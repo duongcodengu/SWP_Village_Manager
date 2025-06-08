@@ -1,0 +1,19 @@
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Village_Manager.styles.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - Fastkart</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <main role="main" class="pb-6">
+            @RenderBody()
+        </main>
+    </div>
+</body>
+</html>

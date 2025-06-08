@@ -11,7 +11,12 @@ builder.Services.AddDbContext<DBContext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 // Add session support
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60); // ton tai trong 60 phut
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 

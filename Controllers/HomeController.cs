@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Village_Manager.Data;
 using Village_Manager.Models;
 
@@ -21,23 +22,32 @@ namespace Village_Manager.Controllers
         [HttpGet]
         [Route("login")]
         public IActionResult Login() => View();
+
         // Xử lý đăng nhập
         [HttpPost]
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
+ 
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
 
             if (user != null)
             {
-                Console.WriteLine("Đăng nhập thành công");
+                // session
                 HttpContext.Session.SetString("Username", user.Username);
-                return RedirectToAction("Index", "Home");
-            }
+                HttpContext.Session.SetInt32("RoleId", user.RoleId);
 
-            Console.WriteLine("Đăng nhập thất bại");
+                // role admin
+                if (user.RoleId == 1)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
+            ViewBag.Error = "Email hoặc mật khẩu không đúng!";
             return View();
         }
+
         // Đăng xuất
         [Route("logout")]
         public IActionResult Logout()

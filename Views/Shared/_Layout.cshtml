@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -256,7 +257,9 @@
 
                                     @* hien thi session khi login *@
                                     @{
+                                        // lay session tu context
                                         var username = Context.Session.GetString("Username");
+                                        var roleId = Context.Session.GetInt32("RoleId");
                                     }
                                     <li class="right-side onhover-dropdown">
                                         <div class="delivery-login-box">
@@ -288,6 +291,15 @@
                                         {
                                             <div class="onhover-div onhover-div-login">
                                                 <ul class="user-box-name">
+                                                    @* neu role la 1 thi la admin *@
+                                                    @if (roleId == 1)
+                                                    {
+                                                        <li class="product-box-contain">
+                                                            <a href="/adminwarehouse">Admin Manager</a>
+                                                        </li>
+                                                    }
+
+                                                    @* rold nao cung co *@
                                                     <li class="product-box-contain">
                                                         <a href="/logout">Log out</a>
                                                     </li>
