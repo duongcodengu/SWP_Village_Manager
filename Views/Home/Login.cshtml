@@ -1,6 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Log In";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Lấy thông báo từ controller
+    var message = ViewBag.Error;
 }
 
 <!DOCTYPE html>
@@ -21,6 +24,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- bootstrap css -->
     <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
@@ -52,6 +56,12 @@
 
                         <div class="input-box">
                             @* form login *@
+                            @if (!string.IsNullOrEmpty(message))
+                            {
+                                <div class="alert alert-danger text-center" role="alert">
+                                    @message
+                                </div>
+                            }
                             <form class="row g-4" asp-action="Login" method="post">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
@@ -61,9 +71,12 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <div class="form-floating theme-form-floating log-in-form">
+                                    <div class="form-floating theme-form-floating log-in-form position-relative">
                                         <input type="password" name="password" class="form-control" id="password" placeholder="Password">
                                         <label for="password">Password</label>
+                                        <span class="toggle-password" style="position:absolute; top:50%; right:15px; transform:translateY(-50%); cursor:pointer;">
+                                            <i class="fa fa-eye-slash" id="togglePassword"></i>
+                                        </span>
                                     </div>
                                 </div>
 
@@ -193,6 +206,19 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+            let show = false;
+            togglePassword.addEventListener('click', function () {
+                show = !show;
+                passwordInput.type = show ? 'text' : 'password';
+                togglePassword.classList.toggle('fa-eye', show);
+                togglePassword.classList.toggle('fa-eye-slash', !show);
+            });
+        });
+    </script>
 </body>
 
 </html>

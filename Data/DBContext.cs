@@ -11,5 +11,7 @@ namespace Village_Manager.Data
         // Define DbSet properties for your entities here, e.g.:
         // public DbSet<YourEntity> YourEntities { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Product> Products { get; set; }
+
     }
 }
