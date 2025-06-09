@@ -35,6 +35,14 @@ namespace Village_Manager.Controllers
             int totalProducts = _context.Products.Count();
             ViewBag.TotalProducts = totalProducts;
 
+            // Lấy thông tin tổng số đơn hàng bán lẻ từ cơ sở dữ liệu
+            int totalRetailOrders = _context.RetailOrders.Count();
+            int totalWholesaleOrders = _context.WholesaleOrders.Count();
+            int totalOrders = totalRetailOrders + totalWholesaleOrders;
+            ViewBag.TotalOrders = totalOrders;
+
+
+
             return View();
         }
     }

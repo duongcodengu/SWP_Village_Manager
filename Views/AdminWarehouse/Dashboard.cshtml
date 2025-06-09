@@ -5,6 +5,7 @@
     // lấy giá trị của ViewBag.Total Controller
     var totalCustomers = ViewBag.TotalCustomers;
     var totalProducts = ViewBag.TotalProducts;
+    var TotalOrders = ViewBag.TotalOrders;
 }
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -104,10 +105,7 @@
                                         <div class="media-body p-0">
                                             <span class="m-0">Total Orders</span>
                                             <h4 class="mb-0 counter">
-                                                9856
-                                                <span class="badge badge-light-danger grow">
-                                                    <i data-feather="trending-down"></i>8.5%
-                                                </span>
+                                                @TotalOrders
                                             </h4>
                                         </div>
                                         <div class="align-self-center text-center">

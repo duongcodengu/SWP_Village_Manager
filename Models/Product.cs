@@ -12,7 +12,7 @@ namespace Village_Manager.Models
 
         [Required]
         [Column("name", TypeName = "nvarchar(100)")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [Column("category_id")]
@@ -27,7 +27,7 @@ namespace Village_Manager.Models
 
         [Required]
         [Column("product_type", TypeName = "nvarchar(20)")]
-        public string ProductType { get; set; } // "processed" hoặc "raw"
+        public string ProductType { get; set; } = string.Empty;// "processed" hoặc "raw"
 
         [Required]
         [Column("quantity")]
