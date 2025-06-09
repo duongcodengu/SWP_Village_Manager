@@ -45,5 +45,12 @@ namespace Village_Manager.Controllers
 
             return View();
         }
+        [HttpGet]
+        [Route("products")]
+        public IActionResult Products() => View();
+
+        [HttpGet]
+        [Route("alluser")]
+        public IActionResult AllUser() => View();
     }
 }

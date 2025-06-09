@@ -13,7 +13,6 @@ namespace Village_Manager.Controllers
         private readonly DBContext _context;
         private readonly IConfiguration _configuration;
 
-
         public HomeController(ILogger<HomeController> logger, DBContext context, IConfiguration configuration)
         {
             _logger = logger;
