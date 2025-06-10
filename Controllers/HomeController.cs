@@ -41,7 +41,7 @@ namespace Village_Manager.Controllers
             {
                 // lấy tên role name
                 int roleId = user.RoleId;
-                string roleName = "ko co ket qua";
+                string roleName = "";
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();

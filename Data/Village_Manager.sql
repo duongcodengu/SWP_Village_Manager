@@ -62,7 +62,8 @@ CREATE TABLE Shipper (
 -- 5. ProductCategory
 CREATE TABLE ProductCategory (
     id INT PRIMARY KEY IDENTITY(1,1),
-    name NVarchar(100) UNIQUE -- không đc trùng danh mục
+    name NVarchar(100) UNIQUE, -- không đc trùng danh mục
+	image_url NVARCHAR(255)
 );
 
 -- 6. Product
@@ -378,3 +379,14 @@ INSERT INTO Users (username, password, email, role_id) VALUES
 ('retail_customer_user', '1', 'retail.customer@example.com', 5),
 ('shipper_user', '1', 'shipper@example.com', 6),
 ('farmer_user', '1', 'farmer@example.com', 7);
+
+INSERT INTO ProductCategory (name, image_url) VALUES
+(N'Vegetables & Fruit', N'/back-end/svg/vegetable.svg'),
+(N'Beverages', N'/back-end/svg/cup.svg'),
+(N'Meats & Seafood', N'/back-end/svg/meats.svg'),
+(N'Breakfast', N'/back-end/svg/breakfast.svg'),
+(N'Frozen Foods', N'/back-end/svg/frozen.svg'),
+(N'Milk & Dairies', N'/back-end/svg/milk.svg'),
+(N'Pet Food', N'/back-end/svg/pet.svg'),
+(N'Vegetables & Fruit', N'/back-end/svg/vegetable.svg');
+

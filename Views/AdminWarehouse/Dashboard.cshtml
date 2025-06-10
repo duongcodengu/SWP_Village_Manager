@@ -6,6 +6,8 @@
     var totalCustomers = ViewBag.TotalCustomers;
     var totalProducts = ViewBag.TotalProducts;
     var TotalOrders = ViewBag.TotalOrders;
+    var categories = ViewBag.Categories as IEnumerable<dynamic>;
+    decimal totalRevenue = ViewBag.TotalRevenue != null ? (decimal)ViewBag.TotalRevenue : 0.0m;
 }
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -84,10 +86,7 @@
                                         <div class="media-body p-0">
                                             <span class="m-0">Total Revenue</span>
                                             <h4 class="mb-0 counter">
-                                                $6659
-                                                <span class="badge badge-light-primary grow">
-                                                    <i data-feather="trending-up"></i>8.5%
-                                                </span>
+                                                @totalRevenue
                                             </h4>
                                         </div>
                                         <div class="align-self-center text-center">
@@ -156,7 +155,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        @* category *@
                         <div class="col-12">
                             <div class="card o-hidden card-hover">
                                 <div class="card-header border-0 pb-1">
@@ -166,159 +165,22 @@
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="category-slider no-arrow">
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/vegetable.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Vegetables & Fruit</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/cup.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Beverages</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/meats.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Meats & Seafood</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/breakfast.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Breakfast</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/frozen.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Frozen Foods</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/milk.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Milk & Dairies</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/pet.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Pet Food</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/vegetable.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Vegetables & Fruit</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/cup.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Beverages</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/meats.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Meats & Seafood</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/breakfast.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Breakfast</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/frozen.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Frozen Foods</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/milk.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Milk & Dairies</h6>
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="~/back-end/svg/pet.svg" class="img-fluid" alt="">
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>Pet Food</h6>
-                                                </a>
-                                            </div>
-                                        </div>
+                                        @if (categories != null)
+                                        {
+                                            foreach (var category in categories)
+                                            {
+                                                <div>
+                                                    <div class="dashboard-category">
+                                                        <a href="javascript:void(0)" class="category-image">
+                                                            <img src="@category.ImageUrl" class="img-fluid" alt="" />
+                                                        </a>
+                                                        <a href="javascript:void(0)" class="category-name">
+                                                            <h6>@category.Name</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </div>
