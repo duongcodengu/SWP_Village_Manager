@@ -1,10 +1,10 @@
-using Village_Manager.Data;
 using Microsoft.EntityFrameworkCore;
+using Village_Manager.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // SQL Server
-builder.Services.AddDbContext<DBContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
@@ -26,7 +26,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession(); // Enable session support
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 // mac dinh khi chay

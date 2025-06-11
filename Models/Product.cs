@@ -1,42 +1,45 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Village_Manager.Models
+namespace Village_Manager.Models;
+
+public partial class Product
 {
-    [Table("Product")]
-    public class Product
-    {
-        [Key]
-        [Column("id")]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [Column("name", TypeName = "nvarchar(100)")]
-        public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = null!;
 
-        [Required]
-        [Column("category_id")]
-        public int CategoryId { get; set; }
+    public int CategoryId { get; set; }
 
-        [Required]
-        [Column("price", TypeName = "decimal(10,2)")]
-        public decimal Price { get; set; }
+    public decimal Price { get; set; }
 
-        [Column("expiration_date", TypeName = "date")]
-        public DateTime? ExpirationDate { get; set; }
+    public DateOnly? ExpirationDate { get; set; }
 
-        [Required]
-        [Column("product_type", TypeName = "nvarchar(20)")]
-        public string ProductType { get; set; } = string.Empty;// "processed" hoặc "raw"
+    public string? ProductType { get; set; }
 
-        [Required]
-        [Column("quantity")]
-        public int Quantity { get; set; }
+    public int Quantity { get; set; }
 
-        [Column("processing_time", TypeName = "date")]
-        public DateTime? ProcessingTime { get; set; }
+    public DateOnly? ProcessingTime { get; set; }
 
-        [Column("farmer_id")]
-        public int? FarmerId { get; set; }
-    }
+    public int? FarmerId { get; set; }
+
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
+    public virtual ProductCategory Category { get; set; } = null!;
+
+    public virtual Farmer? Farmer { get; set; }
+
+    public virtual ICollection<ImportInvoiceDetail> ImportInvoiceDetails { get; set; } = new List<ImportInvoiceDetail>();
+
+    public virtual ICollection<ProcessingOrder> ProcessingOrders { get; set; } = new List<ProcessingOrder>();
+
+    public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+
+    public virtual ICollection<ProductProcessingHistory> ProductProcessingHistories { get; set; } = new List<ProductProcessingHistory>();
+
+    public virtual ICollection<RetailOrderItem> RetailOrderItems { get; set; } = new List<RetailOrderItem>();
+
+    public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
+
+    public virtual ICollection<WholesaleOrderItem> WholesaleOrderItems { get; set; } = new List<WholesaleOrderItem>();
 }

@@ -1,23 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Village_Manager.Models
+namespace Village_Manager.Models;
+
+public partial class WholesaleOrder
 {
-    [Table("WholesaleOrder")]
-    public class WholesaleOrder
-    {
-        [Column("id")]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Column("user_id")]
-        public int UserId { get; set; }
+    public int? UserId { get; set; }
 
-        [Column("order_date")]
-        public DateTime OrderDate { get; set; }
+    public DateTime? OrderDate { get; set; }
 
-        [Column("status")]
-        public string Status { get; set; } = string.Empty;// 'pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned'
+    public string? Status { get; set; }
 
-        [Column("confirmed_at")]
-        public DateTime ConfirmedAt { get; set; } // Ngày xác nhận đơn hàng
-    }
+    public DateTime? ConfirmedAt { get; set; }
+
+    public virtual User? User { get; set; }
+
+    public virtual ICollection<WholesaleOrderItem> WholesaleOrderItems { get; set; } = new List<WholesaleOrderItem>();
 }
