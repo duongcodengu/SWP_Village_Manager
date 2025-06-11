@@ -1,0 +1,14 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# ASP.NET files
+wwwroot/back-end/ajax/api.txt
+
+# Others
+*.log

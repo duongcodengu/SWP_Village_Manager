@@ -10,10 +10,10 @@ namespace Village_Manager.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly DBContext _context;
+        private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public HomeController(ILogger<HomeController> logger, DBContext context, IConfiguration configuration)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context, IConfiguration configuration)
         {
             _logger = logger;
             _context = context;
@@ -32,7 +32,7 @@ namespace Village_Manager.Controllers
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
- 
+
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -52,7 +52,7 @@ namespace Village_Manager.Controllers
                     var result = cmd.ExecuteScalar();
                     roleName = result.ToString() ?? "";
                 }
-                
+
                 // session
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
