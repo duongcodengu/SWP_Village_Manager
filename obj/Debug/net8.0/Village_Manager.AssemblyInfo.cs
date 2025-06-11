@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Village_Manager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c18d577723109ca06cf209011c569a180a84ffc6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25c9bad67dfc69ac1fdad37f1f0dc3aa757d61b3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Village_Manager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Village_Manager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

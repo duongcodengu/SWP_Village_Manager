@@ -1,24 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|c:\\users\\sonlam29\\desktop\\village_manager\\views\\adminwarehouse\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|solutionrelative:views\\adminwarehouse\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|c:\\users\\sonlam29\\desktop\\village_manager\\controllers\\adminwarehousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|solutionrelative:controllers\\adminwarehousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|c:\\users\\sonlam29\\desktop\\village_manager\\data\\village_manager.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
-      "RelativeMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|solutionrelative:data\\village_manager.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|c:\\users\\sonlam29\\desktop\\village_manager\\data\\village_manager.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
-      "RelativeMoniker": "D:0:0:{90244F4F-D634-47DD-86E2-2E4098AE4898}|Village_Manager.csproj|solutionrelative:data\\village_manager.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -26,50 +9,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 242,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": -1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Village_Manager.sql ",
-              "DocumentMoniker": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Data\\Village_Manager.sql",
-              "RelativeDocumentMoniker": "Data\\Village_Manager.sql",
-              "ToolTip": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Data\\Village_Manager.sql",
-              "RelativeToolTip": "Data\\Village_Manager.sql",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-06-09T04:44:30.613Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AdminWarehouseController.cs",
-              "DocumentMoniker": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Controllers\\AdminWarehouseController.cs",
-              "RelativeDocumentMoniker": "Controllers\\AdminWarehouseController.cs",
-              "ToolTip": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Controllers\\AdminWarehouseController.cs",
-              "RelativeToolTip": "Controllers\\AdminWarehouseController.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAADwvz8AAAA3AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-09T05:02:37.031Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Views\\AdminWarehouse\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "Views\\AdminWarehouse\\Dashboard.cshtml",
-              "ToolTip": "C:\\Users\\SonLam29\\Desktop\\Village_Manager\\Views\\AdminWarehouse\\Dashboard.cshtml",
-              "RelativeToolTip": "Views\\AdminWarehouse\\Dashboard.cshtml",
-              "ViewState": "AgIAAJwAAAAAAAAAAIAwwKsAAABQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-09T04:59:26.518Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             }
           ]
         }

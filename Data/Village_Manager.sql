@@ -313,16 +313,6 @@ CREATE TABLE Log (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
--- 27. Session
-CREATE TABLE Session (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    session_token TEXT,
-    created_at DATETIME,
-    expires_at DATETIME,
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
 -- 28. Report
 CREATE TABLE Report (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -389,4 +379,157 @@ INSERT INTO ProductCategory (name, image_url) VALUES
 (N'Milk & Dairies', N'/back-end/svg/milk.svg'),
 (N'Pet Food', N'/back-end/svg/pet.svg'),
 (N'Vegetables & Fruit', N'/back-end/svg/vegetable.svg');
+
+INSERT INTO RetailCustomer (user_id, full_name, phone)
+VALUES
+(5, N'Nguyễn Văn An', '0912345678');
+
+INSERT INTO WholesaleCustomer (user_id, company_name, contact_person, phone)
+VALUES
+(3, N'Công ty TNHH Xuất Nhập Khẩu Tiến Phát', N'Phạm Thị Hồng', '0987654321');
+
+INSERT INTO Farmer (user_id, full_name, phone, address)
+VALUES
+(7, N'Ngô Văn B', '0909998888', N'Ấp 1, Xã Tân Phú, Huyện Châu Thành, Tỉnh Đồng Tháp');
+
+INSERT INTO Shipper (user_id, full_name, phone, vehicle_info)
+VALUES
+(6, N'Lê Văn C', '0911222333', N'Xe tải 1.5 tấn - 61A-12345');
+
+INSERT INTO Warehouse (name, location)
+VALUES
+(N'Kho Miền Nam', N'KCN Tân Tạo, Bình Tân, TP.HCM'),
+(N'Kho Miền Bắc', N'KCN Quang Minh, Mê Linh, Hà Nội');
+
+INSERT INTO Product (name, category_id, price, expiration_date, product_type, quantity, processing_time, farmer_id)
+VALUES
+(N'Rau muống', 1, 15000, '2025-07-01', N'raw', 100, NULL, 1),
+(N'Sữa tươi Vinamilk', 6, 25000, '2025-09-10', N'processed', 200, '2025-05-01', 1),
+(N'Thịt heo ba chỉ', 3, 130000, '2025-06-20', N'raw', 50, NULL, 1),
+(N'Cá basa phi lê', 3, 90000, '2025-06-15', N'raw', 70, NULL, 1);
+
+INSERT INTO Stock (warehouse_id, product_id, quantity, last_updated)
+VALUES
+(1, 1, 40, GETDATE()),
+(1, 2, 80, GETDATE()),
+(2, 3, 30, GETDATE()),
+(2, 4, 20, GETDATE());
+
+INSERT INTO ImportInvoice (warehouse_id, supplier_name, total_amount, created_at, purchase_time)
+VALUES
+(1, N'Công ty Rau Xanh', 2000000, GETDATE(), '2025-06-01 09:30:00'),
+(2, N'Công ty Thịt Sạch', 4000000, GETDATE(), '2025-06-05 15:20:00');
+
+INSERT INTO ImportInvoiceDetail (import_invoice_id, product_id, quantity, unit_price)
+VALUES
+(1, 1, 50, 15000),
+(1, 2, 60, 25000),
+(2, 3, 20, 130000),
+(2, 4, 30, 90000);
+
+INSERT INTO WholesaleOrder (user_id, order_date, status, confirmed_at)
+VALUES
+(3, GETDATE(), N'pending', NULL);
+
+INSERT INTO WholesaleOrderItem (order_id, product_id, quantity, unit_price)
+VALUES
+(1, 2, 30, 24000),
+(1, 4, 15, 89000);
+
+INSERT INTO RetailOrder (user_id, order_date, status, confirmed_at)
+VALUES
+(5, GETDATE(), N'confirmed', GETDATE());
+
+INSERT INTO RetailOrderItem (order_id, product_id, quantity, unit_price)
+VALUES
+(1, 1, 3, 15000),
+(1, 2, 1, 25000);
+
+INSERT INTO Cart (user_id, created_at)
+VALUES
+(5, GETDATE());
+
+INSERT INTO CartItem (cart_id, product_id, quantity)
+VALUES
+(1, 1, 2),
+(1, 2, 1);
+
+INSERT INTO Delivery (order_type, order_id, shipper_id, shipping_fee, start_time, end_time)
+VALUES
+(N'retail', 1, 1, 25000, GETDATE(), NULL);
+
+INSERT INTO ProcessingOrder (product_id, quantity, send_date, expected_return_date)
+VALUES
+(1, 20, '2025-06-01', '2025-06-05');
+
+INSERT INTO ProcessingReceipt (processing_order_id, received_date, actual_quantity)
+VALUES
+(1, '2025-06-05', 19);
+
+INSERT INTO ProductProcessingHistory (product_id, sent_date, return_date, quantity)
+VALUES
+(1, '2025-06-01', '2025-06-05', 19);
+
+INSERT INTO ProcessedProduct (product_id, history_id, processed_date, return_date, processing_note, total_weight, image_url, description)
+VALUES
+(1, 1, '2025-06-05', '2025-06-05', N'Đã xử lý đạt chuẩn an toàn', 18.5, N'/images/processed_rau.jpg', N'Rau muống đã rửa sạch và đóng gói');
+
+INSERT INTO Feedback (user_id, order_id, order_type, content, rating, created_at)
+VALUES
+(5, 1, N'retail', N'Rau tươi, giao nhanh', 5, GETDATE());
+
+INSERT INTO Feedback (user_id, order_id, order_type, content, rating, created_at)
+VALUES
+(5, 1, N'retail', N'Rau tươi, giao nhanh', 5, GETDATE());
+
+INSERT INTO Address (user_id, address_line, city, province, postal_code)
+VALUES
+(5, N'456 Lê Lợi', N'TP.HCM', N'Hồ Chí Minh', N'700000');
+
+INSERT INTO Payment (user_id, order_id, order_type, amount, paid_at, method, payment_type)
+VALUES
+(5, 1, N'retail', 55000, GETDATE(), N'cash', N'receive');
+
+INSERT INTO TransportRoute (start_location, end_location, distance_km, estimated_time)
+VALUES
+(N'Kho Miền Nam', N'456 Lê Lợi, TP.HCM', 15.0, N'30 phút');
+
+INSERT INTO Notification (user_id, content, created_at, is_read)
+VALUES
+(5, N'Đơn hàng của bạn đã được xác nhận!', GETDATE(), 0);
+
+INSERT INTO Log (user_id, action, created_at)
+VALUES
+(5, N'Thêm đơn hàng bán lẻ', GETDATE());
+
+INSERT INTO Report (title, content, created_at)
+VALUES
+(N'Thống kê bán hàng tháng 6', N'Số liệu bán hàng tăng trưởng 12% so với tháng trước', GETDATE());
+
+INSERT INTO Staff (user_id, role, assigned_warehouse_id)
+VALUES
+(2, N'Kho Miền Nam Manager', 1);
+
+INSERT INTO Supplier (name, contact_info)
+VALUES
+(N'Công ty Rau Xanh', N'Liên hệ: 028 12345678'),
+(N'Công ty Thịt Sạch', N'Liên hệ: 024 98765432');
+
+INSERT INTO ReturnOrder (order_type, order_id, user_id, quantity, reason, created_at)
+VALUES
+(N'retail', 1, 5, 1, N'Rau không tươi', GETDATE());
+
+-- chua lay anh
+INSERT INTO ProductImage (product_id, image_url, description)
+VALUES
+(1, N'/images/rau-muong.jpg', N'Rau muống tươi mới cắt sáng nay'),
+(2, N'/images/sua-tuoi-vinamilk.jpg', N'Sữa tươi hộp 1L'),
+(3, N'/images/thit-heo-ba-chi.jpg', N'Thịt ba chỉ tươi sạch'),
+(4, N'/images/ca-basa.jpg', N'Cá basa phi lê tươi');
+
+
+
+select * from ProductImage
+
+
 
