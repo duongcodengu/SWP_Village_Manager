@@ -49,7 +49,6 @@ namespace Village_Manager.Controllers
                 .Select(c => new
                 {
                     Name = c.Name,
-                    ImageUrl = c.ImageUrl
                 }).ToList<dynamic>();
             ViewBag.Categories = categories;
 
@@ -72,12 +71,32 @@ namespace Village_Manager.Controllers
             return View();
         }
 
-        [HttpGet]
-        [Route("products")]
-        public IActionResult Products() => View();
-
+        // Show all users in the data
         [HttpGet]
         [Route("alluser")]
-        public IActionResult AllUser() => View();
+        public IActionResult AllUser()
+        {
+
+            var users = _context.Users.ToList();
+            return View(users); // Truyền danh sách User sang View
+        }
+
+        // delete user by id
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("AdminWarehouse/Delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound(); // return 404 if user not found
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+
+            return RedirectToAction("AllUser"); // Chuyển hướng về danh sách người dùng
+        }
     }
 }
