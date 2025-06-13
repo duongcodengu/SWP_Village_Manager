@@ -24,7 +24,6 @@
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <title>Fastkart - Dashboard</title>
-
     <!-- Google font-->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
@@ -195,7 +194,17 @@
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
-                                    <div id="report-chart"></div>
+                                    <div class="revenue-chart-container" style="padding:24px; background: #fff; border-radius: 18px; box-shadow: 0 3px 18px #0001; max-width: 700px; margin: auto;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                                            <div style="font-size:22px; font-weight:600; color:#0da487;">Biểu đồ Doanh thu theo tháng</div>
+                                            <select id="year-select" style="padding: 6px 18px; border-radius: 8px; border: 1.5px solid #0da487; outline:none; font-size:15px;">
+                                                <option value="2023">2023</option>
+                                                <option value="2024" selected>2024</option>
+                                                <option value="2025">2025</option>
+                                            </select>
+                                        </div>
+                                        <div id="report-chart-new" style="min-width:300px; min-height:230px"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -765,5 +774,143 @@
         <!-- Page Body End -->
     </div>
     <!-- page-wrapper End-->
+
+	@* chạy ApexCharts API *@
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        let reportChartInstance = null;
+
+        function renderRevenueChart(year) {
+            fetch('/api/report_chart/total-revenue-by-month?year=' + year)
+                .then(res => res.json())
+                .then(data => {
+                    const monthLabels = [
+                        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+                    ];
+
+                    var options = {
+                        series: data.series.map(ser => ({
+                            ...ser,
+                            data: ser.data.map(v => Math.round(v))
+                        })),
+                        chart: {
+                            height: 350,
+                            type: 'area',
+                            fontFamily: "Montserrat, Arial, sans-serif",
+                            background: "transparent",
+                            dropShadow: {
+                                enabled: true,
+                                top: 5,
+                                left: 0,
+                                blur: 8,
+                                color: '#0da487',
+                                opacity: 0.09
+                            },
+                            toolbar: { show: false },
+                            zoom: { enabled: false }
+                        },
+                        dataLabels: { enabled: false },
+                        stroke: { curve: 'smooth', width: 4 },
+                        markers: {
+                            size: 7,
+                            strokeWidth: 3,
+                            strokeColors: "#fff",
+                            hover: { size: 12 }
+                        },
+                        colors: ["#0da487"],
+                        fill: {
+                            type: "gradient",
+                            gradient: {
+                                shade: "light",
+                                type: "vertical",
+                                shadeIntensity: 0.5,
+                                gradientToColors: ["#1fe2b6"],
+                                inverseColors: true,
+                                opacityFrom: 0.7,
+                                opacityTo: 0.13,
+                                stops: [0, 70, 100]
+                            }
+                        },
+                        legend: {
+                            show: true,
+                            position: 'top',
+                            fontSize: '16px',
+                            labels: { colors: '#0da487', useSeriesColors: false },
+                            markers: { width: 22, height: 10, radius: 4 }
+                        },
+                        tooltip: {
+                            theme: "light",
+                            style: { fontSize: '16px', fontFamily: 'inherit' },
+                            y: { formatter: val => val.toLocaleString("vi-VN") + ' ₫' },
+                            marker: { show: true }
+                        },
+                        xaxis: {
+                            categories: data.categories,
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                            labels: {
+                                show: true,
+                                style: {
+                                    fontSize: "14px",
+                                    fontWeight: 600,
+                                    color: "#0da487" // hoặc #009688, hoặc màu đậm nổi bật trên nền trắng
+                                }
+                            }
+                        },
+                        yaxis: {
+                            min: 0,
+                            labels: {
+                                style: { fontSize: "14px", color: "#333" },
+                                formatter: val => val.toLocaleString("vi-VN") + ' ₫'
+                            }
+                        },
+                        grid: {
+                            borderColor: "#e5f6f5",
+                            xaxis: { lines: { show: true } },
+                            yaxis: { lines: { show: true } },
+                            padding: { right: 20, left: 18, top: 0, bottom: 0 }
+                        },
+                        responsive: [
+                            { breakpoint: 992, options: { chart: { height: 220 }, markers: { size: 4 } } },
+                            { breakpoint: 576, options: { chart: { height: 160 }, yaxis: { labels: { show: false } } } }
+                        ]
+                    };
+
+                    if (reportChartInstance) reportChartInstance.destroy();
+
+                    const chartDom = document.querySelector("#report-chart-new");
+                    if (chartDom) {
+                        reportChartInstance = new ApexCharts(chartDom, options);
+                        reportChartInstance.render();
+                    } else {
+                        console.error('Không tìm thấy #report-chart-new trong DOM!');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error: ', err);
+                });
+        }
+
+        // Lần đầu load chart với năm mặc định
+        document.addEventListener("DOMContentLoaded", function () {
+            const yearSelect = document.getElementById("year-select");
+            renderRevenueChart(yearSelect.value);
+
+            yearSelect.addEventListener("change", function () {
+                renderRevenueChart(this.value);
+            });
+        });
+    </script>
+    <style>
+        .apexcharts-xaxis-label {
+            fill: #0da487 !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            opacity: 1 !important;
+            display: block !important;
+        }
+	</style>
+
 </body>
 </html>

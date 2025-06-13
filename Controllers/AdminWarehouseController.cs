@@ -53,20 +53,32 @@ namespace Village_Manager.Controllers
                 }).ToList<dynamic>();
             ViewBag.Categories = categories;
 
-            // Tổng doanh thu delivered
-            decimal totalRevenue = 0;
-            // RetailOrder
-            var retailRevenue = (from ro in _context.RetailOrders
-                                 where ro.Status == "delivered"
-                                 join ri in _context.RetailOrderItems on ro.Id equals ri.OrderId
-                                 select ri.Quantity * ri.UnitPrice).Sum();
-            // WholesaleOrder
-            var wholesaleRevenue = (from wo in _context.WholesaleOrders
-                                    where wo.Status == "delivered"
-                                    join wi in _context.WholesaleOrderItems on wo.Id equals wi.OrderId
-                                    select wi.Quantity * wi.UnitPrice).Sum();
+            // Tổng doanh thu confirmed
+            decimal currentYear = DateTime.Now.Year;
 
-            totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
+            // Bán lẻ (Retail)
+            var retailRevenue = _context.RetailOrders
+                .Where(ro => ro.Status == "confirmed"
+                    && ro.ConfirmedAt.HasValue
+                    && ro.ConfirmedAt.Value.Year == currentYear)
+                .Join(_context.RetailOrderItems,
+                      ro => ro.Id,
+                      ri => ri.OrderId,
+                      (ro, ri) => ri.Quantity * ri.UnitPrice)
+                .Sum();
+
+            // Bán buôn (Wholesale)
+            var wholesaleRevenue = _context.WholesaleOrders
+                .Where(wo => wo.Status == "confirmed"
+                    && wo.ConfirmedAt.HasValue
+                    && wo.ConfirmedAt.Value.Year == currentYear)
+                .Join(_context.WholesaleOrderItems,
+                      wo => wo.Id,
+                      wi => wi.OrderId,
+                      (wo, wi) => wi.Quantity * wi.UnitPrice)
+                .Sum();
+
+            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
             ViewBag.TotalRevenue = totalRevenue;
 
             return View();
