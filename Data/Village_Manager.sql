@@ -402,14 +402,12 @@ INSERT INTO WholesaleOrder (user_id, order_date, status, confirmed_at)
 VALUES (1, '2025-04-10', 'confirmed', '2025-04-10'),
        (1, '2025-05-12', 'confirmed', '2025-05-12'),
        (1, '2025-06-18', 'confirmed', '2025-06-18');
+	   (1, '2025-06-18', 'confirmed', '2025-06-18');
 
 -- Giả sử các order id tiếp theo là 1, 2, 3
 INSERT INTO WholesaleOrderItem (order_id, product_id, quantity, unit_price)
 VALUES
-    (1, 1, 20, 20000), -- tháng 4: 400.000
-    (2, 1, 15, 22000), -- tháng 5: 330.000
-    (3, 1, 18, 25000); -- tháng 6: 450.000
-
+	(4, 1, 18, 123);
 
 SELECT * FROM RetailOrder WHERE confirmed_at >= '2025-01-01';
 SELECT * FROM WholesaleOrder WHERE confirmed_at >= '2025-01-01';

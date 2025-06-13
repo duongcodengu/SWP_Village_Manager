@@ -779,15 +779,20 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         let reportChartInstance = null;
+        let autoRefreshInterval = null;
+        let lastChartData = null; 
+
+        function isChartDataEqual(data1, data2) {
+            return JSON.stringify(data1) === JSON.stringify(data2);
+        }
 
         function renderRevenueChart(year) {
             fetch('/api/report_chart/total-revenue-by-month?year=' + year)
                 .then(res => res.json())
                 .then(data => {
-                    const monthLabels = [
-                        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-                        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-                    ];
+                    // So sánh dữ liệu, nếu không đổi thì không update chart nữa
+                    if (lastChartData && isChartDataEqual(data, lastChartData)) return;
+                    lastChartData = data;
 
                     var options = {
                         series: data.series.map(ser => ({
@@ -854,7 +859,7 @@
                                 style: {
                                     fontSize: "14px",
                                     fontWeight: 600,
-                                    color: "#0da487" // hoặc #009688, hoặc màu đậm nổi bật trên nền trắng
+                                    color: "#0da487"
                                 }
                             }
                         },
@@ -892,15 +897,27 @@
                 });
         }
 
-        // Lần đầu load chart với năm mặc định
+        function startAutoRefreshChart() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            const yearSelect = document.getElementById("year-select");
+            autoRefreshInterval = setInterval(() => {
+                renderRevenueChart(yearSelect.value);
+            }, 10000);
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             const yearSelect = document.getElementById("year-select");
             renderRevenueChart(yearSelect.value);
 
             yearSelect.addEventListener("change", function () {
                 renderRevenueChart(this.value);
+                lastChartData = null; // Đổi năm thì luôn render lại chart lần đầu!
+                startAutoRefreshChart();
             });
+
+            startAutoRefreshChart();
         });
+
     </script>
     <style>
         .apexcharts-xaxis-label {
