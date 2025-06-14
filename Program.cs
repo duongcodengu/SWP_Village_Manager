@@ -29,15 +29,17 @@ app.UseSession(); // Enable session support
 app.UseAuthentication();
 app.UseAuthorization();
 
-// mac dinh khi chay
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute(
+        name: "adminwarehouse",
+        pattern: "adminwarehouse/{action=Dashboard}/{id?}",
+        defaults: new { controller = "AdminWarehouse" });
+
+    endpoints.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
+        pattern: "{controller=Home}/{action=Index}/{id?}"
+    );
 });
+
+app.Run();

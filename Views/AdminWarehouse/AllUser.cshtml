@@ -1,4 +1,6 @@
-﻿@{
+@using System.Linq
+@model List<Village_Manager.Models.User>
+@{
     ViewData["Title"] = "All Users";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
@@ -30,9 +32,6 @@
     <!-- remixicon css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
 
-    <!-- Data Table css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
-
     <!-- Themify icon css-->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
 
@@ -46,6 +45,9 @@
     <!-- Bootstrap css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
 
+    <!-- DataTables css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/datatables.css">
+
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
 </head>
@@ -57,166 +59,117 @@
         <div class="page-body-wrapper">
             <!-- Container-fluid starts-->
             <div class="page-body">
-
-                @model List<Village_Manager.Models.User>
-
-                <!-- All User Table Start -->
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card card-table">
-                                <div class="card-body">
-                                    <div class="title-header option-title">
-                                        <h5>All Users</h5>
-                                        <form class="d-inline-flex">
-                                            <a href="/User/Add" class="align-items-center btn btn-theme d-flex">
-                                                <i data-feather="plus"></i>Add New
-                                            </a>
-                                        </form>
-                                    </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            @if (TempData["SuccessMessage"] != null)
+                                            {
+                                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                    @TempData["SuccessMessage"]
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+                                            }
+                                            <div class="title-header option-title">
+                                                <h5>All Users</h5>
+                                                <form class="d-inline-flex">
+                                                    <a href="/adminwarehouse/adduser" class="align-items-center btn btn-theme d-flex">
+                                                        <i data-feather="plus"></i>Add New
+                                                    </a>
+                                                </form>
+                                            </div>
 
-                                    <div class="table-responsive table-product">
-                                        <table class="table all-package theme-table" id="table_id">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Username</th>
-                                                    <th>Email</th>
-                                                    <th>Role</th>
-                                                    <th>Created At</th>
-                                                    <th>Option</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if (Model != null && Model.Any())
-                                                {
-                                                    @foreach (var user in Model)
-                                                    {
+                                            <div class="table-responsive table-product">
+                                                <table class="table all-package theme-table" id="table_id">
+                                                    <thead>
                                                         <tr>
-                                                            <td>@user.Id</td>
-                                                            <td>@user.Username</td>
-                                                            <td>@user.Email</td>
-                                                            <td>@user.RoleId</td>
-                                                            <td>@(user.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</td>
-                                                            <td>
-                                                                <ul>
-                                                                    <li>
-                                                                        <a href="/Order/Detail/@user.Id">Detail</a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a href="/User/Edit/@user.Id">Edit</a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <form asp-action="Delete" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
-                                                                            <button type="submit" style="border: none; background: none; color: red;">
-                                                                                Delete
-                                                                            </button>
-                                                                        </form>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
+                                                            <th>ID</th>
+                                                            <th>Username</th>
+                                                            <th>Email</th>
+                                                            <th>Role</th>
+                                                            <th>Created At</th>
+                                                            <th>Option</th>
                                                         </tr>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <tr>
-                                                        <td colspan="6" class="text-center">Không có người dùng nào trong hệ thống.</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model != null)
+                                                        {
+                                                            @foreach (var user in Model)
+                                                            {
+                                                                <tr>
+                                                                    <td>@user.Id</td>
+                                                                    <td>@user.Username</td>
+                                                                    <td>@user.Email</td>
+                                                                    <td>@(user.Role?.Name ?? "N/A")</td>
+                                                                    <td>@(user.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                                                    <td>
+                                                                        <ul>
+                                                                            <li>
+                                                                                <a href="/Order/Detail/@user.Id">Detail</a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <a href="@Url.Action("EditUser", "AdminWarehouse", new { id = user.Id })">Edit</a>
+                                                                            </li>
+                                                                            <li>
+                                                                                <form asp-action="Delete" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
+                                                                                    <button type="submit" style="border: none; background: none; color: red;">
+                                                                                        Delete
+                                                                                    </button>
+                                                                                </form>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td colspan="6" class="text-center">Không có người dùng nào trong hệ thống.</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
 
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- All User Table Ends -->
-
-
-                <div class="container-fluid">
-                </div>
             </div>
             <!-- Container-fluid end -->
         </div>
         <!-- Page Body End -->
-        <!-- Modal Start -->
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-            <div class="modal-dialog  modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                        <p>Are you sure you want to log out?</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        <div class="button-box">
-                            <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                            <button type="button" class="btn  btn--yes btn-primary">Yes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal End -->
     </div>
 
-    <!-- Delete Modal Box Start -->
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box">
-                        <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
-                            data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- latest js -->
+    <script src="~/back-end/js/jquery-3.6.0.min.js"></script>
 
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box text-center">
-                        <div class="wrapper">
-                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                            </svg>
-                        </div>
-                        <h4 class="text-content">It's Removed.</h4>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Delete Modal Box End -->
+    <!-- Bootstrap js -->
+    <script src="~/back-end/js/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- DataTables js -->
+    <script src="~/back-end/js/jquery.dataTables.js"></script>
+
+    <!-- feather icon js -->
+    <script src="~/back-end/js/icons/feather-icon/feather.min.js"></script>
+    <script src="~/back-end/js/icons/feather-icon/feather-icon.js"></script>
+
+    <!-- scrollbar simplebar js -->
+    <script src="~/back-end/js/scrollbar/simplebar.js"></script>
+    <script src="~/back-end/js/scrollbar/custom.js"></script>
+
+    <!-- Sidebar jquery -->
+    <script src="~/back-end/js/config.js"></script>
+
+    <!-- tooltip init js -->
+    <script src="~/back-end/js/tooltip-init.js"></script>
 </body>
-
 </html>
