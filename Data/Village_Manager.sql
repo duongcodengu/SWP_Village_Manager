@@ -374,7 +374,7 @@ INSERT INTO Roles (name) VALUES
 INSERT INTO Users (username, password, email, role_id)
 VALUES (N'admin', N'admin123', N'admin@example.com', 1);
 
-
+-- Các danh mục sản phẩm
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
 (N'Beverages', N'back-end/svg/cup.svg'),
@@ -386,28 +386,23 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 
 -- Bán lẻ tháng 1, 2, 3 năm 2025 (id user, id product cần đúng thực tế database)
 INSERT INTO RetailOrder (user_id, order_date, status, confirmed_at)
-VALUES (1, '2025-01-05', 'confirmed', '2025-01-05'),
-       (1, '2025-02-15', 'confirmed', '2025-02-15'),
-       (1, '2025-03-18', 'confirmed', '2025-03-18');
-
--- Lấy id của các order vừa tạo (giả sử id là 1, 2, 3)
-INSERT INTO RetailOrderItem (order_id, product_id, quantity, unit_price)
-VALUES
-    (1, 1, 10, 25000), -- tháng 1: 250.000
-    (2, 1, 8, 30000),  -- tháng 2: 240.000
-    (3, 1, 6, 40000);  -- tháng 3: 240.000
-
--- Bán buôn tháng 4, 5, 6 năm 2025
-INSERT INTO WholesaleOrder (user_id, order_date, status, confirmed_at)
-VALUES (1, '2025-04-10', 'confirmed', '2025-04-10'),
-       (1, '2025-05-12', 'confirmed', '2025-05-12'),
-       (1, '2025-06-18', 'confirmed', '2025-06-18');
-	   (1, '2025-06-18', 'confirmed', '2025-06-18');
-
--- Giả sử các order id tiếp theo là 1, 2, 3
-INSERT INTO WholesaleOrderItem (order_id, product_id, quantity, unit_price)
-VALUES
-	(4, 1, 18, 123);
+VALUES (1, '2025-01-05', 'confirmed', '2025-01-05');
 
 SELECT * FROM RetailOrder WHERE confirmed_at >= '2025-01-01';
 SELECT * FROM WholesaleOrder WHERE confirmed_at >= '2025-01-01';
+
+-- Thêm sản phẩm mẫu và nông dân
+INSERT INTO Product (name, category_id, price, expiration_date, product_type, quantity, processing_time, farmer_id)
+VALUES
+(N'Carrot Fresh', 1, 15000, '2025-12-31', 'raw', 200, NULL, 1),
+(N'Carrot Juice', 1, 35000, NULL, 'processed', 100, '2025-06-01', 1),
+(N'Organic Tomato', 1, 18000, '2025-11-30', 'raw', 150, NULL, 1);
+
+INSERT INTO Farmer (user_id, full_name, phone, address)
+VALUES (7, N'Trần Văn Nông', '0123456789', N'An Giang');
+
+INSERT INTO ProductImage (product_id, image_url, description)
+VALUES
+(2, '/images/product/carrot1.png', N'Ảnh cà rốt tươi'),
+(3, '/images/product/carrot-juice1.png', N'Ảnh nước ép cà rốt'),
+(4, '/images/product/tomato1.png', N'Ảnh cà chua hữu cơ');
