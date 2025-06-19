@@ -1,0 +1,33 @@
+@model Village_Manager.Models.Role
+@{
+    ViewData["Title"] = "Chỉnh sửa Role";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary" style="background-color: #0da487 !important; color: #fff; border-radius: 15px 15px 0 0;">
+                        <h5 class="mb-0" style="color: #fff;">Chỉnh sửa Role</h5>
+                    </div>
+                    <div class="card-body" style="background: #fff;">
+                        <form asp-action="Edit" asp-controller="Role" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="Id" />
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label font-roboto">Tên Role</label>
+                                <input asp-for="Name" class="form-control" placeholder="Nhập tên role..." />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-theme btn-animation">Lưu thay đổi</button>
+                                <a href="/adminwarehouse/role" class="btn btn-outline-primary">Quay lại</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

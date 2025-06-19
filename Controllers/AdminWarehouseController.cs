@@ -6,6 +6,7 @@ using Village_Manager.Models;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
 {
@@ -27,10 +28,7 @@ namespace Village_Manager.Controllers
         [Route("adminwarehouse")]
         public IActionResult Dashboard()
         {
-            var username = HttpContext.Session.GetString("Username");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
-
-            if (string.IsNullOrEmpty(username) || roleId != 1)
+            if (!HttpContext.Session.IsAdmin())
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -80,7 +78,7 @@ namespace Village_Manager.Controllers
         // Show all users in the data
         [HttpGet]
         [Route("adminwarehouse/alluser")]
-        public async Task<IActionResult> AllUser()
+        public async Task<IActionResult> AllUser(string searchUser)
         {
             try
             {
@@ -98,13 +96,16 @@ namespace Village_Manager.Controllers
                     return View("404");
                 }
 
-                // Get all users with their roles
-                var users = await _context.Users
-                    .Include(u => u.Role)
-                    .OrderByDescending(u => u.CreatedAt)
-                    .ToListAsync();
+                // Lọc user theo username nếu có searchUser
+                var usersQuery = _context.Users.Include(u => u.Role).AsQueryable();
+                if (!string.IsNullOrEmpty(searchUser))
+                {
+                    usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
+                }
+                var users = await usersQuery.OrderByDescending(u => u.CreatedAt).ToListAsync();
 
                 _logger.LogInformation($"Successfully loaded {users.Count} users");
+                ViewBag.SearchUser = searchUser; // Để giữ lại từ khóa trên view
                 return View(users);
             }
             catch (Exception ex)
@@ -121,10 +122,7 @@ namespace Village_Manager.Controllers
         [Route("adminwarehouse/delete/{id}")]
         public IActionResult Delete(int id)
         {
-            var username = HttpContext.Session.GetString("Username");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
-
-            if (string.IsNullOrEmpty(username) || roleId != 1)
+            if (!HttpContext.Session.IsAdmin())
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -146,6 +144,12 @@ namespace Village_Manager.Controllers
         [Route("adminwarehouse/adduser")]
         public IActionResult AddUser()
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+
             ViewBag.Roles = _context.Roles.ToList();
             return View();
         }
@@ -157,6 +161,12 @@ namespace Village_Manager.Controllers
         {
             try
             {
+                if (!HttpContext.Session.IsAdmin())
+                {
+                    Response.StatusCode = 404;
+                    return View("404");
+                }
+
                 _logger.LogInformation("Starting user creation process...");
                 ViewBag.Roles = await _context.Roles.ToListAsync();
 
@@ -232,17 +242,13 @@ namespace Village_Manager.Controllers
         {
             try
             {
-                _logger.LogInformation($"Loading user for edit. UserId: {id}");
-                
-                var username = HttpContext.Session.GetString("Username");
-                var roleId = HttpContext.Session.GetInt32("RoleId");
-
-                if (string.IsNullOrEmpty(username) || roleId != 1)
+                if (!HttpContext.Session.IsAdmin())
                 {
-                    _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {roleId}");
                     Response.StatusCode = 404;
                     return View("404");
                 }
+
+                _logger.LogInformation($"Loading user for edit. UserId: {id}");
 
                 var user = await _context.Users.FindAsync(id);
                 if (user == null)
@@ -270,17 +276,13 @@ namespace Village_Manager.Controllers
         {
             try
             {
-                _logger.LogInformation($"Processing user update. UserId: {id}");
-                
-                var username = HttpContext.Session.GetString("Username");
-                var roleId = HttpContext.Session.GetInt32("RoleId");
-
-                if (string.IsNullOrEmpty(username) || roleId != 1)
+                if (!HttpContext.Session.IsAdmin())
                 {
-                    _logger.LogWarning($"Unauthorized update attempt. Username: {username}, RoleId: {roleId}");
                     Response.StatusCode = 404;
                     return View("404");
                 }
+
+                _logger.LogInformation($"Processing user update. UserId: {id}");
 
                 ViewBag.Roles = await _context.Roles.ToListAsync();
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Add authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
+        options.LogoutPath = "/logout";
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,10 +41,15 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
+    // Specific route for RoleController
+    endpoints.MapControllerRoute(
+        name: "admin_role_route",
+        pattern: "adminwarehouse/role/{action=Index}/{id?}",
+        defaults: new { controller = "Role" });
+
     endpoints.MapControllerRoute(
         name: "adminwarehouse",
-        pattern: "adminwarehouse/{action=Dashboard}/{id?}",
-        defaults: new { controller = "AdminWarehouse" });
+        pattern: "adminwarehouse/{controller=AdminWarehouse}/{action=Index}/{id?}");
 
     endpoints.MapControllerRoute(
         name: "default",

@@ -66,6 +66,15 @@
                                 <div class="col-sm-12">
                                     <div class="card">
                                         <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div class="title-header option-title">
+                                                    <h5>All Users</h5>
+                                                </div>
+                                                <form class="d-flex align-items-center gap-2" method="get" action="/adminwarehouse/alluser">
+                                                    <input type="text" name="searchUser" class="form-control form-control-sm" placeholder="Tìm username..." value="@ViewBag.SearchUser" style="width: 220px;">
+                                                    <button type="submit" class="btn btn-light btn-sm">Tìm</button>
+                                                </form>
+                                            </div>
                                             @if (TempData["SuccessMessage"] != null)
                                             {
                                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -74,7 +83,6 @@
                                                 </div>
                                             }
                                             <div class="title-header option-title">
-                                                <h5>All Users</h5>
                                                 <form class="d-inline-flex">
                                                     <a href="/adminwarehouse/adduser" class="align-items-center btn btn-theme d-flex">
                                                         <i data-feather="plus"></i>Add New
@@ -149,27 +157,6 @@
         <!-- Page Body End -->
     </div>
 
-    <!-- latest js -->
-    <script src="~/back-end/js/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap js -->
-    <script src="~/back-end/js/bootstrap/bootstrap.bundle.min.js"></script>
-
-    <!-- DataTables js -->
-    <script src="~/back-end/js/jquery.dataTables.js"></script>
-
-    <!-- feather icon js -->
-    <script src="~/back-end/js/icons/feather-icon/feather.min.js"></script>
-    <script src="~/back-end/js/icons/feather-icon/feather-icon.js"></script>
-
-    <!-- scrollbar simplebar js -->
-    <script src="~/back-end/js/scrollbar/simplebar.js"></script>
-    <script src="~/back-end/js/scrollbar/custom.js"></script>
-
-    <!-- Sidebar jquery -->
-    <script src="~/back-end/js/config.js"></script>
-
-    <!-- tooltip init js -->
-    <script src="~/back-end/js/tooltip-init.js"></script>
+   
 </body>
 </html>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
 {
@@ -32,7 +33,6 @@ namespace Village_Manager.Controllers
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
-
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -48,7 +48,6 @@ namespace Village_Manager.Controllers
                     var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
                     cmd.Parameters.AddWithValue("@roleId", roleId);
 
-
                     var result = cmd.ExecuteScalar();
                     roleName = result.ToString() ?? "";
                 }
@@ -63,7 +62,6 @@ namespace Village_Manager.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
-
             }
             ViewBag.Error = "Email hoặc mật khẩu không đúng!";
             return View();
