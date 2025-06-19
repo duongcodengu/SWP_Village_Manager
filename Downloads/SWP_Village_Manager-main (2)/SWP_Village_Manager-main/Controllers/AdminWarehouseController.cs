@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Village_Manager.Data;
@@ -86,7 +87,7 @@ namespace Village_Manager.Controllers
 
             return View();
         }
-
+        //ListProduct
         [HttpGet]
         [Route("products")]
         public IActionResult Products()
@@ -97,6 +98,22 @@ namespace Village_Manager.Controllers
                 .ToList();
             return View(products);
         }
+        // ProductDetail
+        [HttpGet]
+        [Route("productdetail")]
+        public IActionResult ProductDetail(int id)
+        {
+            var product = _context.Products
+                       .Include(p => p.ProductImages)
+                       .Include(p => p.Category)
+                       .FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+                return NotFound();
+
+            return View(product);
+        }
+        //Add Product
         [HttpGet]
         [Route("addproduct")]
         public IActionResult AddProduct()
@@ -178,10 +195,10 @@ namespace Village_Manager.Controllers
             if (product == null)
                 return NotFound();
 
-            return View(product); // Có thể không cần nếu dùng modal
+            return View(product); 
         }
 
-        // POST: Product/DeleteConfirmed/5
+        // DeleteProduct
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -190,17 +207,29 @@ namespace Village_Manager.Controllers
             if (product == null)
                 return NotFound();
 
-            // Xoá ảnh liên quan trước
-            var images = _context.ProductImages.Where(p => p.ProductId == id);
-            _context.ProductImages.RemoveRange(images);
+            var images = _context.ProductImages.Where(p => p.ProductId == id).ToList();
 
+            foreach (var image in images)
+            {
+                var filePath = Path.Combine(_env.WebRootPath, "uploads", image.ImageUrl);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+
+            _context.ProductImages.RemoveRange(images);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
-
-            return Redirect("/product");
+            return Redirect("/products");
         }
 
+        //Update Product
+        [HttpGet]
+        [Route("updateProduct")]
+        public IActionResult UpdateProduct() => View();
+        
         [HttpGet]
         [Route("alluser")]
         public IActionResult AllUser() => View();
