@@ -176,7 +176,7 @@ namespace Village_Manager.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                return Redirect("/adminwarehouse");
+                return Redirect("/products");
             }
             catch (Exception ex)
             {
@@ -227,9 +227,85 @@ namespace Village_Manager.Controllers
 
         //Update Product
         [HttpGet]
-        [Route("updateProduct")]
-        public IActionResult UpdateProduct() => View();
-        
+        [Route("updateproduct")]
+        public async Task<IActionResult> UpdateProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null)
+                return NotFound();
+
+            return View(product);
+        }
+
+
+        [HttpPost]
+        [Route("updateproduct")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProduct(Product model)
+        {
+            var product = await _context.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync(p => p.Id == model.Id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            // Cập nhật chỉ nếu dữ liệu được cung cấp
+            if (!string.IsNullOrEmpty(model.Name))
+                product.Name = model.Name;
+
+            if (model.CategoryId != 0)
+                product.CategoryId = model.CategoryId;
+
+            if (model.Price != 0)
+                product.Price = model.Price;
+
+            if (model.ExpirationDate != default)
+                product.ExpirationDate = model.ExpirationDate;
+
+            if (!string.IsNullOrEmpty(model.ProductType))
+                product.ProductType = model.ProductType;
+
+            if (model.Quantity != 0)
+                product.Quantity = model.Quantity;
+
+            if (model.ProcessingTime != default)
+                product.ProcessingTime = model.ProcessingTime;
+
+            if (model.FarmerId != 0)
+                product.FarmerId = model.FarmerId;
+            
+            // Nếu có ảnh mới, thì cập nhật
+            if (model.ImageUpdate != null && model.ImageUpdate.Any())
+            {
+                _context.ProductImages.RemoveRange(product.ProductImages);
+
+                foreach (var file in model.ImageUpdate)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
+                                       + Path.GetExtension(file.FileName);
+                        var path = Path.Combine("wwwroot/images", fileName);
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        product.ProductImages.Add(new ProductImage
+                        {
+                            ImageUrl = "/images/" + fileName
+                        });
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Redirect("/products");
+        }
+
         [HttpGet]
         [Route("alluser")]
         public IActionResult AllUser() => View();
