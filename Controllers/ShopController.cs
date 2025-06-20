@@ -47,7 +47,7 @@ public class ShopController : Controller
             query = query.Where(p => p.Name.Contains(search));
 
         if (categoryIds?.Any() == true)
-        query = query.Where(p => categoryIds.Contains(p.CategoryId));         // FK từ Product → ProductCategory
+            query = query.Where(p => categoryIds.Contains(p.CategoryId));         // FK từ Product → ProductCategory
 
         if (minPrice.HasValue)
             query = query.Where(p => p.Price >= minPrice.Value);
@@ -115,5 +115,51 @@ public class ShopController : Controller
         if (!string.IsNullOrEmpty(referer))
             return Redirect(referer);
         return RedirectToAction("Cart");
+    }
+
+    public IActionResult Checkout()
+    {
+        // Lấy giỏ hàng từ Session
+        var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        foreach (var item in cartItems)
+        {
+            item.Product = _context.Products
+            .Include(p => p.ProductImages)
+            .FirstOrDefault(p => p.Id == item.ProductId);
+        }
+        return View(cartItems);
+    }
+
+    public IActionResult PlaceOrder()
+    {
+        // Xoá giỏ hàng:
+        HttpContext.Session.Remove("Cart");
+        // Điều hướng đến trang thành công
+        return RedirectToAction("Success");
+    }
+
+    public IActionResult Success()
+    {
+        // Hiển thị trang thành công
+        return View();
+    }
+
+    public IActionResult Tracking(string orderId)
+    {
+        // Có thể dùng ViewBag.OrderId = orderId; nếu muốn
+        return View();
+    }
+
+    public IActionResult Detail(int id)
+    {
+        var product = _context.Products
+        .Include(p => p.ProductImages)
+        .Include(p => p.Category)
+        .FirstOrDefault(p => p.Id == id);
+
+        if (product == null)
+            return NotFound();
+
+        return View(product);
     }
 }
