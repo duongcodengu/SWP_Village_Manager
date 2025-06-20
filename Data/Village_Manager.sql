@@ -24,17 +24,6 @@ CREATE TABLE RetailCustomer (
 	CONSTRAINT CK_RetailCustomer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
--- dành cho bán buôn cần xác minh thêm các thông tin doanh nghiệp
-CREATE TABLE WholesaleCustomer (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    company_name NVarchar(100) UNIQUE NOT NULL, -- check trùng
-    contact_person NVarchar(100) NOT NULL, -- bắt buộc phải có
-    phone NVarchar(20) UNIQUE NOT NULL, -- check trùng phone
-	CONSTRAINT CK_WholesaleCustomer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
 -- 3. Farmer
 CREATE TABLE Farmer (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -129,27 +118,6 @@ CREATE TABLE ImportInvoiceDetail (
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
--- 11. đơn bán buôn
-CREATE TABLE WholesaleOrder (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    order_date DATETIME,
-    status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned')),
-	confirmed_at DATETIME, -- xác nhận đơn hàng
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
--- 12. WholesaleOrderItem
-CREATE TABLE WholesaleOrderItem (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    order_id INT,
-    product_id INT,
-    quantity INT,
-    unit_price DECIMAL(10,2),
-    FOREIGN KEY (order_id) REFERENCES WholesaleOrder(id),
-    FOREIGN KEY (product_id) REFERENCES Product(id)
-);
-
 -- 13. đơn bán lẻ
 CREATE TABLE RetailOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -192,7 +160,7 @@ CREATE TABLE CartItem (
 -- 17. Delivery -- bỏ Delivery_status bảng này chỉ những đơn deli r mới lưu vào đây ko cần status
 CREATE TABLE Delivery (
     id INT PRIMARY KEY IDENTITY(1,1),
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     order_id INT,
     shipper_id INT,
     shipping_fee DECIMAL(10,2),
@@ -251,7 +219,7 @@ CREATE TABLE Feedback (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     order_id INT,
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     content TEXT,
     rating INT,
     created_at DATETIME,
@@ -274,7 +242,7 @@ CREATE TABLE Payment (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     order_id INT,
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     amount DECIMAL(10,2),
     paid_at DATETIME,
     method NVarchar(50) CHECK (method IN ('cash', 'card', 'bank_transfer')),
@@ -349,7 +317,7 @@ CREATE TABLE Supplier (
 -- hoàn hàng 
 CREATE TABLE ReturnOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     order_id INT, -- bắt buộc phải kiểm tra trong code order_type 
     user_id INT,
     quantity INT,
@@ -363,8 +331,6 @@ CREATE TABLE ReturnOrder (
 
 INSERT INTO Roles (name) VALUES
 ('admin'),
-('wholesale_staff'),
-('wholesale_customer'),
 ('retail_staff'),
 ('retail_customer'),
 ('warehouse_staff'),
