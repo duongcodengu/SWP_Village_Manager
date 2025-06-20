@@ -1,0 +1,318 @@
+﻿@{
+    ViewData["Title"] = "Famer";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="assets/css/linearicon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/remixicon.css">
+
+    <!-- Data Table css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/datatables.css">
+
+    <!-- Themify icon css-->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/themify.css">
+
+    <!-- Feather icon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/feather-icon.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/animate.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/bootstrap.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- page-wrapper Start-->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <!-- Page Body Start -->
+        <div class="page-body-wrapper">
+            <!-- Container-fluid starts-->
+            <div class="page-body">
+                <!-- All User Table Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title">
+                                        <h5>All Famer</h5>
+                                        <form class="d-inline-flex">
+                                            <a href="add-new-category.html" class="align-items-center btn btn-theme d-flex">
+                                                <i data-feather="plus-square"></i>Add New
+                                            </a>
+                                        </form>
+                                    </div>
+                                    
+                                    <div class="table-responsive category-table">
+                                        <table class="table all-package theme-table" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Họ tên</th>
+                                                    <th>Điện thoại</th>
+                                                    <th>Địa chỉ</th>
+                                                    <th>Tài khoản</th>
+                                                    <th>Email</th>
+                                                    <th>Ngày tạo</th>
+                                                    <th>Tùy chọn</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (ViewBag.Farmers != null)
+                                                {
+                                                    foreach (dynamic f in ViewBag.Farmers)
+                                                    {
+                                                        <tr>
+                                                            <td>@f.FarmerId</td>
+                                                            <td>@f.FarmerName</td>
+                                                            <td>@f.FarmerPhone</td>
+                                                            <td>@f.FarmerAddress</td>
+                                                            <td>@f.Username</td>
+                                                            <td>@f.Email</td>
+                                                            <td>@((DateTime)f.CreatedAt)</td>
+                                                            <td>
+                                                                <ul class="action-icons">
+                                                                    <li>
+                                                                        <a href="javascript:void(0)"
+                                                                           data-bs-toggle="modal"
+                                                                           data-bs-target="#editFarmerModal"
+                                                                           data-id="@f.FarmerId"
+                                                                           data-name="@f.FarmerName"
+                                                                           data-phone="@f.FarmerPhone"
+                                                                           data-address="@f.FarmerAddress"
+                                                                           data-username="@f.Username"
+                                                                           data-email="@f.Email">
+                                                                            <i class="ri-pencil-line"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="javascript:void(0)"
+                                                                           data-bs-toggle="modal"
+                                                                           data-bs-target="#confirmRoleChangeModal"
+                                                                           data-userid="@f.UserId"
+                                                                           data-username="@f.Username">
+                                                                            <i class="ri-delete-bin-line"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr><td colspan="8" class="text-center">Không có dữ liệu.</td></tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                        @* update  *@
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const editModal = document.getElementById('editFarmerModal');
+
+                                                editModal.addEventListener('show.bs.modal', function (event) {
+                                                    const button = event.relatedTarget;
+                                                    if (!button) return;
+
+                                                    // Ghi log để debug
+                                                    console.log('Button clicked:', button);
+
+                                                    document.getElementById('editFarmerId').value = button.getAttribute('data-id') || '';
+                                                    document.getElementById('editFarmerName').value = button.getAttribute('data-name') || '';
+                                                    document.getElementById('editFarmerPhone').value = button.getAttribute('data-phone') || '';
+                                                    document.getElementById('editFarmerAddress').value = button.getAttribute('data-address') || '';
+                                                    document.getElementById('editUsername').value = button.getAttribute('data-username') || '';
+                                                    document.getElementById('editEmail').value = button.getAttribute('data-email') || '';
+                                                });
+                                            });
+                                        </script>
+                                        @* delete *@
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const confirmModal = document.getElementById('confirmRoleChangeModal');
+
+                                                confirmModal.addEventListener('show.bs.modal', function (event) {
+                                                    const button = event.relatedTarget;
+                                                    if (!button) return;
+
+                                                    const userId = button.getAttribute('data-userid');
+                                                    const username = button.getAttribute('data-username');
+
+                                                    console.log("userId:", userId);
+                                                    console.log("username:", username);
+
+                                                    document.getElementById('changeRoleUserId').value = userId;
+                                                    document.getElementById('modalUsername').textContent = username;
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- All User Table Ends-->
+
+                <div class="container-fluid">
+                </div>
+            </div>
+            <!-- Container-fluid end -->
+        </div>
+        <!-- Page Body End -->
+        <!-- Modal Start -->
+        <div class="modal fade" id="confirmRoleChangeModal" tabindex="-1" aria-labelledby="confirmRoleChangeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="post" action="/famer/change-role">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmRoleChangeModalLabel">Chuyển vai trò người dùng</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Bạn có chắc muốn xóa vai trò của <strong id="modalUsername"></strong> khỏi <span class="badge bg-danger">Farmer </span> không ? </p>
+                            <input type="hidden" id="changeRoleUserId" name="UserId" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Xác nhận</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal End -->
+    </div>
+
+    <!-- Delete Modal Box Start -->
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header d-block text-center">
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box">
+                        <p>
+                            The permission for the use/group, preview is inherited from the object, object will create a
+                            new permission for this object
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-target="#exampleModalToggle2"
+                            data-bs-toggle="modal" data-bs-dismiss="modal">
+                        Yes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box text-center">
+                        <div class="wrapper">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                            </svg>
+                        </div>
+                        <h4 class="text-content">It's Removed.</h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal Box End -->
+    <!-- Edit Farmer Modal -->
+    <div class="modal fade" id="editFarmerModal" tabindex="-1" aria-labelledby="editFarmerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="/famer/update">
+                    <!-- Bạn sẽ tạo action này -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editFarmerModalLabel">Chỉnh sửa thông tin nông dân</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="FarmerId" id="editFarmerId" />
+                        <div class="mb-3">
+                            <label for="editFarmerName" class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" name="FarmerName" id="editFarmerName" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFarmerPhone" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" name="FarmerPhone" id="editFarmerPhone" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFarmerAddress" class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" name="FarmerAddress" id="editFarmerAddress" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label">Tài khoản</label>
+                            <input type="text" class="form-control" name="Username" id="editUsername" disabled />
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" name="Email" id="editEmail" disabled />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (quan trọng!) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

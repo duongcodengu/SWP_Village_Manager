@@ -59,8 +59,8 @@ namespace Village_Manager.Controllers.api
                 categories = months.Select(m => new DateTime(year, m, 1).ToString("MMM")).ToList(),
                 series = new[]
                 {
-            new { name = "Tổng doanh thu", data = chartData }
-        }
+                new { name = "Tổng doanh thu", data = chartData }
+                }
             });
         }
     }

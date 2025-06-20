@@ -384,30 +384,13 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
--- Bán lẻ tháng 1, 2, 3 năm 2025 (id user, id product cần đúng thực tế database)
-INSERT INTO RetailOrder (user_id, order_date, status, confirmed_at)
-VALUES (1, '2025-01-05', 'confirmed', '2025-01-05'),
-       (1, '2025-02-15', 'confirmed', '2025-02-15'),
-       (1, '2025-03-18', 'confirmed', '2025-03-18');
+-- Thêm user cho Farmer 2
+INSERT INTO Users (username, password, email, role_id, created_at)
+VALUES (N'farmer02', N'pass456', N'farmer02@example.com', 8, GETDATE());
 
--- Lấy id của các order vừa tạo (giả sử id là 1, 2, 3)
-INSERT INTO RetailOrderItem (order_id, product_id, quantity, unit_price)
-VALUES
-    (1, 1, 10, 25000), -- tháng 1: 250.000
-    (2, 1, 8, 30000),  -- tháng 2: 240.000
-    (3, 1, 6, 40000);  -- tháng 3: 240.000
+-- Lấy ID vừa tạo
+DECLARE @user_id_2 INT = SCOPE_IDENTITY();
 
--- Bán buôn tháng 4, 5, 6 năm 2025
-INSERT INTO WholesaleOrder (user_id, order_date, status, confirmed_at)
-VALUES (1, '2025-04-10', 'confirmed', '2025-04-10'),
-       (1, '2025-05-12', 'confirmed', '2025-05-12'),
-       (1, '2025-06-18', 'confirmed', '2025-06-18');
-	   (1, '2025-06-18', 'confirmed', '2025-06-18');
-
--- Giả sử các order id tiếp theo là 1, 2, 3
-INSERT INTO WholesaleOrderItem (order_id, product_id, quantity, unit_price)
-VALUES
-	(4, 1, 18, 123);
-
-SELECT * FROM RetailOrder WHERE confirmed_at >= '2025-01-01';
-SELECT * FROM WholesaleOrder WHERE confirmed_at >= '2025-01-01';
+-- Thêm Farmer 2
+INSERT INTO Farmer (user_id, full_name, phone, address)
+VALUES (@user_id_2, N'Trần Thị B', N'0987654321', N'Thôn 5, Xã X, Huyện Y, Tỉnh Z');
