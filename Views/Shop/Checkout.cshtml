@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<Village_Manager.Models.CartItem>
+@{
     ViewData["Title"] = "Checkout";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -12,16 +13,16 @@
     <meta name="description" content="Fastkart">
     <meta name="keywords" content="Fastkart">
     <meta name="author" content="Fastkart">
-    <link rel="icon" href="../assets/images/favicon/1.png" type="image/x-icon">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
     <title>On-demand last-mile delivery</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
 
     <!-- bootstrap css -->
     <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
@@ -77,7 +78,6 @@
         </ul>
     </div>
     <!-- mobile fix menu end -->
-
     <!-- Breadcrumb Section Start -->
     <section class="breadcrumb-section pt-0">
         <div class="container-fluid-lg">
@@ -101,7 +101,6 @@
         </div>
     </section>
     <!-- Breadcrumb Section End -->
-
     <!-- Checkout section Start -->
     <section class="checkout-section-2 section-b-space">
         <div class="container-fluid-lg">
@@ -113,9 +112,9 @@
                                 <li>
                                     <div class="checkout-icon">
                                         <lord-icon target=".nav-item" src="https://cdn.lordicon.com/ggihhudh.json"
-                                            trigger="loop-on-hover"
-                                            colors="primary:#121331,secondary:#646e78,tertiary:#0baf9a"
-                                            class="lord-icon">
+                                                   trigger="loop-on-hover"
+                                                   colors="primary:#121331,secondary:#646e78,tertiary:#0baf9a"
+                                                   class="lord-icon">
                                         </lord-icon>
                                     </div>
                                     <div class="checkout-box">
@@ -130,7 +129,8 @@
                                                         <div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio" name="jack"
-                                                                    id="flexRadioDefault1">
+                                                                       id="flexRadioDefault1">
+
                                                             </div>
 
                                                             <div class="label">
@@ -143,22 +143,31 @@
                                                                 </li>
 
                                                                 <li>
-                                                                    <p class="text-content"><span
-                                                                            class="text-title">Address
-                                                                            : </span>8424 James Lane South San
-                                                                        Francisco, CA 94080</p>
+                                                                    <p class="text-content">
+                                                                        <span class="text-title">
+                                                                            Address
+                                                                            :
+                                                                        </span>8424 James Lane South San
+                                                                        Francisco, CA 94080
+                                                                    </p>
                                                                 </li>
 
                                                                 <li>
-                                                                    <h6 class="text-content"><span
-                                                                            class="text-title">Pin Code
-                                                                            :</span> +380</h6>
+                                                                    <h6 class="text-content">
+                                                                        <span class="text-title">
+                                                                            Pin Code
+                                                                            :
+                                                                        </span> +380
+                                                                    </h6>
                                                                 </li>
 
                                                                 <li>
-                                                                    <h6 class="text-content mb-0"><span
-                                                                            class="text-title">Phone
-                                                                            :</span> + 380 (0564) 53 - 29 - 68</h6>
+                                                                    <h6 class="text-content mb-0">
+                                                                        <span class="text-title">
+                                                                            Phone
+                                                                            :
+                                                                        </span> + 380 (0564) 53 - 29 - 68
+                                                                    </h6>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -170,7 +179,7 @@
                                                         <div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio" name="jack"
-                                                                    id="flexRadioDefault2" checked="checked">
+                                                                       id="flexRadioDefault2" checked="checked">
                                                             </div>
 
                                                             <div class="label">
@@ -183,23 +192,29 @@
                                                                 </li>
 
                                                                 <li>
-                                                                    <p class="text-content"><span
-                                                                            class="text-title">Address
-                                                                            :</span>Nakhimovskiy R-N / Lastovaya Ul.,
+                                                                    <p class="text-content">
+                                                                        <span class="text-title">
+                                                                            Address
+                                                                            :
+                                                                        </span>Nakhimovskiy R-N / Lastovaya Ul.,
                                                                         bld. 5/A, appt. 12
                                                                     </p>
                                                                 </li>
 
                                                                 <li>
-                                                                    <h6 class="text-content"><span
-                                                                            class="text-title">Pin Code :</span>
-                                                                        +380</h6>
+                                                                    <h6 class="text-content">
+                                                                        <span class="text-title">Pin Code :</span>
+                                                                        +380
+                                                                    </h6>
                                                                 </li>
 
                                                                 <li>
-                                                                    <h6 class="text-content mb-0"><span
-                                                                            class="text-title">Phone
-                                                                            :</span> + 380 (0564) 53 - 29 - 68</h6>
+                                                                    <h6 class="text-content mb-0">
+                                                                        <span class="text-title">
+                                                                            Phone
+                                                                            :
+                                                                        </span> + 380 (0564) 53 - 29 - 68
+                                                                    </h6>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -213,7 +228,7 @@
                                 <li>
                                     <div class="checkout-icon">
                                         <lord-icon target=".nav-item" src="https://cdn.lordicon.com/oaflahpk.json"
-                                            trigger="loop-on-hover" colors="primary:#0baf9a" class="lord-icon">
+                                                   trigger="loop-on-hover" colors="primary:#0baf9a" class="lord-icon">
                                         </lord-icon>
                                     </div>
                                     <div class="checkout-box">
@@ -227,13 +242,14 @@
                                                     <div class="delivery-option">
                                                         <div class="delivery-category">
                                                             <div class="shipment-detail">
-                                                                <div
-                                                                    class="form-check custom-form-check hide-check-box">
+                                                                <div class="form-check custom-form-check hide-check-box">
                                                                     <input class="form-check-input" type="radio"
-                                                                        name="standard" id="standard" checked>
+                                                                           name="standard" id="standard" checked>
                                                                     <label class="form-check-label"
-                                                                        for="standard">Standard
-                                                                        Delivery Option</label>
+                                                                           for="standard">
+                                                                        Standard
+                                                                        Delivery Option
+                                                                    </label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -244,12 +260,13 @@
                                                     <div class="delivery-option">
                                                         <div class="delivery-category">
                                                             <div class="shipment-detail">
-                                                                <div
-                                                                    class="form-check mb-0 custom-form-check show-box-checked">
+                                                                <div class="form-check mb-0 custom-form-check show-box-checked">
                                                                     <input class="form-check-input" type="radio"
-                                                                        name="standard" id="future">
-                                                                    <label class="form-check-label" for="future">Future
-                                                                        Delivery Option</label>
+                                                                           name="standard" id="future">
+                                                                    <label class="form-check-label" for="future">
+                                                                        Future
+                                                                        Delivery Option
+                                                                    </label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -262,17 +279,21 @@
                                                             <div class="col-md-6">
                                                                 <div class="delivery-items">
                                                                     <div>
-                                                                        <h5 class="items text-content"><span>3
-                                                                                Items</span>
-                                                                            $693.48</h5>
-                                                                        <h5 class="charge text-content">Delivery Charge
+                                                                        <h5 class="items text-content">
+                                                                            <span>
+                                                                                3
+                                                                                Items
+                                                                            </span>
+                                                                            $693.48
+                                                                        </h5>
+                                                                        <h5 class="charge text-content">
+                                                                            Delivery Charge
                                                                             $34.67
                                                                             <button type="button" class="btn p-0"
-                                                                                data-bs-toggle="tooltip"
-                                                                                data-bs-placement="top"
-                                                                                title="Extra Charge">
-                                                                                <i
-                                                                                    class="fa-solid fa-circle-exclamation"></i>
+                                                                                    data-bs-toggle="tooltip"
+                                                                                    data-bs-placement="top"
+                                                                                    title="Extra Charge">
+                                                                                <i class="fa-solid fa-circle-exclamation"></i>
                                                                             </button>
                                                                         </h5>
                                                                     </div>
@@ -280,8 +301,7 @@
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <form
-                                                                    class="form-floating theme-form-floating date-box">
+                                                                <form class="form-floating theme-form-floating date-box">
                                                                     <input type="date" class="form-control">
                                                                     <label>Select Date</label>
                                                                 </form>
@@ -297,8 +317,8 @@
                                 <li>
                                     <div class="checkout-icon">
                                         <lord-icon target=".nav-item" src="https://cdn.lordicon.com/qmcsqnle.json"
-                                            trigger="loop-on-hover" colors="primary:#0baf9a,secondary:#0baf9a"
-                                            class="lord-icon">
+                                                   trigger="loop-on-hover" colors="primary:#0baf9a,secondary:#0baf9a"
+                                                   class="lord-icon">
                                         </lord-icon>
                                     </div>
                                     <div class="checkout-box">
@@ -308,25 +328,27 @@
 
                                         <div class="checkout-detail">
                                             <div class="accordion accordion-flush custom-accordion"
-                                                id="accordionFlushExample">
+                                                 id="accordionFlushExample">
                                                 <div class="accordion-item">
                                                     <div class="accordion-header" id="flush-headingFour">
                                                         <div class="accordion-button collapsed"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#flush-collapseFour">
+                                                             data-bs-toggle="collapse"
+                                                             data-bs-target="#flush-collapseFour">
                                                             <div class="custom-form-check form-check mb-0">
-                                                                <label class="form-check-label" for="cash"><input
-                                                                        class="form-check-input mt-0" type="radio"
-                                                                        name="flexRadioDefault" id="cash" checked> Cash
-                                                                    On Delivery</label>
+                                                                <label class="form-check-label" for="cash">
+                                                                    <input class="form-check-input mt-0" type="radio"
+                                                                           name="flexRadioDefault" id="cash" checked> Cash
+                                                                    On Delivery
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div id="flush-collapseFour"
-                                                        class="accordion-collapse collapse show"
-                                                        data-bs-parent="#accordionFlushExample">
+                                                         class="accordion-collapse collapse show"
+                                                         data-bs-parent="#accordionFlushExample">
                                                         <div class="accordion-body">
-                                                            <p class="cod-review">Pay digitally with SMS Pay
+                                                            <p class="cod-review">
+                                                                Pay digitally with SMS Pay
                                                                 Link. Cash may not be accepted in COVID restricted
                                                                 areas. <a href="javascript:void(0)">Know more.</a>
                                                             </p>
@@ -337,56 +359,55 @@
                                                 <div class="accordion-item">
                                                     <div class="accordion-header" id="flush-headingOne">
                                                         <div class="accordion-button collapsed"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#flush-collapseOne">
+                                                             data-bs-toggle="collapse"
+                                                             data-bs-target="#flush-collapseOne">
                                                             <div class="custom-form-check form-check mb-0">
-                                                                <label class="form-check-label" for="credit"><input
-                                                                        class="form-check-input mt-0" type="radio"
-                                                                        name="flexRadioDefault" id="credit">
-                                                                    Credit or Debit Card</label>
+                                                                <label class="form-check-label" for="credit">
+                                                                    <input class="form-check-input mt-0" type="radio"
+                                                                           name="flexRadioDefault" id="credit">
+                                                                    Credit or Debit Card
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordionFlushExample">
+                                                         data-bs-parent="#accordionFlushExample">
                                                         <div class="accordion-body">
                                                             <div class="row g-2">
                                                                 <div class="col-12">
                                                                     <div class="payment-method">
-                                                                        <div
-                                                                            class="form-floating mb-lg-3 mb-2 theme-form-floating">
+                                                                        <div class="form-floating mb-lg-3 mb-2 theme-form-floating">
                                                                             <input type="text" class="form-control"
-                                                                                id="credit2"
-                                                                                placeholder="Enter Credit & Debit Card Number">
-                                                                            <label for="credit2">Enter Credit & Debit
-                                                                                Card Number</label>
+                                                                                   id="credit2"
+                                                                                   placeholder="Enter Credit & Debit Card Number">
+                                                                            <label for="credit2">
+                                                                                Enter Credit & Debit
+                                                                                Card Number
+                                                                            </label>
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-xxl-4">
-                                                                    <div
-                                                                        class="form-floating mb-lg-3 mb-2 theme-form-floating">
+                                                                    <div class="form-floating mb-lg-3 mb-2 theme-form-floating">
                                                                         <input type="text" class="form-control"
-                                                                            id="expiry" placeholder="Enter Expiry Date">
+                                                                               id="expiry" placeholder="Enter Expiry Date">
                                                                         <label for="expiry">Expiry Date</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-xxl-4">
-                                                                    <div
-                                                                        class="form-floating mb-lg-3 mb-2 theme-form-floating">
+                                                                    <div class="form-floating mb-lg-3 mb-2 theme-form-floating">
                                                                         <input type="text" class="form-control" id="cvv"
-                                                                            placeholder="Enter CVV Number">
+                                                                               placeholder="Enter CVV Number">
                                                                         <label for="cvv">CVV Number</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-xxl-4">
-                                                                    <div
-                                                                        class="form-floating mb-lg-3 mb-2 theme-form-floating">
+                                                                    <div class="form-floating mb-lg-3 mb-2 theme-form-floating">
                                                                         <input type="password" class="form-control"
-                                                                            id="password" placeholder="Enter Password">
+                                                                               id="password" placeholder="Enter Password">
                                                                         <label for="password">Password</label>
                                                                     </div>
                                                                 </div>
@@ -394,13 +415,16 @@
                                                                 <div class="button-group mt-0">
                                                                     <ul>
                                                                         <li>
-                                                                            <button
-                                                                                class="btn btn-light shopping-button">Cancel</button>
+                                                                            <button class="btn btn-light shopping-button">
+                                                                                Cancel
+                                                                            </button>
                                                                         </li>
 
                                                                         <li>
-                                                                            <button class="btn btn-animation">Use This
-                                                                                Card</button>
+                                                                            <button class="btn btn-animation">
+                                                                                Use This
+                                                                                Card
+                                                                            </button>
                                                                         </li>
                                                                     </ul>
                                                                 </div>
@@ -412,97 +436,110 @@
                                                 <div class="accordion-item">
                                                     <div class="accordion-header" id="flush-headingTwo">
                                                         <div class="accordion-button collapsed"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#flush-collapseTwo">
+                                                             data-bs-toggle="collapse"
+                                                             data-bs-target="#flush-collapseTwo">
                                                             <div class="custom-form-check form-check mb-0">
-                                                                <label class="form-check-label" for="banking"><input
-                                                                        class="form-check-input mt-0" type="radio"
-                                                                        name="flexRadioDefault" id="banking">Net
-                                                                    Banking</label>
+                                                                <label class="form-check-label" for="banking">
+                                                                    <input class="form-check-input mt-0" type="radio"
+                                                                           name="flexRadioDefault" id="banking">Net
+                                                                    Banking
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div id="flush-collapseTwo" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordionFlushExample">
+                                                         data-bs-parent="#accordionFlushExample">
                                                         <div class="accordion-body">
-                                                            <h5 class="text-uppercase mb-4">Select Your Bank
+                                                            <h5 class="text-uppercase mb-4">
+                                                                Select Your Bank
                                                             </h5>
                                                             <div class="row g-2">
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank1">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank1">
                                                                         <label class="form-check-label"
-                                                                            for="bank1">Industrial & Commercial
-                                                                            Bank</label>
+                                                                               for="bank1">
+                                                                            Industrial & Commercial
+                                                                            Bank
+                                                                        </label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank2">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank2">
                                                                         <label class="form-check-label"
-                                                                            for="bank2">Agricultural Bank</label>
+                                                                               for="bank2">Agricultural Bank</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank3">
-                                                                        <label class="form-check-label" for="bank3">Bank
-                                                                            of America</label>
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank3">
+                                                                        <label class="form-check-label" for="bank3">
+                                                                            Bank
+                                                                            of America
+                                                                        </label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank4">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank4">
                                                                         <label class="form-check-label"
-                                                                            for="bank4">Construction Bank Corp.</label>
+                                                                               for="bank4">Construction Bank Corp.</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank5">
-                                                                        <label class="form-check-label" for="bank5">HSBC
-                                                                            Holdings</label>
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank5">
+                                                                        <label class="form-check-label" for="bank5">
+                                                                            HSBC
+                                                                            Holdings
+                                                                        </label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="bank6">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="bank6">
                                                                         <label class="form-check-label"
-                                                                            for="bank6">JPMorgan Chase & Co.</label>
+                                                                               for="bank6">JPMorgan Chase & Co.</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-12">
                                                                     <div class="select-option">
                                                                         <div class="form-floating theme-form-floating">
-                                                                            <select
-                                                                                class="form-select theme-form-select">
-                                                                                <option value="hsbc">HSBC Holdings
+                                                                            <select class="form-select theme-form-select">
+                                                                                <option value="hsbc">
+                                                                                    HSBC Holdings
                                                                                 </option>
-                                                                                <option value="loyds">Lloyds Banking
-                                                                                    Group</option>
-                                                                                <option value="natwest">Nat West Group
+                                                                                <option value="loyds">
+                                                                                    Lloyds Banking
+                                                                                    Group
                                                                                 </option>
-                                                                                <option value="Barclays">Barclays
+                                                                                <option value="natwest">
+                                                                                    Nat West Group
                                                                                 </option>
-                                                                                <option value="other">Others Bank
+                                                                                <option value="Barclays">
+                                                                                    Barclays
+                                                                                </option>
+                                                                                <option value="other">
+                                                                                    Others Bank
                                                                                 </option>
                                                                             </select>
                                                                             <label>Select Other Bank</label>
@@ -517,79 +554,84 @@
                                                 <div class="accordion-item">
                                                     <div class="accordion-header" id="flush-headingThree">
                                                         <div class="accordion-button collapsed"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#flush-collapseThree">
+                                                             data-bs-toggle="collapse"
+                                                             data-bs-target="#flush-collapseThree">
                                                             <div class="custom-form-check form-check mb-0">
-                                                                <label class="form-check-label" for="wallet"><input
-                                                                        class="form-check-input mt-0" type="radio"
-                                                                        name="flexRadioDefault" id="wallet">My
-                                                                    Wallet</label>
+                                                                <label class="form-check-label" for="wallet">
+                                                                    <input class="form-check-input mt-0" type="radio"
+                                                                           name="flexRadioDefault" id="wallet">My
+                                                                    Wallet
+                                                                </label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div id="flush-collapseThree" class="accordion-collapse collapse"
-                                                        data-bs-parent="#accordionFlushExample">
+                                                         data-bs-parent="#accordionFlushExample">
                                                         <div class="accordion-body">
-                                                            <h5 class="text-uppercase mb-4">Select Your Wallet
+                                                            <h5 class="text-uppercase mb-4">
+                                                                Select Your Wallet
                                                             </h5>
                                                             <div class="row">
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <label class="form-check-label"
-                                                                            for="amazon"><input
-                                                                                class="form-check-input mt-0"
-                                                                                type="radio" name="flexRadioDefault"
-                                                                                id="amazon">Amazon Pay</label>
+                                                                               for="amazon">
+                                                                            <input class="form-check-input mt-0"
+                                                                                   type="radio" name="flexRadioDefault"
+                                                                                   id="amazon">Amazon Pay
+                                                                        </label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="gpay">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="gpay">
                                                                         <label class="form-check-label"
-                                                                            for="gpay">Google Pay</label>
+                                                                               for="gpay">Google Pay</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="airtel">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="airtel">
                                                                         <label class="form-check-label"
-                                                                            for="airtel">Airtel Money</label>
+                                                                               for="airtel">Airtel Money</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="paytm">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="paytm">
                                                                         <label class="form-check-label"
-                                                                            for="paytm">Paytm Pay</label>
+                                                                               for="paytm">Paytm Pay</label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="jio">
-                                                                        <label class="form-check-label" for="jio">JIO
-                                                                            Money</label>
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="jio">
+                                                                        <label class="form-check-label" for="jio">
+                                                                            JIO
+                                                                            Money
+                                                                        </label>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="col-md-6">
                                                                     <div class="custom-form-check form-check">
                                                                         <input class="form-check-input mt-0"
-                                                                            type="radio" name="flexRadioDefault"
-                                                                            id="free">
+                                                                               type="radio" name="flexRadioDefault"
+                                                                               id="free">
                                                                         <label class="form-check-label"
-                                                                            for="free">Freecharge</label>
+                                                                               for="free">Freecharge</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -611,107 +653,62 @@
                             <div class="summery-header">
                                 <h3>Order Summery</h3>
                             </div>
-
+                            @* hiển thị sản phẩm *@
                             <ul class="summery-contain">
-                                <li>
-                                    <img src="../assets/images/vegetable/product/1.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Bell pepper <span>X 1</span></h4>
-                                    <h4 class="price">$32.34</h4>
-                                </li>
-
-                                <li>
-                                    <img src="../assets/images/vegetable/product/2.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Eggplant <span>X 3</span></h4>
-                                    <h4 class="price">$12.23</h4>
-                                </li>
-
-                                <li>
-                                    <img src="../assets/images/vegetable/product/3.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Onion <span>X 2</span></h4>
-                                    <h4 class="price">$18.27</h4>
-                                </li>
-
-                                <li>
-                                    <img src="../assets/images/vegetable/product/4.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Potato <span>X 1</span></h4>
-                                    <h4 class="price">$26.90</h4>
-                                </li>
-
-                                <li>
-                                    <img src="../assets/images/vegetable/product/5.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Baby Chili <span>X 1</span></h4>
-                                    <h4 class="price">$19.28</h4>
-                                </li>
-
-                                <li>
-                                    <img src="../assets/images/vegetable/product/6.png"
-                                        class="img-fluid blur-up lazyloaded checkout-image" alt="">
-                                    <h4>Broccoli <span>X 2</span></h4>
-                                    <h4 class="price">$29.69</h4>
-                                </li>
+                                @foreach (var item in Model)
+                                {
+                                    <li>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
+                                                 alt="@item.Product?.Name"
+                                                 style="width: 75px; height: 75px; object-fit: cover; border-radius: 5px; margin-right: 15px;" />
+                                            <div>
+                                                <div style="color: var(--theme-color); font-weight: 600; font-size: 17px;">
+                                                    @item.Product?.Name
+                                                </div>
+                                                <div class="text-muted" font-size: 15px;>
+                                                    @item.Quantity x ₫@String.Format("{0:N0}", item.Product?.Price)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
                             </ul>
 
+                            @* tổng tiền *@
+                            @{
+                                var subtotal = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+                                var shipping = 20000;
+                                var total = subtotal + shipping;
+                            }
                             <ul class="summery-total">
+                                <li><h4>Subtotal</h4><h4 class="price">₫@String.Format("{0:N0}", subtotal)</h4></li>
+                                <li class="pb-2"><h4>Shipping</h4><h4 class="price">₫@String.Format("{0:N0}", shipping)</h4></li>
+                                <li class="list-total"><h4>Total</h4><h4 class="price">₫@String.Format("{0:N0}", total)</h4></li>
+                            </ul>
+                            
+                        </div>
+                        <div class="button-group cart-button">
+                            <ul>
                                 <li>
-                                    <h4>Subtotal</h4>
-                                    <h4 class="price">$111.81</h4>
+                                    <button onclick="location.href='/shop/success'" class="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">
+                                        Place Order
+                                    </button>
                                 </li>
-
                                 <li>
-                                    <h4>Shipping</h4>
-                                    <h4 class="price">$8.90</h4>
-                                </li>
-
-                                <li>
-                                    <h4>Tax</h4>
-                                    <h4 class="price">$29.498</h4>
-                                </li>
-
-                                <li>
-                                    <h4>Coupon/Code</h4>
-                                    <h4 class="price">$-23.10</h4>
-                                </li>
-
-                                <li class="list-total">
-                                    <h4>Total (USD)</h4>
-                                    <h4 class="price">$19.28</h4>
+                                    <button onclick="location.href='/shop/cart'" class="btn btn-md btn-light text-dark shopping-button">
+                                        <i class="fa-solid fa-arrow-left-long me-2"></i>
+                                        Return To Cart
+                                    </button>
                                 </li>
                             </ul>
                         </div>
-
-                        <div class="checkout-offer">
-                            <div class="offer-title">
-                                <div class="offer-icon">
-                                    <img src="../assets/images/inner-page/offer.svg" class="img-fluid" alt="">
-                                </div>
-                                <div class="offer-name">
-                                    <h6>Available Offers</h6>
-                                </div>
-                            </div>
-
-                            <ul class="offer-detail">
-                                <li>
-                                    <p>Combo: BB Royal Almond/Badam Californian, Extra Bold 100 gm...</p>
-                                </li>
-                                <li>
-                                    <p>combo: Royal Cashew Californian, Extra Bold 100 gm + BB Royal Honey 500 gm</p>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <button class="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">Place Order</button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <!-- Checkout section End -->
-
     <!-- Footer Section Start -->
     <footer class="section-t-space">
         <div class="container-fluid-lg">
@@ -721,7 +718,7 @@
                         <div class="service-contain">
                             <div class="service-box">
                                 <div class="service-image">
-                                    <img src="../assets/svg/product.svg" class="blur-up lazyload" alt="">
+                                    <img src="~/svg/product.svg" class="blur-up lazyload" alt="">
                                 </div>
 
                                 <div class="service-detail">
@@ -731,7 +728,7 @@
 
                             <div class="service-box">
                                 <div class="service-image">
-                                    <img src="../assets/svg/delivery.svg" class="blur-up lazyload" alt="">
+                                    <img src="~/svg/delivery.svg" class="blur-up lazyload" alt="">
                                 </div>
 
                                 <div class="service-detail">
@@ -741,7 +738,7 @@
 
                             <div class="service-box">
                                 <div class="service-image">
-                                    <img src="../assets/svg/discount.svg" class="blur-up lazyload" alt="">
+                                    <img src="~/svg/discount.svg" class="blur-up lazyload" alt="">
                                 </div>
 
                                 <div class="service-detail">
@@ -751,7 +748,7 @@
 
                             <div class="service-box">
                                 <div class="service-image">
-                                    <img src="../assets/svg/market.svg" class="blur-up lazyload" alt="">
+                                    <img src="~/svg/market.svg" class="blur-up lazyload" alt="">
                                 </div>
 
                                 <div class="service-detail">
@@ -769,13 +766,15 @@
                         <div class="footer-logo">
                             <div class="theme-logo">
                                 <a href="index.html">
-                                    <img src="../assets/images/logo/1.png" class="blur-up lazyload" alt="">
+                                    <img src="~/images/logo/1.png" class="blur-up lazyload" alt="">
                                 </a>
                             </div>
 
                             <div class="footer-logo-contain">
-                                <p>We are a friendly bar serving a variety of cocktails, wines and beers. Our bar is a
-                                    perfect place for a couple.</p>
+                                <p>
+                                    We are a friendly bar serving a variety of cocktails, wines and beers. Our bar is a
+                                    perfect place for a couple.
+                                </p>
 
                                 <ul class="address">
                                     <li>
@@ -907,14 +906,14 @@
                                     <ul>
                                         <li class="mb-0">
                                             <a href="https://play.google.com/store/apps" target="_blank">
-                                                <img src="../assets/images/playstore.svg" class="blur-up lazyload"
-                                                    alt="">
+                                                <img src="~/images/playstore.svg" class="blur-up lazyload"
+                                                     alt="">
                                             </a>
                                         </li>
                                         <li class="mb-0">
                                             <a href="https://www.apple.com/in/app-store/" target="_blank">
-                                                <img src="../assets/images/appstore.svg" class="blur-up lazyload"
-                                                    alt="">
+                                                <img src="~/images/appstore.svg" class="blur-up lazyload"
+                                                     alt="">
                                             </a>
                                         </li>
                                     </ul>
@@ -931,7 +930,7 @@
                 </div>
 
                 <div class="payment">
-                    <img src="../assets/images/payment/1.png" class="blur-up lazyload" alt="">
+                    <img src="~/images/payment/1.png" class="blur-up lazyload" alt="">
                 </div>
 
                 <div class="social-link">
@@ -963,7 +962,6 @@
         </div>
     </footer>
     <!-- Footer Section End -->
-
     <!-- Location Modal Start -->
     <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
@@ -1063,7 +1061,6 @@
         </div>
     </div>
     <!-- Location Modal End -->
-
     <!-- Add address modal box start -->
     <div class="modal fade theme-modal" id="add-address" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
@@ -1099,7 +1096,7 @@
                     <form>
                         <div class="form-floating mb-4 theme-form-floating">
                             <textarea class="form-control" placeholder="Leave a comment here" id="address"
-                                style="height: 100px"></textarea>
+                                      style="height: 100px"></textarea>
                             <label for="address">Enter Address</label>
                         </div>
                     </form>
@@ -1113,14 +1110,15 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn theme-bg-color btn-md text-white" data-bs-dismiss="modal">Save
-                        changes</button>
+                    <button type="button" class="btn theme-bg-color btn-md text-white" data-bs-dismiss="modal">
+                        Save
+                        changes
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Add address modal box end -->
-
     <!-- Deal Box Modal Start -->
     <div class="modal fade theme-modal deal-modal" id="deal-box" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
@@ -1140,8 +1138,8 @@
                             <li class="list-1">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="../assets/images/vegetable/product/10.png" class="blur-up lazyload"
-                                            alt="">
+                                        <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
+                                             alt="">
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
@@ -1154,8 +1152,8 @@
                             <li class="list-2">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="../assets/images/vegetable/product/11.png" class="blur-up lazyload"
-                                            alt="">
+                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
+                                             alt="">
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
@@ -1168,8 +1166,8 @@
                             <li class="list-3">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="../assets/images/vegetable/product/12.png" class="blur-up lazyload"
-                                            alt="">
+                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
+                                             alt="">
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
@@ -1182,8 +1180,8 @@
                             <li class="list-1">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="../assets/images/vegetable/product/13.png" class="blur-up lazyload"
-                                            alt="">
+                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
+                                             alt="">
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
@@ -1199,7 +1197,6 @@
         </div>
     </div>
     <!-- Deal Box Modal End -->
-
     <!-- Tap to top and theme setting button start -->
     <div class="theme-option">
         <div class="setting-box">
@@ -1218,7 +1215,7 @@
                                 <form class="form-control">
                                     <label for="colorPick" class="form-label mb-0">Theme Color</label>
                                     <input type="color" class="form-control form-control-color" id="colorPick"
-                                        value="#0da487" title="Choose your color">
+                                           value="#0da487" title="Choose your color">
                                 </form>
                             </div>
                         </li>
@@ -1244,7 +1241,6 @@
         </div>
     </div>
     <!-- Tap to top and theme setting button end -->
-
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->

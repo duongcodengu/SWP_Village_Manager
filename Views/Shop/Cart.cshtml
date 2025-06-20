@@ -129,14 +129,14 @@
                                             <tr class="product-box-contain">
                                                 <td class="product-detail">
                                                     <div class="product border-0">
-                                                        <a href="/product/details/@item.ProductId" class="product-image">
-                                                            <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png")"
+                                                        <a href="/shop/detail/@item.ProductId" class="product-image">
+                                                            <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
                                                                  class="img-fluid blur-up lazyload" alt="@item.Product?.Name">
                                                         </a>
                                                         <div class="product-detail">
                                                             <ul>
                                                                 <li class="name">
-                                                                    <a href="/product/details/@item.ProductId">@item.Product?.Name</a>
+                                                                    <a href="/shop/detail/@item.ProductId" class="theme-color">@item.Product?.Name</a>
                                                                 </li> 
                                                             </ul>
                                                         </div>
@@ -203,10 +203,6 @@
                                     <h4>Coupon Discount</h4>
                                     <h4 class="price">(-) ₫0</h4>
                                 </li>
-                                <li class="align-items-start">
-                                    <h4>Shipping</h4>
-                                    <h4 class="price text-end">₫0</h4>
-                                </li>
                             </ul>
                         </div>
 
@@ -220,7 +216,7 @@
                         <div class="button-group cart-button">
                             <ul>
                                 <li>
-                                    <button onclick="location.href = '/shop/checkout'" class="btn btn-animation proceed-btn fw-bold">
+                                    <button onclick="location.href = '/shop/checkout'" class="btn btn-md fw-bold text-white theme-bg-color">
                                         Process To Checkout
                                     </button>
                                 </li>

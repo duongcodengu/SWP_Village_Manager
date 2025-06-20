@@ -213,16 +213,16 @@
                                                         {
                                                            <li class="product-box-contain">
                                                                 <div class="drop-cart d-flex">
-                                                                    <a href="/product/details/@item.ProductId" class="drop-image">
-                                                                        <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png")"
-                                                                             class="blur-up lazyloaded" alt="@item.Product?.Name" />
+                                                                    <a href="/shop/detail/@item.ProductId" class="drop-image">
+                                                                        <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
+                                                         class="blur-up lazyloaded" alt="@item.Product?.Name" />
                                                                     </a>
 
                                                                     <div class="drop-contain w-100">
                                                                         <div class="d-flex justify-content-between align-items-start w-100">
                                                                             <!-- Bên trái: tên sản phẩm -->
                                                                             <div class="flex-grow-1 me-3">
-                                                                                <a href="/product/details/@item.ProductId" class="text-decoration-none text-dark">
+                                                                                <a href="/shop/detail/@item.ProductId" class="text-decoration-none text-dark">
                                                                                     <h5 class="mb-1">@item.Product?.Name</h5>
                                                                                 </a>
                                                                                 <h6 class="mb-0"><span>@item.Quantity x</span> ₫@String.Format("{0:N0}", item.Product?.Price)</h6>
