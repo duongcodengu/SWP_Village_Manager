@@ -13,6 +13,7 @@ CREATE TABLE Users (
     password NVarchar(255) NOT NULL,
     email NVarchar(100) UNIQUE NOT NULL, -- check trùng email
     role_id INT NOT NULL,
+    HasAcceptedGeolocation bit not null default 0,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
@@ -365,6 +366,18 @@ CREATE TABLE ReturnOrder (
     reason TEXT,
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+---1 user có nhiều vị trí
+CREATE TABLE UserLocations (
+    Id INT PRIMARY KEY IDENTITY,
+    UserId int NOT NULL,
+    Label NVARCHAR(100),             
+    Address NVARCHAR(255),           
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
 
 
