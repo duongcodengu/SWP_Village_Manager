@@ -8,6 +8,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddHttpClient();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 // Add session support
@@ -22,12 +24,11 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession(); // Enable session support
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 // mac dinh khi chay
 app.MapControllerRoute(

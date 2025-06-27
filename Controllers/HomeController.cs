@@ -54,12 +54,13 @@ namespace Village_Manager.Controllers
                 }
 
                 // session
+                HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
 
                 // role admin
-                if (user.RoleId == 1)
+                if (user.RoleId == 1 || user.RoleId == 3)
                 {
                     return RedirectToAction("Index", "Home");
                 }

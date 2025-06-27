@@ -19,5 +19,4 @@ public partial class ImportInvoice
 
     public virtual ICollection<ImportInvoiceDetail> ImportInvoiceDetails { get; set; } = new List<ImportInvoiceDetail>();
 
-    public virtual Warehouse? Warehouse { get; set; }
 }

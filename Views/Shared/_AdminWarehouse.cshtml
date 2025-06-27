@@ -1,4 +1,5 @@
-﻿@{
+﻿@inject Village_Manager.Data.AppDbContext _context
+@{
     var roleName = Context.Session.GetString("RoleName");
 }
 @using Microsoft.AspNetCore.Http
@@ -82,52 +83,68 @@
                 </div>
                 <div class="nav-right col-6 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <li>
-                            <span class="header-search">
-                                <i class="ri-search-line"></i>
-                            </span>
-                        </li>
                         <li class="onhover-dropdown">
                             <div class="notification-box">
                                 <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
+                                <span class="badge rounded-pill badge-theme" id="notif-badge">0</span>
                             </div>
-                            <ul class="notification-dropdown onhover-show-div">
+
+                            <ul class="notification-dropdown onhover-show-div" id="notif-dropdown">
                                 <li>
                                     <i class="ri-notification-line"></i>
-                                    <h6 class="f-18 mb-0">Notitications</h6>
+                                    <h6 class="f-18 mb-0">Thông báo</h6>
                                 </li>
                                 <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
+                                    <p class="text-center text-muted"></p>
                                 </li>
                             </ul>
                         </li>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                fetch("/api/notificationapi/all")
+                                    .then(res => {
+                                        if (!res.ok) throw new Error("Lỗi API");
+                                        return res.json();
+                                    })
+                                    .then(data => {
+                                        const badge = document.getElementById("notif-badge");
+                                        const dropdown = document.getElementById("notif-dropdown");
 
-                        <li>
-                            <div class="mode">
-                                <i class="ri-moon-line"></i>
-                            </div>
-                        </li>
+                                        badge.textContent = data.unreadCount ?? 0;
+
+                                        dropdown.innerHTML = `
+                                            <li>
+                                                <i class="ri-notification-line"></i>
+                                                <h6 class="f-18 mb-0">Thông báo</h6>
+                                            </li>
+                                        `;
+
+                                        if (!data.notifications || data.notifications.length === 0) {
+                                            dropdown.innerHTML += `<li><p class="text-center text-muted">Không có thông báo nào.</p></li>`;
+                                        } else {
+                                            data.notifications.forEach(n => {
+                                                const time = new Date(n.created_at).toLocaleTimeString("vi-VN", {
+                                                    hour: '2-digit', minute: '2-digit'
+                                                });
+                                                dropdown.innerHTML += `
+                                                    <li>
+                                                        <p title="${new Date(n.created_at).toLocaleString('vi-VN')}">
+                                                            <i class="fa fa-circle me-2 font-info"></i>
+                                                            ${n.content}
+                                                            <span class="pull-right small text-muted">${time}</span>
+                                                        </p>
+                                                    </li>`;
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Lỗi khi tải thông báo:", error);
+                                        document.getElementById("notif-dropdown").innerHTML += `
+                                            <li><p class="text-center text-danger">Không thể tải thông báo.</p></li>`;
+                                    });
+                            });
+                        </script>
+
                         @{
                             // lay session tu context
                             var username = Context.Session.GetString("Username");
@@ -260,7 +277,7 @@
                                         </li>
 
                                         <li>
-                                            <a href="">Add Famer</a>
+                                            <a href="/addfamer">Add Famer</a>
                                         </li>
                                     </ul>
                                 </li>

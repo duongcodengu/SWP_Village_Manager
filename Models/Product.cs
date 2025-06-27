@@ -41,5 +41,4 @@ public partial class Product
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
 
-    public virtual ICollection<WholesaleOrderItem> WholesaleOrderItems { get; set; } = new List<WholesaleOrderItem>();
 }

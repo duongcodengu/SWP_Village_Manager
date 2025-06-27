@@ -13,7 +13,5 @@ public partial class Staff
 
     public int? AssignedWarehouseId { get; set; }
 
-    public virtual Warehouse? AssignedWarehouse { get; set; }
-
     public virtual User? User { get; set; }
 }

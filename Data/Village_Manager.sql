@@ -15,15 +15,6 @@ CREATE TABLE Users (
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
--- dành cho bán lẻ
-CREATE TABLE RetailCustomer (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    full_name NVarchar(100),
-    phone NVarchar(20) UNIQUE NOT NULL, -- check trùng phone
-	CONSTRAINT CK_RetailCustomer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
 -- 3. Farmer
 CREATE TABLE Farmer (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -78,33 +69,23 @@ CREATE TABLE ProductImage (
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
--- 7. Warehouse
-CREATE TABLE Warehouse (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    name NVarchar(100) UNIQUE NOT NULL,
-    location TEXT
-);
 
 -- 8. Stock kho hàng
 CREATE TABLE Stock (
     id INT PRIMARY KEY IDENTITY(1,1),
-    warehouse_id INT,
     product_id INT,
     quantity INT,
     last_updated DATETIME,
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(id),
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
 -- 9. hóa đơn nhập khẩu
 CREATE TABLE ImportInvoice (
     id INT PRIMARY KEY IDENTITY(1,1),
-    warehouse_id INT,
     supplier_name NVarchar(100),
     total_amount DECIMAL(12,2),
     created_at DATETIME,
 	purchase_time DATETIME,
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(id)
 );
 
 -- 10. chi tiết hóa đơn nhập khảu
@@ -302,9 +283,7 @@ CREATE TABLE Staff (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     role NVarchar(100),
-    assigned_warehouse_id INT,
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (assigned_warehouse_id) REFERENCES Warehouse(id)
 );
 
 -- 30. Supplier
@@ -325,15 +304,51 @@ CREATE TABLE ReturnOrder (
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+------------------------------------ADD Table--------------------------------------------------------------
 
+CREATE TABLE SupplyRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    
+    requester_type NVARCHAR(10) CHECK (requester_type IN ('admin', 'farmer')) NOT NULL,
 
+    requester_id INT NOT NULL,   
+    receiver_id INT NOT NULL,   
+
+    farmer_id INT NOT NULL,     
+
+    product_name NVARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2), -- giá đề xuất
+
+    status NVARCHAR(20) CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+
+    requested_at DATETIME DEFAULT GETDATE(),
+    responded_at DATETIME NULL,
+
+    FOREIGN KEY (requester_id) REFERENCES Users(id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(id),
+    FOREIGN KEY (farmer_id) REFERENCES Farmer(id),
+);
+
+CREATE TABLE FarmerRegistrationRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,	
+    full_name NVARCHAR(100) NOT NULL,
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+    reviewed_at DATETIME NULL,
+    reviewed_by INT NULL, -- admin user_id
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES Users(id)
+);
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES
 ('admin'),
-('retail_staff'),
-('retail_customer'),
-('warehouse_staff'),
+('staff'),
+('customer'),
 ('shipper'),
 ('farmer');
 
@@ -350,13 +365,12 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
--- Thêm user cho Farmer 2
 INSERT INTO Users (username, password, email, role_id, created_at)
-VALUES (N'farmer02', N'pass456', N'farmer02@example.com', 8, GETDATE());
+VALUES 
+(N'customer01', N'cus123', N'customer01@example.com', 3, GETDATE()),
+(N'customer02', N'cus456', N'customer02@example.com', 3, GETDATE()),
+(N'customer03', N'cus789', N'customer03@example.com', 3, GETDATE()),
+(N'customer04', N'cusabc', N'customer04@example.com', 3, GETDATE()),
+(N'customer05', N'cusxyz', N'customer05@example.com', 3, GETDATE());
 
--- Lấy ID vừa tạo
-DECLARE @user_id_2 INT = SCOPE_IDENTITY();
 
--- Thêm Farmer 2
-INSERT INTO Farmer (user_id, full_name, phone, address)
-VALUES (@user_id_2, N'Trần Thị B', N'0987654321', N'Thôn 5, Xã X, Huyện Y, Tỉnh Z');

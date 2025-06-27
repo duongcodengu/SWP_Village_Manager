@@ -32,14 +32,8 @@ namespace Village_Manager.Controllers.api
                               group roi by roi.ProductId into g
                               select new { ProductId = g.Key, Qty = g.Sum(x => x.Quantity) };
 
-            var wholesaleSales = from wo in _context.WholesaleOrders
-                                 join woi in _context.WholesaleOrderItems on wo.Id equals woi.OrderId
-                                 where wo.ConfirmedAt >= fromDate
-                                 group woi by woi.ProductId into g
-                                 select new { ProductId = g.Key, Qty = g.Sum(x => x.Quantity) };
-
-            // Step 2: Gộp bán lẻ và bán buôn
-            var totalSales = retailSales.Concat(wholesaleSales)
+            // Step 2: bán lẻ 
+            var totalSales = retailSales
                 .GroupBy(x => x.ProductId)
                 .Select(g => new
                 {

@@ -44,8 +44,4 @@ public partial class User
     public virtual ICollection<Shipper> Shippers { get; set; } = new List<Shipper>();
 
     public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
-
-    public virtual ICollection<WholesaleCustomer> WholesaleCustomers { get; set; } = new List<WholesaleCustomer>();
-
-    public virtual ICollection<WholesaleOrder> WholesaleOrders { get; set; } = new List<WholesaleOrder>();
 }

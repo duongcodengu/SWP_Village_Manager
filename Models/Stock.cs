@@ -16,6 +16,4 @@ public partial class Stock
     public DateTime? LastUpdated { get; set; }
 
     public virtual Product? Product { get; set; }
-
-    public virtual Warehouse? Warehouse { get; set; }
 }

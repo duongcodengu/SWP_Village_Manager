@@ -41,8 +41,7 @@ namespace Village_Manager.Controllers
 
             // Tổng số đơn hàng
             int totalRetailOrders = _context.RetailOrders.Count();
-            int totalWholesaleOrders = _context.WholesaleOrders.Count();
-            int totalOrders = totalRetailOrders + totalWholesaleOrders;
+            int totalOrders = totalRetailOrders;
             ViewBag.TotalOrders = totalOrders;
 
             // Lấy category (name, image_url)
@@ -68,18 +67,7 @@ namespace Village_Manager.Controllers
                       (ro, ri) => ri.Quantity * ri.UnitPrice)
                 .Sum();
 
-            // Bán buôn (Wholesale)
-            var wholesaleRevenue = _context.WholesaleOrders
-                .Where(wo => wo.Status == "confirmed"
-                    && wo.ConfirmedAt.HasValue
-                    && wo.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.WholesaleOrderItems,
-                      wo => wo.Id,
-                      wi => wi.OrderId,
-                      (wo, wi) => wi.Quantity * wi.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
+            decimal totalRevenue = (retailRevenue ?? 0);
             ViewBag.TotalRevenue = totalRevenue;
 
             // last 4 đơn hàng
@@ -101,26 +89,7 @@ namespace Village_Manager.Controllers
                                         p.PaymentType == "receive") ? "Paid" : "Unpaid"
                                 });
 
-            var wholesaleOrders = (from wo in _context.WholesaleOrders
-                                   join u in _context.Users on wo.UserId equals u.Id
-                                   join woi in _context.WholesaleOrderItems on wo.Id equals woi.OrderId into woItems
-                                   from woiGroup in woItems.DefaultIfEmpty()
-                                   group woiGroup by new { wo.Id, u.Username, wo.OrderDate, wo.Status } into g
-                                   select new
-                                   {
-                                       OrderId = g.Key.Id,
-                                       Username = g.Key.Username,
-                                       DatePlaced = g.Key.OrderDate,
-                                       OrderStatus = g.Key.Status,
-                                       TotalPrice = g.Sum(x => (x != null) ? x.Quantity * x.UnitPrice : 0),
-                                       PaymentStatus = _context.Payments.Any(p =>
-                                           p.OrderId == g.Key.Id &&
-                                           p.OrderType == "wholesale" &&
-                                           p.PaymentType == "receive") ? "Paid" : "Unpaid"
-                                   });
-
             var latestOrders = retailOrders
-                                .Concat(wholesaleOrders)
                                 .OrderByDescending(x => x.DatePlaced)
                                 .Take(4)
                                 .ToList();
@@ -199,6 +168,64 @@ namespace Village_Manager.Controllers
             }
 
             return RedirectToAction("Famer");
+        }
+        [HttpGet]
+        [Route("addfamer")]
+        public IActionResult AddFamer()
+        {
+            var pending = _context.FarmerRegistrationRequest
+                .Where(r => r.status == "pending")
+                .OrderByDescending(r => r.requested_at)
+                .ToList();
+
+            return View(pending);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+
+            if (request == null || request.status != "pending")
+                return NotFound();
+
+            request.status = "approved";
+            request.reviewed_at = DateTime.Now;
+            request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+
+            // Tạo bản ghi mới trong bảng Farmers
+            _context.Farmers.Add(new Farmer
+            {
+                UserId = request.user_id,
+                FullName = request.full_name,
+                Phone = request.phone,
+                Address = request.address
+            });
+
+            var user = await _context.Users.FindAsync(request.user_id);
+            if (user != null)
+            {
+                user.RoleId = 5;
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("AddFamer");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+
+            if (request == null || request.status != "pending")
+                return NotFound();
+
+            request.status = "rejected";
+            request.reviewed_at = DateTime.Now;
+            request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("AddFamer");
         }
     }
 }

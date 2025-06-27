@@ -28,18 +28,8 @@ namespace Village_Manager.Controllers.api
                                   Revenue = item.Quantity * item.UnitPrice
                               };
 
-            // BÁN BUÔN
-            var wholesaleQuery = from order in _context.WholesaleOrders
-                                 where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
-                                 join item in _context.WholesaleOrderItems on order.Id equals item.OrderId
-                                 select new
-                                 {
-                                     Month = order.ConfirmedAt.Value.Month,
-                                     Revenue = item.Quantity * item.UnitPrice
-                                 };
-
             // GỘP doanh thu cả 2 loại
-            var allData = retailQuery.Concat(wholesaleQuery)
+            var allData = retailQuery
                 .ToList()
                 .GroupBy(x => x.Month)
                 .Select(g => new

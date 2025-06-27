@@ -77,17 +77,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<TransportRoute> TransportRoutes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<Warehouse> Warehouses { get; set; }
-
-    public virtual DbSet<WholesaleCustomer> WholesaleCustomers { get; set; }
-
-    public virtual DbSet<WholesaleOrder> WholesaleOrders { get; set; }
-
-    public virtual DbSet<WholesaleOrderItem> WholesaleOrderItems { get; set; }
-
     public DbSet<ProductCategory> ProductCategory { get; set; }
-
+    public DbSet<FarmerRegistrationRequest> FarmerRegistrationRequest { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -252,11 +243,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.TotalAmount)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("total_amount");
-            entity.Property(e => e.WarehouseId).HasColumnName("warehouse_id");
 
-            entity.HasOne(d => d.Warehouse).WithMany(p => p.ImportInvoices)
-                .HasForeignKey(d => d.WarehouseId)
-                .HasConstraintName("FK__ImportInv__wareh__6754599E");
         });
 
         modelBuilder.Entity<ImportInvoiceDetail>(entity =>
@@ -682,15 +669,10 @@ public partial class AppDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Staff__3213E83F58180E04");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AssignedWarehouseId).HasColumnName("assigned_warehouse_id");
             entity.Property(e => e.Role)
                 .HasMaxLength(100)
                 .HasColumnName("role");
             entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.AssignedWarehouse).WithMany(p => p.Staff)
-                .HasForeignKey(d => d.AssignedWarehouseId)
-                .HasConstraintName("FK__Staff__assigned___2EDAF651");
 
             entity.HasOne(d => d.User).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.UserId)
@@ -709,15 +691,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("last_updated");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.WarehouseId).HasColumnName("warehouse_id");
 
             entity.HasOne(d => d.Product).WithMany(p => p.Stocks)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK__Stock__product_i__6477ECF3");
-
-            entity.HasOne(d => d.Warehouse).WithMany(p => p.Stocks)
-                .HasForeignKey(d => d.WarehouseId)
-                .HasConstraintName("FK__Stock__warehouse__6383C8BA");
         });
 
         modelBuilder.Entity<Supplier>(entity =>
@@ -786,96 +763,6 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__role_id__3D5E1FD2");
-        });
-
-        modelBuilder.Entity<Warehouse>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Warehous__3213E83F0843A6C6");
-
-            entity.ToTable("Warehouse");
-
-            entity.HasIndex(e => e.Name, "UQ__Warehous__72E12F1B25E6A215").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Location)
-                .HasColumnType("text")
-                .HasColumnName("location");
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .HasColumnName("name");
-        });
-
-        modelBuilder.Entity<WholesaleCustomer>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Wholesal__3213E83F2B810801");
-
-            entity.ToTable("WholesaleCustomer");
-
-            entity.HasIndex(e => e.CompanyName, "UQ__Wholesal__6D1B87CB1D5ECDA6").IsUnique();
-
-            entity.HasIndex(e => e.Phone, "UQ__Wholesal__B43B145F2155A8F4").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CompanyName)
-                .HasMaxLength(100)
-                .HasColumnName("company_name");
-            entity.Property(e => e.ContactPerson)
-                .HasMaxLength(100)
-                .HasColumnName("contact_person");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .HasColumnName("phone");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithMany(p => p.WholesaleCustomers)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Wholesale__user___47DBAE45");
-        });
-
-        modelBuilder.Entity<WholesaleOrder>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Wholesal__3213E83FC1855FA8");
-
-            entity.ToTable("WholesaleOrder");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ConfirmedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("confirmed_at");
-            entity.Property(e => e.OrderDate)
-                .HasColumnType("datetime")
-                .HasColumnName("order_date");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithMany(p => p.WholesaleOrders)
-                .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Wholesale__user___6EF57B66");
-        });
-
-        modelBuilder.Entity<WholesaleOrderItem>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Wholesal__3213E83F196CF04B");
-
-            entity.ToTable("WholesaleOrderItem");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.UnitPrice)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("unit_price");
-
-            entity.HasOne(d => d.Order).WithMany(p => p.WholesaleOrderItems)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK__Wholesale__order__71D1E811");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.WholesaleOrderItems)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK__Wholesale__produ__72C60C4A");
         });
 
         OnModelCreatingPartial(modelBuilder);
