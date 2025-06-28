@@ -3121,24 +3121,78 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
-    <script>
-            const userId = @Html.Raw(Json.Serialize(ViewBag.UserId ?? 0));
-        const hasLocation = @Html.Raw(Json.Serialize(ViewBag.HasAcceptedGeo ?? false)); // sửa tại đây
+    <div id="geoPrompt" style="
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    width: 300px;
+">
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/535/535239.png" alt="Location icon" width="24" height="24" style="margin-right: 10px;">
+            <strong>Cho phép truy cập vị trí</strong>
+        </div>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #444;">
+            Ứng dụng cần vị trí để phục vụ bạn tốt hơn.
+        </p>
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="denyLocation()" style="
+            background: transparent;
+            border: 2px solid #ccc;
+            color: #555;
+            padding: 6px 14px;
+            border-radius: 6px;
+            margin-right: 10px;
+            cursor: pointer;
+        ">
+                Từ chối
+            </button>
+            <button onclick="allowLocation()" style="
+            background-color: #0DA487;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        ">
+                Cho phép
+            </button>
+        </div>
+    </div>
 
-        console.log("UserId:", userId);
-        console.log("hasLocation:", hasLocation);
+
+    <script>
+        const userId = @Html.Raw(Json.Serialize(ViewBag.UserId ?? 0))
+        const hasLocation = @Html.Raw(Json.Serialize(ViewBag.HasAcceptedGeo ?? false))
 
         document.addEventListener("DOMContentLoaded", function () {
-            if (hasLocation === false) {
-                if (confirm("Cho phép cung cấp vị trí của bạn?")) {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(savePosition, showError);
-                    } else {
-                        alert("Trình duyệt không hỗ trợ định vị.");
-                    }
-                }
+            if (hasLocation === false && userId > 0) {
+                setTimeout(() => {
+                    document.getElementById("geoPrompt").style.display = "block";
+                }, 1000);
             }
         });
+
+        function allowLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition, showError);
+            } else {
+                alert("Trình duyệt không hỗ trợ định vị.");
+            }
+        }
+
+        function denyLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            console.log("Người dùng từ chối chia sẻ vị trí.");
+        }
 
         function savePosition(position) {
             const data = {
@@ -3156,7 +3210,6 @@
             })
             .then(res => res.json())
             .then(res => {
-                console.log("Đã lưu vị trí:", res);
                 return fetch('/api/location/accept', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -3164,13 +3217,17 @@
                 });
             })
             .then(res => res.json())
-            .then(data => console.log("Accept geolocation response:", data));
+            .then(result => {
+                console.log("Vị trí đã được lưu & chấp nhận:", result);
+            });
         }
 
         function showError(error) {
             alert("Không thể lấy vị trí: " + error.message);
         }
     </script>
+
+
 
 </body>
 

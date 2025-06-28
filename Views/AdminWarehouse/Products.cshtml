@@ -71,6 +71,10 @@
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Products List</h5>
+                                        <form action="/searchProduct" method="get" class="mb-3 d-flex justify-content-end">
+                                            <input type="text" name="search" class="form-control w-25" placeholder="Search product..." value="@Context.Request.Query["search"]" />
+                                            <button type="submit" class="btn btn-primary ms-2">Search</button>
+                                        </form>
                                         <div class="right-options">
                                             <ul>
                                                 <li>

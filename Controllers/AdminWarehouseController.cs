@@ -305,6 +305,28 @@ namespace Village_Manager.Controllers
             await _context.SaveChangesAsync();
             return Redirect("/products");
         }
+        [HttpGet]
+        [Route("searchProduct")]
+        public async Task<IActionResult> SearchProduct(string search)
+        {
+            var productsQuery = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductImages)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+                productsQuery = productsQuery.Where(p =>
+                    p.Name.ToLower().Contains(search) ||
+                    (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
+                    p.ProductType.ToLower().Contains(search)
+                );
+            }
+
+            var products = await productsQuery.ToListAsync();
+            return View("Products",products);
+        }
 
         [HttpGet]
         [Route("alluser")]

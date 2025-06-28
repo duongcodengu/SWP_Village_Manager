@@ -54,6 +54,7 @@ namespace Village_Manager.Controllers
                 }
 
                 // session
+                HttpContext.Session.SetInt32("UserID", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
@@ -62,6 +63,10 @@ namespace Village_Manager.Controllers
                 if (user.RoleId == 1)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+                else if(user.RoleId == 5)
+                {
+                    return RedirectToAction("IndexCustomer","Customer");
                 }
 
             }
