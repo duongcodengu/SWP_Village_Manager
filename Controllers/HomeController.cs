@@ -54,7 +54,7 @@ namespace Village_Manager.Controllers
                 }
 
                 // session
-                HttpContext.Session.SetInt32("UserID", user.Id);
+                HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
