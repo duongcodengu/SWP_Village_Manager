@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
 
@@ -20,7 +21,20 @@ namespace Village_Manager.Controllers
             _configuration = configuration;
         }
 
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            var categories = _context.ProductCategories.Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.ImageUrl
+
+            })
+                .ToList();
+            ViewBag.ProductCategories = categories;
+            return View();
+           
+        }
 
         //login
         [HttpGet]
@@ -68,6 +82,10 @@ namespace Village_Manager.Controllers
             ViewBag.Error = "Email hoặc mật khẩu không đúng!";
             return View();
         }
+        
+
+
+
 
         // Đăng xuất
         [Route("logout")]

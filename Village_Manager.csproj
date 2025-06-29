@@ -22,6 +22,7 @@
   <ItemGroup>
     <Folder Include="Repositories\IRepositories\" />
     <Folder Include="Services\IService\" />
+    <Folder Include="Views\AdminWarehouse\NewFolder\" />
   </ItemGroup>
 
 </Project>

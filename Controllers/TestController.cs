@@ -1,29 +1,33 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using Village_Manager.Data;
+﻿    using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
-//namespace Village_Manager.Controllers
-//{
-//    public class TestController : Controller
-//    {
-//        private readonly DBContext _context; 
+[Route("[controller]")]
+[ApiController]
+public class TestController : ControllerBase
+{
+    private readonly IConfiguration _configuration;
 
-//        public TestController(DBContext context)
-//        {
-//            _context = context;
-//        }
+    public TestController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
-//        public IActionResult CheckDb()
-//        {
-//            try
-//            {
-//                // Thử truy vấn số lượng user trong bảng Users
-//                int userCount = _context.Users.Count();
-//                return Content($"Đã kết nối database! Số lượng user: {userCount}");
-//            }
-//            catch (Exception ex)
-//            {
-//                return Content("Kết nối thất bại: " + ex.Message);
-//            }
-//        }
-//    }
-//}
+    [HttpGet("hihi")]
+    public IActionResult CheckDb()
+    {
+        string connString = _configuration.GetConnectionString("DefaultConnection");
+
+        try
+        {
+            using (var connection = new SqlConnection(connString))
+            {
+                connection.Open();
+                return Ok("✅ Kết nối thành công với SQL Server!");
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"❌ Lỗi khi kết nối SQL: {ex.Message}");
+        }
+    }
+}
