@@ -4,7 +4,7 @@
 }
 @using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -159,7 +159,7 @@
                             </div>
                             <ul class="profile-dropdown onhover-show-div">
                                 <li>
-                                    <a href="~/alluser">
+                                    <a href="/adminwarehouse/alluser">
                                         <i data-feather="users"></i>
                                         <span>Users</span>
                                     </a>
@@ -177,7 +177,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="profile-setting.html">
+                                    <a href="profilesetting">
                                         <i data-feather="settings"></i>
                                         <span>Settings</span>
                                     </a>
@@ -289,10 +289,10 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="~/alluser">All users</a>
+                                            <a href="/adminwarehouse/alluser">All users</a>
                                         </li>
                                         <li>
-                                            <a href="add-new-user.html">Add new user</a>
+                                            <a href="/adminwarehouse/adduser">Add New User</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -304,10 +304,10 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="role.html">All roles</a>
+                                            <a href="/adminwarehouse/role">All roles</a>
                                         </li>
                                         <li>
-                                            <a href="create-role.html">Create Role</a>
+                                            <a href="/adminwarehouse/createrole">Create roles</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -397,7 +397,7 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="profile-setting.html">Profile Setting</a>
+                                            <a href="/profilesetting">Profile Setting</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -413,6 +413,15 @@
                                     <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
                                         <i class="ri-list-check"></i>
                                         <span>List Page</span>
+                                    </a>
+                                </li>
+
+                            
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="/adminwarehouse/logs">
+                                        <i class="ri-history-line"></i>
+                                        <span>Lịch sử hoạt động</span>
                                     </a>
                                 </li>
                             </ul>
@@ -509,6 +518,6 @@
 
     <!-- Theme js -->
     <script src="~/back-end/js/script.js"></script>
-    
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
