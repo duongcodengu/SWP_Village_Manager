@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Add authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
+        options.LogoutPath = "/logout";
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,9 +41,19 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// mac dinh khi chay
+// Chuyển sang top-level route registrations
+app.MapControllerRoute(
+    name: "admin_role_route",
+    pattern: "adminwarehouse/role/{action=Index}/{id?}",
+    defaults: new { controller = "Role" });
+
+app.MapControllerRoute(
+    name: "adminwarehouse",
+    pattern: "adminwarehouse/{controller=AdminWarehouse}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

@@ -1,0 +1,134 @@
+﻿@model IEnumerable<Village_Manager.Models.Role>
+
+@{
+    ViewData["Title"] = "Role List";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-lg border-0 rounded-4 mt-4">
+                    <div class="card-header bg-primary d-flex justify-content-between align-items-center rounded-top-4" style="background-color: #0da487 !important; color: #fff;">
+                        <h4 class="mb-0" style="color: #fff; font-weight: 700; letter-spacing: 1px;">Danh sách Role</h4>
+                        <a href="/adminwarehouse/role/add" class="btn btn-theme btn-lg d-flex align-items-center gap-2 shadow-sm" style="font-weight: 600;">
+                            <i data-feather="plus"></i> Thêm Role
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="border-radius: 12px; overflow: hidden;">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="py-3 ps-4" style="font-size: 1.1rem;">Tên Role</th>
+                                        <th class="py-3 text-center" style="width: 120px; font-size: 1.1rem;">Tùy chọn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        foreach (var role in Model)
+                                        {
+                                            <tr style="transition: background 0.2s;">
+                                                <td class="ps-4" style="font-size: 1.05rem;">@role.Name</td>
+                                                <td class="text-center align-middle">
+                                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                                        <a href="/adminwarehouse/role/edit/@role.Id" class="btn btn-light btn-circle shadow-sm" title="Sửa" style="border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+                                                            <i class="ri-pencil-line" style="font-size: 1.2rem; color: #0da487;"></i>
+                                                        </a>
+                                                        <form asp-action="Delete" asp-controller="Role" asp-route-id="@role.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa role này không?');">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="btn btn-light btn-circle shadow-sm" title="Xóa" style="border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+                                                                <i class="ri-delete-bin-line" style="font-size: 1.2rem; color: #ef3f3e;"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center py-4">Không có role nào trong hệ thống.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Container-fluid Ends-->
+    <!-- footer start-->
+    <div class="container-fluid">
+        <footer class="footer">
+            <div class="row">
+                <div class="col-md-12 footer-copyright text-center">
+                    <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Delete Modal Box Start -->
+<div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-block text-center">
+                <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="remove-box">
+                    <p>
+                        The permission for the use/group, preview is inherited from the object, object will create a
+                        new permission for this object
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">
+                    Yes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="remove-box text-center">
+                    <div class="wrapper">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                    </div>
+                    <h4 class="text-content">It's Removed.</h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
