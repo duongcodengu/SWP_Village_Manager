@@ -8,7 +8,6 @@
     var TotalOrders = ViewBag.TotalOrders;
     var categories = ViewBag.Categories as IEnumerable<dynamic>;
     decimal totalRevenue = ViewBag.TotalRevenue != null ? (decimal)ViewBag.TotalRevenue : 0.0m;
-
 }
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -202,6 +201,7 @@
                                                 <option value="2023">2023</option>
                                                 <option value="2024">2024</option>
                                                 <option value="2025" selected>2025</option>
+
                                             </select>
                                         </div>
                                         <div id="report-chart-new" style="min-width:300px; min-height:230px"></div>
@@ -229,12 +229,14 @@
                                                 <li><a class="dropdown-item range-option" data-range="1" href="#">Today</a></li>
                                                 <li><a class="dropdown-item range-option" data-range="7" href="#">Last 7 Days</a></li>
                                                 <li><a class="dropdown-item range-option" data-range="30" href="#">Last 30 Days</a></li>
+
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="card-body p-0">
+
                                     <div class="table-responsive">
                                         <table class="best-selling-table w-image table border-0 mb-0">
                                             <tbody id="best-selling-body">
@@ -243,11 +245,13 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Best Selling Product End -->
+
                         <script>
                             function loadBestSelling(range = 1) {
                                 const tbody = document.getElementById("best-selling-body");
@@ -385,6 +389,7 @@
                                                             <td colspan="5" class="text-center">No orders available</td>
                                                         </tr>
                                                     }
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -526,6 +531,193 @@
                             })();
                         </script>
                         <!-- Earning chart end-->
+                                        <h4>Earning</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="bar-chart-earning"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Earning chart end-->
+                        <!-- Transactions start-->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header border-0">
+                                    <div class="card-header-title">
+                                        <h4>Transactions</h4>
+                                    </div>
+                                </div>
+
+                                <div class="card-body pt-0">
+                                    <div>
+                                        <div class="table-responsive">
+                                            <table class="user-table transactions-table table border-0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="transactions-icon">
+                                                                <i class="ri-shield-line"></i>
+                                                            </div>
+                                                            <div class="transactions-name">
+                                                                <h6>Wallets</h6>
+                                                                <p>Starbucks</p>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="lost">-$74</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="td-color-1">
+                                                            <div class="transactions-icon">
+                                                                <i class="ri-check-line"></i>
+                                                            </div>
+                                                            <div class="transactions-name">
+                                                                <h6>Bank Transfer</h6>
+                                                                <p>Add Money</p>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="success">+$125</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="td-color-2">
+                                                            <div class="transactions-icon">
+                                                                <i class="ri-exchange-dollar-line"></i>
+                                                            </div>
+                                                            <div class="transactions-name">
+                                                                <h6>Paypal</h6>
+                                                                <p>Add Money</p>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="lost">-$50</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="td-color-3">
+                                                            <div class="transactions-icon">
+                                                                <i class="ri-bank-card-line"></i>
+                                                            </div>
+                                                            <div class="transactions-name">
+                                                                <h6>Mastercard</h6>
+                                                                <p>Ordered Food</p>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="lost">-$40</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="td-color-4 pb-0">
+                                                            <div class="transactions-icon">
+                                                                <i class="ri-bar-chart-grouped-line"></i>
+                                                            </div>
+                                                            <div class="transactions-name">
+                                                                <h6>Transfer</h6>
+                                                                <p>Refund</p>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="success pb-0">+$90</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Transactions end-->
+                        <!-- visitors chart start-->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="h-100">
+                                <div class="card o-hidden card-hover">
+                                    <div class="card-header border-0">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="card-header-title">
+                                                <h4>Visitors</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <div class="pie-chart">
+                                            <div id="pie-chart-visitors"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- visitors chart end-->
+                        <!-- To Do List start-->
+                        <div class="col-xxl-4 col-md-6">
+                            <div class="card o-hidden card-hover">
+                                <div class="card-header border-0">
+                                    <div class="card-header-title">
+                                        <h4>To Do List</h4>
+                                    </div>
+                                </div>
+
+                                <div class="card-body pt-0">
+                                    <ul class="to-do-list">
+                                        <li class="to-do-item">
+                                            <div class="form-check user-checkbox">
+                                                <input class="checkbox_animated check-it" type="checkbox" value=""
+                                                       id="flexCheckDefault">
+                                            </div>
+                                            <div class="to-do-list-name">
+                                                <strong>Pick up kids from school</strong>
+                                                <p>8 Hours</p>
+                                            </div>
+                                        </li>
+                                        <li class="to-do-item">
+                                            <div class="form-check user-checkbox">
+                                                <input class="checkbox_animated check-it" type="checkbox" value=""
+                                                       id="flexCheckDefault1">
+                                            </div>
+                                            <div class="to-do-list-name">
+                                                <strong>Prepare or presentation.</strong>
+                                                <p>8 Hours</p>
+                                            </div>
+                                        </li>
+                                        <li class="to-do-item">
+                                            <div class="form-check user-checkbox">
+                                                <input class="checkbox_animated check-it" type="checkbox" value=""
+                                                       id="flexCheckDefault2">
+                                            </div>
+                                            <div class="to-do-list-name">
+                                                <strong>Create invoice</strong>
+                                                <p>8 Hours</p>
+                                            </div>
+                                        </li>
+                                        <li class="to-do-item">
+                                            <div class="form-check user-checkbox">
+                                                <input class="checkbox_animated check-it" type="checkbox" value=""
+                                                       id="flexCheckDefault3">
+                                            </div>
+                                            <div class="to-do-list-name">
+                                                <strong>Meeting with Alisa</strong>
+                                                <p>8 Hours</p>
+                                            </div>
+                                        </li>
+
+                                        <li class="to-do-item">
+                                            <form class="row g-2">
+                                                <div class="col-8">
+                                                    <input type="text" class="form-control" id="name"
+                                                           placeholder="Enter Task Name">
+                                                </div>
+                                                <div class="col-4">
+                                                    <button type="submit" class="btn btn-primary w-100 h-100">
+                                                        Add
+                                                        task
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- To Do List end-->
                     </div>
                 </div>
                 <!-- Container-fluid Ends-->

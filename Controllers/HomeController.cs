@@ -64,6 +64,10 @@ namespace Village_Manager.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
+                else if(user.RoleId == 5)
+                {
+                    return RedirectToAction("IndexCustomer","Customer");
+                }
 
             }
             ViewBag.Error = "Email hoặc mật khẩu không đúng!";

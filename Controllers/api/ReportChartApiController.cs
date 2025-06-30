@@ -30,6 +30,18 @@ namespace Village_Manager.Controllers.api
 
             // GỘP doanh thu cả 2 loại
             var allData = retailQuery
+            // BÁN BUÔN
+            var wholesaleQuery = from order in _context.WholesaleOrders
+                                 where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
+                                 join item in _context.WholesaleOrderItems on order.Id equals item.OrderId
+                                 select new
+                                 {
+                                     Month = order.ConfirmedAt.Value.Month,
+                                     Revenue = item.Quantity * item.UnitPrice
+                                 };
+
+            // GỘP doanh thu cả 2 loại
+            var allData = retailQuery.Concat(wholesaleQuery)
                 .ToList()
                 .GroupBy(x => x.Month)
                 .Select(g => new
@@ -49,8 +61,8 @@ namespace Village_Manager.Controllers.api
                 categories = months.Select(m => new DateTime(year, m, 1).ToString("MMM")).ToList(),
                 series = new[]
                 {
-                new { name = "Tổng doanh thu", data = chartData }
-                }
+            new { name = "Tổng doanh thu", data = chartData }
+        }
             });
         }
     }
