@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Add Category";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+@model Village_Manager.Models.ProductCategory
+
+<form asp-action="addCategory" asp-controller="Category" method="post" enctype="multipart/form-data">
+        <div class="page-body-wrapper">
+          
+            <div class="page-body">
+                  
+                <!-- New Product Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-8 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2">
+                                                <h5>Category Information</h5>
+                                            </div>
+                                                            
+                                            <div class="theme-form theme-form-2 mega-form">
+                                                <div class="mb-4 row align-items-center" >
+                                                    <label class="form-label-title col-sm-3 mb-0" >Category Name</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control"  type="text"
+                                                             asp-for="Name"  placeholder="Category Name">
+                                                             <span asp-validation-for="Name" class="text-danger"> </span>
+                                                    </div>
+                                                </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Category Image</label>
+                                            <div class="col-sm-9">
+                                                    <input class="form-control" type="file" name="ImgFile" accept="image/*" />
+                                            </div>
+                                        </div>
+
+                                                </div>
+
+                                               
+                                            </div>
+                                        </div>
+                                        <div class="card-submit-button">
+                                            <button class="btn btn-animation ms-auto" type="submit">Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Product Add End -->
+                <!-- footer Start -->
+                <div class="container-fluid">
+                    <footer class="footer">
+                        <div class="row">
+                            <div class="col-md-12 footer-copyright text-center">
+                                <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+                <!-- footer En -->
+            </div>
+            <!-- Container-fluid End -->
+</form>
+        <!-- Page Body End -->
+    
+   

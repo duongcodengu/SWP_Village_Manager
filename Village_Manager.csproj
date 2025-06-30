@@ -23,6 +23,7 @@
   <Folder Include="Repositories\IRepositories\" />
   <Folder Include="Services\IService\" />
   <Folder Include="wwwroot\uploads\" />
-</ItemGroup>
+    <Folder Include="Views\AdminWarehouse\NewFolder\" />
+  </ItemGroup>
 
 </Project>

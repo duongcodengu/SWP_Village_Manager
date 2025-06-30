@@ -17,7 +17,7 @@ public partial class AppDbContext : DbContext
     }
 
     public virtual DbSet<Address> Addresses { get; set; }
-
+    
     public virtual DbSet<Cart> Carts { get; set; }
 
     public virtual DbSet<CartItem> CartItems { get; set; }
@@ -464,7 +464,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
-        });
+        });  
 
         modelBuilder.Entity<ProductImage>(entity =>
         {

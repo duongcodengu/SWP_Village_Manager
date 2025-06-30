@@ -8,6 +8,7 @@ using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
+    [Route("adminwarehouse")]
     public class AdminWarehouseController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,8 +23,8 @@ namespace Village_Manager.Controllers
         }
 
         // kiểm tra quyền truy cập
-        [HttpGet]
-        [Route("adminwarehouse")]
+        [HttpGet("")]
+     
         public IActionResult Dashboard()
         {
             var username = HttpContext.Session.GetString("Username");
@@ -103,7 +104,11 @@ namespace Village_Manager.Controllers
 
             return View();
         }
-
+      
+        
+       
+    
+        
         [HttpGet]
         [Route("products")]
         public IActionResult Products() => View();
