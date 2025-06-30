@@ -23,89 +23,70 @@ namespace Village_Manager.Controllers
             _logger = logger;
         }
 
-        // kiểm tra quyền truy cập
+        // Dashboard: Trang tổng quan quản trị, hiển thị số liệu tổng hợp
         [HttpGet]
         [Route("adminwarehouse")]
         public IActionResult Dashboard()
         {
+            // Kiểm tra quyền admin
             if (!HttpContext.Session.IsAdmin())
             {
                 Response.StatusCode = 404;
                 return View("404");
             }
-
-            // Tổng số khách hàng
+            // Lấy tổng số khách hàng
             int totalCustomers = _context.Users.Count();
             ViewBag.TotalCustomers = totalCustomers;
-
-            // Tổng số sản phẩm
+            // Lấy tổng số sản phẩm
             int totalProducts = _context.Products.Count();
             ViewBag.TotalProducts = totalProducts;
-
-            // Tổng số đơn hàng
+            // Lấy tổng số đơn hàng
             int totalRetailOrders = _context.RetailOrders.Count();
             int totalWholesaleOrders = _context.WholesaleOrders.Count();
             int totalOrders = totalRetailOrders + totalWholesaleOrders;
             ViewBag.TotalOrders = totalOrders;
-
-            // Lấy category (name, image_url)
-            var categories = _context.ProductCategory
-                .Select(c => new
-                {
-                    Name = c.Name,
-                }).ToList<dynamic>();
+            // Lấy danh sách category
+            var categories = _context.ProductCategory.Select(c => new { Name = c.Name }).ToList<dynamic>();
             ViewBag.Categories = categories;
-
-            // Tổng doanh thu delivered
+            // Tính tổng doanh thu các đơn đã giao
             decimal totalRevenue = 0;
-            // RetailOrder
-            var retailRevenue = (from ro in _context.RetailOrders
-                                 where ro.Status == "delivered"
-                                 join ri in _context.RetailOrderItems on ro.Id equals ri.OrderId
-                                 select ri.Quantity * ri.UnitPrice).Sum();
-            // WholesaleOrder
-            var wholesaleRevenue = (from wo in _context.WholesaleOrders
-                                    where wo.Status == "delivered"
-                                    join wi in _context.WholesaleOrderItems on wo.Id equals wi.OrderId
-                                    select wi.Quantity * wi.UnitPrice).Sum();
-
+            var retailRevenue = (from ro in _context.RetailOrders where ro.Status == "delivered" join ri in _context.RetailOrderItems on ro.Id equals ri.OrderId select ri.Quantity * ri.UnitPrice).Sum();
+            var wholesaleRevenue = (from wo in _context.WholesaleOrders where wo.Status == "delivered" join wi in _context.WholesaleOrderItems on wo.Id equals wi.OrderId select wi.Quantity * wi.UnitPrice).Sum();
             totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
             ViewBag.TotalRevenue = totalRevenue;
-
             return View();
         }
 
-        // Show all users in the data
+        // AllUser: Hiển thị danh sách user, có phân trang và tìm kiếm
         [HttpGet]
         [Route("adminwarehouse/alluser")]
-        public async Task<IActionResult> AllUser(string searchUser)
+        public async Task<IActionResult> AllUser(string searchUser, int page = 1)
         {
             try
             {
                 _logger.LogInformation("Starting to load all users...");
-                
+                // Lấy thông tin session
                 var username = HttpContext.Session.GetString("Username");
                 var roleId = HttpContext.Session.GetInt32("RoleId");
-
-                _logger.LogInformation($"Session info - Username: {username}, RoleId: {roleId}");
-
+                // Kiểm tra quyền admin
                 if (string.IsNullOrEmpty(username) || roleId != 1)
                 {
                     _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {roleId}");
                     Response.StatusCode = 404;
                     return View("404");
                 }
-
-                // Lọc user theo username nếu có searchUser
+                // Phân trang và tìm kiếm
+                int pageSize = 10;
                 var usersQuery = _context.Users.Include(u => u.Role).AsQueryable();
                 if (!string.IsNullOrEmpty(searchUser))
                 {
                     usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
                 }
-                var users = await usersQuery.OrderByDescending(u => u.CreatedAt).ToListAsync();
-
-                _logger.LogInformation($"Successfully loaded {users.Count} users");
-                ViewBag.SearchUser = searchUser; // Để giữ lại từ khóa trên view
+                int totalUsers = await usersQuery.CountAsync();
+                var users = await usersQuery.OrderByDescending(u => u.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+                ViewBag.SearchUser = searchUser;
                 return View(users);
             }
             catch (Exception ex)
@@ -116,105 +97,110 @@ namespace Village_Manager.Controllers
             }
         }
 
-        // delete user by id
+        // Delete: Xóa user theo id
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("adminwarehouse/delete/{id}")]
         public IActionResult Delete(int id)
         {
+            // Kiểm tra quyền admin
             if (!HttpContext.Session.IsAdmin())
             {
                 Response.StatusCode = 404;
                 return View("404");
             }
-
+            // Tìm user theo id
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
-
+            // Xóa user khỏi database
             _context.Users.Remove(user);
             _context.SaveChanges();
-
+            var currentUserId = HttpContext.Session.GetInt32("UserId");
+            LogHelper.SaveLog(_context, currentUserId, $"Xóa user: {user.Username} (ID: {user.Id})");
             return RedirectToAction("AllUser");
         }
 
+        // AddUser (GET): Hiển thị form thêm user mới
         [HttpGet]
         [Route("adminwarehouse/adduser")]
+        [Route("user/adduser")]
         public IActionResult AddUser()
         {
+            // Kiểm tra quyền admin
             if (!HttpContext.Session.IsAdmin())
             {
                 Response.StatusCode = 404;
                 return View("404");
             }
-
+            // Lấy danh sách role để hiển thị trong form
             ViewBag.Roles = _context.Roles.ToList();
             return View();
         }
 
+        // AddUser (POST): Xử lý thêm user mới
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("adminwarehouse/adduser")]
+        [Route("user/adduser")]
         public async Task<IActionResult> AddUser(User user, string confirmPassword)
         {
             try
             {
+                // Kiểm tra quyền admin
                 if (!HttpContext.Session.IsAdmin())
                 {
                     Response.StatusCode = 404;
                     return View("404");
                 }
-
                 _logger.LogInformation("Starting user creation process...");
                 ViewBag.Roles = await _context.Roles.ToListAsync();
-
-                // Basic validation
-                if (string.IsNullOrEmpty(user.Username) || 
-                    string.IsNullOrEmpty(user.Password) || 
-                    string.IsNullOrEmpty(user.Email) || 
-                    user.RoleId <= 0)
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
                 {
                     ModelState.AddModelError("", "Please fill in all required fields");
                     return View(user);
                 }
-
-                // Check password match
+                // Kiểm tra xác nhận mật khẩu
                 if (user.Password != confirmPassword)
                 {
                     ModelState.AddModelError("Password", "Passwords do not match");
                     return View(user);
                 }
-
-                // Check if username exists
+                // Kiểm tra username/email đã tồn tại chưa
                 if (await _context.Users.AnyAsync(u => u.Username == user.Username))
                 {
                     ModelState.AddModelError("Username", "Username already exists");
                     return View(user);
                 }
-
-                // Check if email exists
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 {
                     ModelState.AddModelError("Email", "Email already exists");
                     return View(user);
                 }
-
-                // Create new user
+                // Kiểm tra định dạng số điện thoại (10 chữ số)
+                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+                {
+                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
+                    return View(user);
+                }
+                // Tạo user mới
                 var newUser = new User
                 {
                     Username = user.Username.Trim(),
                     Email = user.Email.Trim(),
                     Password = HashPassword(user.Password),
                     RoleId = user.RoleId,
+                    Phone = user.Phone?.Trim(),
                     CreatedAt = DateTime.Now
                 };
-
-                // Save to database
+                // Lưu vào database
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
-
+                var currentUserId = HttpContext.Session.GetInt32("UserId");
+                LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
                 TempData["SuccessMessage"] = "User created successfully!";
                 return RedirectToAction("AllUser");
             }
@@ -236,27 +222,27 @@ namespace Village_Manager.Controllers
             }
         }
 
+        // EditUser (GET): Hiển thị form chỉnh sửa user
         [HttpGet]
         [Route("adminwarehouse/edituser/{id}")]
         public async Task<IActionResult> EditUser(int id)
         {
             try
             {
+                // Kiểm tra quyền admin
                 if (!HttpContext.Session.IsAdmin())
                 {
                     Response.StatusCode = 404;
                     return View("404");
                 }
-
                 _logger.LogInformation($"Loading user for edit. UserId: {id}");
-
+                // Lấy user theo id
                 var user = await _context.Users.FindAsync(id);
                 if (user == null)
                 {
                     _logger.LogWarning($"User not found. UserId: {id}");
                     return NotFound();
                 }
-
                 ViewBag.Roles = await _context.Roles.ToListAsync();
                 _logger.LogInformation($"Successfully loaded user for edit. UserId: {id}");
                 return View(user);
@@ -269,6 +255,7 @@ namespace Village_Manager.Controllers
             }
         }
 
+        // EditUser (POST): Xử lý cập nhật thông tin user
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("adminwarehouse/edituser/{id}")]
@@ -276,65 +263,63 @@ namespace Village_Manager.Controllers
         {
             try
             {
+                // Kiểm tra quyền admin
                 if (!HttpContext.Session.IsAdmin())
                 {
                     Response.StatusCode = 404;
                     return View("404");
                 }
-
                 _logger.LogInformation($"Processing user update. UserId: {id}");
-
                 ViewBag.Roles = await _context.Roles.ToListAsync();
-
-                // Basic validation
-                if (string.IsNullOrEmpty(user.Username) || 
-                    string.IsNullOrEmpty(user.Email) || 
-                    user.RoleId <= 0)
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
                 {
                     _logger.LogWarning($"Invalid user data. Username: {user.Username}, Email: {user.Email}, RoleId: {user.RoleId}");
                     ModelState.AddModelError("", "Please fill in all required fields");
                     return View(user);
                 }
-
+                // Kiểm tra định dạng số điện thoại (10 chữ số)
+                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+                {
+                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
+                    return View(user);
+                }
+                // Lấy user hiện tại
                 var existingUser = await _context.Users.FindAsync(id);
                 if (existingUser == null)
                 {
                     _logger.LogWarning($"User not found for update. UserId: {id}");
                     return NotFound();
                 }
-
-                // Check if username exists (excluding current user)
+                // Kiểm tra username/email đã tồn tại chưa (trừ user hiện tại)
                 if (await _context.Users.AnyAsync(u => u.Username == user.Username && u.Id != id))
                 {
                     _logger.LogWarning($"Username already exists: {user.Username}");
                     ModelState.AddModelError("Username", "Username already exists");
                     return View(user);
                 }
-
-                // Check if email exists (excluding current user)
                 if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Id != id))
                 {
                     _logger.LogWarning($"Email already exists: {user.Email}");
                     ModelState.AddModelError("Email", "Email already exists");
                     return View(user);
                 }
-
-                // Update user properties
+                // Cập nhật thông tin user
                 existingUser.Username = user.Username.Trim();
                 existingUser.Email = user.Email.Trim();
                 existingUser.RoleId = user.RoleId;
-
-                // Update password if provided
+                existingUser.Phone = user.Phone?.Trim();
+                // Nếu có nhập mật khẩu mới thì cập nhật
                 if (!string.IsNullOrEmpty(newPassword))
                 {
                     existingUser.Password = HashPassword(newPassword);
                     _logger.LogInformation($"Password updated for user. UserId: {id}");
                 }
-
-                // Save changes
+                // Lưu thay đổi
                 await _context.SaveChangesAsync();
+                var currentUserId = HttpContext.Session.GetInt32("UserId");
+                LogHelper.SaveLog(_context, currentUserId, $"Cập nhật user: {existingUser.Username} (ID: {existingUser.Id})");
                 _logger.LogInformation($"User updated successfully. UserId: {id}");
-
                 TempData["SuccessMessage"] = "User updated successfully!";
                 return RedirectToAction("AllUser");
             }
@@ -345,6 +330,165 @@ namespace Village_Manager.Controllers
                 ViewBag.Roles = await _context.Roles.ToListAsync();
                 return View(user);
             }
+        }
+
+        // view to change profile setting
+        [HttpGet("/profilesetting")]
+        public IActionResult Index()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            return View("~/Views/AdminWarehouse/ProfileSetting.cshtml", user);
+        }
+
+        // view to changge create role 
+        [HttpGet("/adminwarehouse/createrole")]
+        public IActionResult CreateRole()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+            return View("~/Views/AdminWarehouse/CreateRole.cshtml", user);
+        }
+
+        // Logs: Hiển thị lịch sử thao tác (log) của admin
+        [HttpGet]
+        [Route("adminwarehouse/logs")]
+        public IActionResult Logs(int page = 1)
+        {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            int pageSize = 20;
+            // Lấy danh sách log, join với user để lấy tên
+            var logs = (from l in _context.Logs
+                        join u in _context.Users on l.UserId equals u.Id into userJoin
+                        from u in userJoin.DefaultIfEmpty()
+                        orderby l.CreatedAt descending
+                        select new Village_Manager.Models.Dto.LogViewModel
+                        {
+                            Username = u != null ? u.Username : "Unknown",
+                            Action = l.Action,
+                            CreatedAt = l.CreatedAt
+                        })
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToList();
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)_context.Logs.Count() / pageSize);
+            return View("~/Views/AdminWarehouse/Logs.cshtml", logs);
+        }
+
+        // Dashboard Shipper: Trang tổng quan cho shipper (demo giao diện)
+        [HttpGet]
+        [Route("adminwarehouse/shipper-dashboard")]
+        public IActionResult ShipperDashboard()
+        {
+            // Dữ liệu mẫu cho dashboard shipper
+            ViewBag.TodayOrders = 5;
+            ViewBag.SuccessOrders = 4;
+            ViewBag.SuccessRate = 80;
+            ViewBag.Income = 500000;
+            return View("~/Views/AdminWarehouse/ShipperDashboard.cshtml");
+        }
+
+        // Danh sách đơn hàng của shipper
+        [HttpGet]
+        [Route("adminwarehouse/shipper-orders")]
+        public IActionResult ShipperOrders()
+        {
+            // Dữ liệu mẫu
+            var orders = new List<dynamic> {
+                new { Id = 1, Code = "DH001", CustomerName = "Nguyễn Văn A", Address = "Hà Nội", Status = "Sẵn sàng giao", DeliveryTime = DateTime.Now.AddHours(1) },
+                new { Id = 2, Code = "DH002", CustomerName = "Trần Thị B", Address = "HCM", Status = "Đang giao hàng", DeliveryTime = DateTime.Now.AddHours(2) },
+                new { Id = 3, Code = "DH003", CustomerName = "Lê Văn C", Address = "Đà Nẵng", Status = "Giao thành công", DeliveryTime = DateTime.Now.AddHours(-1) }
+            };
+            ViewBag.Orders = orders;
+            return View("~/Views/AdminWarehouse/ShipperOrders.cshtml");
+        }
+
+        // Chi tiết đơn hàng
+        [HttpGet]
+        [Route("adminwarehouse/shipper-order/{id}")]
+        public IActionResult ShipperOrderDetail(int id)
+        {
+            // Dữ liệu mẫu
+            var order = new {
+                Id = id,
+                Code = $"DH00{id}",
+                CustomerName = "Nguyễn Văn A",
+                Address = "Hà Nội",
+                Phone = "0912345678",
+                Status = "Đang giao hàng",
+                Items = new[] {
+                    new { ProductName = "Sản phẩm 1", Quantity = 2 },
+                    new { ProductName = "Sản phẩm 2", Quantity = 1 }
+                },
+                StatusLogs = new[] {
+                    new { Time = DateTime.Now.AddHours(-2), Status = "Sẵn sàng giao", Note = "" },
+                    new { Time = DateTime.Now.AddHours(-1), Status = "Đang giao hàng", Note = "Shipper đã nhận đơn" }
+                }
+            };
+            ViewBag.Order = order;
+            return View("~/Views/AdminWarehouse/ShipperOrderDetail.cshtml");
+        }
+
+        // Cập nhật trạng thái đơn hàng (POST)
+        [HttpPost]
+        [Route("adminwarehouse/shipper-update-status/{id}")]
+        public IActionResult ShipperUpdateStatus(int id, string status, string note)
+        {
+            // Ở đây chỉ demo, thực tế sẽ cập nhật vào DB
+            TempData["SuccessMessage"] = $"Cập nhật trạng thái đơn hàng {id} thành công: {status}";
+            return RedirectToAction("ShipperOrderDetail", new { id });
+        }
+
+        [HttpGet]
+        [Route("adminwarehouse/shipper-all")]
+        public IActionResult ShipperAllInOne(int? detailId = null)
+        {
+            // Thống kê mẫu
+            ViewBag.TodayOrders = 5;
+            ViewBag.SuccessOrders = 4;
+            // Danh sách đơn hàng mẫu
+            var orders = new List<dynamic> {
+                new { Id = 1, Code = "DH001", CustomerName = "Nguyễn Văn A", Address = "Hà Nội", Status = "Sẵn sàng giao", DeliveryTime = DateTime.Now.AddHours(1) },
+                new { Id = 2, Code = "DH002", CustomerName = "Trần Thị B", Address = "HCM", Status = "Đang giao hàng", DeliveryTime = DateTime.Now.AddHours(2) },
+                new { Id = 3, Code = "DH003", CustomerName = "Lê Văn C", Address = "Đà Nẵng", Status = "Giao thành công", DeliveryTime = DateTime.Now.AddHours(-1) }
+            };
+            ViewBag.Orders = orders;
+            // Nếu có id chi tiết, trả về đơn mẫu
+            if (detailId != null)
+            {
+                var order = new {
+                    Id = detailId,
+                    Code = $"DH00{detailId}",
+                    CustomerName = "Nguyễn Văn A",
+                    Address = "Hà Nội",
+                    Phone = "0912345678",
+                    Status = "Đang giao hàng",
+                    Items = new[] {
+                        new { ProductName = "Sản phẩm 1", Quantity = 2 },
+                        new { ProductName = "Sản phẩm 2", Quantity = 1 }
+                    },
+                    StatusLogs = new[] {
+                        new { Time = DateTime.Now.AddHours(-2), Status = "Sẵn sàng giao", Note = "" },
+                        new { Time = DateTime.Now.AddHours(-1), Status = "Đang giao hàng", Note = "Shipper đã nhận đơn" }
+                    }
+                };
+                ViewBag.OrderDetail = order;
+            }
+            return View("~/Views/AdminWarehouse/ShipperAllInOne.cshtml");
         }
     }
 }

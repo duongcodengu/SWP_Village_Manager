@@ -30,7 +30,7 @@
 
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
-                                        <form class="theme-form theme-form-2 mega-form" asp-action="AddUser" method="post">
+                                        <form class="theme-form theme-form-2 mega-form" action="/user/adduser" method="post">
                                             @Html.AntiForgeryToken()
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -52,6 +52,14 @@
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Email" class="form-control" type="email" required>
                                                         <span asp-validation-for="Email" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Phone Number </label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input asp-for="Phone" class="form-control" type="phone" required>
+                                                        <span asp-validation-for="Phone" class="text-danger"></span>
                                                     </div>
                                                 </div>
 

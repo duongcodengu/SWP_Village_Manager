@@ -42,7 +42,7 @@ namespace Village_Manager.Controllers
                 // lấy tên role name
                 int roleId = user.RoleId;
                 string roleName = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SqlConnection(connectionString))  
                 {
                     conn.Open();
                     var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
@@ -52,10 +52,12 @@ namespace Village_Manager.Controllers
                     roleName = result.ToString() ?? "";
                 }
 
-                // session
+                // Xóa session cũ trước khi set mới
+                HttpContext.Session.Clear();
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
+                HttpContext.Session.SetInt32("UserId", user.Id);
 
                 // role admin
                 if (user.RoleId == 1)

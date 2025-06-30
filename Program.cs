@@ -39,22 +39,19 @@ app.UseSession(); // Enable session support
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    // Specific route for RoleController
-    endpoints.MapControllerRoute(
-        name: "admin_role_route",
-        pattern: "adminwarehouse/role/{action=Index}/{id?}",
-        defaults: new { controller = "Role" });
+// Chuyển sang top-level route registrations
+app.MapControllerRoute(
+    name: "admin_role_route",
+    pattern: "adminwarehouse/role/{action=Index}/{id?}",
+    defaults: new { controller = "Role" });
 
-    endpoints.MapControllerRoute(
-        name: "adminwarehouse",
-        pattern: "adminwarehouse/{controller=AdminWarehouse}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "adminwarehouse",
+    pattern: "adminwarehouse/{controller=AdminWarehouse}/{action=Index}/{id?}");
 
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}"
-    );
-});
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

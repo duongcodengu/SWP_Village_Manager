@@ -23,33 +23,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
           rel="stylesheet">
 
-    <!-- Fontawesome css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
-
-    <!-- Linear Icon css -->
-    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
-
-    <!-- remixicon css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
-
-    <!-- Themify icon css-->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
-
-    <!-- Feather icon css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
-
-    <!-- Plugins css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
-
-    <!-- Bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
-
-    <!-- DataTables css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/datatables.css">
-
-    <!-- App css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
 </head>
 
 <body>
@@ -98,6 +71,7 @@
                                                             <th>Username</th>
                                                             <th>Email</th>
                                                             <th>Role</th>
+                                                            <th> Phone </th>
                                                             <th>Created At</th>
                                                             <th>Option</th>
                                                         </tr>
@@ -112,8 +86,9 @@
                                                                     <td>@user.Username</td>
                                                                     <td>@user.Email</td>
                                                                     <td>@(user.Role?.Name ?? "N/A")</td>
+                                                                    <td>@(user.Phone ?? "N/A")</td>
                                                                     <td>@(user.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")</td>
-                                                                    <td>
+                                                                    <td>    
                                                                         <ul>
                                                                             <li>
                                                                                 <a href="/Order/Detail/@user.Id">Detail</a>
@@ -151,6 +126,25 @@
                     </div>
                 </div>
                 <!-- All User Table Ends -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav aria-label="User pagination">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@(ViewBag.CurrentPage - 1)">Previous</a>
+                            </li>
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                    <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@i">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@(ViewBag.CurrentPage + 1)">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                }
             </div>
             <!-- Container-fluid end -->
         </div>
