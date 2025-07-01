@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Add Product";
+    ViewData["Title"] = "Update Product";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
@@ -84,14 +84,14 @@
                         <div class="mb-4 row">
                             <label class="col-sm-3">Product Name</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="name" >
+                                <input type="text" class="form-control" name="name" value="@Model.Name" required>
                             </div>
                         </div>
 
                         <div class="mb-4 row">
                             <label class="col-sm-3">Product Type</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="product_type" >
+                                <select class="form-control" name="product_type">
                                     <option value="processed">Processed</option>
                                     <option value="raw">Raw</option>
                                 </select>
@@ -101,16 +101,19 @@
                         <div class="mb-4 row">
                             <label class="col-sm-3">Category</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="category_id" >
-                                    <!-- Options loaded from backend -->
-                                    <option value="2">Vegetables & Fruit</option>
-                                    <option value="3">Beverages</option>
-                                    <option value="4">Meats & Seafood</option>
-                                    <option value="5">Breakfast</option>
-                                    <option value="6">Frozen Foods</option>
-                                    <option value="7">Milk & Dairies</option>
-                                    <option value="8">Pet Food</option>
-                                    <!-- ... -->
+                                <select class="form-control" name="category_id" required>
+                                    <option disabled>-- Select Category --</option>
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        if (category.Id == Model.CategoryId)
+                                        {
+                                            <option value="@category.Id" selected="selected">@category.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    }
                                 </select>
                             </div>
                         </div>
@@ -119,36 +122,28 @@
                         <div class="mb-4 row">
                             <label class="col-sm-3">Quantity</label>
                             <div class="col-sm-9">
-                                <input type="number" name="quantity" class="form-control" >
+                                <input type="number" name="quantity" class="form-control" value="@Model.Quantity" required>
                             </div>
                         </div>
 
                         <div class="mb-4 row">
                             <label class="col-sm-3">Price</label>
                             <div class="col-sm-9">
-                                <input type="number" name="price" class="form-control" step="0.01" >
+                                <input type="number" name="price" class="form-control" step="0.01" value="@Model.Price" required>
                             </div>
                         </div>
 
                         <div class="mb-4 row">
                             <label class="col-sm-3">Expiration Date</label>
                             <div class="col-sm-9">
-                                <input type="date" name="expiration_date" class="form-control">
+                                <input type="date" name="expiration_date" class="form-control" value="@Model.ExpirationDate?.ToString("yyyy-MM-dd")">
                             </div>
                         </div>
 
                         <div class="mb-4 row">
                             <label class="col-sm-3">Processing Time</label>
                             <div class="col-sm-9">
-                                <input type="date" name="processing_time" class="form-control">
-                            </div>
-                        </div>
-
-                        <div class="mb-4 row">
-                            <label class="col-sm-3">Farmer</label>
-                            <div class="col-sm-9">
-                                <input type="hidden" name="farmer_id" value="1" />
-                                <input type="text" class="form-control" name="farmer_name">
+                                <input type="date" name="processing_time" class="form-control" value="@Model.ProcessingTime?.ToString("yyyy-MM-dd")">
                             </div>
                         </div>
                     </div>
@@ -177,7 +172,7 @@
 
                 <!-- Submit -->
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success">Add Product</button>
+                    <button type="submit" class="btn btn-success">Update Product</button>
                 </div>
             </form>
 

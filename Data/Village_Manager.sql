@@ -36,6 +36,9 @@ CREATE TABLE Shipper (
     phone NVarchar(20) UNIQUE NOT NULL, -- check trùng
 	CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
     vehicle_info TEXT, -- bắt buộc phải có
+	status NVARCHAR(50) 
+    CONSTRAINT DF_status DEFAULT 'pending',
+    CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
@@ -340,6 +343,20 @@ CREATE TABLE FarmerRegistrationRequest (
     address TEXT NOT NULL,
     status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
     requested_at DATETIME DEFAULT GETDATE(),
+    reviewed_at DATETIME NULL,
+    reviewed_by INT NULL, -- admin user_id
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES Users(id)
+);
+CREATE TABLE ShipperRegistrationRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,	
+    full_name NVARCHAR(100) NOT NULL,
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+	vehicle_info TEXT, -- bắt buộc phải có
     reviewed_at DATETIME NULL,
     reviewed_by INT NULL, -- admin user_id
     FOREIGN KEY (user_id) REFERENCES Users(id),

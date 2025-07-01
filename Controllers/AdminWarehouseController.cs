@@ -1,5 +1,4 @@
-
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -47,7 +46,7 @@ public class AdminWarehouseController : Controller
         int totalOrders = totalRetailOrders;
         ViewBag.TotalOrders = totalOrders;
         // Lấy danh sách category
-        var categories = _context.ProductCategory
+        var categories = _context.ProductCategories
             .Select(c => new { Name = c.Name, ImageUrl = c.ImageUrl })
             .ToList<dynamic>(); ViewBag.Categories = categories;
         // Tổng doanh thu confirmed
@@ -122,26 +121,24 @@ public class AdminWarehouseController : Controller
         return View(product);
     }
     //Add Product
-    [HttpGet]
-    [Route("addproduct")]
+    [HttpGet("addproduct")]
     public IActionResult AddProduct()
     {
+        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Farmers = _context.Farmers.ToList();
         return View();
     }
 
-    [HttpPost]
-    [Route("addproduct")]
+    [HttpPost("addproduct")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
     {
         try
         {
-            // Create new Product instance
             var product = new Product
             {
                 Name = form["name"],
                 ProductType = form["product_type"],
-                CategoryId = int.Parse(form["category_id"]),
                 Quantity = int.Parse(form["quantity"]),
                 Price = decimal.Parse(form["price"]),
                 ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
@@ -149,16 +146,22 @@ public class AdminWarehouseController : Controller
                 FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null
             };
 
+            if (int.TryParse(form["category_id"], out int categoryId))
+            {
+                product.CategoryId = categoryId;
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
+            // Save images
             if (images != null && images.Count > 0)
             {
                 foreach (var file in images)
                 {
                     if (file.Length > 0)
                     {
-                        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                        string uploadsFolder = Path.Combine(_env.WebRootPath, "images");
                         Directory.CreateDirectory(uploadsFolder);
 
                         string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
@@ -184,11 +187,13 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
-            return Redirect("products");
+            return Redirect("/products");
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Error adding product: " + ex.Message);
+            ViewBag.Farmers = _context.Farmers.ToList();
+            ViewBag.Categories = _context.ProductCategories.ToList();
             return View();
         }
     }
@@ -242,6 +247,8 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
+        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Farmers = _context.Farmers.ToList();
         return View(product);
     }
 
@@ -249,7 +256,7 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     [Route("updateproduct")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateProduct(Product model)
+    public async Task<IActionResult> UpdateProduct(Product model, List<IFormFile> ImageUpdate)
     {
         var product = await _context.Products
             .Include(p => p.ProductImages)
@@ -286,11 +293,11 @@ public class AdminWarehouseController : Controller
             product.FarmerId = model.FarmerId;
 
         // Nếu có ảnh mới, thì cập nhật
-        if (model.ImageUpdate != null && model.ImageUpdate.Any())
+        if (ImageUpdate != null && ImageUpdate.Any())
         {
             _context.ProductImages.RemoveRange(product.ProductImages);
 
-            foreach (var file in model.ImageUpdate)
+            foreach (var file in ImageUpdate)
             {
                 if (file.Length > 0)
                 {
@@ -317,24 +324,25 @@ public class AdminWarehouseController : Controller
     [Route("searchProduct")]
     public async Task<IActionResult> SearchProduct(string search)
     {
+        if (string.IsNullOrEmpty(search))
+        {
+            return Redirect("products"); 
+        }
+
         var productsQuery = _context.Products
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(search))
-        {
-            search = search.ToLower();
-            productsQuery = productsQuery.Where(p =>
-                p.Name.ToLower().Contains(search) ||
-                (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
-                p.ProductType.ToLower().Contains(search)
-            );
-        }
+        search = search.ToLower();
+        productsQuery = productsQuery.Where(p =>
+            p.Name.ToLower().Contains(search) ||
+            (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
+            p.ProductType.ToLower().Contains(search)
+        );
 
         var products = await productsQuery.ToListAsync();
         return View("Products", products);
-
     }
     [HttpGet]
     [Route("alluser")]
@@ -504,6 +512,7 @@ public class AdminWarehouseController : Controller
             return View(user);
         }
     }
+
 
     private string HashPassword(string password)
     {
@@ -774,9 +783,9 @@ public class AdminWarehouseController : Controller
     [Route("addfamer")]
     public IActionResult AddFamer()
     {
-        var pending = _context.FarmerRegistrationRequest
-            .Where(r => r.status == "pending")
-            .OrderByDescending(r => r.requested_at)
+        var pending = _context.FarmerRegistrationRequests
+            .Where(r => r.Status == "pending")
+            .OrderByDescending(r => r.RequestedAt)
             .ToList();
 
         return View(pending);
@@ -785,25 +794,25 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Approve(int id)
     {
-        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+        var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
-        if (request == null || request.status != "pending")
+        if (request == null || request.Status != "pending")
             return NotFound();
 
-        request.status = "approved";
-        request.reviewed_at = DateTime.Now;
-        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+        request.Status = "approved";
+        request.ReviewedAt = DateTime.Now;
+        request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         // Tạo bản ghi mới trong bảng Farmers
         _context.Farmers.Add(new Farmer
         {
-            UserId = request.user_id,
-            FullName = request.full_name,
-            Phone = request.phone,
-            Address = request.address
+            UserId = request.UserId,
+            FullName = request.FullName,
+            Phone = request.Phone,
+            Address = request.Address
         });
 
-        var user = await _context.Users.FindAsync(request.user_id);
+        var user = await _context.Users.FindAsync(request.UserId);
         if (user != null)
         {
             user.RoleId = 5;
@@ -816,14 +825,14 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Reject(int id)
     {
-        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+        var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
-        if (request == null || request.status != "pending")
+        if (request == null || request.Status != "pending")
             return NotFound();
 
-        request.status = "rejected";
-        request.reviewed_at = DateTime.Now;
-        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+        request.Status = "rejected";
+        request.RequestedAt = DateTime.Now;
+        request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         await _context.SaveChangesAsync();
         return RedirectToAction("AddFamer");

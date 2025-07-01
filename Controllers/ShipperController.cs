@@ -5,21 +5,20 @@ using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
-    public class FamerController : Controller
+    public class ShipperController : Controller
     {
         private readonly AppDbContext _context;
-        public FamerController(AppDbContext context)
+        public ShipperController(AppDbContext context)
         {
             _context = context;
         }
-
         [HttpGet]
-        [Route("becomefamer")]
-        public IActionResult FamerBecome() => View();
+        [Route("shipperbecome")]
+        public IActionResult ShipperBecome() => View();
 
         [HttpPost]
-        [Route("becomefamer")]
-        public async Task<IActionResult> FamerBecome(string FullName, string Phone, string AddressDetail, string Address)
+        [Route("ShipperBecome")]
+        public async Task<IActionResult> ShipperBecome(string FullName, string Phone, string AddressDetail, string Address, string vehicleInfor)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -29,34 +28,35 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra nếu đã gửi yêu cầu rồi
-            var existing = await _context.FarmerRegistrationRequests
+            var existing = await _context.ShipperRegistrationRequests
                 .AnyAsync(r => r.UserId == userId && r.Status == "pending");
 
             if (existing)
             {
                 TempData["Error"] = "Bạn đã gửi yêu cầu rồi. Vui lòng chờ xét duyệt.";
-                return RedirectToAction("FamerBecome");
+                return RedirectToAction("shipperbecome");
             }
 
             // Lưu yêu cầu
-            var request = new FarmerRegistrationRequest
+            var request = new ShipperRegistrationRequest
             {
                 UserId = userId.Value,
                 FullName = FullName,
                 Phone = Phone,
                 Address = Address,
                 Status = "pending",
+                VehicleInfo = vehicleInfor,
                 RequestedAt = DateTime.Now
             };
 
-            _context.FarmerRegistrationRequests.Add(request);
+            _context.ShipperRegistrationRequests.Add(request);
 
             // Gửi thông báo đến tất cả admin
             var admins = await _context.Users
                 .Where(u => u.RoleId == 1)
                 .ToListAsync();
 
-            string message = $"Tài khoản ID {userId} đã gửi yêu cầu đăng ký làm nông dân.";
+            string message = $"Tài khoản ID {userId} đã gửi yêu cầu đăng ký làm shipper.";
 
             foreach (var admin in admins)
             {
@@ -72,11 +72,8 @@ namespace Village_Manager.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Yêu cầu đã được gửi. Vui lòng chờ xét duyệt.";
-            return RedirectToAction("FamerBecome");
+            return RedirectToAction("shipperbecome");
         }
-
-        [HttpGet]
-        [Route("dashboardfamer")]
-        public IActionResult DashboardFamer() => View();
     }
 }
+

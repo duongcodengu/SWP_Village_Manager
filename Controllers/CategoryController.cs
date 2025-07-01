@@ -37,7 +37,7 @@ namespace Village_Manager.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            var categories = _context.ProductCategory.ToList();
+            var categories = _context.ProductCategories.ToList();
             return View(categories);
         }
         // add Category 
@@ -49,23 +49,23 @@ namespace Village_Manager.Controllers
             return View("Views/AdminWarehouse/addCategory.cshtml");
         }
         [HttpPost("addCategory")]
-  
-        public IActionResult addCategory( ProductCategory category , IFormFile ImgFile)
+
+        public IActionResult addCategory(ProductCategory category, IFormFile ImgFile)
         {
             if (String.IsNullOrWhiteSpace(category.Name))
             {
                 ModelState.AddModelError("Name", "Category name is required");
                 return View(category);
             }
-            if(_context.ProductCategories.Any(c => c.Name == category.Name))
+            if (_context.ProductCategories.Any(c => c.Name == category.Name))
             {
                 ModelState.AddModelError("Name", "Category name already exit!!");
                 return View(category);
             }
-            if(ImgFile == null || ImgFile.Length == 0)
+            if (ImgFile == null || ImgFile.Length == 0)
             {
                 ModelState.AddModelError("Image", "Please upload a category image");
-                   return View(category);
+                return View(category);
             }
             // kiem tra tep anh user nhap
             if (ImgFile != null && ImgFile.Length > 0)
@@ -88,7 +88,7 @@ namespace Village_Manager.Controllers
                 }
                 // lưu đường dẫn 
                 category.ImageUrl = "/upload/" + filename;
-                    
+
             }
             // lưu ảnh vào database 
             // nếu các model state đều hợp lệ lưu vào database sau đó chuyển và trang hiển thị danh sách listcate
@@ -104,24 +104,24 @@ namespace Village_Manager.Controllers
 
         // edit category
         [HttpGet("editCategory/{id}")]
-        public IActionResult EditCategory( int id)
+        public IActionResult EditCategory(int id)
         {
-            var Category = _context.ProductCategory.FirstOrDefault(c => c.Id == id);    
+            var Category = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
             if (Category == null) return NotFound();
-            
-            return View("/Views/AdminWarehouse/EditCategory.cshtml" , Category);
+
+            return View("/Views/AdminWarehouse/EditCategory.cshtml", Category);
         }
         [HttpPost("editCategory/{id}")]
         [ActionName("EditCategory")]
-        public IActionResult EditCategory(int id , ProductCategory category , IFormFile imgFile)
+        public IActionResult EditCategory(int id, ProductCategory category, IFormFile imgFile)
         {
             if (id != category.Id) return BadRequest();
-            var exitCate = _context.ProductCategory.FirstOrDefault(c => c.Id == id);
+            var exitCate = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
             if (exitCate == null) return NotFound();
             if (ModelState.IsValid)
             {
                 exitCate.Name = category.Name;
-                if(imgFile != null && imgFile.Length > 0)
+                if (imgFile != null && imgFile.Length > 0)
                 {
                     var filename = Guid.NewGuid() + Path.GetExtension(imgFile.FileName);
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/categories", filename);
@@ -140,13 +140,13 @@ namespace Village_Manager.Controllers
             category.ImageUrl = exitCate.ImageUrl;
             return View("Views/AdminWarehouse/Listcate.cshtml", category);
         }
-       [HttpGet("DeleteCategory/{id}")]
-       public IActionResult DeleteCategory( int id)
-        { 
+        [HttpGet("DeleteCategory/{id}")]
+        public IActionResult DeleteCategory(int id)
+        {
 
             var category = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
             if (category == null) return NotFound();
-            _context.ProductCategory.Remove(category);
+            _context.ProductCategories.Remove(category);
             _context.SaveChanges();
             return RedirectToAction("Listcate");
 
@@ -154,6 +154,6 @@ namespace Village_Manager.Controllers
         }
 
     }
- 
+
 
 }

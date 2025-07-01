@@ -105,17 +105,17 @@
                                                                 var item = Model[i];
                                                                 <tr>
                                                                     <td>@(i + 1)</td>
-                                                                    <td>@item.full_name</td>
-                                                                    <td>@item.phone</td>
-                                                                    <td>@item.address</td>
-                                                                    <td>@item.requested_at.ToString("dd/MM/yyyy HH:mm")</td>
+                                                                    <td>@item.FullName</td>
+                                                                    <td>@item.Phone</td>
+                                                                    <td>@item.Address</td>
+                                                                    <td>@item.RequestedAt.Value.ToString("dd/MM/yyyy HH:mm")</td>
                                                                     <td>
                                                                         <form method="post" asp-action="Approve" asp-controller="AdminWarehouse" class="d-inline">
-                                                                            <input type="hidden" name="id" value="@item.id" />
+                                                                            <input type="hidden" name="id" value="@item.Id" />
                                                                             <button class="btn btn-success btn-sm" type="submit">Chấp nhận</button>
                                                                         </form>
                                                                         <form method="post" asp-action="Reject" asp-controller="AdminWarehouse" class="d-inline ms-2">
-                                                                            <input type="hidden" name="id" value="@item.id" />
+                                                                            <input type="hidden" name="id" value="@item.Id" />
                                                                             <button class="btn btn-danger btn-sm" type="submit">Từ chối</button>
                                                                         </form>
                                                                     </td>

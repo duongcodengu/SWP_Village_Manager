@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Village_Manager.Models;
 
-public partial class FarmerRegistrationRequest
+public partial class ShipperRegistrationRequest
 {
     public int Id { get; set; }
 
@@ -18,6 +18,8 @@ public partial class FarmerRegistrationRequest
     public string? Status { get; set; }
 
     public DateTime? RequestedAt { get; set; }
+
+    public string? VehicleInfo { get; set; }
 
     public DateTime? ReviewedAt { get; set; }
 
