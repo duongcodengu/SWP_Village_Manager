@@ -15,16 +15,12 @@ public partial class Product
 
     public decimal Price { get; set; }
 
-    public DateOnly? ExpirationDate { get; set; }
-
     public DateTime? ExpirationDate { get; set; }
     [Required]
     [RegularExpression("processed|raw")]
     public string? ProductType { get; set; }
 
     public int Quantity { get; set; }
-
-    public DateOnly? ProcessingTime { get; set; }
     public DateTime? ProcessingTime { get; set; }
 
     public int? FarmerId { get; set; }

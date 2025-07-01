@@ -10,661 +10,422 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Village_Manager.Extensions;
 
-namespace Village_Manager.Controllers
+namespace Village_Manager.Controllers;
+public class AdminWarehouseController : Controller
+{
+    private readonly AppDbContext _context;
+    private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _env;
+    private readonly ILogger<AdminWarehouseController> _logger;
 
-    [Route("adminwarehouse")]
-    public class AdminWarehouseController : Controller
+    public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env, ILogger<AdminWarehouseController> logger)
     {
-        private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _env;
-        private readonly ILogger<AdminWarehouseController> _logger;
-        public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env,ILogger<AdminWarehouseController> _logger;)
+        _context = context;
+        _configuration = configuration;
+        _env = env;
+        _logger = logger;
+    }
+    // Dashboard: Trang tổng quan quản trị, hiển thị số liệu tổng hợp
+    [HttpGet]
+    [Route("adminwarehouse")]
+    public IActionResult Dashboard()
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
         {
-            _context = context;
-            _configuration = configuration;
-            _env = env;
-            _logger = logger;
-
-
-        // Dashboard: Trang tổng quan quản trị, hiển thị số liệu tổng hợp
-        [HttpGet]
-        [Route("adminwarehouse")]
-        public IActionResult Dashboard()
-        {
-            // Kiểm tra quyền admin
-            if (!HttpContext.Session.IsAdmin())
-            {
-                Response.StatusCode = 404;
-                return View("404");
-            }
-            // Lấy tổng số khách hàng
-            int totalCustomers = _context.Users.Count();
-            ViewBag.TotalCustomers = totalCustomers;
-            // Lấy tổng số sản phẩm
-            int totalProducts = _context.Products.Count();
-            ViewBag.TotalProducts = totalProducts;
-            // Lấy tổng số đơn hàng
-            int totalRetailOrders = _context.RetailOrders.Count();
-            int totalWholesaleOrders = _context.WholesaleOrders.Count();
-            int totalOrders = totalRetailOrders + totalWholesaleOrders;
-            ViewBag.TotalOrders = totalOrders;
-            // Lấy danh sách category
-            var categories = _context.ProductCategory.Select(c => new { Name = c.Name }).ToList<dynamic>();
-            ViewBag.Categories = categories;
-
-            // Tổng doanh thu confirmed
-            decimal currentYear = DateTime.Now.Year;
-
-            // Bán lẻ (Retail)
-            var retailRevenue = _context.RetailOrders
-                .Where(ro => ro.Status == "confirmed"
-                    && ro.ConfirmedAt.HasValue
-                    && ro.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.RetailOrderItems,
-                      ro => ro.Id,
-                      ri => ri.OrderId,
-                      (ro, ri) => ri.Quantity * ri.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0);
-            ViewBag.TotalRevenue = totalRevenue;
-
-            // last 4 đơn hàng
-            var retailOrders = (from ro in _context.RetailOrders
-                                join u in _context.Users on ro.UserId equals u.Id
-                                join roi in _context.RetailOrderItems on ro.Id equals roi.OrderId into roItems
-                                from roiGroup in roItems.DefaultIfEmpty()
-                                group roiGroup by new { ro.Id, u.Username, ro.OrderDate, ro.Status } into g
-                                select new
-                                {
-                                    OrderId = g.Key.Id,
-                                    Username = g.Key.Username,
-                                    DatePlaced = g.Key.OrderDate,
-                                    OrderStatus = g.Key.Status,
-                                    TotalPrice = g.Sum(x => (x != null) ? x.Quantity * x.UnitPrice : 0),
-                                    PaymentStatus = _context.Payments.Any(p =>
-                                        p.OrderId == g.Key.Id &&
-                                        p.OrderType == "retail" &&
-                                        p.PaymentType == "receive") ? "Paid" : "Unpaid"
-                                });
-
-            var latestOrders = retailOrders
-                                .OrderByDescending(x => x.DatePlaced)
-                                .Take(4)
-                                .ToList();
-
-            ViewBag.LatestOrders = latestOrders.ToList();
-
-            return View();
+            Response.StatusCode = 404;
+            return View("404");
         }
-      
-        
-       
-    
-        
-        [HttpGet]
+        // Lấy tổng số khách hàng
+        int totalCustomers = _context.Users.Count();
+        ViewBag.TotalCustomers = totalCustomers;
+        // Lấy tổng số sản phẩm
+        int totalProducts = _context.Products.Count();
+        ViewBag.TotalProducts = totalProducts;
+        // Lấy tổng số đơn hàng
+        int totalRetailOrders = _context.RetailOrders.Count();
+        int totalOrders = totalRetailOrders;
+        ViewBag.TotalOrders = totalOrders;
+        // Lấy danh sách category
+        var categories = _context.ProductCategory
+            .Select(c => new { Name = c.Name, ImageUrl = c.ImageUrl })
+            .ToList<dynamic>(); ViewBag.Categories = categories;
+        // Tổng doanh thu confirmed
+        decimal currentYear = DateTime.Now.Year;
 
-        [Route("products")]
-        public IActionResult Products() => View();
-            // Bán buôn (Wholesale)
-            var wholesaleRevenue = _context.WholesaleOrders
-                .Where(wo => wo.Status == "confirmed"
-                    && wo.ConfirmedAt.HasValue
-                    && wo.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.WholesaleOrderItems,
-                      wo => wo.Id,
-                      wi => wi.OrderId,
-                      (wo, wi) => wi.Quantity * wi.UnitPrice)
-                .Sum();
+        // Bán lẻ (Retail)
+        var retailRevenue = _context.RetailOrders
+            .Where(ro => ro.Status == "confirmed"
+                && ro.ConfirmedAt.HasValue
+                && ro.ConfirmedAt.Value.Year == currentYear)
+            .Join(_context.RetailOrderItems,
+                    ro => ro.Id,
+                    ri => ri.OrderId,
+                    (ro, ri) => ri.Quantity * ri.UnitPrice)
+            .Sum();
 
-            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
-            ViewBag.TotalRevenue = totalRevenue;
+        decimal totalRevenue = (retailRevenue ?? 0);
+        ViewBag.TotalRevenue = totalRevenue;
 
-            return View();
-        }
-        //ListProduct
-        [HttpGet]
-        [Route("products")]
-        public IActionResult Products()
-        {
-            var products = _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductImages)
-                .ToList();
-            return View(products);
-        }
-        // ProductDetail
-        [HttpGet]
-        [Route("productdetail")]
-        public IActionResult ProductDetail(int id)
-        {
-            var product = _context.Products
-                       .Include(p => p.ProductImages)
-                       .Include(p => p.Category)
-                       .FirstOrDefault(p => p.Id == id);
-
-            if (product == null)
-                return NotFound();
-
-            return View(product);
-        }
-        //Add Product
-        [HttpGet]
-        [Route("addproduct")]
-        public IActionResult AddProduct()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [Route("addproduct")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
-        {
-            try
-            {
-                // Create new Product instance
-                var product = new Product
-                {
-                    Name = form["name"],
-                    ProductType = form["product_type"],
-                    CategoryId = int.Parse(form["category_id"]),
-                    Quantity = int.Parse(form["quantity"]),
-                    Price = decimal.Parse(form["price"]),
-                    ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
-                    ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
-                    FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null
-                };
-
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync(); 
-
-                if (images != null && images.Count > 0)
-                {
-                    foreach (var file in images)
-                    {
-                        if (file.Length > 0)
-                        {
-                            string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-                            Directory.CreateDirectory(uploadsFolder); 
-
-                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                            using (var stream = new FileStream(filePath, FileMode.Create))
+        // last 4 đơn hàng
+        var retailOrders = (from ro in _context.RetailOrders
+                            join u in _context.Users on ro.UserId equals u.Id
+                            join roi in _context.RetailOrderItems on ro.Id equals roi.OrderId into roItems
+                            from roiGroup in roItems.DefaultIfEmpty()
+                            group roiGroup by new { ro.Id, u.Username, ro.OrderDate, ro.Status } into g
+                            select new
                             {
-                                await file.CopyToAsync(stream);
-                            }
+                                OrderId = g.Key.Id,
+                                Username = g.Key.Username,
+                                DatePlaced = g.Key.OrderDate,
+                                OrderStatus = g.Key.Status,
+                                TotalPrice = g.Sum(x => (x != null) ? x.Quantity * x.UnitPrice : 0),
+                                PaymentStatus = _context.Payments.Any(p =>
+                                    p.OrderId == g.Key.Id &&
+                                    p.OrderType == "retail" &&
+                                    p.PaymentType == "receive") ? "Paid" : "Unpaid"
+                            });
 
-                            var productImage = new ProductImage
-                            {
-                                ProductId = product.Id,
-                                ImageUrl = "/uploads/" + uniqueFileName,
-                                Description = form["image_description"],
-                                UploadedAt = DateTime.Now
-                            };
+        var latestOrders = retailOrders
+                            .OrderByDescending(x => x.DatePlaced)
+                            .Take(4)
+                            .ToList();
 
-                            _context.ProductImages.Add(productImage);
-                        }
-                    }
+        ViewBag.LatestOrders = latestOrders.ToList();
 
-                    await _context.SaveChangesAsync();
-                }
+        return View();
+    }
+    //ListProduct
+    [HttpGet]
+    [Route("products")]
+    public IActionResult Products()
+    {
+        var products = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .ToList();
+        return View(products);
+    }
+    // ProductDetail
+    [HttpGet]
+    [Route("productdetail")]
+    public IActionResult ProductDetail(int id)
+    {
+        var product = _context.Products
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category)
+                    .FirstOrDefault(p => p.Id == id);
 
-                return Redirect("/adminwarehouse/products");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error adding product: " + ex.Message);
-                return View();
-            }
-        }
+        if (product == null)
+            return NotFound();
 
+        return View(product);
+    }
+    //Add Product
+    [HttpGet]
+    [Route("addproduct")]
+    public IActionResult AddProduct()
+    {
+        return View();
+    }
 
-        public async Task<IActionResult> Delete(int? id)
+    [HttpPost]
+    [Route("addproduct")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
+    {
+        try
         {
-            if (id == null)
-                return NotFound();
-
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-                return NotFound();
-
-            return View(product); 
-        }
-
-        // DeleteProduct
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-                return NotFound();
-
-            var images = _context.ProductImages.Where(p => p.ProductId == id).ToList();
-
-            foreach (var image in images)
+            // Create new Product instance
+            var product = new Product
             {
-                var filePath = Path.Combine(_env.WebRootPath, "uploads", image.ImageUrl);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-            }
+                Name = form["name"],
+                ProductType = form["product_type"],
+                CategoryId = int.Parse(form["category_id"]),
+                Quantity = int.Parse(form["quantity"]),
+                Price = decimal.Parse(form["price"]),
+                //ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
+                //ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
+                FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null
+            };
 
-            _context.ProductImages.RemoveRange(images);
-            _context.Products.Remove(product);
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return Redirect("/adminwarehouse/products");
-        }
-
-        //Update Product
-        [HttpGet]
-        [Route("updateproduct")]
-        public async Task<IActionResult> UpdateProduct(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-                return NotFound();
-
-            return View(product);
-        }
-
-
-        [HttpPost]
-        [Route("updateproduct")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateProduct(Product model)
-        {
-            var product = await _context.Products
-                .Include(p => p.ProductImages)
-                .FirstOrDefaultAsync(p => p.Id == model.Id);
-
-            if (product == null)
+            if (images != null && images.Count > 0)
             {
-                return NotFound();
-            }
-
-            // Cập nhật chỉ nếu dữ liệu được cung cấp
-            if (!string.IsNullOrEmpty(model.Name))
-                product.Name = model.Name;
-
-            if (model.CategoryId != 0)
-                product.CategoryId = model.CategoryId;
-
-            if (model.Price != 0)
-                product.Price = model.Price;
-
-            if (model.ExpirationDate != default)
-                product.ExpirationDate = model.ExpirationDate;
-
-            if (!string.IsNullOrEmpty(model.ProductType))
-                product.ProductType = model.ProductType;
-
-            if (model.Quantity != 0)
-                product.Quantity = model.Quantity;
-
-            if (model.ProcessingTime != default)
-                product.ProcessingTime = model.ProcessingTime;
-
-            if (model.FarmerId != 0)
-                product.FarmerId = model.FarmerId;
-            
-            // Nếu có ảnh mới, thì cập nhật
-            if (model.ImageUpdate != null && model.ImageUpdate.Any())
-            {
-                _context.ProductImages.RemoveRange(product.ProductImages);
-
-                foreach (var file in model.ImageUpdate)
+                foreach (var file in images)
                 {
                     if (file.Length > 0)
                     {
-                        var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
-                                       + Path.GetExtension(file.FileName);
-                        var path = Path.Combine("wwwroot/images", fileName);
-                        using (var stream = new FileStream(path, FileMode.Create))
+                        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                        Directory.CreateDirectory(uploadsFolder);
+
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
 
-                        product.ProductImages.Add(new ProductImage
+                        var productImage = new ProductImage
                         {
-                            ImageUrl = "/images/" + fileName
-                        });
+                            ProductId = product.Id,
+                            ImageUrl = "/uploads/" + uniqueFileName,
+                            Description = form["image_description"],
+                            UploadedAt = DateTime.Now
+                        };
+
+                        _context.ProductImages.Add(productImage);
                     }
                 }
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return Redirect("/adminwarehouse/products");
         }
-        [HttpGet]
-        [Route("searchProduct")]
-        public async Task<IActionResult> SearchProduct(string search)
+        catch (Exception ex)
         {
-            var productsQuery = _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.ProductImages)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                search = search.ToLower();
-                productsQuery = productsQuery.Where(p =>
-                    p.Name.ToLower().Contains(search) ||
-                    (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
-                    p.ProductType.ToLower().Contains(search)
-                );
-            }
-
-            var products = await productsQuery.ToListAsync();
-            return View("Products",products);
-        [Route("adminwarehouse/alluser")]
-        public async Task<IActionResult> AllUser(string searchUser, int page = 1)
-        {
-            try
-            {
-                _logger.LogInformation("Starting to load all users...");
-                // Lấy thông tin session
-                var username = HttpContext.Session.GetString("Username");
-                var roleId = HttpContext.Session.GetInt32("RoleId");
-                // Kiểm tra quyền admin
-                if (string.IsNullOrEmpty(username) || roleId != 1)
-                {
-                    _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {roleId}");
-                    Response.StatusCode = 404;
-                    return View("404");
-                }
-                // Phân trang và tìm kiếm
-                int pageSize = 10;
-                var usersQuery = _context.Users.Include(u => u.Role).AsQueryable();
-                if (!string.IsNullOrEmpty(searchUser))
-                {
-                    usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
-                }
-                int totalUsers = await usersQuery.CountAsync();
-                var users = await usersQuery.OrderByDescending(u => u.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-                ViewBag.CurrentPage = page;
-                ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
-                ViewBag.SearchUser = searchUser;
-                return View(users);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error loading users: {ex.Message}");
-                TempData["ErrorMessage"] = "An error occurred while loading users.";
-                return View(new List<User>());
-            }
-        }
-
-        // Delete: Xóa user theo id
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("adminwarehouse/delete/{id}")]
-        public IActionResult Delete(int id)
-        {
-            // Kiểm tra quyền admin
-            if (!HttpContext.Session.IsAdmin())
-            {
-                Response.StatusCode = 404;
-                return View("404");
-            }
-            // Tìm user theo id
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            // Xóa user khỏi database
-            _context.Users.Remove(user);
-            _context.SaveChanges();
-            var currentUserId = HttpContext.Session.GetInt32("UserId");
-            LogHelper.SaveLog(_context, currentUserId, $"Xóa user: {user.Username} (ID: {user.Id})");
-            return RedirectToAction("AllUser");
-        }
-
-        // AddUser (GET): Hiển thị form thêm user mới
-        [HttpGet]
-        [Route("adminwarehouse/adduser")]
-        [Route("user/adduser")]
-        public IActionResult AddUser()
-        {
-            // Kiểm tra quyền admin
-            if (!HttpContext.Session.IsAdmin())
-            {
-                Response.StatusCode = 404;
-                return View("404");
-            }
-            // Lấy danh sách role để hiển thị trong form
-            ViewBag.Roles = _context.Roles.ToList();
+            ModelState.AddModelError("", "Error adding product: " + ex.Message);
             return View();
         }
+    }
 
-        // AddUser (POST): Xử lý thêm user mới
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("adminwarehouse/adduser")]
-        [Route("user/adduser")]
-        public async Task<IActionResult> AddUser(User user, string confirmPassword)
+
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
+            return NotFound();
+
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
+            return NotFound();
+
+        return View(product);
+    }
+
+    // DeleteProduct
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
+            return NotFound();
+
+        var images = _context.ProductImages.Where(p => p.ProductId == id).ToList();
+
+        foreach (var image in images)
         {
-            try
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", image.ImageUrl);
+            if (System.IO.File.Exists(filePath))
             {
-                // Kiểm tra quyền admin
-                if (!HttpContext.Session.IsAdmin())
-                {
-                    Response.StatusCode = 404;
-                    return View("404");
-                }
-                _logger.LogInformation("Starting user creation process...");
-                ViewBag.Roles = await _context.Roles.ToListAsync();
-                // Kiểm tra dữ liệu đầu vào
-                if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
-                {
-                    ModelState.AddModelError("", "Please fill in all required fields");
-                    return View(user);
-                }
-                // Kiểm tra xác nhận mật khẩu
-                if (user.Password != confirmPassword)
-                {
-                    ModelState.AddModelError("Password", "Passwords do not match");
-                    return View(user);
-                }
-                // Kiểm tra username/email đã tồn tại chưa
-                if (await _context.Users.AnyAsync(u => u.Username == user.Username))
-                {
-                    ModelState.AddModelError("Username", "Username already exists");
-                    return View(user);
-                }
-                if (await _context.Users.AnyAsync(u => u.Email == user.Email))
-                {
-                    ModelState.AddModelError("Email", "Email already exists");
-                    return View(user);
-                }
-                // Kiểm tra định dạng số điện thoại (10 chữ số)
-                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
-                {
-                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
-                    return View(user);
-                }
-                // Tạo user mới
-                var newUser = new User
-                {
-                    Username = user.Username.Trim(),
-                    Email = user.Email.Trim(),
-                    Password = HashPassword(user.Password),
-                    RoleId = user.RoleId,
-                    Phone = user.Phone?.Trim(),
-                    CreatedAt = DateTime.Now
-                };
-                // Lưu vào database
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-                var currentUserId = HttpContext.Session.GetInt32("UserId");
-                LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
-                TempData["SuccessMessage"] = "User created successfully!";
-                return RedirectToAction("AllUser");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error creating user: {ex.Message}");
-                ModelState.AddModelError("", "An error occurred while creating the user. Please try again.");
-                ViewBag.Roles = await _context.Roles.ToListAsync();
-                return View(user);
+                System.IO.File.Delete(filePath);
             }
         }
 
-        private string HashPassword(string password)
+        _context.ProductImages.RemoveRange(images);
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+
+        return Redirect("/products");
+    }
+
+    //Update Product
+    [HttpGet]
+    [Route("updateproduct")]
+    public async Task<IActionResult> UpdateProduct(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product == null)
+            return NotFound();
+
+        return View(product);
+    }
+
+
+    [HttpPost]
+    [Route("updateproduct")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProduct(Product model)
+    {
+        var product = await _context.Products
+            .Include(p => p.ProductImages)
+            .FirstOrDefaultAsync(p => p.Id == model.Id);
+
+        if (product == null)
         {
-            using (var sha256 = SHA256.Create())
+            return NotFound();
+        }
+
+        // Cập nhật chỉ nếu dữ liệu được cung cấp
+        if (!string.IsNullOrEmpty(model.Name))
+            product.Name = model.Name;
+
+        if (model.CategoryId != 0)
+            product.CategoryId = model.CategoryId;
+
+        if (model.Price != 0)
+            product.Price = model.Price;
+
+        //if (model.ExpirationDate != default)
+        //    product.ExpirationDate = model.ExpirationDate;
+
+        if (!string.IsNullOrEmpty(model.ProductType))
+            product.ProductType = model.ProductType;
+
+        if (model.Quantity != 0)
+            product.Quantity = model.Quantity;
+
+        //if (model.ProcessingTime != default)
+        //    product.ProcessingTime = model.ProcessingTime;
+
+        if (model.FarmerId != 0)
+            product.FarmerId = model.FarmerId;
+
+        // Nếu có ảnh mới, thì cập nhật
+        if (model.ImageUpdate != null && model.ImageUpdate.Any())
+        {
+            _context.ProductImages.RemoveRange(product.ProductImages);
+
+            foreach (var file in model.ImageUpdate)
             {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return Convert.ToBase64String(hashedBytes);
+                if (file.Length > 0)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
+                                    + Path.GetExtension(file.FileName);
+                    var path = Path.Combine("wwwroot/images", fileName);
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    product.ProductImages.Add(new ProductImage
+                    {
+                        ImageUrl = "/images/" + fileName
+                    });
+                }
             }
         }
 
-        // EditUser (GET): Hiển thị form chỉnh sửa user
-        [HttpGet]
-        [Route("adminwarehouse/edituser/{id}")]
-        public async Task<IActionResult> EditUser(int id)
+        await _context.SaveChangesAsync();
+        return Redirect("/adminwarehouse/products");
+    }
+    [HttpGet]
+    [Route("searchProduct")]
+    public async Task<IActionResult> SearchProduct(string search)
+    {
+        var productsQuery = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
         {
-            try
-            {
-                // Kiểm tra quyền admin
-                if (!HttpContext.Session.IsAdmin())
-                {
-                    Response.StatusCode = 404;
-                    return View("404");
-                }
-                _logger.LogInformation($"Loading user for edit. UserId: {id}");
-                // Lấy user theo id
-                var user = await _context.Users.FindAsync(id);
-                if (user == null)
-                {
-                    _logger.LogWarning($"User not found. UserId: {id}");
-                    return NotFound();
-                }
-                ViewBag.Roles = await _context.Roles.ToListAsync();
-                _logger.LogInformation($"Successfully loaded user for edit. UserId: {id}");
-                return View(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error loading user for edit: {ex.Message}");
-                TempData["ErrorMessage"] = "An error occurred while loading user data.";
-                return RedirectToAction("AllUser");
-            }
+            search = search.ToLower();
+            productsQuery = productsQuery.Where(p =>
+                p.Name.ToLower().Contains(search) ||
+                (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
+                p.ProductType.ToLower().Contains(search)
+            );
         }
 
-        // EditUser (POST): Xử lý cập nhật thông tin user
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("adminwarehouse/edituser/{id}")]
-        public async Task<IActionResult> EditUser(int id, User user, string newPassword)
-        {
-            try
-            {
-                // Kiểm tra quyền admin
-                if (!HttpContext.Session.IsAdmin())
-                {
-                    Response.StatusCode = 404;
-                    return View("404");
-                }
-                _logger.LogInformation($"Processing user update. UserId: {id}");
-                ViewBag.Roles = await _context.Roles.ToListAsync();
-                // Kiểm tra dữ liệu đầu vào
-                if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
-                {
-                    _logger.LogWarning($"Invalid user data. Username: {user.Username}, Email: {user.Email}, RoleId: {user.RoleId}");
-                    ModelState.AddModelError("", "Please fill in all required fields");
-                    return View(user);
-                }
-                // Kiểm tra định dạng số điện thoại (10 chữ số)
-                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
-                {
-                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
-                    return View(user);
-                }
-                // Lấy user hiện tại
-                var existingUser = await _context.Users.FindAsync(id);
-                if (existingUser == null)
-                {
-                    _logger.LogWarning($"User not found for update. UserId: {id}");
-                    return NotFound();
-                }
-                // Kiểm tra username/email đã tồn tại chưa (trừ user hiện tại)
-                if (await _context.Users.AnyAsync(u => u.Username == user.Username && u.Id != id))
-                {
-                    _logger.LogWarning($"Username already exists: {user.Username}");
-                    ModelState.AddModelError("Username", "Username already exists");
-                    return View(user);
-                }
-                if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Id != id))
-                {
-                    _logger.LogWarning($"Email already exists: {user.Email}");
-                    ModelState.AddModelError("Email", "Email already exists");
-                    return View(user);
-                }
-                // Cập nhật thông tin user
-                existingUser.Username = user.Username.Trim();
-                existingUser.Email = user.Email.Trim();
-                existingUser.RoleId = user.RoleId;
-                existingUser.Phone = user.Phone?.Trim();
-                // Nếu có nhập mật khẩu mới thì cập nhật
-                if (!string.IsNullOrEmpty(newPassword))
-                {
-                    existingUser.Password = HashPassword(newPassword);
-                    _logger.LogInformation($"Password updated for user. UserId: {id}");
-                }
-                // Lưu thay đổi
-                await _context.SaveChangesAsync();
-                var currentUserId = HttpContext.Session.GetInt32("UserId");
-                LogHelper.SaveLog(_context, currentUserId, $"Cập nhật user: {existingUser.Username} (ID: {existingUser.Id})");
-                _logger.LogInformation($"User updated successfully. UserId: {id}");
-                TempData["SuccessMessage"] = "User updated successfully!";
-                return RedirectToAction("AllUser");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error updating user: {ex.Message}");
-                ModelState.AddModelError("", "An error occurred while updating the user. Please try again.");
-                ViewBag.Roles = await _context.Roles.ToListAsync();
-                return View(user);
-            }
-        }
+        var products = await productsQuery.ToListAsync();
+        return View("Products", products);
 
-        // view to change profile setting
-        [HttpGet("/profilesetting")]
-        public IActionResult Index()
+    }
+    [HttpGet]
+    [Route("adminwarehouse/alluser")]
+    public async Task<IActionResult> AllUser(string searchUser, int page = 1)
+    {
+        try
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
+            _logger.LogInformation("Starting to load all users...");
+            // Lấy thông tin session
+            var username = HttpContext.Session.GetString("Username");
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            // Kiểm tra quyền admin
+            if (string.IsNullOrEmpty(username) || roleId != 1)
             {
-                return RedirectToAction("Login", "Home");
+                _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {roleId}");
+                Response.StatusCode = 404;
+                return View("404");
             }
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            return View("~/Views/AdminWarehouse/ProfileSetting.cshtml", user);
+            // Phân trang và tìm kiếm
+            int pageSize = 10;
+            var usersQuery = _context.Users.Include(u => u.Role).AsQueryable();
+            if (!string.IsNullOrEmpty(searchUser))
+            {
+                usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
+            }
+            int totalUsers = await usersQuery.CountAsync();
+            var users = await usersQuery.OrderByDescending(u => u.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+            ViewBag.SearchUser = searchUser;
+            return View(users);
         }
-
-        // view to changge create role 
-        [HttpGet("/adminwarehouse/createrole")]
-        public IActionResult CreateRole()
+        catch (Exception ex)
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Home");
-            }
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            return View("~/Views/AdminWarehouse/CreateRole.cshtml", user);
+            _logger.LogError($"Error loading users: {ex.Message}");
+            TempData["ErrorMessage"] = "An error occurred while loading users.";
+            return View(new List<User>());
         }
+    }
 
-        // Logs: Hiển thị lịch sử thao tác (log) của admin
-        [HttpGet]
-        [Route("adminwarehouse/logs")]
-        public IActionResult Logs(int page = 1)
+    // Delete: Xóa user theo id
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("adminwarehouse/delete/{id}")]
+    public IActionResult Delete(int id)
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        // Tìm user theo id
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        // Xóa user khỏi database
+        _context.Users.Remove(user);
+        _context.SaveChanges();
+        var currentUserId = HttpContext.Session.GetInt32("UserId");
+        LogHelper.SaveLog(_context, currentUserId, $"Xóa user: {user.Username} (ID: {user.Id})");
+        return RedirectToAction("AllUser");
+    }
+
+    // AddUser (GET): Hiển thị form thêm user mới
+    [HttpGet]
+    [Route("adminwarehouse/adduser")]
+    [Route("user/adduser")]
+    public IActionResult AddUser()
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        // Lấy danh sách role để hiển thị trong form
+        ViewBag.Roles = _context.Roles.ToList();
+        return View();
+    }
+
+    // AddUser (POST): Xử lý thêm user mới
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("adminwarehouse/adduser")]
+    [Route("user/adduser")]
+    public async Task<IActionResult> AddUser(User user, string confirmPassword)
+    {
+        try
         {
             // Kiểm tra quyền admin
             if (!HttpContext.Session.IsAdmin())
@@ -672,213 +433,429 @@ namespace Village_Manager.Controllers
                 Response.StatusCode = 404;
                 return View("404");
             }
-            int pageSize = 20;
-            // Lấy danh sách log, join với user để lấy tên
-            var logs = (from l in _context.Logs
-                        join u in _context.Users on l.UserId equals u.Id into userJoin
-                        from u in userJoin.DefaultIfEmpty()
-                        orderby l.CreatedAt descending
-                        select new Village_Manager.Models.Dto.LogViewModel
-                        {
-                            Username = u != null ? u.Username : "Unknown",
-                            Action = l.Action,
-                            CreatedAt = l.CreatedAt
-                        })
-                        .Skip((page - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToList();
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)_context.Logs.Count() / pageSize);
-            return View("~/Views/AdminWarehouse/Logs.cshtml", logs);
+            _logger.LogInformation("Starting user creation process...");
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            // Kiểm tra dữ liệu đầu vào
+            if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
+            {
+                ModelState.AddModelError("", "Please fill in all required fields");
+                return View(user);
+            }
+            // Kiểm tra xác nhận mật khẩu
+            if (user.Password != confirmPassword)
+            {
+                ModelState.AddModelError("Password", "Passwords do not match");
+                return View(user);
+            }
+            // Kiểm tra username/email đã tồn tại chưa
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username))
+            {
+                ModelState.AddModelError("Username", "Username already exists");
+                return View(user);
+            }
+            if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+            {
+                ModelState.AddModelError("Email", "Email already exists");
+                return View(user);
+            }
+            // Kiểm tra định dạng số điện thoại (10 chữ số)
+            if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+            {
+                ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
+                return View(user);
+            }
+            // Tạo user mới
+            var newUser = new User
+            {
+                Username = user.Username.Trim(),
+                Email = user.Email.Trim(),
+                Password = HashPassword(user.Password),
+                RoleId = user.RoleId,
+                Phone = user.Phone?.Trim(),
+                CreatedAt = DateTime.Now
+            };
+            // Lưu vào database
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+            var currentUserId = HttpContext.Session.GetInt32("UserId");
+            LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
+            TempData["SuccessMessage"] = "User created successfully!";
+            return RedirectToAction("AllUser");
         }
-
-        // Dashboard Shipper: Trang tổng quan cho shipper (demo giao diện)
-        [HttpGet]
-        [Route("adminwarehouse/shipper-dashboard")]
-        public IActionResult ShipperDashboard()
+        catch (Exception ex)
         {
-            // Dữ liệu mẫu cho dashboard shipper
-            ViewBag.TodayOrders = 5;
-            ViewBag.SuccessOrders = 4;
-            ViewBag.SuccessRate = 80;
-            ViewBag.Income = 500000;
-            return View("~/Views/AdminWarehouse/ShipperDashboard.cshtml");
+            _logger.LogError($"Error creating user: {ex.Message}");
+            ModelState.AddModelError("", "An error occurred while creating the user. Please try again.");
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            return View(user);
         }
+    }
 
-        // Danh sách đơn hàng của shipper
-        [HttpGet]
-        [Route("adminwarehouse/shipper-orders")]
-        public IActionResult ShipperOrders()
+    private string HashPassword(string password)
+    {
+        using (var sha256 = SHA256.Create())
         {
-            // Dữ liệu mẫu
-            var orders = new List<dynamic> {
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
+        }
+    }
+
+    // EditUser (GET): Hiển thị form chỉnh sửa user
+    [HttpGet]
+    [Route("adminwarehouse/edituser/{id}")]
+    public async Task<IActionResult> EditUser(int id)
+    {
+        try
+        {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            _logger.LogInformation($"Loading user for edit. UserId: {id}");
+            // Lấy user theo id
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                _logger.LogWarning($"User not found. UserId: {id}");
+                return NotFound();
+            }
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            _logger.LogInformation($"Successfully loaded user for edit. UserId: {id}");
+            return View(user);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error loading user for edit: {ex.Message}");
+            TempData["ErrorMessage"] = "An error occurred while loading user data.";
+            return RedirectToAction("AllUser");
+        }
+    }
+
+    // EditUser (POST): Xử lý cập nhật thông tin user
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("adminwarehouse/edituser/{id}")]
+    public async Task<IActionResult> EditUser(int id, User user, string newPassword)
+    {
+        try
+        {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            _logger.LogInformation($"Processing user update. UserId: {id}");
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            // Kiểm tra dữ liệu đầu vào
+            if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Email) || user.RoleId <= 0)
+            {
+                _logger.LogWarning($"Invalid user data. Username: {user.Username}, Email: {user.Email}, RoleId: {user.RoleId}");
+                ModelState.AddModelError("", "Please fill in all required fields");
+                return View(user);
+            }
+            // Kiểm tra định dạng số điện thoại (10 chữ số)
+            if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+            {
+                ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
+                return View(user);
+            }
+            // Lấy user hiện tại
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
+            {
+                _logger.LogWarning($"User not found for update. UserId: {id}");
+                return NotFound();
+            }
+            // Kiểm tra username/email đã tồn tại chưa (trừ user hiện tại)
+            if (await _context.Users.AnyAsync(u => u.Username == user.Username && u.Id != id))
+            {
+                _logger.LogWarning($"Username already exists: {user.Username}");
+                ModelState.AddModelError("Username", "Username already exists");
+                return View(user);
+            }
+            if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Id != id))
+            {
+                _logger.LogWarning($"Email already exists: {user.Email}");
+                ModelState.AddModelError("Email", "Email already exists");
+                return View(user);
+            }
+            // Cập nhật thông tin user
+            existingUser.Username = user.Username.Trim();
+            existingUser.Email = user.Email.Trim();
+            existingUser.RoleId = user.RoleId;
+            existingUser.Phone = user.Phone?.Trim();
+            // Nếu có nhập mật khẩu mới thì cập nhật
+            if (!string.IsNullOrEmpty(newPassword))
+            {
+                existingUser.Password = HashPassword(newPassword);
+                _logger.LogInformation($"Password updated for user. UserId: {id}");
+            }
+            // Lưu thay đổi
+            await _context.SaveChangesAsync();
+            var currentUserId = HttpContext.Session.GetInt32("UserId");
+            LogHelper.SaveLog(_context, currentUserId, $"Cập nhật user: {existingUser.Username} (ID: {existingUser.Id})");
+            _logger.LogInformation($"User updated successfully. UserId: {id}");
+            TempData["SuccessMessage"] = "User updated successfully!";
+            return RedirectToAction("AllUser");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating user: {ex.Message}");
+            ModelState.AddModelError("", "An error occurred while updating the user. Please try again.");
+            ViewBag.Roles = await _context.Roles.ToListAsync();
+            return View(user);
+        }
+    }
+
+    // view to change profile setting
+    [HttpGet("/profilesetting")]
+    public IActionResult Index()
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Home");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        return View("~/Views/AdminWarehouse/ProfileSetting.cshtml", user);
+    }
+
+    // view to changge create role 
+    [HttpGet("/adminwarehouse/createrole")]
+    public IActionResult CreateRole()
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Home");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        return View("~/Views/AdminWarehouse/CreateRole.cshtml", user);
+    }
+
+    // Logs: Hiển thị lịch sử thao tác (log) của admin
+    [HttpGet]
+    [Route("adminwarehouse/logs")]
+    public IActionResult Logs(int page = 1)
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        int pageSize = 20;
+        // Lấy danh sách log, join với user để lấy tên
+        var logs = (from l in _context.Logs
+                    join u in _context.Users on l.UserId equals u.Id into userJoin
+                    from u in userJoin.DefaultIfEmpty()
+                    orderby l.CreatedAt descending
+                    select new Village_Manager.Models.Dto.LogViewModel
+                    {
+                        Username = u != null ? u.Username : "Unknown",
+                        Action = l.Action,
+                        CreatedAt = l.CreatedAt
+                    })
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling((double)_context.Logs.Count() / pageSize);
+        return View("~/Views/AdminWarehouse/Logs.cshtml", logs);
+    }
+
+    // Dashboard Shipper: Trang tổng quan cho shipper (demo giao diện)
+    [HttpGet]
+    [Route("adminwarehouse/shipper-dashboard")]
+    public IActionResult ShipperDashboard()
+    {
+        // Dữ liệu mẫu cho dashboard shipper
+        ViewBag.TodayOrders = 5;
+        ViewBag.SuccessOrders = 4;
+        ViewBag.SuccessRate = 80;
+        ViewBag.Income = 500000;
+        return View("~/Views/AdminWarehouse/ShipperDashboard.cshtml");
+    }
+
+    // Danh sách đơn hàng của shipper
+    [HttpGet]
+    [Route("adminwarehouse/shipper-orders")]
+    public IActionResult ShipperOrders()
+    {
+        // Dữ liệu mẫu
+        var orders = new List<dynamic> {
                 new { Id = 1, Code = "DH001", CustomerName = "Nguyễn Văn A", Address = "Hà Nội", Status = "Sẵn sàng giao", DeliveryTime = DateTime.Now.AddHours(1) },
                 new { Id = 2, Code = "DH002", CustomerName = "Trần Thị B", Address = "HCM", Status = "Đang giao hàng", DeliveryTime = DateTime.Now.AddHours(2) },
                 new { Id = 3, Code = "DH003", CustomerName = "Lê Văn C", Address = "Đà Nẵng", Status = "Giao thành công", DeliveryTime = DateTime.Now.AddHours(-1) }
             };
-            ViewBag.Orders = orders;
-            return View("~/Views/AdminWarehouse/ShipperOrders.cshtml");
-        }
+        ViewBag.Orders = orders;
+        return View("~/Views/AdminWarehouse/ShipperOrders.cshtml");
+    }
 
-        // Chi tiết đơn hàng
-        [HttpGet]
-        [Route("adminwarehouse/shipper-order/{id}")]
-        public IActionResult ShipperOrderDetail(int id)
+    // Chi tiết đơn hàng
+    [HttpGet]
+    [Route("adminwarehouse/shipper-order/{id}")]
+    public IActionResult ShipperOrderDetail(int id)
+    {
+        // Dữ liệu mẫu
+        var order = new
         {
-            // Dữ liệu mẫu
-            var order = new {
-                Id = id,
-                Code = $"DH00{id}",
-                CustomerName = "Nguyễn Văn A",
-                Address = "Hà Nội",
-                Phone = "0912345678",
-                Status = "Đang giao hàng",
-                Items = new[] {
+            Id = id,
+            Code = $"DH00{id}",
+            CustomerName = "Nguyễn Văn A",
+            Address = "Hà Nội",
+            Phone = "0912345678",
+            Status = "Đang giao hàng",
+            Items = new[] {
                     new { ProductName = "Sản phẩm 1", Quantity = 2 },
                     new { ProductName = "Sản phẩm 2", Quantity = 1 }
                 },
-                StatusLogs = new[] {
+            StatusLogs = new[] {
                     new { Time = DateTime.Now.AddHours(-2), Status = "Sẵn sàng giao", Note = "" },
                     new { Time = DateTime.Now.AddHours(-1), Status = "Đang giao hàng", Note = "Shipper đã nhận đơn" }
                 }
-            };
-            ViewBag.Order = order;
-            return View("~/Views/AdminWarehouse/ShipperOrderDetail.cshtml");
-        }
+        };
+        ViewBag.Order = order;
+        return View("~/Views/AdminWarehouse/ShipperOrderDetail.cshtml");
+    }
 
-        // Cập nhật trạng thái đơn hàng (POST)
-        [HttpPost]
-        [Route("adminwarehouse/shipper-update-status/{id}")]
-        public IActionResult ShipperUpdateStatus(int id, string status, string note)
+    // Cập nhật trạng thái đơn hàng (POST)
+    [HttpPost]
+    [Route("adminwarehouse/shipper-update-status/{id}")]
+    public IActionResult ShipperUpdateStatus(int id, string status, string note)
+    {
+        // Ở đây chỉ demo, thực tế sẽ cập nhật vào DB
+        TempData["SuccessMessage"] = $"Cập nhật trạng thái đơn hàng {id} thành công: {status}";
+        return RedirectToAction("ShipperOrderDetail", new { id });
+    }
+
+    [HttpGet]
+    [Route("alluser")]
+    public IActionResult AllUser() => View();
+
+    // Lấy danh sách farmer
+    [HttpGet]
+    [Route("famer")]
+    public IActionResult Famer()
+    {
+        var farmers = (from f in _context.Farmers
+                       join u in _context.Users on f.UserId equals u.Id
+                       join r in _context.Roles on u.RoleId equals r.Id
+                       where r.Name == "farmer"
+                       select new
+                       {
+                           FarmerId = f.Id,
+                           FarmerName = f.FullName,
+                           FarmerPhone = f.Phone,
+                           FarmerAddress = f.Address,
+                           Username = u.Username,
+                           Email = u.Email,
+                           CreatedAt = u.CreatedAt,
+                           UserId = u.Id
+                       }).ToList();
+
+        ViewBag.Farmers = farmers.ToList();
+
+        return View();
+    }
+
+    //update farmer thông tin
+    [HttpPost]
+    [Route("famer/update")]
+    public IActionResult UpdateFarmer(int FarmerId, string FarmerName, string FarmerPhone, string FarmerAddress)
+    {
+        var farmer = _context.Farmers.FirstOrDefault(f => f.Id == FarmerId);
+        if (farmer != null)
         {
-            // Ở đây chỉ demo, thực tế sẽ cập nhật vào DB
-            TempData["SuccessMessage"] = $"Cập nhật trạng thái đơn hàng {id} thành công: {status}";
-            return RedirectToAction("ShipperOrderDetail", new { id });
+            farmer.FullName = FarmerName;
+            farmer.Phone = FarmerPhone;
+            farmer.Address = FarmerAddress;
+
+            _context.SaveChanges();
         }
 
-        [HttpGet]
-        [Route("alluser")]
-        public IActionResult AllUser() => View();
+        return RedirectToAction("Famer");
+    }
 
-        // Lấy danh sách farmer
-        [HttpGet]
-        [Route("famer")]
-        public IActionResult Famer()
+    // xóa role farmer
+    [HttpPost]
+    [Route("famer/change-role")]
+    public IActionResult ChangeRole(int UserId)
+    {
+        // retail_customer = role_id 5
+        int newRoleId = 5;
+
+        var user = _context.Users.FirstOrDefault(u => u.Id == UserId);
+        if (user != null)
         {
-            var farmers = (from f in _context.Farmers
-                           join u in _context.Users on f.UserId equals u.Id
-                           join r in _context.Roles on u.RoleId equals r.Id
-                           where r.Name == "farmer"
-                           select new
-                           {
-                               FarmerId = f.Id,
-                               FarmerName = f.FullName,
-                               FarmerPhone = f.Phone,
-                               FarmerAddress = f.Address,
-                               Username = u.Username,
-                               Email = u.Email,
-                               CreatedAt = u.CreatedAt,
-                               UserId = u.Id
-                           }).ToList();
-
-            ViewBag.Farmers = farmers.ToList();
-
-            return View();
+            user.RoleId = newRoleId;
+            _context.SaveChanges();
         }
 
-        //update farmer thông tin
-        [HttpPost]
-        [Route("famer/update")]
-        public IActionResult UpdateFarmer(int FarmerId, string FarmerName, string FarmerPhone, string FarmerAddress)
+        return RedirectToAction("Famer");
+    }
+    [HttpGet]
+    [Route("addfamer")]
+    public IActionResult AddFamer()
+    {
+        var pending = _context.FarmerRegistrationRequest
+            .Where(r => r.status == "pending")
+            .OrderByDescending(r => r.requested_at)
+            .ToList();
+
+        return View(pending);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Approve(int id)
+    {
+        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+
+        if (request == null || request.status != "pending")
+            return NotFound();
+
+        request.status = "approved";
+        request.reviewed_at = DateTime.Now;
+        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+
+        // Tạo bản ghi mới trong bảng Farmers
+        _context.Farmers.Add(new Farmer
         {
-            var farmer = _context.Farmers.FirstOrDefault(f => f.Id == FarmerId);
-            if (farmer != null)
-            {
-                farmer.FullName = FarmerName;
-                farmer.Phone = FarmerPhone;
-                farmer.Address = FarmerAddress;
+            UserId = request.user_id,
+            FullName = request.full_name,
+            Phone = request.phone,
+            Address = request.address
+        });
 
-                _context.SaveChanges();
-            }
-
-            return RedirectToAction("Famer");
-        }
-
-        // xóa role farmer
-        [HttpPost]
-        [Route("famer/change-role")]
-        public IActionResult ChangeRole(int UserId)
+        var user = await _context.Users.FindAsync(request.user_id);
+        if (user != null)
         {
-            // retail_customer = role_id 5
-            int newRoleId = 5;
-
-            var user = _context.Users.FirstOrDefault(u => u.Id == UserId);
-            if (user != null)
-            {
-                user.RoleId = newRoleId;
-                _context.SaveChanges();
-            }
-
-            return RedirectToAction("Famer");
-        }
-        [HttpGet]
-        [Route("addfamer")]
-        public IActionResult AddFamer()
-        {
-            var pending = _context.FarmerRegistrationRequest
-                .Where(r => r.status == "pending")
-                .OrderByDescending(r => r.requested_at)
-                .ToList();
-
-            return View(pending);
+            user.RoleId = 5;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Approve(int id)
-        {
-            var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+        await _context.SaveChangesAsync();
+        return RedirectToAction("AddFamer");
+    }
 
-            if (request == null || request.status != "pending")
-                return NotFound();
+    [HttpPost]
+    public async Task<IActionResult> Reject(int id)
+    {
+        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
 
-            request.status = "approved";
-            request.reviewed_at = DateTime.Now;
-            request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+        if (request == null || request.status != "pending")
+            return NotFound();
 
-            // Tạo bản ghi mới trong bảng Farmers
-            _context.Farmers.Add(new Farmer
-            {
-                UserId = request.user_id,
-                FullName = request.full_name,
-                Phone = request.phone,
-                Address = request.address
-            });
+        request.status = "rejected";
+        request.reviewed_at = DateTime.Now;
+        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
 
-            var user = await _context.Users.FindAsync(request.user_id);
-            if (user != null)
-            {
-                user.RoleId = 5;
-            }
+        await _context.SaveChangesAsync();
+        return RedirectToAction("AddFamer");
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction("AddFamer");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Reject(int id)
-        {
-            var request = await _context.FarmerRegistrationRequest.FindAsync(id);
-
-            if (request == null || request.status != "pending")
-                return NotFound();
-
-            request.status = "rejected";
-            request.reviewed_at = DateTime.Now;
-            request.reviewed_by = HttpContext.Session.GetInt32("UserId");
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction("AddFamer");
-        
-        }
     }
 }
+
+

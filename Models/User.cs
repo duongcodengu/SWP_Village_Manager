@@ -15,12 +15,11 @@ public partial class User
 
     public int RoleId { get; set; }
 
-    
-
-    public DateTime? CreatedAt { get; set; }
     public bool HasAcceptedGeolocation { get; set; }
 
     public string? Phone { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
 
 
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();

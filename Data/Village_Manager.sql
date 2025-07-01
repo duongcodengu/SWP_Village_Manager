@@ -12,6 +12,8 @@ CREATE TABLE Users (
     password NVarchar(255) NOT NULL,
     email NVarchar(100) UNIQUE NOT NULL, -- check trùng email
     role_id INT NOT NULL,
+    HasAcceptedGeolocation BIT NOT NULL DEFAULT 0,
+    Phone Nvarchar(10) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
@@ -352,9 +354,10 @@ INSERT INTO Roles (name) VALUES
 ('shipper'),
 ('farmer');
 
-INSERT INTO Users (username, password, email, role_id)
-VALUES (N'admin', N'admin123', N'admin@example.com', 1);
+INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
+VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789);
 
+select * from Users
 
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
@@ -372,5 +375,4 @@ VALUES
 (N'customer03', N'cus789', N'customer03@example.com', 3, GETDATE()),
 (N'customer04', N'cusabc', N'customer04@example.com', 3, GETDATE()),
 (N'customer05', N'cusxyz', N'customer05@example.com', 3, GETDATE());
-
 
