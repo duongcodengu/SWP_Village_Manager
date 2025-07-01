@@ -1,4 +1,5 @@
-﻿@{
+@model List<Village_Manager.Models.Product>
+@{
     ViewData["Title"] = "Products";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
@@ -70,6 +71,11 @@
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Products List</h5>
+
+                                        <form action="/searchProduct" method="get" class="mb-3 d-flex justify-content-end">
+                                            <input type="text" name="search" class="form-control w-25" placeholder="Search product..." value="@Context.Request.Query["search"]" />
+                                            <button type="submit" class="btn btn-primary ms-2">Search</button>
+                                        </form>
                                         <div class="right-options">
                                             <ul>
                                                 <li>
@@ -79,7 +85,7 @@
                                                     <a href="javascript:void(0)">Export</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-solid" href="add-new-product.html">Add Product</a>
+                                                    <a class="btn btn-solid" href="@Url.Action("AddProduct", "AdminWarehouse")">Add Product</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -92,7 +98,6 @@
                                                         <th>Product Image</th>
                                                         <th>Product Name</th>
                                                         <th>Category</th>
-                                                        <th>Current Qty</th>
                                                         <th>Price</th>
                                                         <th>Status</th>
                                                         <th>Option</th>
@@ -100,26 +105,23 @@
                                                 </thead>
 
                                                 <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/1.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Aata Buscuit</td>
-
-                                                        <td>Buscuit</td>
-
-                                                        <td>12</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-
+                                                    @foreach(var product in Model)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @if(product.ProductImages != null && product.ProductImages.Any())
+                                                                {
+                                                                    <img src="@product.ProductImages.First().ImageUrl" alt="Product Image" width="120"/>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>No image</span>
+                                                                }
+                                                            </td>
+                                                            <td>@product.Name</td>
+                                                            <td>@product.Category?.Name</td>
+                                                            <td>@product.Price</td>
+                                                            <td>@product.ProductType</td>
                                                         <td>
                                                             <ul>
                                                                 <li>
@@ -136,450 +138,35 @@
 
                                                                 <li>
                                                                     <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
+                                                                         data-bs-target="#deleteModal-@product.Id">
+                                                                         <i class="ri-delete-bin-line"></i>
                                                                     </a>
+                                                                        <div class="modal fade" id="deleteModal-@product.Id" tabindex="-1" aria-hidden="true">
+                                                                            <div class="modal-dialog">
+                                                                                <div class="modal-content">
+                                                                                    <form asp-action="DeleteConfirmed" asp-controller="AdminWarehouse" method="post">
+                                                                                        <div class="modal-header">
+                                                                                            <h5 class="modal-title">Xác nhận xoá</h5>
+                                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body">
+                                                                                            Bạn có chắc chắn muốn xoá sản phẩm <strong>@product.Name</strong> không?
+                                                                                        </div>
+                                                                                        <div class="modal-footer">
+                                                                                            <input type="hidden" name="id" value="@product.Id" />
+                                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                                                                                            <button type="submit" class="btn btn-danger">Xoá</button>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                 </li>
                                                             </ul>
                                                         </td>
                                                     </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/2.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Cold Brew Coffee</td>
-
-                                                        <td>Drinks</td>
-
-                                                        <td>10</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/3.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Peanut Butter Cookies</td>
-
-                                                        <td>Cookies</td>
-
-                                                        <td>9</td>
-
-                                                        <td class="td-price">$86.35</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/4.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Wheet Flakes</td>
-
-                                                        <td>Flakes</td>
-
-                                                        <td>8</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/5.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Potato Chips</td>
-
-                                                        <td>Chips</td>
-
-                                                        <td>23</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/6.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Tuwer Dal</td>
-
-                                                        <td>Dals</td>
-
-                                                        <td>50</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/7.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Almond Milk</td>
-
-                                                        <td>Milk</td>
-
-                                                        <td>25</td>
-
-                                                        <td class="td-price">$121.43</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/11.png"
-                                                                     class="img-fluid" alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Wheat Bread</td>
-
-                                                        <td>Breads</td>
-
-                                                        <td>6</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/8.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Dog Food</td>
-
-                                                        <td>Pet Food</td>
-
-                                                        <td>11</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/9.png" class="img-fluid"
-                                                                     alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Fresh Meat</td>
-
-                                                        <td>Meats</td>
-
-                                                        <td>18</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="~/back-end/images/product/10.png"
-                                                                     class="img-fluid" alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Classic Coffee</td>
-
-                                                        <td>Coffee</td>
-
-                                                        <td>25</td>
-
-                                                        <td class="td-price">$86.35</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                       data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
+                                                    }
+                                                    
                                                 </tbody>
                                             </table>
                                         </div>
@@ -616,61 +203,7 @@
         </div>
     </div>
     <!-- Modal End -->
-    <!-- Delete Modal Box Start -->
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box">
-                        <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
-                            data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box text-center">
-                        <div class="wrapper">
-                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                            </svg>
-                        </div>
-                        <h4 class="text-content">It's Removed.</h4>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Delete Modal Box End -->
 
 </body>

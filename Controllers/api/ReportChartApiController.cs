@@ -14,44 +14,37 @@ namespace Village_Manager.Controllers.api
             _context = context;
         }
 
-        // RetailOrder, RetailOrderItem và WholesaleOrder, WholesaleOrderItem
+        // RetailOrder, RetailOrderItem và
         [HttpGet("total-revenue-by-month")]
         public IActionResult TotalRevenueByMonth([FromQuery] int year = 2024)
         {
-            // BÁN LẺ
+            // BÁN LẺ: Lấy doanh thu theo tháng
             var retailQuery = from order in _context.RetailOrders
                               where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
                               join item in _context.RetailOrderItems on order.Id equals item.OrderId
+                              group new { order, item } by order.ConfirmedAt.Value.Month into g
                               select new
                               {
-                                  Month = order.ConfirmedAt.Value.Month,
-                                  Revenue = item.Quantity * item.UnitPrice
+                                  Month = g.Key,
+                                  TotalRevenue = g.Sum(x => x.item.Quantity * x.item.UnitPrice)
                               };
 
-            // GỘP doanh thu cả 2 loại
-            var allData = retailQuery
-                .ToList()
-                .GroupBy(x => x.Month)
-                .Select(g => new
-                {
-                    Month = g.Key,
-                    TotalRevenue = g.Sum(x => x.Revenue)
-                })
-                .OrderBy(x => x.Month)
-                .ToList();
-
-            // Đảm bảo trả về 12 tháng
+            // Tạo danh sách 12 tháng, nếu tháng nào không có sẽ gán doanh thu = 0
             var months = Enumerable.Range(1, 12).ToList();
-            var chartData = months.Select(m => allData.FirstOrDefault(x => x.Month == m)?.TotalRevenue ?? 0).ToList();
+
+            var chartData = months.Select(m =>
+                retailQuery.FirstOrDefault(x => x.Month == m)?.TotalRevenue ?? 0
+            ).ToList();
 
             return Ok(new
             {
                 categories = months.Select(m => new DateTime(year, m, 1).ToString("MMM")).ToList(),
                 series = new[]
                 {
-                new { name = "Tổng doanh thu", data = chartData }
-                }
+            new { name = "Tổng doanh thu", data = chartData }
+        }
             });
         }
+
     }
 }

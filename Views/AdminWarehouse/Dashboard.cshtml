@@ -8,7 +8,6 @@
     var TotalOrders = ViewBag.TotalOrders;
     var categories = ViewBag.Categories as IEnumerable<dynamic>;
     decimal totalRevenue = ViewBag.TotalRevenue != null ? (decimal)ViewBag.TotalRevenue : 0.0m;
-
 }
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -202,6 +201,7 @@
                                                 <option value="2023">2023</option>
                                                 <option value="2024">2024</option>
                                                 <option value="2025" selected>2025</option>
+
                                             </select>
                                         </div>
                                         <div id="report-chart-new" style="min-width:300px; min-height:230px"></div>
@@ -229,12 +229,14 @@
                                                 <li><a class="dropdown-item range-option" data-range="1" href="#">Today</a></li>
                                                 <li><a class="dropdown-item range-option" data-range="7" href="#">Last 7 Days</a></li>
                                                 <li><a class="dropdown-item range-option" data-range="30" href="#">Last 30 Days</a></li>
+
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="card-body p-0">
+
                                     <div class="table-responsive">
                                         <table class="best-selling-table w-image table border-0 mb-0">
                                             <tbody id="best-selling-body">
@@ -243,11 +245,13 @@
                                                 </tr>
                                             </tbody>
                                         </table>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Best Selling Product End -->
+
                         <script>
                             function loadBestSelling(range = 1) {
                                 const tbody = document.getElementById("best-selling-body");
@@ -385,6 +389,7 @@
                                                             <td colspan="5" class="text-center">No orders available</td>
                                                         </tr>
                                                     }
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -525,16 +530,11 @@
                               setInterval(() => loadData(false), 10000);
                             })();
                         </script>
-                        <!-- Earning chart end-->
                     </div>
                 </div>
-                <!-- Container-fluid Ends-->
             </div>
-            <!-- index body end -->
         </div>
-        <!-- Page Body End -->
     </div>
-    <!-- page-wrapper End-->
 
 	@* chạy ApexCharts API *@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>

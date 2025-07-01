@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
+//using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
 {
@@ -46,7 +47,6 @@ namespace Village_Manager.Controllers
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
-
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -56,12 +56,11 @@ namespace Village_Manager.Controllers
                 // lấy tên role name
                 int roleId = user.RoleId;
                 string roleName = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SqlConnection(connectionString))  
                 {
                     conn.Open();
                     var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
                     cmd.Parameters.AddWithValue("@roleId", roleId);
-
 
                     var result = cmd.ExecuteScalar();
                     roleName = result.ToString() ?? "";
@@ -69,14 +68,21 @@ namespace Village_Manager.Controllers
 
                 // session
                 HttpContext.Session.SetInt32("UserId", user.Id);
+                // Xóa session cũ trước khi set mới
+                HttpContext.Session.Clear();
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
+                HttpContext.Session.SetInt32("UserId", user.Id);
 
                 // role admin
                 if (user.RoleId == 1 || user.RoleId == 3)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+                else if(user.RoleId == 5)
+                {
+                    return RedirectToAction("IndexCustomer","Customer");
                 }
 
             }

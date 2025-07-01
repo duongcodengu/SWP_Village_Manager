@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Village_Manager.Extensions
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -299,6 +300,12 @@
                                                         </li>
                                                     }
 
+                                                    @if(roleId == 5)
+                                                    {
+                                                        <li class="product-box-contain">
+                                                            <a href="/dashboard">My Profile</a>
+                                                        </li>
+                                                    }
                                                     @* rold nao cung co *@
                                                     <li class="product-box-contain">
                                                         <a href="/logout">Log out</a>
@@ -1213,6 +1220,7 @@
                                                     <li>
                                                         <a class="dropdown-item" href="seller-dashboard.html">
                                                             Famer
+
                                                             Dashboard
                                                         </a>
                                                     </li>
