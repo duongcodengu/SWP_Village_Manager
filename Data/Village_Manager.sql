@@ -345,6 +345,17 @@ CREATE TABLE FarmerRegistrationRequest (
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (reviewed_by) REFERENCES Users(id)
 );
+
+CREATE TABLE UserLocations (
+    Id INT PRIMARY KEY IDENTITY,
+    UserId int NOT NULL,
+    Label NVARCHAR(100),             
+    Address NVARCHAR(255),           
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES Users(Id)
+);
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES

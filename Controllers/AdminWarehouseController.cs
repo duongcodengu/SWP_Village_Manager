@@ -144,8 +144,8 @@ public class AdminWarehouseController : Controller
                 CategoryId = int.Parse(form["category_id"]),
                 Quantity = int.Parse(form["quantity"]),
                 Price = decimal.Parse(form["price"]),
-                //ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
-                //ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
+                ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
+                ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
                 FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null
             };
 
@@ -172,7 +172,7 @@ public class AdminWarehouseController : Controller
                         var productImage = new ProductImage
                         {
                             ProductId = product.Id,
-                            ImageUrl = "/uploads/" + uniqueFileName,
+                            ImageUrl = "/images/" + uniqueFileName,
                             Description = form["image_description"],
                             UploadedAt = DateTime.Now
                         };
@@ -184,7 +184,7 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
-            return Redirect("/adminwarehouse/products");
+            return Redirect("products");
         }
         catch (Exception ex)
         {
@@ -311,7 +311,7 @@ public class AdminWarehouseController : Controller
         }
 
         await _context.SaveChangesAsync();
-        return Redirect("/adminwarehouse/products");
+        return Redirect("/products");
     }
     [HttpGet]
     [Route("searchProduct")]
@@ -337,7 +337,7 @@ public class AdminWarehouseController : Controller
 
     }
     [HttpGet]
-    [Route("adminwarehouse/alluser")]
+    [Route("alluser")]
     public async Task<IActionResult> AllUser(string searchUser, int page = 1)
     {
         try
@@ -378,7 +378,7 @@ public class AdminWarehouseController : Controller
     // Delete: Xóa user theo id
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("adminwarehouse/delete/{id}")]
+    [Route("delete/{id}")]
     public IActionResult Delete(int id)
     {
         // Kiểm tra quyền admin
@@ -403,8 +403,7 @@ public class AdminWarehouseController : Controller
 
     // AddUser (GET): Hiển thị form thêm user mới
     [HttpGet]
-    [Route("adminwarehouse/adduser")]
-    [Route("user/adduser")]
+    [Route("adduser")]
     public IActionResult AddUser()
     {
         // Kiểm tra quyền admin
@@ -421,8 +420,7 @@ public class AdminWarehouseController : Controller
     // AddUser (POST): Xử lý thêm user mới
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("adminwarehouse/adduser")]
-    [Route("user/adduser")]
+    [Route("adduser")]
     public async Task<IActionResult> AddUser(User user, string confirmPassword)
     {
         try
@@ -502,7 +500,7 @@ public class AdminWarehouseController : Controller
 
     // EditUser (GET): Hiển thị form chỉnh sửa user
     [HttpGet]
-    [Route("adminwarehouse/edituser/{id}")]
+    [Route("/edituser/{id}")]
     public async Task<IActionResult> EditUser(int id)
     {
         try
@@ -536,7 +534,7 @@ public class AdminWarehouseController : Controller
     // EditUser (POST): Xử lý cập nhật thông tin user
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Route("adminwarehouse/edituser/{id}")]
+    [Route("edituser/{id}")]
     public async Task<IActionResult> EditUser(int id, User user, string newPassword)
     {
         try
@@ -611,7 +609,7 @@ public class AdminWarehouseController : Controller
     }
 
     // view to change profile setting
-    [HttpGet("/profilesetting")]
+    [HttpGet("profilesetting")]
     public IActionResult Index()
     {
         var userId = HttpContext.Session.GetInt32("UserId");
@@ -624,7 +622,7 @@ public class AdminWarehouseController : Controller
     }
 
     // view to changge create role 
-    [HttpGet("/adminwarehouse/createrole")]
+    [HttpGet("createrole")]
     public IActionResult CreateRole()
     {
         var userId = HttpContext.Session.GetInt32("UserId");
@@ -638,7 +636,7 @@ public class AdminWarehouseController : Controller
 
     // Logs: Hiển thị lịch sử thao tác (log) của admin
     [HttpGet]
-    [Route("adminwarehouse/logs")]
+    [Route("logs")]
     public IActionResult Logs(int page = 1)
     {
         // Kiểm tra quyền admin
@@ -666,75 +664,6 @@ public class AdminWarehouseController : Controller
         ViewBag.TotalPages = (int)Math.Ceiling((double)_context.Logs.Count() / pageSize);
         return View("~/Views/AdminWarehouse/Logs.cshtml", logs);
     }
-
-    // Dashboard Shipper: Trang tổng quan cho shipper (demo giao diện)
-    [HttpGet]
-    [Route("adminwarehouse/shipper-dashboard")]
-    public IActionResult ShipperDashboard()
-    {
-        // Dữ liệu mẫu cho dashboard shipper
-        ViewBag.TodayOrders = 5;
-        ViewBag.SuccessOrders = 4;
-        ViewBag.SuccessRate = 80;
-        ViewBag.Income = 500000;
-        return View("~/Views/AdminWarehouse/ShipperDashboard.cshtml");
-    }
-
-    // Danh sách đơn hàng của shipper
-    [HttpGet]
-    [Route("adminwarehouse/shipper-orders")]
-    public IActionResult ShipperOrders()
-    {
-        // Dữ liệu mẫu
-        var orders = new List<dynamic> {
-                new { Id = 1, Code = "DH001", CustomerName = "Nguyễn Văn A", Address = "Hà Nội", Status = "Sẵn sàng giao", DeliveryTime = DateTime.Now.AddHours(1) },
-                new { Id = 2, Code = "DH002", CustomerName = "Trần Thị B", Address = "HCM", Status = "Đang giao hàng", DeliveryTime = DateTime.Now.AddHours(2) },
-                new { Id = 3, Code = "DH003", CustomerName = "Lê Văn C", Address = "Đà Nẵng", Status = "Giao thành công", DeliveryTime = DateTime.Now.AddHours(-1) }
-            };
-        ViewBag.Orders = orders;
-        return View("~/Views/AdminWarehouse/ShipperOrders.cshtml");
-    }
-
-    // Chi tiết đơn hàng
-    [HttpGet]
-    [Route("adminwarehouse/shipper-order/{id}")]
-    public IActionResult ShipperOrderDetail(int id)
-    {
-        // Dữ liệu mẫu
-        var order = new
-        {
-            Id = id,
-            Code = $"DH00{id}",
-            CustomerName = "Nguyễn Văn A",
-            Address = "Hà Nội",
-            Phone = "0912345678",
-            Status = "Đang giao hàng",
-            Items = new[] {
-                    new { ProductName = "Sản phẩm 1", Quantity = 2 },
-                    new { ProductName = "Sản phẩm 2", Quantity = 1 }
-                },
-            StatusLogs = new[] {
-                    new { Time = DateTime.Now.AddHours(-2), Status = "Sẵn sàng giao", Note = "" },
-                    new { Time = DateTime.Now.AddHours(-1), Status = "Đang giao hàng", Note = "Shipper đã nhận đơn" }
-                }
-        };
-        ViewBag.Order = order;
-        return View("~/Views/AdminWarehouse/ShipperOrderDetail.cshtml");
-    }
-
-    // Cập nhật trạng thái đơn hàng (POST)
-    [HttpPost]
-    [Route("adminwarehouse/shipper-update-status/{id}")]
-    public IActionResult ShipperUpdateStatus(int id, string status, string note)
-    {
-        // Ở đây chỉ demo, thực tế sẽ cập nhật vào DB
-        TempData["SuccessMessage"] = $"Cập nhật trạng thái đơn hàng {id} thành công: {status}";
-        return RedirectToAction("ShipperOrderDetail", new { id });
-    }
-
-    [HttpGet]
-    [Route("alluser")]
-    public IActionResult AllUser() => View();
 
     // Lấy danh sách farmer
     [HttpGet]
