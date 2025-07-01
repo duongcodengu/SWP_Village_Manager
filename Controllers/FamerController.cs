@@ -74,5 +74,9 @@ namespace Village_Manager.Controllers
             TempData["Success"] = "Yêu cầu đã được gửi. Vui lòng chờ xét duyệt.";
             return RedirectToAction("FamerBecome");
         }
+
+        [HttpGet]
+        [Route("dashboardfamer")]
+        public IActionResult DashboardFamer() => View();
     }
 }

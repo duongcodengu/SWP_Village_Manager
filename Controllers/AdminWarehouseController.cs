@@ -475,6 +475,22 @@ public class AdminWarehouseController : Controller
             // Lưu vào database
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
+
+            // Thêm vào bảng Farmer nếu role là farmer
+            var farmerRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "farmer");
+            if (farmerRole != null && newUser.RoleId == farmerRole.Id)
+            {
+                var newFarmer = new Farmer
+                {
+                    UserId = newUser.Id,
+                    FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                    Phone = newUser.Phone,
+                    Address = "" // lấy từ form nếu có, hoặc để trống
+                };
+                _context.Farmers.Add(newFarmer);
+                await _context.SaveChangesAsync();
+            }
+
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
             TempData["SuccessMessage"] = "User created successfully!";
@@ -593,6 +609,34 @@ public class AdminWarehouseController : Controller
             }
             // Lưu thay đổi
             await _context.SaveChangesAsync();
+
+            // Cập nhật hoặc tạo Farmer nếu role là farmer
+            var farmerRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "farmer");
+            if (farmerRole != null && existingUser.RoleId == farmerRole.Id)
+            {
+                var farmer = await _context.Farmers.FirstOrDefaultAsync(f => f.UserId == existingUser.Id);
+                if (farmer == null)
+                {
+                    // Nếu chưa có thì tạo mới
+                    var newFarmer = new Farmer
+                    {
+                        UserId = existingUser.Id,
+                        FullName = existingUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                        Phone = existingUser.Phone,
+                        Address = "" // lấy từ form nếu có, hoặc để trống
+                    };
+                    _context.Farmers.Add(newFarmer);
+                }
+                else
+                {
+                    // Nếu đã có thì cập nhật thông tin
+                    farmer.FullName = existingUser.Username; // hoặc lấy từ form nếu có trường tên đầy đủ
+                    farmer.Phone = existingUser.Phone;
+                    // farmer.Address = ... // lấy từ form nếu có
+                }
+                await _context.SaveChangesAsync();
+            }
+
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             LogHelper.SaveLog(_context, currentUserId, $"Cập nhật user: {existingUser.Username} (ID: {existingUser.Id})");
             _logger.LogInformation($"User updated successfully. UserId: {id}");

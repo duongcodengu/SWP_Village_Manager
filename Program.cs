@@ -41,16 +41,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// Chuyển sang top-level route registrations
-app.MapControllerRoute(
-    name: "admin_role_route",
-    pattern: "adminwarehouse/role/{action=Index}/{id?}",
-    defaults: new { controller = "Role" });
-
-app.MapControllerRoute(
-    name: "adminwarehouse",
-    pattern: "adminwarehouse/{controller=AdminWarehouse}/{action=Index}/{id?}");
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"

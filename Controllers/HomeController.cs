@@ -76,24 +76,15 @@ namespace Village_Manager.Controllers
                 HttpContext.Session.SetInt32("UserId", user.Id);
 
                 // role admin
-                if (user.RoleId == 1 || user.RoleId == 3)
+                if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
                 {
                     return RedirectToAction("Index", "Home");
-                }
-                else if(user.RoleId == 5)
-                {
-                    return RedirectToAction("IndexCustomer","Customer");
                 }
 
             }
             ViewBag.Error = "Email hoặc mật khẩu không đúng!";
             return View();
         }
-        
-
-
-
-
         // Đăng xuất
         [Route("logout")]
         public IActionResult Logout()
