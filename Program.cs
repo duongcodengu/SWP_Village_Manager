@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 

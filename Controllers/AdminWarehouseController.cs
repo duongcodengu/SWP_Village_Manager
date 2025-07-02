@@ -126,6 +126,18 @@ public class AdminWarehouseController : Controller
     [Route("addproduct")]
     public IActionResult AddProduct()
     {
+        // Lấy danh sách danh mục sản phẩm
+        var categories = _context.ProductCategory
+            .Select(c => new { Id = c.Id, Name = c.Name })
+            .ToList();
+
+        // Lấy danh sách tất cả farmer để dùng cho autocomplete (nếu bạn muốn render sẵn)
+        var farmers = _context.Farmers
+            .Select(f => new { Id = f.Id, Name = f.FullName })
+            .ToList();
+
+        ViewBag.Categories = categories;
+        ViewBag.Farmers = farmers;
         return View();
     }
 

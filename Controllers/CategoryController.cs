@@ -7,7 +7,7 @@ using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
-    [Route("Category")]
+    [Route("category")]
     public class CategoryController : Controller
     {
         private readonly AppDbContext _context;

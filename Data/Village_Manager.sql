@@ -309,24 +309,17 @@ CREATE TABLE ReturnOrder (
 ------------------------------------ADD Table--------------------------------------------------------------
 
 CREATE TABLE SupplyRequest (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    
+    id INT PRIMARY KEY IDENTITY(1,1),   
     requester_type NVARCHAR(10) CHECK (requester_type IN ('admin', 'farmer')) NOT NULL,
-
     requester_id INT NOT NULL,   
     receiver_id INT NOT NULL,   
-
     farmer_id INT NOT NULL,     
-
     product_name NVARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10,2), -- giá đề xuất
-
     status NVARCHAR(20) CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
-
     requested_at DATETIME DEFAULT GETDATE(),
     responded_at DATETIME NULL,
-
     FOREIGN KEY (requester_id) REFERENCES Users(id),
     FOREIGN KEY (receiver_id) REFERENCES Users(id),
     FOREIGN KEY (farmer_id) REFERENCES Farmer(id),
