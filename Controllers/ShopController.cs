@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Utils;
 using Village_Manager.Data;
-using Village_Manager.Utils;
 using Village_Manager.Models;
+using Village_Manager.Utils;
 
 public class ShopController : Controller
 {
     private readonly AppDbContext _context;
-
-    public ShopController(AppDbContext context)
+    private readonly IWebHostEnvironment _env;
+    public ShopController(AppDbContext context, IWebHostEnvironment env)
     {
         _context = context;
+        _env = env;
     }
 
     // Hiển thị sản phẩm + tìm kiếm + lịch sử tìm kiếm
@@ -21,11 +23,10 @@ public class ShopController : Controller
     int? minPrice,
     int? maxPrice,
     string? remove,
-    string? clear)
+    string? clear,
+    string? sort)
     {
         // Cart info
-        ViewBag.CartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        ViewBag.CartCount = ((List<CartItem>)ViewBag.CartItems).Sum(i => i.Quantity);
 
         // Search history
         const string sessionKey = "SearchHistory";
@@ -55,13 +56,36 @@ public class ShopController : Controller
         if (maxPrice.HasValue)
             query = query.Where(p => p.Price <= maxPrice.Value);
 
+        //Sort
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            switch (sort)
+            {
+                case "price_asc":
+                    query = query.OrderBy(p => p.Price);
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(p => p.Price);
+                    break;
+                case "name_asc":
+                    query = query.OrderBy(p => p.Name);
+                    break;
+                case "name_desc":
+                    query = query.OrderByDescending(p => p.Name);
+                    break;
+            }
+        }
+
         ViewBag.Categories = await _context.ProductCategories.ToListAsync();
 
         var products = await query.ToListAsync();
+
+        foreach (var p in products)
+        {
+            DefaultImage.EnsureSingle(p, _env);
+        }
         return View("Search", products);
     }
-
-
 
     // Thêm vào giỏ hàng
     [HttpPost]
@@ -96,6 +120,7 @@ public class ShopController : Controller
     public IActionResult Cart()
     {
         var cartItems = CartHelper.GetCartWithProducts(HttpContext, _context);
+        DefaultImage.Ensure(cartItems, _env);
         return View(cartItems); // model là List<CartItem>
     }
 
@@ -126,6 +151,7 @@ public class ShopController : Controller
             item.Product = _context.Products
             .Include(p => p.ProductImages)
             .FirstOrDefault(p => p.Id == item.ProductId);
+            DefaultImage.EnsureSingle(item.Product, _env);
         }
         return View(cartItems);
     }
@@ -159,6 +185,7 @@ public class ShopController : Controller
 
         if (product == null)
             return NotFound();
+        DefaultImage.EnsureSingle(product, _env);
 
         return View(product);
     }

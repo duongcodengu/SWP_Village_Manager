@@ -24,4 +24,10 @@
     <Folder Include="Services\IService\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\images\product\default-product.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
