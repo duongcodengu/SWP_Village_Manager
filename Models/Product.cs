@@ -25,11 +25,17 @@ public partial class Product
 
     public int? FarmerId { get; set; }
 
+    [Required]
+    [Column("approval_status")]
+    [RegularExpression("pending|accepted|rejected")]
+    public string ApprovalStatus { get; set; } = "pending";
+
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     public virtual ProductCategory Category { get; set; } = null!;
 
     public virtual Farmer? Farmer { get; set; }
+
     [NotMapped]
     public List<IFormFile>? ImageUpdate { get; set; }
 

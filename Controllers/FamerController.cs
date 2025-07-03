@@ -77,6 +77,105 @@ namespace Village_Manager.Controllers
 
         [HttpGet]
         [Route("dashboardfamer")]
-        public IActionResult DashboardFamer() => View();
+        public IActionResult DashboardFamer()
+        {
+            var categories = _context.ProductCategory
+            .Select(c => new { Id = c.Id, Name = c.Name })
+            .ToList();
+
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            int? farmerId = HttpContext.Session.GetInt32("FarmerId");
+
+            if (userId == null || farmerId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var farmer = _context.Farmers.FirstOrDefault(f => f.Id == farmerId && f.UserId == userId);
+
+            if (farmer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            ViewBag.Categories = categories;
+            ViewBag.UserId = userId;
+            ViewBag.FarmerId = farmerId;
+            ViewBag.FarmerName = farmer.FullName;
+            return View();
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
+        {
+            int? farmerId = HttpContext.Session.GetInt32("FarmerId");
+            if (farmerId == null)
+                return RedirectToAction("Login", "Account");
+
+            var product = new Product
+            {
+                Name = form["name"],
+                ProductType = form["product_type"],
+                CategoryId = int.Parse(form["category_id"]),
+                Quantity = int.Parse(form["quantity"]),
+                Price = decimal.Parse(form["price"]),
+                ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
+                ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
+                FarmerId = farmerId.Value,
+                ApprovalStatus = "pending"
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            // Xử lý upload ảnh
+            if (images != null && images.Count > 0)
+            {
+                foreach (var file in images)
+                {
+                    if (file.Length > 0)
+                    {
+                        string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                        Directory.CreateDirectory(uploadsFolder);
+
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var productImage = new ProductImage
+                        {
+                            ProductId = product.Id,
+                            ImageUrl = "/uploads/" + uniqueFileName,
+                            Description = form["image_description"],
+                            UploadedAt = DateTime.Now
+                        };
+
+                        _context.ProductImages.Add(productImage);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Gửi thông báo cho admin
+            var admins = _context.Users.Where(u => u.RoleId == 1).ToList();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = $"Sản phẩm mới '{product.Name}' của farmer ID {farmerId} cần duyệt.",
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Sản phẩm đã gửi chờ duyệt!";
+            return RedirectToAction("DashboardFamer");
+        }
     }
 }

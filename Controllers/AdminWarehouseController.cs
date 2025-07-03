@@ -1,5 +1,4 @@
-
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -101,6 +100,7 @@ public class AdminWarehouseController : Controller
     public IActionResult Products()
     {
         var products = _context.Products
+            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .ToList();
@@ -114,6 +114,7 @@ public class AdminWarehouseController : Controller
         var product = _context.Products
                     .Include(p => p.ProductImages)
                     .Include(p => p.Category)
+                    .Include(p => p.Farmer)
                     .FirstOrDefault(p => p.Id == id);
 
         if (product == null)
@@ -131,13 +132,7 @@ public class AdminWarehouseController : Controller
             .Select(c => new { Id = c.Id, Name = c.Name })
             .ToList();
 
-        // Lấy danh sách tất cả farmer để dùng cho autocomplete (nếu bạn muốn render sẵn)
-        var farmers = _context.Farmers
-            .Select(f => new { Id = f.Id, Name = f.FullName })
-            .ToList();
-
         ViewBag.Categories = categories;
-        ViewBag.Farmers = farmers;
         return View();
     }
 
@@ -158,7 +153,8 @@ public class AdminWarehouseController : Controller
                 Price = decimal.Parse(form["price"]),
                 ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
                 ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
-                FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null
+                FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null,
+                ApprovalStatus = "accepted"
             };
 
             _context.Products.Add(product);
@@ -840,6 +836,37 @@ public class AdminWarehouseController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction("AddFamer");
 
+    }
+
+    // view to pending products
+    [HttpGet]
+    [Route("pendingproducts")]
+    public IActionResult PendingProducts()
+    {
+        var pendingProducts = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.Farmer)
+            .Include(p => p.ProductImages)
+            .Where(p => p.ApprovalStatus == "pending")
+            .ToList();
+        return View(pendingProducts);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("approveproduct")]
+    public IActionResult ApproveProduct(int id, string action)
+    {
+        var product = _context.Products.Find(id);
+        if (product == null) return NotFound();
+
+        if (action == "accept")
+            product.ApprovalStatus = "accepted";
+        else if (action == "reject")
+            product.ApprovalStatus = "rejected";
+
+        _context.SaveChanges();
+        return RedirectToAction("PendingProducts");
     }
 }
 

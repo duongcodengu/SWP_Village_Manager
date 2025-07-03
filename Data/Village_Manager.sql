@@ -57,6 +57,8 @@ CREATE TABLE Product (
     quantity INT NOT NULL,
     processing_time DATE,
     farmer_id INT,
+	-- thêm thuộc tính này
+	approval_status NVARCHAR(20) DEFAULT 'pending' CHECK (approval_status IN ('pending', 'accepted', 'rejected')),
     FOREIGN KEY (category_id) REFERENCES ProductCategory(id),
     FOREIGN KEY (farmer_id) REFERENCES Farmer(id)
 );

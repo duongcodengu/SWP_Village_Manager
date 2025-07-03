@@ -9,12 +9,16 @@
   <ItemGroup>
     <Compile Remove="Repositories\**" />
     <Compile Remove="Services\**" />
+    <Compile Remove="Views\AdminWarehouse\NewFolder\**" />
     <Content Remove="Repositories\**" />
     <Content Remove="Services\**" />
+    <Content Remove="Views\AdminWarehouse\NewFolder\**" />
     <EmbeddedResource Remove="Repositories\**" />
     <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Views\AdminWarehouse\NewFolder\**" />
     <None Remove="Repositories\**" />
     <None Remove="Services\**" />
+    <None Remove="Views\AdminWarehouse\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,10 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-  <Folder Include="Repositories\IRepositories\" />
-  <Folder Include="Services\IService\" />
   <Folder Include="wwwroot\uploads\" />
-    <Folder Include="Views\AdminWarehouse\NewFolder\" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

@@ -75,7 +75,17 @@ namespace Village_Manager.Controllers
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
                 HttpContext.Session.SetInt32("UserId", user.Id);
 
-                // role admin
+                if (user.RoleId == 5)
+                {
+                    var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
+                    if (farmer != null)
+                    {
+                        HttpContext.Session.SetInt32("FarmerId", farmer.Id);
+                        HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
+                    }
+                }
+
+                // check role
                 if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
                 {
                     return RedirectToAction("Index", "Home");
