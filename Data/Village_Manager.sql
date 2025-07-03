@@ -38,7 +38,7 @@ CREATE TABLE Shipper (
     vehicle_info TEXT, -- bắt buộc phải có
 	status NVARCHAR(50) 
     CONSTRAINT DF_status DEFAULT 'pending',
-    CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected')),
+    CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected', 'inactive')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 

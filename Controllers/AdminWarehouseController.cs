@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Village_Manager.Extensions;
+using System.Linq;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers;
 public class AdminWarehouseController : Controller
@@ -835,9 +837,97 @@ public class AdminWarehouseController : Controller
         request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         await _context.SaveChangesAsync();
-        return RedirectToAction("AddFamer");
-
+        return RedirectToAction("AddFamer"); 
     }
+    [HttpGet]
+    [Route("shipper")]
+    public IActionResult Shipper()
+    {
+        var result = (from shipper in _context.Shippers
+                      join request in _context.ShipperRegistrationRequests
+                      on shipper.UserId equals request.UserId
+                      select new ShipperDisplayViewModel
+                      {
+                          Id = shipper.Id,
+                          FullName = shipper.FullName,
+                          Phone = shipper.Phone,
+                          VehicleInfo = shipper.VehicleInfo,
+                          Status = shipper.Status,
+                          Address = request.Address,
+                          UserId = request.UserId,
+                          Username = shipper.User.Username,
+                          Email = shipper.User.Email,
+                          Created = shipper.User.CreatedAt
+                      }).ToList();
+
+        return View(result);
+    }
+
+    [HttpGet]
+    [Route("admin/shipper-requests")]
+    public IActionResult ShipperRequests()
+    {
+        var result = _context.ShipperRegistrationRequests
+            .Include(r => r.User)
+            .Where(r => r.Status == "pending")
+            .Select(r => new ShipperRequestViewModel
+            {
+                Id = r.Id,
+                FullName = r.FullName,
+                Phone = r.Phone,
+                VehicleInfo = r.VehicleInfo,
+                Address = r.Address,
+                RequestedAt = r.RequestedAt,
+                Username = r.User.Username,
+                Email = r.User.Email
+            })
+            .OrderByDescending(r => r.RequestedAt)
+            .ToList();
+
+        return View(result);
+    }
+
+    [HttpPost]
+    [Route("admin_shipperrequest_update")]
+    public async Task<IActionResult> UpdateShipperRequest(int id, string action)
+    {
+        var request = await _context.ShipperRegistrationRequests
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (request == null || request.Status != "pending")
+        {
+            TempData["Error"] = "Yêu cầu không hợp lệ hoặc đã xử lý.";
+            return Redirect("admin/shipper-requests");
+        }
+
+        if (action == "accept")
+        {
+            request.Status = "approved";
+            request.ReviewedAt = DateTime.Now;
+            request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
+
+            var newShipper = new Shipper
+            {
+                UserId = request.UserId,
+                FullName = request.FullName,
+                Phone = request.Phone,
+                VehicleInfo = request.VehicleInfo,
+                Status = "approved"
+            };
+            _context.Shippers.Add(newShipper);
+        }
+        else if (action == "reject")
+        {
+            request.Status = "rejected";
+            request.ReviewedAt = DateTime.Now;
+            request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
+        }
+
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "Cập nhật yêu cầu thành công.";
+        return Redirect("admin/shipper-requests");
+    }
+
 }
 
 
