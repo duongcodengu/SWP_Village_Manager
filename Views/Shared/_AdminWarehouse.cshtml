@@ -77,6 +77,7 @@
                         </a>
                     </div>
                 </div>
+                @* thông báo *@
                 <div class="nav-right col-6 pull-right right-header p-0">
                     <ul class="nav-menus">
                         <li class="onhover-dropdown">
@@ -97,49 +98,138 @@
                         </li>
                         <script>
                             document.addEventListener("DOMContentLoaded", function () {
-                                fetch("/api/notificationapi/all")
-                                    .then(res => {
-                                        if (!res.ok) throw new Error("Lỗi API");
-                                        return res.json();
-                                    })
-                                    .then(data => {
-                                        const badge = document.getElementById("notif-badge");
-                                        const dropdown = document.getElementById("notif-dropdown");
+                                function loadNotifications() {
+                                    fetch("/api/notificationapi/all-unread")
+                                        .then(res => {
+                                            if (!res.ok) throw new Error("Lỗi API");
+                                            return res.json();
+                                        })
+                                        .then(data => {
+                                            const badge = document.getElementById("notif-badge");
+                                            const dropdown = document.getElementById("notif-dropdown");
 
-                                        badge.textContent = data.unreadCount ?? 0;
+                                            badge.textContent = data.unreadCount ?? 0;
 
-                                        dropdown.innerHTML = `
-                                            <li>
-                                                <i class="ri-notification-line"></i>
-                                                <h6 class="f-18 mb-0">Thông báo</h6>
-                                            </li>
-                                        `;
+                                            // Render header + nút
+                                            dropdown.innerHTML = `
+                                                <li>
+                                                    <i class="ri-notification-line"></i>
+                                                    <h6 class="f-18 mb-0">Thông báo</h6>
+                                                    <div class="d-flex gap-2 mt-2">
+                                                        <button class="btn btn-sm btn-outline-danger notif-red-btn" id="notif-readall-btn">Đọc tất cả</button>
+                                                        <button class="btn btn-sm btn-outline-warning notif-yellow-btn" id="notif-showall-btn">Xem tất cả</button>
+                                                    </div>
+                                                </li>
+                                            `;
 
-                                        if (!data.notifications || data.notifications.length === 0) {
-                                            dropdown.innerHTML += `<li><p class="text-center text-muted">Không có thông báo nào.</p></li>`;
-                                        } else {
-                                            data.notifications.forEach(n => {
-                                                const time = new Date(n.created_at).toLocaleTimeString("vi-VN", {
-                                                    hour: '2-digit', minute: '2-digit'
+                                            if (!data.notifications || data.notifications.length === 0) {
+                                                dropdown.innerHTML += `<li><p class="text-center text-muted">Không có thông báo nào.</p></li>`;
+                                            } else {
+                                                data.notifications.forEach(n => {
+                                                    const time = new Date(n.created_at).toLocaleTimeString("vi-VN", {
+                                                        hour: '2-digit', minute: '2-digit'
+                                                    });
+                                                    dropdown.innerHTML += `
+                                                        <li>
+                                                            <p title="${new Date(n.created_at).toLocaleString('vi-VN')}"
+                                                               class="notif-item${n.is_read ? ' text-muted' : ' fw-bold'}"
+                                                               data-id="${n.id}" style="cursor:pointer;">
+                                                                <i class="fa fa-circle me-2 font-info"></i>
+                                                                ${n.content}
+                                                                <span class="pull-right small text-muted">${time}</span>
+                                                            </p>
+                                                        </li>`;
                                                 });
-                                                dropdown.innerHTML += `
-                                                    <li>
-                                                        <p title="${new Date(n.created_at).toLocaleString('vi-VN')}">
-                                                            <i class="fa fa-circle me-2 font-info"></i>
-                                                            ${n.content}
-                                                            <span class="pull-right small text-muted">${time}</span>
-                                                        </p>
-                                                    </li>`;
+                                            }
+
+                                            // Gán sự kiện cho từng thông báo
+                                            dropdown.querySelectorAll('.notif-item').forEach(item => {
+                                                item.addEventListener('click', function () {
+                                                    const notifId = this.getAttribute('data-id');
+                                                    fetch(`/api/notificationapi/read/${notifId}`, { method: 'POST' })
+                                                        .then(() => {
+                                                            this.classList.remove('fw-bold');
+                                                            this.classList.add('text-muted');
+                                                            loadNotifications(); // reload lại để cập nhật badge
+                                                        });
+                                                });
                                             });
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Lỗi khi tải thông báo:", error);
-                                        document.getElementById("notif-dropdown").innerHTML += `
-                                            <li><p class="text-center text-danger">Không thể tải thông báo.</p></li>`;
-                                    });
+
+                                            // Gán sự kiện cho nút Đọc tất cả
+                                            const readAllBtn = document.getElementById('notif-readall-btn');
+                                            if (readAllBtn) {
+                                                readAllBtn.onclick = function () {
+                                                    fetch('/api/notificationapi/readall', { method: 'POST' })
+                                                        .then(() => loadNotifications());
+                                                };
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error("Lỗi khi tải thông báo:", error);
+                                            document.getElementById("notif-dropdown").innerHTML += `
+                                                <li><p class="text-center text-danger">Không thể tải thông báo.</p></li>`;
+                                        });
+                                }
+
+                                loadNotifications();
+                                // tự động reload thông báo mỗi 30 giây:
+                                setInterval(loadNotifications, 30000);
                             });
                         </script>
+                        <script>
+                            // Sự kiện cho nút "Xem tất cả"
+                            document.addEventListener("click", function (e) {
+                                if (e.target && e.target.id === "notif-showall-btn") {
+                                    fetch("/api/notificationapi/all?all=true")
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            const list = document.getElementById("all-notifications-list");
+                                            if (!data.notifications || data.notifications.length === 0) {
+                                                list.innerHTML = `<p class="text-center text-muted">Không có thông báo nào.</p>`;
+                                            } else {
+                                                let html = '<ul class="list-group">';
+                                                data.notifications.forEach(n => {
+                                                    const time = new Date(n.created_at).toLocaleString("vi-VN");
+                                                    html += `
+                                                        <li class="list-group-item${n.is_read ? ' text-muted' : ' fw-bold'}">
+                                                            <i class="fa fa-circle me-2 font-info"></i>
+                                                            ${n.content}
+                                                        </li>`;
+                                                });
+                                                html += '</ul>';
+                                                list.innerHTML = html;
+                                            }
+                                            // Hiện modal
+                                            $('#allNotificationsModal').modal('show');
+                                        });
+                                }
+                            });
+                        </script>
+                        <style>
+                            .notif-red-btn {
+                                border-color: #dc3545 !important;
+                                color: #dc3545 !important;
+                                background: #fff !important;
+                            }
+
+                                .notif-red-btn:hover, .notif-red-btn:focus {
+                                    background: #dc3545 !important;
+                                    color: #fff !important;
+                                    border-color: #dc3545 !important;
+                                }
+
+                            .notif-yellow-btn {
+                                border-color: #ffc107 !important;
+                                color: #ffc107 !important;
+                                background: #fff !important;
+                            }
+
+                                .notif-yellow-btn:hover, .notif-yellow-btn:focus {
+                                    background: #ffc107 !important;
+                                    color: #fff !important;
+                                    border-color: #ffc107 !important;
+                                }
+                        </style>
                         <div class="nav-right col-6 pull-right right-header p-0">
                             <ul class="nav-menus">
                                 <li>
@@ -460,7 +550,20 @@
         <!-- footer end-->
         </div>
     </div>
-
+    <!-- Modal hiển thị tất cả thông báo -->
+    <div class="modal fade" id="allNotificationsModal" tabindex="-1" aria-labelledby="allNotificationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allNotificationsModalLabel">Tất cả thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" id="all-notifications-list">
+                    <!-- Danh sách thông báo sẽ render ở đây -->
+                </div>
+            </div>
+        </div>
+    </div>
             
     <!-- latest js -->
     <script src="~/back-end/js/jquery-3.6.0.min.js"></script>

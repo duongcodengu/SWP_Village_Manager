@@ -25,7 +25,7 @@ namespace Village_Manager.Controllers
 
             if (userId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Home");
             }
 
             // Kiểm tra nếu đã gửi yêu cầu rồi
@@ -88,14 +88,14 @@ namespace Village_Manager.Controllers
 
             if (userId == null || farmerId == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Home");
             }
 
             var farmer = _context.Farmers.FirstOrDefault(f => f.Id == farmerId && f.UserId == userId);
 
             if (farmer == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Home");
             }
             ViewBag.Categories = categories;
             ViewBag.UserId = userId;
@@ -110,7 +110,7 @@ namespace Village_Manager.Controllers
         {
             int? farmerId = HttpContext.Session.GetInt32("FarmerId");
             if (farmerId == null)
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Home");
 
             var product = new Product
             {
@@ -176,6 +176,33 @@ namespace Village_Manager.Controllers
 
             TempData["Success"] = "Sản phẩm đã gửi chờ duyệt!";
             return RedirectToAction("DashboardFamer");
+        }
+
+        [HttpPost]
+        [Route("famer/cancelproduct")]
+        public IActionResult CancelProduct(int productId, string reason)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
+            if (product == null) return NotFound();
+
+            product.ApprovalStatus = "rejected";
+            _context.SaveChanges();
+
+            // Gửi thông báo cho admin
+            var admins = _context.Users.Where(u => u.RoleId == 1).ToList();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = $"Farmer đã hủy bán sản phẩm '{product.Name}'. Lý do: {reason}",
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+            _context.SaveChanges();
+
+            return Ok(new { success = true });
         }
     }
 }

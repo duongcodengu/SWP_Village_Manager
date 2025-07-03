@@ -39,7 +39,7 @@ public class AdminWarehouseController : Controller
         int totalCustomers = _context.Users.Count();
         ViewBag.TotalCustomers = totalCustomers;
         // Lấy tổng số sản phẩm
-        int totalProducts = _context.Products.Count();
+        int totalProducts = _context.Products.Count(p => p.ApprovalStatus == "accepted");
         ViewBag.TotalProducts = totalProducts;
         // Lấy tổng số đơn hàng
         int totalRetailOrders = _context.RetailOrders.Count();
