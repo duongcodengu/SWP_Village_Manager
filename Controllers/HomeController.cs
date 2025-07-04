@@ -34,7 +34,7 @@ namespace Village_Manager.Controllers
                 .ToList();
             ViewBag.ProductCategories = categories;
             return View();
-           
+
         }
 
         //login
