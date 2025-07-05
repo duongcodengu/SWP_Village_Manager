@@ -31,56 +31,6 @@ namespace Village_Manager.Controllers
             public List<RetailOrder> OngoingOrders { get; set; }
 
         }
-        [HttpGet]
-        [Route("dashboardfamer")]
-        public IActionResult DashboardFamer()
-        {
-            // lấy thông tin từ session nếu không có quay lại đăng nhập
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if(userId == null)
-            {
-                return RedirectToAction("Login", "Home");
-            }
-            // truy vấn thông tin user từ bảng User
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            // truy vấn thông tin famer từ bảng famer
-            var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == userId);
-            // Truy vấn Prodcut trong bảng product và ảnh trong bảng prodcutImages của famer qua id famer
-            var productList = _context.Products.Include(p => p.ProductImages).Where(p => p.FarmerId == farmer.Id).ToList();
-            //Duyệt qua từng sản phẩm trong prodcutList
-            var productWithSalesList = productList.Select(p => new ProductWithSales
-            {
-                Product = p,
-                SoldQuantity = _context.RetailOrderItems
-              .Where(roi => roi.ProductId == p.Id)
-               .Sum(roi => (int?)roi.Quantity) ?? 0
-            }).ToList();
-            var productIds = productList.Select(p => p.Id).ToList();
-            var ongoingStatuses = new[] { "pending", "confirmed", "shipped" };
-
-            var ongoingOrders = _context.RetailOrders
-              .Include(o => o.RetailOrderItems)
-                 .ThenInclude(roi => roi.Product)
-                .Where(o => o.RetailOrderItems.Any(roi => productIds.Contains((int)roi.ProductId))
-                 && ongoingStatuses.Contains(o.Status))
-                    .ToList();
-
-            if (user == null || farmer == null)
-            {
-                return Content("Khong thay thong tin");
-            }
-            var model = new FamerDashboardView
-            {
-                User = user,
-                Famer = farmer,
-                ProductList = productList,
-                ProductWithSalesList = productWithSalesList,
-                OngoingOrders = ongoingOrders
-            };
-            return View(model);
-
-
-        }
 
         [HttpGet]
         [Route("becomefamer")]
@@ -143,14 +93,14 @@ namespace Village_Manager.Controllers
             TempData["Success"] = "Yêu cầu đã được gửi. Vui lòng chờ xét duyệt.";
             return RedirectToAction("FamerBecome");
         }
-        
+
         [HttpGet]
         [Route("dashboardfamer")]
         public IActionResult DashboardFamer()
         {
             var categories = _context.ProductCategory
-            .Select(c => new { Id = c.Id, Name = c.Name })
-            .ToList();
+                .Select(c => new { Id = c.Id, Name = c.Name })
+                .ToList();
 
             int? userId = HttpContext.Session.GetInt32("UserId");
             int? farmerId = HttpContext.Session.GetInt32("FarmerId");
@@ -160,19 +110,59 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Login", "Home");
             }
 
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var farmer = _context.Farmers.FirstOrDefault(f => f.Id == farmerId && f.UserId == userId);
 
-            if (farmer == null)
+            if (user == null || farmer == null)
             {
                 return RedirectToAction("Login", "Home");
             }
+
+            var productList = _context.Products
+                .Include(p => p.ProductImages)
+                .Where(p => p.FarmerId == farmer.Id)
+                .ToList();
+
+            var productWithSalesList = productList.Select(p => new ProductWithSales
+            {
+                Product = p,
+                SoldQuantity = _context.RetailOrderItems
+                    .Where(roi => roi.ProductId == p.Id)
+                    .Sum(roi => (int?)roi.Quantity) ?? 0
+            }).ToList();
+
+            var productIds = productList.Select(p => p.Id).ToList();
+            var ongoingStatuses = new[] { "pending", "confirmed", "shipped" };
+
+            var ongoingOrders = _context.RetailOrders
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(roi => roi.Product)
+                .Where(o => o.RetailOrderItems.Any(roi => productIds.Contains((int)roi.ProductId))
+                        && ongoingStatuses.Contains(o.Status))
+                .ToList();
+
+            var model = new FamerDashboardView
+            {
+                User = user,
+                Famer = farmer,
+                ProductList = productList,
+                ProductWithSalesList = productWithSalesList,
+                OngoingOrders = ongoingOrders
+            };
+
             ViewBag.Categories = categories;
             ViewBag.UserId = userId;
             ViewBag.FarmerId = farmerId;
             ViewBag.FarmerName = farmer.FullName;
-            return View();
+            ViewBag.TotalProductTypes = productList.Count;
+            ViewBag.TotalSold = productWithSalesList.Sum(p => p.SoldQuantity);
+            ViewBag.TotalQuantityInStock = _context.Stocks
+                .Where(s => productIds.Contains(s.Id))
+                .Sum(s => (int?)s.Quantity) ?? 0;
+            return View(model);
         }
-        
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
