@@ -204,5 +204,35 @@ namespace Village_Manager.Controllers
 
             return Ok(new { success = true });
         }
+
+        [HttpPost]
+        [Route("famer/resellproduct")]
+        public IActionResult ResellProduct(int productId)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
+            if (product == null) return NotFound();
+
+            if (product.ApprovalStatus != "rejected")
+                return BadRequest("Chỉ có thể bán lại sản phẩm đã bị hủy hoặc từ chối.");
+
+            product.ApprovalStatus = "pending";
+            _context.SaveChanges();
+
+            // Gửi thông báo cho admin
+            var admins = _context.Users.Where(u => u.RoleId == 1).ToList();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = $"Farmer đã yêu cầu bán lại sản phẩm '{product.Name}'.",
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+            _context.SaveChanges();
+
+            return Ok(new { success = true });
+        }
     }
 }

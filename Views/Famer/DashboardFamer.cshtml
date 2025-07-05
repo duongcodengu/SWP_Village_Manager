@@ -1179,8 +1179,8 @@
                             data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" data-bs-dismiss="modal"
-                            class="btn theme-bg-color btn-md fw-bold text-light">
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
+                            data-bs-dismiss="modal">
                         Save changes
                     </button>
                 </div>
@@ -1531,6 +1531,8 @@
                     html += '<button class="btn btn-danger btn-sm" onclick="showCancelModal(' + p.id + ')">Hủy bán</button>';
                 } else if (p.approvalStatus === 'pending') {
                     html += '<span class="text-muted">-</span>';
+                } else if (p.approvalStatus === 'rejected' || p.approvalStatus === 'cancelled') {
+                    html += '<button class="btn btn-success btn-sm" onclick="resellProduct(' + p.id + ')">Bán lại</button>';
                 }
                 html += '</td>';
                 html += '</tr>';
@@ -1604,6 +1606,20 @@
             $('#cancelProductId').val(productId);
             $('#cancelReason').val('');
             $('#cancelProductModal').modal('show');
+        }
+
+        // Thêm hàm bán lại sản phẩm
+        function resellProduct(productId) {
+            if (!confirm('Bạn có chắc chắn muốn bán lại sản phẩm này?')) return;
+            $.post('/famer/resellproduct', { productId: productId }, function(res) {
+                if (res.success) {
+                    loadMyProducts();
+                } else {
+                    alert('Không thể bán lại sản phẩm.');
+                }
+            }).fail(function(xhr) {
+                alert(xhr.responseText || 'Có lỗi xảy ra khi bán lại sản phẩm.');
+            });
         }
     </script>
 </body>

@@ -382,3 +382,4 @@ VALUES
 (N'customer04', N'cusabc', N'customer04@example.com', 3, GETDATE()),
 (N'customer05', N'cusxyz', N'customer05@example.com', 3, GETDATE());
 
+
