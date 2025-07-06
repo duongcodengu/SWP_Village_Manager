@@ -90,6 +90,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<DeliveryIssue> DeliveryIssues { get; set; }
 
+    public virtual DbSet<DeliveryProof> DeliveryProofs { get; set; }
+
     public DbSet<UserLocation> UserLocations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

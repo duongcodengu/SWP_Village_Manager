@@ -67,7 +67,22 @@ namespace Village_Manager.Controllers
         }
         public IActionResult HistoryShipper()
         {
-            return View();
+            var shipperId = HttpContext.Session.GetInt32("ShipperId");
+            if (!shipperId.HasValue)
+                return RedirectToAction("Login", "Home");
+
+            var deliveries = _context.Deliveries
+                .Where(d => d.ShipperId == shipperId && (d.Status == "delivered" || d.Status == "failed"))
+                .OrderByDescending(d => d.EndTime)
+                .ToList();
+
+            // Lấy proof cho từng đơn
+            var proofs = _context.DeliveryProofs
+                .Where(p => p.ShipperId == shipperId)
+                .ToList();
+
+            ViewBag.DeliveryProofs = proofs;
+            return View(deliveries);
         }
         public IActionResult NotificationsShipper()
         {
@@ -96,6 +111,41 @@ namespace Village_Manager.Controllers
             var delivery = _context.Deliveries.FirstOrDefault(d => d.Id == id);
             if (delivery != null && delivery.Status == "in_transit")
             {
+                delivery.Status = "delivered";
+                delivery.EndTime = DateTime.Now;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("DeliveriesShipper");
+        }
+
+        [HttpPost]
+        public IActionResult ConfirmDeliveryProof(int id, string note, IFormFile proofImage)
+        {
+            var delivery = _context.Deliveries.FirstOrDefault(d => d.Id == id);
+            var shipperId = HttpContext.Session.GetInt32("ShipperId");
+            if (delivery != null && delivery.Status == "in_transit" && shipperId.HasValue)
+            {
+                string imagePath = null;
+                if (proofImage != null && proofImage.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+                    var fileName = $"proof_{delivery.Id}_{DateTime.Now.Ticks}{Path.GetExtension(proofImage.FileName)}";
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        proofImage.CopyTo(stream);
+                    }
+                    imagePath = "/uploads/" + fileName;
+                }
+                _context.DeliveryProofs.Add(new DeliveryProof
+                {
+                    DeliveryId = delivery.Id,
+                    ShipperId = shipperId.Value,
+                    ImagePath = imagePath,
+                    Note = note,
+                    CreatedAt = DateTime.Now
+                });
                 delivery.Status = "delivered";
                 delivery.EndTime = DateTime.Now;
                 _context.SaveChanges();

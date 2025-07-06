@@ -79,12 +79,9 @@
                                 }
                                 else if (delivery.Status == "in_transit")
                                 {
-                                    <form method="post" action="/Shipper/ConfirmDelivery" style="display: inline;">
-                                        <input type="hidden" name="id" value="@delivery.Id" />
-                                        <button type="submit" class="btn btn-outline-primary btn-sm" onclick="return confirm('Xác nhận đã giao hàng thành công?')">
-                                            <i class="fa fa-check"></i> Xác nhận giao
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)">
+                                        <i class="fa fa-check"></i> Xác nhận giao
+                                    </button>
                                 }
                                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#issueModal@(delivery.Id)">
                                     <i class="fa fa-exclamation-triangle"></i> Báo sự cố
@@ -133,6 +130,44 @@
                 </div>
             </div>
         </div>
+    }
+}
+
+<!-- Modal xác nhận giao hàng có upload bằng chứng -->
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var delivery in Model)
+    {
+        if (delivery.Status == "in_transit")
+        {
+            <div class="modal fade" id="proofModal@(delivery.Id)" tabindex="-1" aria-labelledby="proofModalLabel@(delivery.Id)" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="proofModalLabel@(delivery.Id)">Xác nhận giao hàng - Đơn #@delivery.OrderId</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" enctype="multipart/form-data" action="/Shipper/ConfirmDeliveryProof">
+                            <div class="modal-body">
+                                <input type="hidden" name="id" value="@delivery.Id" />
+                                <div class="mb-3">
+                                    <label for="proofImage@(delivery.Id)" class="form-label">Ảnh bằng chứng (nếu có):</label>
+                                    <input type="file" class="form-control" id="proofImage@(delivery.Id)" name="proofImage" accept="image/*" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="note@(delivery.Id)" class="form-label">Ghi chú:</label>
+                                    <textarea class="form-control" id="note@(delivery.Id)" name="note" rows="2" placeholder="Ghi chú thêm (nếu có)..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Xác nhận giao</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
     }
 }
 </body>
