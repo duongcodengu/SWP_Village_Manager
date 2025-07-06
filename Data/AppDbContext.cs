@@ -88,6 +88,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<WholesaleOrderItem> WholesaleOrderItems { get; set; }
 
+    public virtual DbSet<DeliveryIssue> DeliveryIssues { get; set; }
+
     public DbSet<UserLocation> UserLocations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

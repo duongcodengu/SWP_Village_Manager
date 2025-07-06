@@ -66,15 +66,24 @@ namespace Village_Manager.Controllers
                     roleName = result.ToString() ?? "";
                 }
 
-                // session
-                HttpContext.Session.SetInt32("UserId", user.Id);
                 // Xóa session cũ trước khi set mới
                 HttpContext.Session.Clear();
+                HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
-                HttpContext.Session.SetInt32("UserId", user.Id);
 
+                // Set thêm ShipperId nếu là shipper
+                if (user.RoleId == 4)
+                {
+                    var shipper = _context.Shippers.FirstOrDefault(s => s.UserId == user.Id);
+                    if (shipper != null)
+                    {
+                        HttpContext.Session.SetInt32("ShipperId", shipper.Id);
+                        HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
+                    }
+                }
+                // Set thêm FarmerId nếu là farmer
                 if (user.RoleId == 5)
                 {
                     var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
@@ -86,7 +95,11 @@ namespace Village_Manager.Controllers
                 }
 
                 // check role
-                if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
+                if (user.RoleId == 4)
+                {
+                    return RedirectToAction("DashboardShipper", "Shipper");
+                }
+                else
                 {
                     return RedirectToAction("Index", "Home");
                 }

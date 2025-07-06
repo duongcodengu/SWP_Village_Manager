@@ -475,7 +475,7 @@ public class AdminWarehouseController : Controller
             {
                 Username = user.Username.Trim(),
                 Email = user.Email.Trim(),
-                Password = HashPassword(user.Password),
+                Password = user.Password, // Lưu plain text
                 RoleId = user.RoleId,
                 Phone = user.Phone?.Trim(),
                 CreatedAt = DateTime.Now
@@ -612,7 +612,7 @@ public class AdminWarehouseController : Controller
             // Nếu có nhập mật khẩu mới thì cập nhật
             if (!string.IsNullOrEmpty(newPassword))
             {
-                existingUser.Password = HashPassword(newPassword);
+                existingUser.Password = newPassword; // Lưu plain text
                 _logger.LogInformation($"Password updated for user. UserId: {id}");
             }
             // Lưu thay đổi
