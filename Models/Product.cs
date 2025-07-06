@@ -16,11 +16,11 @@ public partial class Product
     public decimal Price { get; set; }
 
     public DateTime? ExpirationDate { get; set; }
-    [Required]
-    [RegularExpression("processed|raw")]
+
     public string? ProductType { get; set; }
 
     public int Quantity { get; set; }
+
     public DateTime? ProcessingTime { get; set; }
 
     public int? FarmerId { get; set; }
@@ -35,7 +35,6 @@ public partial class Product
     public virtual ProductCategory Category { get; set; } = null!;
 
     public virtual Farmer? Farmer { get; set; }
-
     [NotMapped]
     public List<IFormFile>? ImageUpdate { get; set; }
 
@@ -50,5 +49,4 @@ public partial class Product
     public virtual ICollection<RetailOrderItem> RetailOrderItems { get; set; } = new List<RetailOrderItem>();
 
     public virtual ICollection<Stock> Stocks { get; set; } = new List<Stock>();
-
 }

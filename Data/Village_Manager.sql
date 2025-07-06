@@ -36,6 +36,9 @@ CREATE TABLE Shipper (
     phone NVarchar(20) UNIQUE NOT NULL, -- check trùng
 	CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
     vehicle_info TEXT, -- bắt buộc phải có
+	status NVARCHAR(50) 
+    CONSTRAINT DF_status DEFAULT 'pending',
+    CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected', 'inactive')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
@@ -340,6 +343,20 @@ CREATE TABLE FarmerRegistrationRequest (
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (reviewed_by) REFERENCES Users(id)
 );
+CREATE TABLE ShipperRegistrationRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,	
+    full_name NVARCHAR(100) NOT NULL,
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+	vehicle_info TEXT, -- bắt buộc phải có
+    reviewed_at DATETIME NULL,
+    reviewed_by INT NULL, -- admin user_id
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES Users(id)
+);
 
 CREATE TABLE UserLocations (
     Id INT PRIMARY KEY IDENTITY,
@@ -363,7 +380,6 @@ INSERT INTO Roles (name) VALUES
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789);
 
-select * from Users
 
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
@@ -374,12 +390,5 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
-INSERT INTO Users (username, password, email, role_id, created_at)
-VALUES 
-(N'customer01', N'cus123', N'customer01@example.com', 3, GETDATE()),
-(N'customer02', N'cus456', N'customer02@example.com', 3, GETDATE()),
-(N'customer03', N'cus789', N'customer03@example.com', 3, GETDATE()),
-(N'customer04', N'cusabc', N'customer04@example.com', 3, GETDATE()),
-(N'customer05', N'cusxyz', N'customer05@example.com', 3, GETDATE());
 
 

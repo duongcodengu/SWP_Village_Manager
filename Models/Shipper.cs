@@ -15,6 +15,8 @@ public partial class Shipper
 
     public string? VehicleInfo { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<Delivery> Deliveries { get; set; } = new List<Delivery>();
 
     public virtual User? User { get; set; }

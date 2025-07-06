@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Add Famer";
+    ViewData["Title"] = "Shipper Requests";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
-@model List<Village_Manager.Models.FarmerRegistrationRequest>
+@model List<Village_Manager.ViewModel.ShipperRequestViewModel>
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -109,15 +109,13 @@
                                                                     <td>@item.FullName</td>
                                                                     <td>@item.Phone</td>
                                                                     <td>@item.Address</td>
+                                                                    <td>@item.VehicleInfo</td>
                                                                     <td>@item.RequestedAt.Value.ToString("dd/MM/yyyy HH:mm")</td>
                                                                     <td>
-                                                                        <form method="post" asp-action="Approve" asp-controller="AdminWarehouse" class="d-inline">
+                                                                        <form method="post" action="/admin_shipperrequest_update" class="d-inline">
                                                                             <input type="hidden" name="id" value="@item.Id" />
-                                                                            <button class="btn btn-success btn-sm" type="submit">Chấp nhận</button>
-                                                                        </form>
-                                                                        <form method="post" asp-action="Reject" asp-controller="AdminWarehouse" class="d-inline ms-2">
-                                                                            <input type="hidden" name="id" value="@item.Id" />
-                                                                            <button class="btn btn-danger btn-sm" type="submit">Từ chối</button>
+                                                                            <button class="btn btn-success btn-sm" type="submit" name="action" value="accept">Chấp nhận</button>
+                                                                            <button class="btn btn-danger btn-sm ms-2" type="submit" name="action" value="reject">Từ chối</button>
                                                                         </form>
                                                                     </td>
                                                                 </tr>
@@ -164,3 +162,4 @@
 </body>
 
 </html>
+

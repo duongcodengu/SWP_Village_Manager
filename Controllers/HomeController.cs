@@ -34,7 +34,7 @@ namespace Village_Manager.Controllers
                 .ToList();
             ViewBag.ProductCategories = categories;
             return View();
-
+           
         }
 
         //login
@@ -50,13 +50,13 @@ namespace Village_Manager.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
+            Console.WriteLine(connectionString);
             if (user != null)
             {
                 // lấy tên role name
                 int roleId = user.RoleId;
                 string roleName = "";
-                using (var conn = new SqlConnection(connectionString))  
+                using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
                     var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
@@ -85,10 +85,14 @@ namespace Village_Manager.Controllers
                     }
                 }
 
-                // check role
+                // role admin
                 if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+                else if (user.RoleId == 3)
+                {
+                    return RedirectToAction("IndexCustomer", "Customer");
                 }
 
             }
@@ -96,6 +100,11 @@ namespace Village_Manager.Controllers
 
             return View();
         }
+
+
+
+
+
         // Đăng xuất
         [Route("logout")]
         public IActionResult Logout()

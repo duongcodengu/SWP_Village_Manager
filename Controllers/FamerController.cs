@@ -48,8 +48,8 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra nếu đã gửi yêu cầu rồi
-            var existing = await _context.FarmerRegistrationRequest
-                .AnyAsync(r => r.user_id == userId && r.status == "pending");
+            var existing = await _context.FarmerRegistrationRequests
+                .AnyAsync(r => r.UserId == userId && r.Status == "pending");
 
             if (existing)
             {
@@ -60,15 +60,15 @@ namespace Village_Manager.Controllers
             // Lưu yêu cầu
             var request = new FarmerRegistrationRequest
             {
-                user_id = userId.Value,
-                full_name = FullName,
-                phone = Phone,
-                address = Address,
-                status = "pending",
-                requested_at = DateTime.Now
+                UserId = userId.Value,
+                FullName = FullName,
+                Phone = Phone,
+                Address = Address,
+                Status = "pending",
+                RequestedAt = DateTime.Now
             };
 
-            _context.FarmerRegistrationRequest.Add(request);
+            _context.FarmerRegistrationRequests.Add(request);
 
             // Gửi thông báo đến tất cả admin
             var admins = await _context.Users
@@ -98,7 +98,7 @@ namespace Village_Manager.Controllers
         [Route("dashboardfamer")]
         public IActionResult DashboardFamer()
         {
-            var categories = _context.ProductCategory
+            var categories = _context.ProductCategories
                 .Select(c => new { Id = c.Id, Name = c.Name })
                 .ToList();
 
