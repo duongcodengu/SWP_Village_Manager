@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Village_Manager.Controllers
 {
@@ -63,6 +64,24 @@ namespace Village_Manager.Controllers
         }
         public IActionResult ProfileShipper()
         {
+            var shipperId = HttpContext.Session.GetInt32("ShipperId");
+            if (!shipperId.HasValue)
+                return RedirectToAction("Login", "Home");
+
+            var shipper = _context.Shippers
+                .Where(s => s.Id == shipperId)
+                .Select(s => new {
+                    s.Id,
+                    s.FullName,
+                    s.Phone,
+                    s.VehicleInfo,
+                    User = s.User
+                })
+                .FirstOrDefault();
+
+            if (shipper == null) return RedirectToAction("Login", "Home");
+
+            ViewBag.Profile = shipper;
             return View();
         }
         public IActionResult HistoryShipper()
@@ -175,6 +194,90 @@ namespace Village_Manager.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("DeliveriesShipper");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateVehicleInfo(int id, string vehicleInfo)
+        {
+            var shipper = _context.Shippers.FirstOrDefault(s => s.Id == id);
+            if (shipper != null)
+            {
+                shipper.VehicleInfo = vehicleInfo;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ProfileShipper");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile(int id, string fullName, string phone, string vehicleInfo)
+        {
+            var shipper = _context.Shippers.FirstOrDefault(s => s.Id == id);
+            if (shipper == null)
+                return RedirectToAction("ProfileShipper");
+
+            // Kiểm tra phương tiện không được để trống
+            if (string.IsNullOrWhiteSpace(vehicleInfo))
+            {
+                TempData["ProfileError"] = "Phương tiện không được để trống.";
+                return RedirectToAction("ProfileShipper");
+            }
+
+            // Kiểm tra số điện thoại chỉ chứa số
+            if (string.IsNullOrWhiteSpace(phone) || phone.Any(c => !char.IsDigit(c)))
+            {
+                TempData["ProfileError"] = "Số điện thoại chỉ được chứa ký tự số.";
+                return RedirectToAction("ProfileShipper");
+            }
+
+            // Kiểm tra số điện thoại không trùng với shipper khác
+            var phoneExists = _context.Shippers.Any(s => s.Phone == phone && s.Id != id);
+            if (phoneExists)
+            {
+                TempData["ProfileError"] = "Số điện thoại đã tồn tại.";
+                return RedirectToAction("ProfileShipper");
+            }
+
+            shipper.FullName = fullName;
+            shipper.Phone = phone;
+            shipper.VehicleInfo = vehicleInfo;
+            _context.SaveChanges();
+            TempData["ProfileSuccess"] = "Cập nhật thông tin thành công.";
+            return RedirectToAction("ProfileShipper");
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(int id, string currentPassword, string newPassword, string confirmPassword)
+        {
+            var shipper = _context.Shippers.Include(s => s.User).FirstOrDefault(s => s.Id == id);
+            if (shipper == null || shipper.User == null)
+            {
+                TempData["PasswordError"] = "Không tìm thấy tài khoản.";
+                return RedirectToAction("ProfileShipper");
+            }
+            if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                TempData["PasswordError"] = "Vui lòng nhập đầy đủ thông tin.";
+                return RedirectToAction("ProfileShipper");
+            }
+            if (shipper.User.Password != currentPassword)
+            {
+                TempData["PasswordError"] = "Mật khẩu hiện tại không đúng.";
+                return RedirectToAction("ProfileShipper");
+            }
+            if (newPassword != confirmPassword)
+            {
+                TempData["PasswordError"] = "Mật khẩu mới và xác nhận không khớp.";
+                return RedirectToAction("ProfileShipper");
+            }
+            if (newPassword.Length < 6)
+            {
+                TempData["PasswordError"] = "Mật khẩu mới phải có ít nhất 6 ký tự.";
+                return RedirectToAction("ProfileShipper");
+            }
+            shipper.User.Password = newPassword;
+            _context.SaveChanges();
+            TempData["PasswordSuccess"] = "Đổi mật khẩu thành công.";
+            return RedirectToAction("ProfileShipper");
         }
     }
 }

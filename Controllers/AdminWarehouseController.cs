@@ -499,6 +499,21 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
+            // Thêm vào bảng Shipper nếu role là shipper
+            var shipperRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "shipper");
+            if (shipperRole != null && newUser.RoleId == shipperRole.Id)
+            {
+                var newShipper = new Shipper
+                {
+                    UserId = newUser.Id,
+                    FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                    Phone = newUser.Phone,
+                    VehicleInfo = null // cho phép null
+                };
+                _context.Shippers.Add(newShipper);
+                await _context.SaveChangesAsync();
+            }
+
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
             TempData["SuccessMessage"] = "User created successfully!";
@@ -641,6 +656,31 @@ public class AdminWarehouseController : Controller
                     farmer.FullName = existingUser.Username; // hoặc lấy từ form nếu có trường tên đầy đủ
                     farmer.Phone = existingUser.Phone;
                     // farmer.Address = ... // lấy từ form nếu có
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Cập nhật hoặc tạo Shipper nếu role là shipper
+            var shipperRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "shipper");
+            if (shipperRole != null && existingUser.RoleId == shipperRole.Id)
+            {
+                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == existingUser.Id);
+                if (shipper == null)
+                {
+                    var newShipper = new Shipper
+                    {
+                        UserId = existingUser.Id,
+                        FullName = existingUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                        Phone = existingUser.Phone,
+                        VehicleInfo = null // cho phép null
+                    };
+                    _context.Shippers.Add(newShipper);
+                }
+                else
+                {
+                    shipper.FullName = existingUser.Username;
+                    shipper.Phone = existingUser.Phone;
+                    // shipper.VehicleInfo = ... // lấy từ form nếu có
                 }
                 await _context.SaveChangesAsync();
             }
