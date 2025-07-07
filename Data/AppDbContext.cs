@@ -84,6 +84,19 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserLocation> UserLocations { get; set; }
+    public virtual DbSet<Warehouse> Warehouses { get; set; }
+
+    public virtual DbSet<WholesaleCustomer> WholesaleCustomers { get; set; }
+
+    public virtual DbSet<WholesaleOrder> WholesaleOrders { get; set; }
+
+    public virtual DbSet<WholesaleOrderItem> WholesaleOrderItems { get; set; }
+
+    public virtual DbSet<DeliveryIssue> DeliveryIssues { get; set; }
+
+    public virtual DbSet<DeliveryProof> DeliveryProofs { get; set; }
+
+    public DbSet<UserLocation> UserLocations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

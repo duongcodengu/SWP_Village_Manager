@@ -63,6 +63,10 @@
 @{
     ViewData["Title"] = "Dashboard Shipper";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var total = ViewBag.TotalDeliveries ?? 0;
+    var pending = ViewBag.PendingDeliveries ?? 0;
+    var completed = ViewBag.CompletedDeliveries ?? 0;
+    var recent = ViewBag.RecentDeliveries as List<Village_Manager.Models.Delivery>;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -103,27 +107,27 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/ShipperView/OrdersShipper" class="nav-link d-flex align-items-center gap-2">
+                                    <a href="/Shipper/OrdersShipper" class="nav-link d-flex align-items-center gap-2">
                                         <i class="fa fa-list"></i> <span>Orders</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/ShipperView/DeliveriesShipper" class="nav-link d-flex align-items-center gap-2">
+                                    <a href="/Shipper/DeliveriesShipper" class="nav-link d-flex align-items-center gap-2">
                                         <i class="fa fa-truck"></i> <span>Deliveries</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/ShipperView/ProfileShipper" class="nav-link d-flex align-items-center gap-2">
+                                    <a href="/Shipper/ProfileShipper" class="nav-link d-flex align-items-center gap-2">
                                         <i class="fa fa-user"></i> <span>Profile</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/ShipperView/HistoryShipper" class="nav-link d-flex align-items-center gap-2">
+                                    <a href="/Shipper/HistoryShipper" class="nav-link d-flex align-items-center gap-2">
                                         <i class="fa fa-history"></i> <span>History</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/ShipperView/NotificationsShipper" class="nav-link d-flex align-items-center gap-2">
+                                    <a href="/Shipper/NotificationsShipper" class="nav-link d-flex align-items-center gap-2">
                                         <i class="fa fa-bell"></i> <span>Notifications</span>
                                     </a>
                                 </li>
@@ -158,7 +162,7 @@
                                                     <div class="mb-2">
                                                         <i class="fa fa-cube fa-2x text-primary"></i>
                                                     </div>
-                                                    @* <div class="fs-1 fw-bold text-dark" id="totalDeliveries">@Model.TotalDeliveries</div> *@
+                                                    <div class="fs-1 fw-bold text-dark">@total</div>
                                                     <div class="text-muted small mt-1">Tổng đơn giao</div>
                                                 </div>
                                             </div>
@@ -170,7 +174,7 @@
                                                     <div class="mb-2">
                                                         <i class="fa fa-clock fa-2x text-warning"></i>
                                                     </div>
-                                                    @* <div class="fs-1 fw-bold text-dark" id="pendingOrders">@Model.PendingOrders</div> *@
+                                                    <div class="fs-1 fw-bold text-dark">@pending</div>
                                                     <div class="text-muted small mt-1">Chờ nhận</div>
                                                 </div>
                                             </div>
@@ -181,7 +185,7 @@
                                                     <div class="mb-2">
                                                         <i class="fa fa-check-circle fa-2x text-success"></i>
                                                     </div>
-                                                    @* <div class="fs-1 fw-bold text-dark" id="completedOrders">@Model.CompletedOrders</div> *@
+                                                    <div class="fs-1 fw-bold text-dark">@completed</div>
                                                     <div class="text-muted small mt-1">Hoàn thành</div>
                                                 </div>
                                             </div>
@@ -204,24 +208,27 @@
                                                             <th class="text-center">Thời gian</th>
                                                         </tr>
                                                     </thead>
-                                                    @* <tbody id="recentOrdersTbody">
-                                                        @foreach (var order in Model.RecentDeliveries)
+                                                    <tbody>
+                                                        @if (recent != null && recent.Count > 0)
                                                         {
-                                                            <tr>
-                                                                <td class="text-center">@order.OrderId</td>
-                                                                <td>@order.CustomerName</td>
-                                                                <td class="text-center">@order.Status</td>
-                                                                <td>@order.Address</td>
-                                                                <td class="text-center">@order.Time</td>
-                                                            </tr>
+                                                            foreach (var order in recent)
+                                                            {
+                                                                <tr>
+                                                                    <td class="text-center">#@order.OrderId</td>
+                                                                    <td>@order.CustomerName</td>
+                                                                    <td class="text-center">@order.Status</td>
+                                                                    <td>@order.CustomerAddress</td>
+                                                                    <td class="text-center">@order.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                                                                </tr>
+                                                            }
                                                         }
-                                                        @if (Model.RecentDeliveries == null || Model.RecentDeliveries.Count == 0)
+                                                        else
                                                         {
                                                             <tr>
                                                                 <td colspan="5" class="text-center text-muted">Không có đơn hàng gần nhất.</td>
                                                             </tr>
                                                         }
-                                                    </tbody> *@
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>

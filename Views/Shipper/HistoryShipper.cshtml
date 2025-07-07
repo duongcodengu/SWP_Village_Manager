@@ -1,6 +1,9 @@
+@model List<Village_Manager.Models.Delivery>
+@using Village_Manager.Models
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Lịch sử giao hàng";
+    var proofs = ViewBag.DeliveryProofs as List<DeliveryProof>;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -48,29 +51,89 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>#DH001</td>
-                    <td>Nguyễn Văn A</td>
-                    <td>123 Đường ABC, Quận 1</td>
-                    <td><span class="badge bg-success">Đã giao</span></td>
-                    <td>10:00 01/06/2024</td>
-                    <td>10:45 01/06/2024</td>
-                    <td><a href="#" class="btn btn-outline-info btn-sm"><i class="fa fa-eye"></i> Xem</a></td>
-                </tr>
-                <tr>
-                    <td>#DH002</td>
-                    <td>Trần Thị B</td>
-                    <td>456 Đường XYZ, Quận 3</td>
-                    <td><span class="badge bg-danger">Thất bại</span></td>
-                    <td>11:30 01/06/2024</td>
-                    <td>12:10 01/06/2024</td>
-                    <td><a href="#" class="btn btn-outline-info btn-sm"><i class="fa fa-eye"></i> Xem</a></td>
-                </tr>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var delivery in Model)
+                    {
+                        var proof = proofs?.FirstOrDefault(p => p.DeliveryId == delivery.Id);
+                        <tr>
+                            <td>#@delivery.OrderId</td>
+                            <td>@delivery.CustomerName</td>
+                            <td>@delivery.CustomerAddress</td>
+                            <td>
+                                @if (delivery.Status == "delivered")
+                                {
+                                    <span class="badge bg-success">Đã giao</span>
+                                }
+                                else if (delivery.Status == "failed")
+                                {
+                                    <span class="badge bg-danger">Thất bại</span>
+                                }
+                            </td>
+                            <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                            <td>@delivery.EndTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                            <td>
+                                @if (proof != null)
+                                {
+                                    <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)"><i class="fa fa-eye"></i> Xem</button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có bằng chứng</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Không có đơn hàng trong lịch sử.</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
         <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
 </div> 
+<!-- Modal xem bằng chứng giao hàng -->
+@if (Model != null && Model.Count > 0 && proofs != null)
+{
+    foreach (var delivery in Model)
+    {
+        var proof = proofs.FirstOrDefault(p => p.DeliveryId == delivery.Id);
+        if (proof != null)
+        {
+            <div class="modal fade" id="proofModal@(delivery.Id)" tabindex="-1" aria-labelledby="proofModalLabel@(delivery.Id)" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="proofModalLabel@(delivery.Id)">Bằng chứng giao hàng - Đơn #@delivery.OrderId</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if (!string.IsNullOrEmpty(proof.ImagePath))
+                            {
+                                <div class="mb-3 text-center">
+                                    <img src="@proof.ImagePath" alt="Bằng chứng giao hàng" class="img-fluid rounded border" style="max-height:300px;" />
+                                </div>
+                            }
+                            <div class="mb-2">
+                                <strong>Ghi chú:</strong> @proof.Note
+                            </div>
+                            <div class="mb-2 text-muted">
+                                <small>Thời gian xác nhận: @proof.CreatedAt.ToString("HH:mm dd/MM/yyyy")</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
 </body>
 <!-- latest jquery-->
 <script src="~/js/jquery-3.6.0.min.js"></script>
