@@ -17,11 +17,11 @@ public partial class User
 
     public bool HasAcceptedGeolocation { get; set; } = false;
 
-    public bool IsActive { get; set; } = true;
-
     public string? Phone { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public bool IsActive { get; set; } = true;
 
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
 

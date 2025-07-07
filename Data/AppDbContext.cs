@@ -96,8 +96,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<DeliveryProof> DeliveryProofs { get; set; }
 
-    public DbSet<UserLocation> UserLocations { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
@@ -167,30 +165,58 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Delivery>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Delivery__3213E83FF10F0108");
-
             entity.ToTable("Delivery");
 
+            entity.HasKey(e => e.Id)
+                .HasName("PK__Delivery__3213E83FF10F0108");
+
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.EndTime)
-                .HasColumnType("datetime")
-                .HasColumnName("end_time");
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
+
             entity.Property(e => e.OrderType)
                 .HasMaxLength(10)
                 .HasColumnName("order_type");
-            entity.Property(e => e.ShipperId).HasColumnName("shipper_id");
+
+            entity.Property(e => e.OrderId)
+                .HasColumnName("order_id");
+
+            entity.Property(e => e.ShipperId)
+                .HasColumnName("shipper_id");
+
             entity.Property(e => e.ShippingFee)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("shipping_fee");
+
             entity.Property(e => e.StartTime)
                 .HasColumnType("datetime")
                 .HasColumnName("start_time");
 
-            entity.HasOne(d => d.Shipper).WithMany(p => p.Deliveries)
+            entity.Property(e => e.EndTime)
+                .HasColumnType("datetime")
+                .HasColumnName("end_time");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+
+            entity.Property(e => e.CustomerName)
+                .HasMaxLength(100)
+                .HasColumnName("customer_name");
+
+            entity.Property(e => e.CustomerAddress)
+                .HasMaxLength(255)
+                .HasColumnName("customer_address");
+
+            entity.Property(e => e.CustomerPhone)
+                .HasMaxLength(20)
+                .HasColumnName("customer_phone");
+
+            entity.HasOne(d => d.Shipper)
+                .WithMany(p => p.Deliveries)
                 .HasForeignKey(d => d.ShipperId)
-                .HasConstraintName("FK__Delivery__shippe__70DDC3D8");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Delivery__shipper_id");
         });
+
 
         modelBuilder.Entity<Farmer>(entity =>
         {
@@ -895,8 +921,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Username)
                 .HasMaxLength(100)
                 .HasColumnName("username");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+            entity.Property(e => e.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true);
+                    entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__role_id__3F466844");

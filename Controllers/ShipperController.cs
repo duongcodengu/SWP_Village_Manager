@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Village_Manager.Controllers
 {

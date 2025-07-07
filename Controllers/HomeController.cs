@@ -115,11 +115,6 @@ namespace Village_Manager.Controllers
 
             return View();
         }
-
-
-
-
-
         // Đăng xuất
         [Route("logout")]
         public IActionResult Logout()

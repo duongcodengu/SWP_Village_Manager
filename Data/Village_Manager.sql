@@ -15,6 +15,7 @@ CREATE TABLE Users (
     HasAcceptedGeolocation BIT NOT NULL DEFAULT 0,
     Phone Nvarchar(10) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
+    is_active BIT NOT NULL DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
 -- 3. Farmer
@@ -143,18 +144,6 @@ CREATE TABLE CartItem (
     quantity INT,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (product_id) REFERENCES Product(id)
-);
-
--- 17. Delivery -- bỏ Delivery_status bảng này chỉ những đơn deli r mới lưu vào đây ko cần status
-CREATE TABLE Delivery (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
-    order_id INT,
-    shipper_id INT,
-    shipping_fee DECIMAL(10,2),
-    start_time DATETIME,
-    end_time DATETIME,
-    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
 
 -- 18. ProcessingOrder
@@ -367,6 +356,43 @@ CREATE TABLE UserLocations (
     Longitude FLOAT NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (UserId) REFERENCES Users(Id)
+);
+
+CREATE TABLE Delivery (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    order_type NVARCHAR(10) CHECK (order_type IN ('retail', 'import')),
+    order_id INT,
+    shipper_id INT,
+    shipping_fee DECIMAL(10,2),
+    start_time DATETIME,
+    end_time DATETIME,
+    status NVARCHAR(50) CHECK (status IN ('assigned', 'in_transit', 'delivered', 'failed')), -- trạng thái đơn giao
+    customer_name NVARCHAR(100),      -- tên khách hàng nhận
+    customer_address NVARCHAR(255),   -- địa chỉ giao hàng
+    customer_phone NVARCHAR(20),      -- số điện thoại khách
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
+);
+
+CREATE TABLE DeliveryIssue (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    delivery_id INT,
+    shipper_id INT,
+    issue_type NVARCHAR(50),
+    description NVARCHAR(255),
+    reported_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES Delivery(id),
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
+);
+
+CREATE TABLE DeliveryProof (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    delivery_id INT,
+    shipper_id INT,
+    image_path NVARCHAR(255),
+    note NVARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES Delivery(id),
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
 ------------------------------------INSERT--------------------------------------------------------------
 
