@@ -11,6 +11,7 @@ namespace Village_Manager.Controllers.api
     public class ShopApiController : ControllerBase
     {
         private readonly AppDbContext _context;
+
         public ShopApiController(AppDbContext context)
         {
             _context = context;
@@ -18,7 +19,12 @@ namespace Village_Manager.Controllers.api
 
         // Lọc, sắp xếp sản phẩm
         [HttpGet("products")]
-        public async Task<IActionResult> GetProducts(string? search, List<int>? categoryIds, int? minPrice, int? maxPrice, string? sort)
+        public async Task<IActionResult> GetProducts(
+            string? search,
+            [FromQuery] List<int> categoryIds,
+            int? minPrice,
+            int? maxPrice,
+            string? sort)
         {
             var query = _context.Products
                 .Include(p => p.Category)
@@ -28,7 +34,7 @@ namespace Village_Manager.Controllers.api
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(p => p.Name.Contains(search));
 
-            if (categoryIds?.Any() == true)
+            if (categoryIds.Any())
                 query = query.Where(p => categoryIds.Contains(p.CategoryId));
 
             if (minPrice.HasValue)
@@ -49,17 +55,21 @@ namespace Village_Manager.Controllers.api
                 };
             }
 
-            var products = await query.Select(p => new
+            var products = await query.ToListAsync();
+
+            var result = products.Select(p => new
             {
                 p.Id,
                 p.Name,
-                CategoryName = p.Category.Name,
+                CategoryName = p.Category?.Name ?? "",
                 p.Price,
                 p.ProductType,
-                Image = p.ProductImages.FirstOrDefault().ImageUrl ?? "/images/product/default-product.png"
-            }).ToListAsync();
+                Image = (p.ProductImages != null && p.ProductImages.Any())
+                    ? p.ProductImages.First().ImageUrl
+                    : "/images/product/default-product.png"
+            });
 
-            return Ok(products);
+            return Ok(result);
         }
 
         // Thêm vào giỏ hàng
@@ -68,6 +78,7 @@ namespace Village_Manager.Controllers.api
         {
             var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
             var existing = cart.FirstOrDefault(i => i.ProductId == productId);
+
             if (existing != null)
                 existing.Quantity += quantity;
             else
