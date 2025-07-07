@@ -394,6 +394,16 @@ CREATE TABLE DeliveryProof (
     FOREIGN KEY (delivery_id) REFERENCES Delivery(id),
     FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
+
+CREATE TABLE ContactMessages (
+    Id INT PRIMARY KEY IDENTITY,
+    FirstName NVARCHAR(100),
+    LastName NVARCHAR(100),
+    Email NVARCHAR(150),
+    PhoneNumber NVARCHAR(20),
+    Message NVARCHAR(MAX),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES

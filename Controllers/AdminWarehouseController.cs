@@ -1,14 +1,19 @@
+using System.Linq;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Village_Manager.Data;
-using Village_Manager.Models;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using Village_Manager.Data;
 using Village_Manager.Extensions;
-using System.Linq;
+using Village_Manager.Models;
 using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers;
@@ -18,14 +23,17 @@ public class AdminWarehouseController : Controller
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<AdminWarehouseController> _logger;
+    private readonly EmailSettings _emailSettings;
 
-    public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env, ILogger<AdminWarehouseController> logger)
+    public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env, ILogger<AdminWarehouseController> logger, IOptions<EmailSettings> emailSettings)
     {
         _context = context;
         _configuration = configuration;
         _env = env;
         _logger = logger;
+        _emailSettings = emailSettings.Value;
     }
+
     // Dashboard: Trang tổng quan quản trị, hiển thị số liệu tổng hợp
     [HttpGet]
     [Route("adminwarehouse")]
@@ -1051,6 +1059,39 @@ public class AdminWarehouseController : Controller
         TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Username}";
         return RedirectToAction("AllUser");
     }
+
+    //support
+    [HttpGet]
+    [Route("support")]
+    public async Task<IActionResult> Support()
+    {
+        var tickets = await _context.ContactMessages
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+
+        return View(tickets); 
+    }
+
+    [HttpPost]
+    [Route("support/reply")]
+    public async Task<IActionResult> Reply(int Id, string Email, string Content)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
+        message.To.Add(new MailboxAddress("", Email));
+        message.Subject = "Phản hồi từ bộ phận hỗ trợ";
+        message.Body = new TextPart("plain") { Text = Content };
+
+        using var client = new MailKit.Net.Smtp.SmtpClient();
+        await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+        await client.AuthenticateAsync(_emailSettings.SenderEmail, _emailSettings.AppPassword);
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+
+        TempData["Success"] = "Success";
+        return RedirectToAction("Support");
+    }
+
 }
 
 

@@ -115,6 +115,57 @@ namespace Village_Manager.Controllers
 
             return View();
         }
+
+        //Contact us
+        [HttpGet]
+        [Route("contact-us")]
+        public IActionResult ContactUs() => View();
+
+        [HttpPost]
+        [Route("contact-us")]
+        public async Task<IActionResult> ContactUs(string FirstName, string LastName, string Email, string PhoneNumber, string Message, DateTime CreatedAt)
+        {
+            var request = new ContactMessages
+            {
+                FirstName = FirstName,
+                LastName = LastName,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                Message = Message,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.ContactMessages.Add(request);
+
+            var admins = await _context.Users
+                .Where(u => u.RoleId == 1)
+                .ToListAsync();
+
+            string message = $"Có ticket cần sử lý từ {Email}";
+
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = message,
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Yêu cầu đã được gửi. Chúng tôi sẽ liên hệ với bạn sớm nhất";
+            return RedirectToAction("ContactUs");
+        }
+
+        // đăng ký
+        [HttpGet]
+        [Route("signup")]
+        public IActionResult SignUp() => View();
+
+
         // Đăng xuất
         [Route("logout")]
         public IActionResult Logout()
