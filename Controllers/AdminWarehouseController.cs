@@ -908,6 +908,50 @@ public class AdminWarehouseController : Controller
         _context.SaveChanges();
         return RedirectToAction("PendingProducts");
     }
+
+    // Ban user (set IsActive = false)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("banuser/{id}")]
+    public IActionResult BanUser(int id)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.IsActive = false;
+        _context.SaveChanges();
+        TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Username}";
+        return RedirectToAction("AllUser");
+    }
+
+    // Unban user (set IsActive = true)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("unbanuser/{id}")]
+    public IActionResult UnbanUser(int id)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.IsActive = true;
+        _context.SaveChanges();
+        TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Username}";
+        return RedirectToAction("AllUser");
+    }
 }
 
 

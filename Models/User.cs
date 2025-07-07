@@ -17,6 +17,8 @@ public partial class User
 
     public bool HasAcceptedGeolocation { get; set; }
 
+    public bool IsActive { get; set; } = true;
+
     public string? Phone { get; set; }
 
     public DateTime? CreatedAt { get; set; }
