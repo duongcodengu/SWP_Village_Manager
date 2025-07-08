@@ -179,9 +179,10 @@ public class ShopController : Controller
     public IActionResult Detail(int id)
     {
         var product = _context.Products
-        .Include(p => p.ProductImages)
-        .Include(p => p.Category)
-        .FirstOrDefault(p => p.Id == id);
+            .Include(p => p.ProductImages)
+            .Include(p => p.Farmer)
+            .Include(p => p.Category) // Nếu có navigation property tới Category
+            .FirstOrDefault(p => p.Id == id);
 
         if (product == null)
             return NotFound();
