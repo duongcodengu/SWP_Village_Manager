@@ -175,7 +175,20 @@ public class ShopController : Controller
     public IActionResult Success()
     {
         // Hiển thị trang thành công
-        return View();
+        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        foreach (var item in cart)
+        {
+            item.Product = _context.Products
+            .Include(p => p.ProductImages)
+            .FirstOrDefault(p => p.Id == item.ProductId);
+        }
+        ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1); // hoặc theo user hiện tại
+        ViewBag.OrderId = 1234;
+        ViewBag.PaymentMethod = "Cash on Delivery";
+        // Clear cart sau khi đặt hàng thành công nếu cần
+        HttpContext.Session.Set("Cart", new List<CartItem>());
+
+        return View(cart); // Truyền vào Success.cshtml
     }
 
     public IActionResult Tracking(string orderId)
