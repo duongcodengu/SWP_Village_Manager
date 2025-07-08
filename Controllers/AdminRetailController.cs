@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
@@ -13,12 +14,37 @@ namespace Village_Manager.Controllers
         // kiểm tra quyền truy cập
         [HttpGet]
         [Route("AdminRetail")]
+=======
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Village_Manager.Data;
+
+namespace Village_Manager.Controllers
+{
+    public class AdminRetailController : Controller
+    {
+        private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
+
+        public AdminRetailController(AppDbContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+        [HttpGet]
+        [Route("adminretail")]
+>>>>>>> user
         public IActionResult Dashboard()
         {
             var username = HttpContext.Session.GetString("Username");
             var roleId = HttpContext.Session.GetInt32("RoleId");
 
+<<<<<<< HEAD
             if (string.IsNullOrEmpty(username) || roleId != 1)
+=======
+            if (string.IsNullOrEmpty(username) || roleId != 4)
+>>>>>>> user
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -47,6 +73,7 @@ namespace Village_Manager.Controllers
                 }).ToList<dynamic>();
             ViewBag.Categories = categories;
 
+<<<<<<< HEAD
             // Tổng doanh thu confirmed
             decimal currentYear = DateTime.Now.Year;
 
@@ -73,11 +100,23 @@ namespace Village_Manager.Controllers
                 .Sum();
 
             decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
+=======
+            // Tổng doanh thu delivered
+            decimal totalRevenue = 0;
+            // RetailOrder
+            var retailRevenue = (from ro in _context.RetailOrders
+                                 where ro.Status == "delivered"
+                                 join ri in _context.RetailOrderItems on ro.Id equals ri.OrderId
+                                 select ri.Quantity * ri.UnitPrice).Sum();
+
+            totalRevenue = retailRevenue ?? 0;
+>>>>>>> user
             ViewBag.TotalRevenue = totalRevenue;
 
             return View();
         }
 
+<<<<<<< HEAD
         [HttpGet]
         [Route("products")]
         public IActionResult Products()
@@ -205,3 +244,18 @@ namespace Village_Manager.Controllers
     }
 }
 
+=======
+        // Hiển thị danh sách khách mua lẻ
+        [HttpGet]
+        [Route("allretailcustomers")]
+        public IActionResult AllRetailCustomers()
+        {
+            var model = _context.RetailCustomers
+                                .Include(rc => rc.User) 
+                                .ToList();
+
+            return View(model);
+        }
+    }
+}
+>>>>>>> user
