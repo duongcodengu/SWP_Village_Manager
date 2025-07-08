@@ -63,6 +63,14 @@ namespace Village_Manager.Controllers
                 {
                     return RedirectToAction("Index", "Home");
                 }
+                else if (user.RoleId == 5) // Retail Customer
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (user.RoleId == 4) // Retail Staff
+                {
+                    return RedirectToAction("Index", "Home");
+                }
 
             }
             ViewBag.Error = "Email hoặc mật khẩu không đúng!";
@@ -75,6 +83,31 @@ namespace Village_Manager.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [Route("forgotpassword")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        [Route("forgotpassword")]
+        public IActionResult ForgotPassword(string email)
+        {
+
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user != null)
+            {
+                ViewBag.Message = "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.";
+            }
+            else
+            {
+                ViewBag.Error = "Email không hợp lệ.";
+            }
+
+            return View();
         }
     }
 }
