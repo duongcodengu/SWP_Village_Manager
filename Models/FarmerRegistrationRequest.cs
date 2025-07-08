@@ -1,43 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Village_Manager.Models
+namespace Village_Manager.Models;
+
+public partial class FarmerRegistrationRequest
 {
-    public class FarmerRegistrationRequest
-    {
-        [Key]
-        public int id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public int user_id { get; set; }
+    public int UserId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string full_name { get; set; }
+    public string FullName { get; set; } = null!;
 
-        [Required]
-        [Phone]
-        [StringLength(20)]
-        public string phone { get; set; }
+    public string Phone { get; set; } = null!;
 
-        [Required]
-        public string address { get; set; }
+    public string Address { get; set; } = null!;
 
-        [Required]
-        [StringLength(20)]
-        public string status { get; set; } = "pending";
+    public string? Status { get; set; }
 
-        public DateTime requested_at { get; set; } = DateTime.Now;
+    public DateTime? RequestedAt { get; set; }
 
-        public DateTime? reviewed_at { get; set; }
+    public DateTime? ReviewedAt { get; set; }
 
-        public int? reviewed_by { get; set; }
+    public int? ReviewedBy { get; set; }
 
-        // Optional: navigation properties
-        [ForeignKey("user_id")]
-        public User? User { get; set; }
+    public virtual User? ReviewedByNavigation { get; set; }
 
-        [ForeignKey("reviewed_by")]
-        public User? ReviewedBy { get; set; }
-    }
+    public virtual User User { get; set; } = null!;
 }

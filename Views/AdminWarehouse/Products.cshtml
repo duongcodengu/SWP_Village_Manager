@@ -73,6 +73,7 @@
                                         <h5>Products List</h5>
 
                                         <form action="/searchProduct" method="get" class="mb-3 d-flex justify-content-end">
+
                                             <input type="text" name="search" class="form-control w-25" placeholder="Search product..." value="@Context.Request.Query["search"]" />
                                             <button type="submit" class="btn btn-primary ms-2">Search</button>
                                         </form>
@@ -111,7 +112,8 @@
                                                             <td>
                                                                 @if(product.ProductImages != null && product.ProductImages.Any())
                                                                 {
-                                                                    <img src="@product.ProductImages.First().ImageUrl" alt="Product Image" width="120"/>
+                                                                    <img src="@product.ProductImages.FirstOrDefault()?.ImageUrl" style="max-height: 80px;" />
+
                                                                 }
                                                                 else
                                                                 {

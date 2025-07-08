@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using System.Linq;
 using Village_Manager.Data;
 using Village_Manager.Models;
 
@@ -11,6 +13,23 @@ namespace Village_Manager.Controllers
         public FamerController(AppDbContext context)
         {
             _context = context;
+        }
+        // class custom model  để lưu trữ thông tin sản phẩm và số lượng sản phẩm đã bán
+        public class ProductWithSales
+        {
+            public Product Product { get; set; }
+            public int SoldQuantity { get; set; }
+        }
+
+            
+        public class FamerDashboardView
+        {
+            public User User { get; set; }
+            public Farmer Famer { get; set; }
+            public List<Product> ProductList { get; set; } // Danh sách sản phẩm gốc
+            public List<ProductWithSales> ProductWithSalesList { get; set; } // Danh sách sản phẩm kèm số lượng đã bán
+            public List<RetailOrder> OngoingOrders { get; set; }
+
         }
 
         [HttpGet]
@@ -29,8 +48,8 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra nếu đã gửi yêu cầu rồi
-            var existing = await _context.FarmerRegistrationRequest
-                .AnyAsync(r => r.user_id == userId && r.status == "pending");
+            var existing = await _context.FarmerRegistrationRequests
+                .AnyAsync(r => r.UserId == userId && r.Status == "pending");
 
             if (existing)
             {
@@ -41,15 +60,15 @@ namespace Village_Manager.Controllers
             // Lưu yêu cầu
             var request = new FarmerRegistrationRequest
             {
-                user_id = userId.Value,
-                full_name = FullName,
-                phone = Phone,
-                address = Address,
-                status = "pending",
-                requested_at = DateTime.Now
+                UserId = userId.Value,
+                FullName = FullName,
+                Phone = Phone,
+                Address = Address,
+                Status = "pending",
+                RequestedAt = DateTime.Now
             };
 
-            _context.FarmerRegistrationRequest.Add(request);
+            _context.FarmerRegistrationRequests.Add(request);
 
             // Gửi thông báo đến tất cả admin
             var admins = await _context.Users
@@ -79,9 +98,9 @@ namespace Village_Manager.Controllers
         [Route("dashboardfamer")]
         public IActionResult DashboardFamer()
         {
-            var categories = _context.ProductCategory
-            .Select(c => new { Id = c.Id, Name = c.Name })
-            .ToList();
+            var categories = _context.ProductCategories
+                .Select(c => new { Id = c.Id, Name = c.Name })
+                .ToList();
 
             int? userId = HttpContext.Session.GetInt32("UserId");
             int? farmerId = HttpContext.Session.GetInt32("FarmerId");
@@ -91,19 +110,59 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Login", "Home");
             }
 
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var farmer = _context.Farmers.FirstOrDefault(f => f.Id == farmerId && f.UserId == userId);
 
-            if (farmer == null)
+            if (user == null || farmer == null)
             {
                 return RedirectToAction("Login", "Home");
             }
+
+            var productList = _context.Products
+                .Include(p => p.ProductImages)
+                .Where(p => p.FarmerId == farmer.Id)
+                .ToList();
+
+            var productWithSalesList = productList.Select(p => new ProductWithSales
+            {
+                Product = p,
+                SoldQuantity = _context.RetailOrderItems
+                    .Where(roi => roi.ProductId == p.Id)
+                    .Sum(roi => (int?)roi.Quantity) ?? 0
+            }).ToList();
+
+            var productIds = productList.Select(p => p.Id).ToList();
+            var ongoingStatuses = new[] { "pending", "confirmed", "shipped" };
+
+            var ongoingOrders = _context.RetailOrders
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(roi => roi.Product)
+                .Where(o => o.RetailOrderItems.Any(roi => productIds.Contains((int)roi.ProductId))
+                        && ongoingStatuses.Contains(o.Status))
+                .ToList();
+
+            var model = new FamerDashboardView
+            {
+                User = user,
+                Famer = farmer,
+                ProductList = productList,
+                ProductWithSalesList = productWithSalesList,
+                OngoingOrders = ongoingOrders
+            };
+
             ViewBag.Categories = categories;
             ViewBag.UserId = userId;
             ViewBag.FarmerId = farmerId;
             ViewBag.FarmerName = farmer.FullName;
-            return View();
+            ViewBag.TotalProductTypes = productList.Count;
+            ViewBag.TotalSold = productWithSalesList.Sum(p => p.SoldQuantity);
+            ViewBag.TotalQuantityInStock = _context.Stocks
+                .Where(s => productIds.Contains(s.Id))
+                .Sum(s => (int?)s.Quantity) ?? 0;
+            return View(model);
         }
-        
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
@@ -196,6 +255,36 @@ namespace Village_Manager.Controllers
                 {
                     UserId = admin.Id,
                     Content = $"Farmer đã hủy bán sản phẩm '{product.Name}'. Lý do: {reason}",
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+            _context.SaveChanges();
+
+            return Ok(new { success = true });
+        }
+
+        [HttpPost]
+        [Route("famer/resellproduct")]
+        public IActionResult ResellProduct(int productId)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
+            if (product == null) return NotFound();
+
+            if (product.ApprovalStatus != "rejected")
+                return BadRequest("Chỉ có thể bán lại sản phẩm đã bị hủy hoặc từ chối.");
+
+            product.ApprovalStatus = "pending";
+            _context.SaveChanges();
+
+            // Gửi thông báo cho admin
+            var admins = _context.Users.Where(u => u.RoleId == 1).ToList();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = $"Farmer đã yêu cầu bán lại sản phẩm '{product.Name}'.",
                     CreatedAt = DateTime.Now,
                     IsRead = false
                 });

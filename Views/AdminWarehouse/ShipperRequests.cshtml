@@ -1,0 +1,165 @@
+﻿@{
+    ViewData["Title"] = "Shipper Requests";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+@model List<Village_Manager.ViewModel.ShipperRequestViewModel>
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <!-- meta data -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <title>Fastkart - Edit Attributes</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+
+    <!-- Themify icon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
+
+    <!--Dropzon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/dropzone.css">
+
+    <!-- Feather icon css-->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+
+    <!-- Select2 css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/select2.min.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/chartist.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/date-picker.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
+
+    <!-- Bootstrap-tag input css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap-tagsinput.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+</head>
+
+<body>
+    <!-- page-wrapper start -->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <!-- Page Body start -->
+        <div class="page-body-wrapper">
+            <div class="page-body">
+
+                <!-- New Famer Add Start -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-xxl-10 col-lg-12 m-auto">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-header-2 mb-3">
+                                                <h5>Yêu cầu đăng ký làm Shipper</h5>
+                                            </div>
+
+                                            @if (Model == null || !Model.Any())
+                                            {
+                                                <div>Không có yêu cầu nào đang chờ xét duyệt.</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Họ tên</th>
+                                                                <th>SĐT</th>
+                                                                <th>Địa chỉ</th>
+                                                                <th>Phương tiện</th>
+                                                                <th>Thời gian gửi</th>
+                                                                <th>Hành động</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @for (int i = 0; i < Model.Count; i++)
+                                                            {
+                                                                var item = Model[i];
+                                                                <tr>
+                                                                    <td>@(i + 1)</td>
+                                                                    <td>@item.FullName</td>
+                                                                    <td>@item.Phone</td>
+                                                                    <td>@item.Address</td>
+                                                                    <td>@item.VehicleInfo</td>
+                                                                    <td>@item.RequestedAt.Value.ToString("dd/MM/yyyy HH:mm")</td>
+                                                                    <td>
+                                                                        <form method="post" action="/admin_shipperrequest_update" class="d-inline">
+                                                                            <input type="hidden" name="id" value="@item.Id" />
+                                                                            <button class="btn btn-success btn-sm" type="submit" name="action" value="accept">Chấp nhận</button>
+                                                                            <button class="btn btn-danger btn-sm ms-2" type="submit" name="action" value="reject">Từ chối</button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- New Famer Add End -->
+            </div>
+            <!-- Container-fluid End -->
+        </div>
+        <!-- Page Body End -->
+    </div>
+    <!-- page-wrapper End -->
+    <!-- Modal Start -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                    <p>Are you sure you want to log out?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="button-box">
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" onclick="location.href = 'login.html';"
+                                class="btn  btn--yes btn-primary">
+                            Yes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+</body>
+
+</html>
+

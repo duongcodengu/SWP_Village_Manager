@@ -11,7 +11,5 @@ public partial class Staff
 
     public string? Role { get; set; }
 
-    public int? AssignedWarehouseId { get; set; }
-
     public virtual User? User { get; set; }
 }

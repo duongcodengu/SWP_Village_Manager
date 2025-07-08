@@ -126,17 +126,12 @@
                                                 dropdown.innerHTML += `<li><p class="text-center text-muted">Không có thông báo nào.</p></li>`;
                                             } else {
                                                 data.notifications.forEach(n => {
-                                                    const time = new Date(n.created_at).toLocaleTimeString("vi-VN", {
-                                                        hour: '2-digit', minute: '2-digit'
-                                                    });
                                                     dropdown.innerHTML += `
                                                         <li>
-                                                            <p title="${new Date(n.created_at).toLocaleString('vi-VN')}"
-                                                               class="notif-item${n.is_read ? ' text-muted' : ' fw-bold'}"
-                                                               data-id="${n.id}" style="cursor:pointer;">
+                                                            <p class="notif-item${n.is_read ? ' text-muted' : ' fw-bold'}"
+                                                                data-id="${n.id}" style="cursor:pointer;">
                                                                 <i class="fa fa-circle me-2 font-info"></i>
                                                                 ${n.content}
-                                                                <span class="pull-right small text-muted">${time}</span>
                                                             </p>
                                                         </li>`;
                                                 });
@@ -276,7 +271,7 @@
                                         </li>
                                         <li>
                                             <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="">
-                                                <i data-feather="log-out"></i>
+                                                <i data-feather="log-out" href="/logout"></i>
                                                 <span>Log out</span>
                                             </a>
                                         </li>
@@ -378,6 +373,21 @@
 
                                          <li>
                                             <a href="/pendingproducts">Pending Products</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-list-settings-line"></i>
+                                        <span>Shipper</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="/shipper">Shipper</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="/admin/shipper-requests">Add Shipper</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -484,10 +494,19 @@
                                 </li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="support-ticket.html">
-                                        <i class="ri-phone-line"></i>
-                                        <span>Support Ticket</span>
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Hỗ trợ</span>
                                     </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="support">Yêu cầu hỗ trợ</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="create-coupon.html">Tiket</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 <li class="sidebar-list">

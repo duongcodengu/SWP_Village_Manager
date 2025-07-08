@@ -1,0 +1,172 @@
+@model List<Village_Manager.Models.Delivery>
+@using Village_Manager.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Lịch sử giao hàng";
+    var proofs = ViewBag.DeliveryProofs as List<DeliveryProof>;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+<body>
+<div class="card shadow rounded-4 p-4">
+    <h3 class="mb-4 fw-bold text-secondary"><i class="fa fa-history me-2"></i>Lịch sử giao hàng</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Địa chỉ</th>
+                    <th>Trạng thái</th>
+                    <th>Bắt đầu</th>
+                    <th>Kết thúc</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var delivery in Model)
+                    {
+                        var proof = proofs?.FirstOrDefault(p => p.DeliveryId == delivery.Id);
+                        <tr>
+                            <td>#@delivery.OrderId</td>
+                            <td>@delivery.CustomerName</td>
+                            <td>@delivery.CustomerAddress</td>
+                            <td>
+                                @if (delivery.Status == "delivered")
+                                {
+                                    <span class="badge bg-success">Đã giao</span>
+                                }
+                                else if (delivery.Status == "failed")
+                                {
+                                    <span class="badge bg-danger">Thất bại</span>
+                                }
+                            </td>
+                            <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                            <td>@delivery.EndTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                            <td>
+                                @if (proof != null)
+                                {
+                                    <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)"><i class="fa fa-eye"></i> Xem</button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có bằng chứng</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Không có đơn hàng trong lịch sử.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
+</div> 
+<!-- Modal xem bằng chứng giao hàng -->
+@if (Model != null && Model.Count > 0 && proofs != null)
+{
+    foreach (var delivery in Model)
+    {
+        var proof = proofs.FirstOrDefault(p => p.DeliveryId == delivery.Id);
+        if (proof != null)
+        {
+            <div class="modal fade" id="proofModal@(delivery.Id)" tabindex="-1" aria-labelledby="proofModalLabel@(delivery.Id)" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="proofModalLabel@(delivery.Id)">Bằng chứng giao hàng - Đơn #@delivery.OrderId</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if (!string.IsNullOrEmpty(proof.ImagePath))
+                            {
+                                <div class="mb-3 text-center">
+                                    <img src="@proof.ImagePath" alt="Bằng chứng giao hàng" class="img-fluid rounded border" style="max-height:300px;" />
+                                </div>
+                            }
+                            <div class="mb-2">
+                                <strong>Ghi chú:</strong> @proof.Note
+                            </div>
+                            <div class="mb-2 text-muted">
+                                <small>Thời gian xác nhận: @proof.CreatedAt.ToString("HH:mm dd/MM/yyyy")</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+</body>
+<!-- latest jquery-->
+<script src="~/js/jquery-3.6.0.min.js"></script>
+
+<!-- jquery ui-->
+<script src="~/js/jquery-ui.min.js"></script>
+
+<!-- Bootstrap js-->
+<script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+<script src="~/js/bootstrap/popper.min.js"></script>
+
+<!-- feather icon js-->
+<script src="~/js/feather/feather.min.js"></script>
+<script src="~/js/feather/feather-icon.js"></script>
+
+<!-- Lazyload Js -->
+<script src="~/js/lazysizes.min.js"></script>
+
+<!-- Slick js-->
+<script src="~/js/slick/slick.js"></script>
+<script src="~/js/slick/custom_slick.js"></script>
+
+<!-- Apexcharts Js -->
+<script src="~/js/apexchart.js"></script>
+<script src="~/js/custom-chart.js"></script>
+
+<!-- Nav & tab upside js -->
+<script src="~/js/nav-tab.js"></script>
+
+<!-- script js -->
+<script src="~/js/script.js"></script>
+
+<!-- theme setting js -->
+<script src="~/js/theme-setting.js"></script>
+</html>

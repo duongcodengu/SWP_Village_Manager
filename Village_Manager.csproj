@@ -9,19 +9,24 @@
   <ItemGroup>
     <Compile Remove="Repositories\**" />
     <Compile Remove="Services\**" />
+    <Compile Remove="Shipper\**" />
     <Compile Remove="Views\AdminWarehouse\NewFolder\**" />
     <Content Remove="Repositories\**" />
     <Content Remove="Services\**" />
+    <Content Remove="Shipper\**" />
     <Content Remove="Views\AdminWarehouse\NewFolder\**" />
     <EmbeddedResource Remove="Repositories\**" />
     <EmbeddedResource Remove="Services\**" />
+    <EmbeddedResource Remove="Shipper\**" />
     <EmbeddedResource Remove="Views\AdminWarehouse\NewFolder\**" />
     <None Remove="Repositories\**" />
     <None Remove="Services\**" />
+    <None Remove="Shipper\**" />
     <None Remove="Views\AdminWarehouse\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.13.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>

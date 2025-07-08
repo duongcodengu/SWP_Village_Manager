@@ -1,13 +1,20 @@
+using System.Linq;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Village_Manager.Data;
-using Village_Manager.Models;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using Village_Manager.Data;
 using Village_Manager.Extensions;
+using Village_Manager.Models;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers;
 public class AdminWarehouseController : Controller
@@ -16,14 +23,17 @@ public class AdminWarehouseController : Controller
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<AdminWarehouseController> _logger;
+    private readonly EmailSettings _emailSettings;
 
-    public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env, ILogger<AdminWarehouseController> logger)
+    public AdminWarehouseController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment env, ILogger<AdminWarehouseController> logger, IOptions<EmailSettings> emailSettings)
     {
         _context = context;
         _configuration = configuration;
         _env = env;
         _logger = logger;
+        _emailSettings = emailSettings.Value;
     }
+
     // Dashboard: Trang tổng quan quản trị, hiển thị số liệu tổng hợp
     [HttpGet]
     [Route("adminwarehouse")]
@@ -46,7 +56,7 @@ public class AdminWarehouseController : Controller
         int totalOrders = totalRetailOrders;
         ViewBag.TotalOrders = totalOrders;
         // Lấy danh sách category
-        var categories = _context.ProductCategory
+        var categories = _context.ProductCategories
             .Select(c => new { Name = c.Name, ImageUrl = c.ImageUrl })
             .ToList<dynamic>(); ViewBag.Categories = categories;
         // Tổng doanh thu confirmed
@@ -123,32 +133,30 @@ public class AdminWarehouseController : Controller
         return View(product);
     }
     //Add Product
-    [HttpGet]
-    [Route("addproduct")]
+    [HttpGet("addproduct")]
     public IActionResult AddProduct()
-    {
+    { 
         // Lấy danh sách danh mục sản phẩm
-        var categories = _context.ProductCategory
+        var categories = _context.ProductCategories
             .Select(c => new { Id = c.Id, Name = c.Name })
             .ToList();
 
         ViewBag.Categories = categories;
+        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Farmers = _context.Farmers.ToList();
         return View();
     }
 
-    [HttpPost]
-    [Route("addproduct")]
+    [HttpPost("addproduct")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddProduct(IFormCollection form, List<IFormFile> images)
     {
         try
         {
-            // Create new Product instance
             var product = new Product
             {
                 Name = form["name"],
                 ProductType = form["product_type"],
-                CategoryId = int.Parse(form["category_id"]),
                 Quantity = int.Parse(form["quantity"]),
                 Price = decimal.Parse(form["price"]),
                 ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
@@ -157,16 +165,22 @@ public class AdminWarehouseController : Controller
                 ApprovalStatus = "accepted"
             };
 
+            if (int.TryParse(form["category_id"], out int categoryId))
+            {
+                product.CategoryId = categoryId;
+            }
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
+            // Save images
             if (images != null && images.Count > 0)
             {
                 foreach (var file in images)
                 {
                     if (file.Length > 0)
                     {
-                        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                        string uploadsFolder = Path.Combine(_env.WebRootPath, "images");
                         Directory.CreateDirectory(uploadsFolder);
 
                         string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
@@ -192,11 +206,13 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
-            return Redirect("products");
+            return Redirect("/products");
         }
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Error adding product: " + ex.Message);
+            ViewBag.Farmers = _context.Farmers.ToList();
+            ViewBag.Categories = _context.ProductCategories.ToList();
             return View();
         }
     }
@@ -250,6 +266,8 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
+        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Farmers = _context.Farmers.ToList();
         return View(product);
     }
 
@@ -257,7 +275,7 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     [Route("updateproduct")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateProduct(Product model)
+    public async Task<IActionResult> UpdateProduct(Product model, List<IFormFile> ImageUpdate)
     {
         var product = await _context.Products
             .Include(p => p.ProductImages)
@@ -294,11 +312,11 @@ public class AdminWarehouseController : Controller
             product.FarmerId = model.FarmerId;
 
         // Nếu có ảnh mới, thì cập nhật
-        if (model.ImageUpdate != null && model.ImageUpdate.Any())
+        if (ImageUpdate != null && ImageUpdate.Any())
         {
             _context.ProductImages.RemoveRange(product.ProductImages);
 
-            foreach (var file in model.ImageUpdate)
+            foreach (var file in ImageUpdate)
             {
                 if (file.Length > 0)
                 {
@@ -325,24 +343,25 @@ public class AdminWarehouseController : Controller
     [Route("searchProduct")]
     public async Task<IActionResult> SearchProduct(string search)
     {
+        if (string.IsNullOrEmpty(search))
+        {
+            return Redirect("products"); 
+        }
+
         var productsQuery = _context.Products
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .AsQueryable();
 
-        if (!string.IsNullOrEmpty(search))
-        {
-            search = search.ToLower();
-            productsQuery = productsQuery.Where(p =>
-                p.Name.ToLower().Contains(search) ||
-                (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
-                p.ProductType.ToLower().Contains(search)
-            );
-        }
+        search = search.ToLower();
+        productsQuery = productsQuery.Where(p =>
+            p.Name.ToLower().Contains(search) ||
+            (p.Category != null && p.Category.Name.ToLower().Contains(search)) ||
+            p.ProductType.ToLower().Contains(search)
+        );
 
         var products = await productsQuery.ToListAsync();
         return View("Products", products);
-
     }
     [HttpGet]
     [Route("alluser")]
@@ -475,7 +494,7 @@ public class AdminWarehouseController : Controller
             {
                 Username = user.Username.Trim(),
                 Email = user.Email.Trim(),
-                Password = HashPassword(user.Password),
+                Password = user.Password, // Lưu plain text
                 RoleId = user.RoleId,
                 Phone = user.Phone?.Trim(),
                 CreatedAt = DateTime.Now
@@ -499,6 +518,21 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
+            // Thêm vào bảng Shipper nếu role là shipper
+            var shipperRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "shipper");
+            if (shipperRole != null && newUser.RoleId == shipperRole.Id)
+            {
+                var newShipper = new Shipper
+                {
+                    UserId = newUser.Id,
+                    FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                    Phone = newUser.Phone,
+                    VehicleInfo = null // cho phép null
+                };
+                _context.Shippers.Add(newShipper);
+                await _context.SaveChangesAsync();
+            }
+
             var currentUserId = HttpContext.Session.GetInt32("UserId");
             LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
             TempData["SuccessMessage"] = "User created successfully!";
@@ -512,6 +546,7 @@ public class AdminWarehouseController : Controller
             return View(user);
         }
     }
+
 
     private string HashPassword(string password)
     {
@@ -612,7 +647,7 @@ public class AdminWarehouseController : Controller
             // Nếu có nhập mật khẩu mới thì cập nhật
             if (!string.IsNullOrEmpty(newPassword))
             {
-                existingUser.Password = HashPassword(newPassword);
+                existingUser.Password = newPassword; // Lưu plain text
                 _logger.LogInformation($"Password updated for user. UserId: {id}");
             }
             // Lưu thay đổi
@@ -641,6 +676,31 @@ public class AdminWarehouseController : Controller
                     farmer.FullName = existingUser.Username; // hoặc lấy từ form nếu có trường tên đầy đủ
                     farmer.Phone = existingUser.Phone;
                     // farmer.Address = ... // lấy từ form nếu có
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            // Cập nhật hoặc tạo Shipper nếu role là shipper
+            var shipperRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "shipper");
+            if (shipperRole != null && existingUser.RoleId == shipperRole.Id)
+            {
+                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == existingUser.Id);
+                if (shipper == null)
+                {
+                    var newShipper = new Shipper
+                    {
+                        UserId = existingUser.Id,
+                        FullName = existingUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
+                        Phone = existingUser.Phone,
+                        VehicleInfo = null // cho phép null
+                    };
+                    _context.Shippers.Add(newShipper);
+                }
+                else
+                {
+                    shipper.FullName = existingUser.Username;
+                    shipper.Phone = existingUser.Phone;
+                    // shipper.VehicleInfo = ... // lấy từ form nếu có
                 }
                 await _context.SaveChangesAsync();
             }
@@ -782,9 +842,9 @@ public class AdminWarehouseController : Controller
     [Route("addfamer")]
     public IActionResult AddFamer()
     {
-        var pending = _context.FarmerRegistrationRequest
-            .Where(r => r.status == "pending")
-            .OrderByDescending(r => r.requested_at)
+        var pending = _context.FarmerRegistrationRequests
+            .Where(r => r.Status == "pending")
+            .OrderByDescending(r => r.RequestedAt)
             .ToList();
 
         return View(pending);
@@ -793,25 +853,25 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Approve(int id)
     {
-        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+        var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
-        if (request == null || request.status != "pending")
+        if (request == null || request.Status != "pending")
             return NotFound();
 
-        request.status = "approved";
-        request.reviewed_at = DateTime.Now;
-        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+        request.Status = "approved";
+        request.ReviewedAt = DateTime.Now;
+        request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         // Tạo bản ghi mới trong bảng Farmers
         _context.Farmers.Add(new Farmer
         {
-            UserId = request.user_id,
-            FullName = request.full_name,
-            Phone = request.phone,
-            Address = request.address
+            UserId = request.UserId,
+            FullName = request.FullName,
+            Phone = request.Phone,
+            Address = request.Address
         });
 
-        var user = await _context.Users.FindAsync(request.user_id);
+        var user = await _context.Users.FindAsync(request.UserId);
         if (user != null)
         {
             user.RoleId = 5;
@@ -824,20 +884,18 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Reject(int id)
     {
-        var request = await _context.FarmerRegistrationRequest.FindAsync(id);
+        var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
-        if (request == null || request.status != "pending")
+        if (request == null || request.Status != "pending")
             return NotFound();
 
-        request.status = "rejected";
-        request.reviewed_at = DateTime.Now;
-        request.reviewed_by = HttpContext.Session.GetInt32("UserId");
+        request.Status = "rejected";
+        request.RequestedAt = DateTime.Now;
+        request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         await _context.SaveChangesAsync();
-        return RedirectToAction("AddFamer");
-
+        return RedirectToAction("AddFamer"); 
     }
-
     // view to pending products
     [HttpGet]
     [Route("pendingproducts")]
@@ -868,6 +926,172 @@ public class AdminWarehouseController : Controller
         _context.SaveChanges();
         return RedirectToAction("PendingProducts");
     }
+    [HttpGet]
+    [Route("shipper")]
+    public IActionResult Shipper()
+    {
+        var result = (from shipper in _context.Shippers
+                      join request in _context.ShipperRegistrationRequests
+                      on shipper.UserId equals request.UserId
+                      select new ShipperDisplayViewModel
+                      {
+                          Id = shipper.Id,
+                          FullName = shipper.FullName,
+                          Phone = shipper.Phone,
+                          VehicleInfo = shipper.VehicleInfo,
+                          Status = shipper.Status,
+                          Address = request.Address,
+                          UserId = request.UserId,
+                          Username = shipper.User.Username,
+                          Email = shipper.User.Email,
+                          Created = shipper.User.CreatedAt
+                      }).ToList();
+
+        return View(result);
+    }
+
+    [HttpGet]
+    [Route("admin/shipper-requests")]
+    public IActionResult ShipperRequests()
+    {
+        var result = _context.ShipperRegistrationRequests
+            .Include(r => r.User)
+            .Where(r => r.Status == "pending")
+            .Select(r => new ShipperRequestViewModel
+            {
+                Id = r.Id,
+                FullName = r.FullName,
+                Phone = r.Phone,
+                VehicleInfo = r.VehicleInfo,
+                Address = r.Address,
+                RequestedAt = r.RequestedAt,
+                Username = r.User.Username,
+                Email = r.User.Email
+            })
+            .OrderByDescending(r => r.RequestedAt)
+            .ToList();
+
+        return View(result);
+    }
+
+    [HttpPost]
+    [Route("admin_shipperrequest_update")]
+    public async Task<IActionResult> UpdateShipperRequest(int id, string action)
+    {
+        var request = await _context.ShipperRegistrationRequests
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (request == null || request.Status != "pending")
+        {
+            TempData["Error"] = "Yêu cầu không hợp lệ hoặc đã xử lý.";
+            return Redirect("admin/shipper-requests");
+        }
+
+        if (action == "accept")
+        {
+            request.Status = "approved";
+            request.ReviewedAt = DateTime.Now;
+            request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
+
+            var newShipper = new Shipper
+            {
+                UserId = request.UserId,
+                FullName = request.FullName,
+                Phone = request.Phone,
+                VehicleInfo = request.VehicleInfo,
+                Status = "approved"
+            };
+            _context.Shippers.Add(newShipper);
+        }
+        else if (action == "reject")
+        {
+            request.Status = "rejected";
+            request.ReviewedAt = DateTime.Now;
+            request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
+        }
+
+        await _context.SaveChangesAsync();
+        TempData["Success"] = "Cập nhật yêu cầu thành công.";
+        return Redirect("admin/shipper-requests");
+    }
+
+
+    // Ban user (set IsActive = false)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("banuser/{id}")]
+    public IActionResult BanUser(int id)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.IsActive = false;
+        _context.SaveChanges();
+        TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Username}";
+        return RedirectToAction("AllUser");
+    }
+
+    // Unban user (set IsActive = true)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("unbanuser/{id}")]
+    public IActionResult UnbanUser(int id)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        user.IsActive = true;
+        _context.SaveChanges();
+        TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Username}";
+        return RedirectToAction("AllUser");
+    }
+
+    //support
+    [HttpGet]
+    [Route("support")]
+    public async Task<IActionResult> Support()
+    {
+        var tickets = await _context.ContactMessages
+            .OrderByDescending(t => t.CreatedAt)
+            .ToListAsync();
+
+        return View(tickets); 
+    }
+
+    [HttpPost]
+    [Route("support/reply")]
+    public async Task<IActionResult> Reply(int Id, string Email, string Content)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
+        message.To.Add(new MailboxAddress("", Email));
+        message.Subject = "Phản hồi từ bộ phận hỗ trợ";
+        message.Body = new TextPart("plain") { Text = Content };
+
+        using var client = new MailKit.Net.Smtp.SmtpClient();
+        await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+        await client.AuthenticateAsync(_emailSettings.SenderEmail, _emailSettings.AppPassword);
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
+
+        TempData["Success"] = "Success";
+        return RedirectToAction("Support");
+    }
+
 }
 
 

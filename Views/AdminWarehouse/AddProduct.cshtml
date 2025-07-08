@@ -1,7 +1,9 @@
-﻿@using Village_Manager.Models;
+
+﻿@using Village_Manager.Models
 @{
     ViewData["Title"] = "Add Product";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+    var farmers = ViewBag.Farmers as List<Farmer>;
     var categories = ViewBag.Categories as List<ProductCategory>;
 }
 <!DOCTYPE html>
@@ -101,14 +103,15 @@
 
                         <div class="mb-4 row">
                             <label class="col-sm-3">Category</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" name="category_id" required>
-                                    @foreach (var category in ViewBag.Categories)
-                                    {
-                                        <option value="@category.Id">@category.Name</option>
-                                    }
-                                </select>
-                            </div>
+                                <div class="col-sm-9">
+                                    <select name="category_id" class="form-control" required>
+                                        <option disabled>-- Select Category --</option>
+                                        @foreach (var category in ViewBag.Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    </select>
+                                </div>
                         </div>
 
 
@@ -151,7 +154,6 @@
                                 <span id="farmer-error" style="color:red; display:none;">You must select a valid farmer from the list.</span>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
