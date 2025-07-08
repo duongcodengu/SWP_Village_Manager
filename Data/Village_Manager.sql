@@ -363,8 +363,7 @@ INSERT INTO Roles (name) VALUES
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789);
 
-select * from Users
-
+-- Các danh mục sản phẩm
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
 (N'Beverages', N'back-end/svg/cup.svg'),
