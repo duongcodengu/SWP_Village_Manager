@@ -1,0 +1,1489 @@
+﻿@using Village_Manager.Models;
+@{
+    ViewData["Title"] = "Dashboard Famer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as List<ProductCategory>;
+}
+@model Village_Manager.Controllers.FamerController.FamerDashboardView
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+
+<body>
+    <!-- User Dashboard Section Start -->
+    <section class="user-dashboard-section section-b-space">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-xxl-3 col-lg-4">
+                    <div class="dashboard-left-sidebar">
+                        <div class="close-button d-flex d-lg-none">
+                            <button class="close-sidebar">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="profile-box">
+                            <div class="cover-image">
+                                <img src="~/images/inner-page/cover-img.jpg" class="img-fluid blur-up lazyload"
+                                     alt="">
+                            </div>
+
+                            <div class="profile-contain">
+                                <div class="profile-image">
+                                    <div class="position-relative">
+                                        <img src="~/images/vendor-page/logo.png"
+                                             class="blur-up lazyload update_img" alt="">
+                                    </div>
+                                </div>
+
+                                <div class="profile-name">
+                                    <li> @Model.Famer.FullName</li>
+                                    <h6 class="text-content">@Model.User.Email</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-pills user-nav-pills" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="#pills-tabContent" class="nav-link active" id="pills-dashboard-tab"
+                                   data-bs-toggle="pill" data-bs-target="#pills-dashboard" role="tab">
+                                    <i data-feather="home"></i>
+                                    DashBoard
+                                </a>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-product-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-product" type="button" role="tab">
+                                    <i data-feather="shopping-bag"></i>Products
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-order-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-order" type="button" role="tab">
+                                    <i data-feather="shopping-bag"></i>Order
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-profile" type="button" role="tab">
+                                    <i data-feather="user"></i>
+                                    Profile
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-security-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-security" type="button" role="tab">
+                                    <i data-feather="settings"></i>
+                                    Setting
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-out-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-out" type="button" role="tab">
+                                    <i data-feather="log-out"></i>
+                                    Log Out
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xxl-9 col-lg-8">
+                    <button class="btn left-dashboard-show btn-animation btn-md fw-bold d-block mb-4 d-lg-none">
+                        Show
+                        Menu
+                    </button>
+                    <div class="dashboard-right-sidebar">
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel">
+                                <div class="dashboard-home">
+                                    <div class="title">
+                                        <h2>My Dashboard</h2>
+                                    </div>
+
+                                    <div class="dashboard-user-name">
+                                        <h6 class="text-content">Hello, <b class="text-title">@Model.Famer.FullName</b></h6>
+                                        <p class="text-content">
+                                            From your My Account Dashboard you have the ability to
+                                            view a snapshot of your recent account activity and update your account
+                                            information. Select a link below to view or edit information.
+                                        </p>
+                                    </div>
+
+                                    <div class="total-box">
+                                        <div class="row g-sm-4 g-3">
+                                            <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                <div class="total-contain">
+                                                    <img src="~/images/svg/order.svg"
+                                                         class="img-1 blur-up lazyload" alt="">
+                                                    <img src="~/images/svg/order.svg" class="blur-up lazyload"
+                                                         alt="">
+                                                    <div class="total-detail">
+                                                        <h5>Số lượng sản phẩm</h5>
+                                                        <h3>@ViewBag.TotalProductTypes</h3>>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                <div class="total-contain">
+                                                    <img src="~/images/svg/pending.svg"
+                                                         class="img-1 blur-up lazyload" alt="">
+                                                    <img src="~/images/svg/pending.svg" class="blur-up lazyload"
+                                                         alt="">
+                                                    <div class="total-detail">
+                                                        <h5>Đã bán</h5>
+                                                        <h3>@ViewBag.TotalSold</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-4 col-lg-6 col-md-4 col-sm-6">
+                                                <div class="total-contain">
+                                                    <img src="~/images/svg/wishlist.svg"
+                                                         class="img-1 blur-up lazyload" alt="">
+                                                    <img src="~/images/svg/wishlist.svg"
+                                                         class="blur-up lazyload" alt="">
+                                                    <div class="total-detail">
+                                                        <h5>Kho</h5>
+                                                        <h3>@ViewBag.TotalQuantityInStock</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-xxl-6">
+                                            <div class="dashboard-bg-box">
+                                                <div id="chart"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6">
+                                            <div class="dashboard-bg-box">
+                                                <div id="sale"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6">
+                                            <div class="table-responsive dashboard-bg-box">
+                                                <div class="dashboard-title mb-4">
+                                                    <h3>Products</h3>
+                                                </div>
+
+                                                <table class="table product-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Images</th>
+                                                            <th scope="col">Product Name</th>
+                                                            <th scope="col">Price</th>
+                                                            <th scope="col">Sale</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model.ProductWithSalesList != null && Model.ProductWithSalesList.Any())
+                                                        {
+                                                            foreach (var item in Model.ProductWithSalesList)
+                                                            {
+                                                                var product = item.Product;
+                                                                <tr>
+                                                                    <td>
+                                                                        @if(product.ProductImages != null && product.ProductImages.Any())
+                                                                        {
+                                                                            <img src="@product.ProductImages.First().ImageUrl" alt="ảnh sản phẩm" width="80"/>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span> không có ảnh</span>
+                                                                        }
+
+                                                                    </td>
+                                                                    <td>@product.Name</td>
+                                                                    <td>@product.Price</td>
+                                                                    <td>@item.SoldQuantity</td>
+                                                                     
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td colspan="6" class="tex-center"> Ban chua co san pham</td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6">
+                                            <div class="order-tab dashboard-bg-box">
+                                                <div class="dashboard-title mb-4">
+                                                    <h3>Recent Order</h3>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table class="table order-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Order ID</th>
+                                                                <th scope="col">Product Name</th>
+                                                                <th scope="col">Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                // Lấy danh sách productId của farmer hiện tại
+                                                                var farmerProductIds = Model.ProductList?.Select(p => p.Id).ToList() ?? new List<int>();
+                                                            }
+                                                            @foreach (var oder in Model.OngoingOrders)
+                                                            {
+                                                                <tr>
+                                                                    <td>@oder.Id</td>
+                                                                    <td>
+                                                                        <ul>
+                                                                            @{
+                                                                                // Lọc các item là sản phẩm của farmer hiện tại
+                                                                                var items = oder.RetailOrderItems
+                                                                                .Where(i => i.Product != null && farmerProductIds.Contains(i.Product.Id))
+                                                                                .GroupBy(i => i.Product.Name)
+                                                                                .Select(g => new { Name = g.Key, Quantity = g.Sum(x => x.Quantity) });
+                                                                            }
+                                                                            @foreach (var item in items)
+                                                                            {
+                                                                                <li>@item.Name </li>
+                                                                            }
+                                                                        </ul>
+                                                                    </td>
+                                                                    <td>@oder.Status</td>
+                                                                </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* tab product *@
+                            <div class="tab-pane fade" id="pills-product" role="tabpanel">
+                                <div class="product-tab">
+                                    <div class="title d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h2 class="mb-0">Tất cả sản phẩm</h2>
+                                        </div>
+
+                                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                                            Đăng ký sản phẩm mới
+                                        </button>
+                                    </div>
+
+
+                                    <div class="table-responsive dashboard-bg-box">
+                                        <table class="table product-table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Ảnh</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Giá</th>
+                                                    <th scope="col">Mô tả</th>
+                                                    <th scope="col">Trạng thái</th>
+                                                    <th scope="col"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="my-products-tbody">
+                                                @* table hien thi list product *@
+                                            </tbody>
+                                        </table>
+
+                                        <nav class="custom-pagination" id="my-pagination" style="display:none">
+                                            <ul class="pagination justify-content-center"></ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                            @* tab product end *@
+
+                            
+
+                            <div class="tab-pane fade" id="pills-order" role="tabpanel">
+                                <div class="dashboard-order">
+                                    <div class="title">
+                                        <h2>All Order</h2>
+                                        <span class="title-leaf title-leaf-gray">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="order-tab dashboard-bg-box">
+                                        <div class="table-responsive">
+                                            <table class="table order-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Order ID</th>
+                                                        <th scope="col">Product Name</th>
+                                                        <th scope="col">Status</th>
+                                                        <th scope="col">Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (Model.OngoingOrders != null && Model.OngoingOrders.Any())
+                                                    {
+                                                        // Lấy danh sách productId của farmer hiện tại
+                                                         farmerProductIds = Model.ProductList?.Select(p => p.Id).ToList() ?? new List<int>();
+
+                                                        foreach (var order in Model.OngoingOrders)
+                                                        {
+                                                            // Lọc các item là sản phẩm của farmer hiện tại
+                                                            var items = order.RetailOrderItems
+                                                            .Where(i => i.Product != null && farmerProductIds.Contains(i.Product.Id))
+                                                            .GroupBy(i => i.Product.Name)
+                                                            .Select(g => new
+                                                            {
+                                                                Name = g.Key,
+                                                                Quantity = g.Sum(x => x.Quantity),
+                                                                Price = g.Sum(x => x.Product.Price * x.Quantity)
+                                                            });
+
+                                                            <tr>
+                                                                <td>@order.Id</td>
+                                                                <td>
+                                                                    <ul>
+                                                                        @foreach (var item in items)
+                                                                        {
+                                                                            <li>@item.Name </li>
+                                                                        }
+                                                                    </ul>
+                                                                </td>
+                                                                <td>@order.Status</td>
+                                                                <td>
+                                                                    @items.Sum(i => i.Price)
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <tr>
+                                                            <td colspan="4" class="text-center">Không có đơn hàng nào đang được đặt.</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <nav class="custom-pagination">
+                                            <ul class="pagination justify-content-center">
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="javascript:void(0)" tabindex="-1">
+                                                        <i class="fa-solid fa-angles-left"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="javascript:void(0)">1</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="javascript:void(0)">2</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="javascript:void(0)">3</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="javascript:void(0)">
+                                                        <i class="fa-solid fa-angles-right"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel">
+                                <div class="dashboard-profile">
+                                    <div class="title">
+                                        <h2>My Profile</h2>
+                                        <span class="title-leaf">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="profile-tab dashboard-bg-box">
+                                        <div class="dashboard-title dashboard-flex">
+                                            <h3>Profile Name</h3>
+                                            <button class="btn btn-sm theme-bg-color text-white" data-bs-toggle="modal"
+                                                    data-bs-target="#edit-profile">
+                                                Edit Profile
+                                            </button>
+                                        </div>
+
+                                        <ul>
+                                            
+                                            </li>
+                                            <li>
+                                                <h5>Email Address :</h5>
+                                                <h5>@Model.User.Email</h5>
+                                            </li>
+                                            <li>
+                                                <h5>Country / Region :</h5>
+                                                <h5>Viet Nam</h5>
+                                            </li>
+
+                                            <li>
+                                                <h5>Year of joining :</h5>
+                                                <h5>@Model.User.CreatedAt</h5>
+                                            </li>
+
+                                          
+
+                                    
+
+                                            <li>
+                                                <h5>State :</h5>
+                                                <h5>@Model.User.Addresses</h5>
+                                            </li>
+
+                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-security" role="tabpanel">
+                                <div class="dashboard-privacy">
+                                    <div class="title">
+                                        <h2>My Setting</h2>
+                                        <span class="title-leaf">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="dashboard-bg-box">
+                                        <div class="dashboard-title mb-4">
+                                            <h3>Notifications</h3>
+                                        </div>
+
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="desktop" name="desktop"
+                                                       checked>
+                                                <label class="form-check-label ms-2" for="desktop">
+                                                    Show
+                                                    Desktop Notifications
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="enable" name="desktop">
+                                                <label class="form-check-label ms-2" for="enable">
+                                                    Enable
+                                                    Notifications
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="activity"
+                                                       name="desktop">
+                                                <label class="form-check-label ms-2" for="activity">
+                                                    Get
+                                                    notification for my own activity
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="dnd" name="desktop">
+                                                <label class="form-check-label ms-2" for="dnd">DND</label>
+                                            </div>
+                                        </div>
+
+                                        <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
+                                            Save
+                                            Changes
+                                        </button>
+                                    </div>
+
+                                    <div class="dashboard-bg-box">
+                                        <div class="dashboard-title mb-4">
+                                            <h3>Deactivate Account</h3>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="concern"
+                                                       name="concern">
+                                                <label class="form-check-label ms-2" for="concern">
+                                                    I have a privacy
+                                                    concern
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="temporary"
+                                                       name="concern">
+                                                <label class="form-check-label ms-2" for="temporary">
+                                                    This is
+                                                    temporary
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="other" name="concern">
+                                                <label class="form-check-label ms-2" for="other">other</label>
+                                            </div>
+                                        </div>
+
+                                        <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
+                                            Deactivate
+                                            Account
+                                        </button>
+                                    </div>
+
+                                    <div class="dashboard-bg-box">
+                                        <div class="dashboard-title mb-4">
+                                            <h3>Delete Account</h3>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="usable" name="usable">
+                                                <label class="form-check-label ms-2" for="usable">
+                                                    No longer
+                                                    usable
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="account" name="usable">
+                                                <label class="form-check-label ms-2" for="account">
+                                                    Want to switch on
+                                                    other
+                                                    account
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="privacy-box">
+                                            <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
+                                                <input class="form-check-input" type="radio" id="other-2" name="usable">
+                                                <label class="form-check-label ms-2" for="other-2">Other</label>
+                                            </div>
+                                        </div>
+
+                                        <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
+                                            Delete My
+                                            Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- User Dashboard Section End -->
+    <!-- Deal Box Modal Start -->
+    <div class="modal fade theme-modal deal-modal" id="deal-box" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title w-100" id="deal_today">Deal Today</h5>
+                        <p class="mt-1 text-content">Recommended deals for you.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="deal-offer-box">
+                        <ul class="deal-offer-list">
+                            <li class="list-1">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-2">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-3">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-1">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Deal Box Modal End -->
+    <!-- Tap to top and theme setting button start -->
+    <div class="theme-option">
+        <div class="setting-box">
+            <button class="btn setting-button">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
+            <div class="theme-setting-2">
+                <div class="theme-box">
+                    <ul>
+                        <li>
+                            <div class="setting-name">
+                                <h4>Color</h4>
+                            </div>
+                            <div class="theme-setting-button color-picker">
+                                <form class="form-control">
+                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
+                                    <input type="color" class="form-control form-control-color" id="colorPick"
+                                           value="#0da487" title="Choose your color">
+                                </form>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>Dark</h4>
+                            </div>
+                            <div class="theme-setting-button">
+                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
+                                <button class="btn btn-2 unline" id="lightButton">Light</button>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top and theme setting button end -->
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- Add address modal box start -->
+    <div class="modal fade theme-modal" id="add-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add a new address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="text" class="form-control" id="fname" placeholder="Enter First Name">
+                            <label for="fname">First Name</label>
+                        </div>
+                    </form>
+
+                    <form>
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="text" class="form-control" id="lname" placeholder="Enter Last Name">
+                            <label for="lname">Last Name</label>
+                        </div>
+                    </form>
+
+                    <form>
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="email" class="form-control" id="email" placeholder="Enter Email Address">
+                            <label for="email">Email Address</label>
+                        </div>
+                    </form>
+
+                    <form>
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <textarea class="form-control" placeholder="Leave a comment here" id="address"
+                                      style="height: 100px"></textarea>
+                            <label for="address">Enter Address</label>
+                        </div>
+                    </form>
+
+                    <form>
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="email" class="form-control" id="pin" placeholder="Enter Pin Code">
+                            <label for="pin">Pin Code</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn theme-bg-color btn-md text-white" data-bs-dismiss="modal">
+                        Save
+                        changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add address modal box end -->
+    <!-- Location Modal Start -->
+    <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Choose your Delivery Location</h5>
+                    <p class="mt-1 text-content">Enter your address and we will specify the offer for your area.</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="location-list">
+                        <div class="search-input">
+                            <input type="search" class="form-control" placeholder="Search Your Area">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+
+                        <div class="disabled-box">
+                            <h6>Select a Location</h6>
+                        </div>
+
+                        <ul class="location-select custom-height">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Alabama</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Arizona</h6>
+                                    <span>Min: $150</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>California</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Colorado</h6>
+                                    <span>Min: $140</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Florida</h6>
+                                    <span>Min: $160</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Georgia</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Kansas</h6>
+                                    <span>Min: $170</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Minnesota</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>New York</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Washington</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Location Modal End -->
+    <!-- Edit Profile Start -->
+    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-xxl-12">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="pname" value="Jack Jennas">
+                                    <label for="pname">Full Name</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="email" class="form-control" id="email1" value="vicki.pope@gmail.com">
+                                    <label for="email1">Email address</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input class="form-control" type="tel" value="4567891234" name="mobile" id="mobile"
+                                           maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
+                                            this.value.slice(0, this.maxLength);">
+                                    <label for="mobile">Email address</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-12">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="address1"
+                                           value="8424 James Lane South San Francisco">
+                                    <label for="address1">Add Address</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-12">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="address2" value="CA 94080">
+                                    <label for="address2">Add Address 2</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <select class="form-select" id="floatingSelect1">
+                                        <option selected>Choose Your Country</option>
+                                        <option value="kingdom">United Kingdom</option>
+                                        <option value="states">United States</option>
+                                        <option value="fra">France</option>
+                                        <option value="china">China</option>
+                                        <option value="spain">Spain</option>
+                                        <option value="italy">Italy</option>
+                                        <option value="turkey">Turkey</option>
+                                        <option value="germany">Germany</option>
+                                        <option value="russian">Russian Federation</option>
+                                        <option value="malay">Malaysia</option>
+                                        <option value="mexico">Mexico</option>
+                                        <option value="austria">Austria</option>
+                                        <option value="hong">Hong Kong SAR, China</option>
+                                        <option value="ukraine">Ukraine</option>
+                                        <option value="thailand">Thailand</option>
+                                        <option value="saudi">Saudi Arabia</option>
+                                        <option value="canada">Canada</option>
+                                        <option value="singa">Singapore</option>
+                                    </select>
+                                    <label for="floatingSelect">Country</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <select class="form-select" id="floatingSelect">
+                                        <option selected>Choose Your City</option>
+                                        <option value="kingdom">India</option>
+                                        <option value="states">Canada</option>
+                                        <option value="fra">Dubai</option>
+                                        <option value="china">Los Angeles</option>
+                                        <option value="spain">Thailand</option>
+                                    </select>
+                                    <label for="floatingSelect">City</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="address3" value="94080">
+                                    <label for="address3">Pin Code</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
+                            data-bs-dismiss="modal">
+                        Save changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Profile End -->
+    <!-- Edit Card Start -->
+    <div class="modal fade theme-modal" id="editCard" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel8">Edit Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="finame" value="Mark">
+                                    <label for="finame">First Name</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="text" class="form-control" id="laname" value="Jecno">
+                                    <label for="laname">Last Name</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <select class="form-select" id="floatingSelect12">
+                                        <option selected>Card Type</option>
+                                        <option value="kingdom">Visa Card</option>
+                                        <option value="states">MasterCard Card</option>
+                                        <option value="fra">RuPay Card</option>
+                                        <option value="china">Contactless Card</option>
+                                        <option value="spain">Maestro Card</option>
+                                    </select>
+                                    <label for="floatingSelect12">Card Type</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Card End -->
+    <!-- Remove Profile Modal Start -->
+    <div class="modal fade theme-modal remove-profile" id="removeProfile" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header d-block text-center">
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box">
+                        <p>
+                            The permission for the use/group, preview is inherited from the object, object will create a
+                            new permission for this object
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
+                            data-bs-target="#removeAddress" data-bs-toggle="modal">
+                        Yes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade theme-modal remove-profile" id="removeAddress" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box text-center">
+                        <h4 class="text-content">It's Removed.</h4>
+                    </div>
+                </div>
+                <div class="modal-footer pt-0">
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Remove Profile Modal End -->
+    <!-- Edit Profile Modal Start -->
+    <div class="modal fade theme-modal" id="edit-profile" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel3">Edit Your Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="companyName" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="companyName" value="Grocery Store">
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailAddress" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="emailAddress" value="joshuadbass@rhyta.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country / Region</label>
+                            <input type="text" class="form-control" id="country" value="107 Veltri Drive">
+                        </div>
+                        <div class="mb-3">
+                            <label for="established" class="form-label">Year Established</label>
+                            <input type="email" class="form-control" id="established" value="2022">
+                        </div>
+                        <div class="mb-3">
+                            <label for="employees" class="form-label">Total Employees</label>
+                            <input type="text" class="form-control" id="employees" value="154 - 360 People">
+                        </div>
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="email" class="form-control" id="category" value="Grocery">
+                        </div>
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street Address</label>
+                            <input type="text" class="form-control" id="street" value="234 High St">
+                        </div>
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City / State</label>
+                            <input type="email" class="form-control" id="city" value="107 Veltri Drive">
+                        </div>
+                        <div class="mb-3">
+                            <label for="zip" class="form-label">Zip</label>
+                            <input type="text" class="form-control" id="zip" value="B23 6SN">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
+                            data-bs-dismiss="modal">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* model chứa form đăng ký bán sản phẩm *@
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form asp-action="AddProduct" asp-controller="Famer" enctype="multipart/form-data" method="post">">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Đăng sản phẩm mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" name="name" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Loại</label>
+                            <select name="product_type" class="form-select" required>
+                                <option value="raw">Raw</option>
+                                <option value="processed">Processed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Danh mục</label>
+                            <select name="category_id" class="form-select" required>
+                                @foreach (var cat in ViewBag.Categories)
+                                {
+                                    <option value="@cat.Id">@cat.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Số lượng</label>
+                            <input type="number" name="quantity" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá</label>
+                            <input type="number" name="price" step="0.01" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngày hết hạn</label>
+                            <input type="date" name="expiration_date" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Thời gian chế biến</label>
+                            <input type="date" name="processing_time" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hình ảnh sản phẩm</label>
+                            <input type="file" name="images" multiple class="form-control" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Mô tả ảnh</label>
+                            <textarea name="image_description" class="form-control"></textarea>
+                        </div>
+                        @if (ViewBag.FarmerId != null)
+                        {
+                            <input type="hidden" name="farmer_id" value="@ViewBag.FarmerId" />
+                            <span class="badge bg-primary">Xin chào, @ViewBag.FarmerName!</span>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning mt-2">
+                                Bạn không phải là farmer.
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success fw-bold" @(ViewBag.FarmerId == null ? "disabled" : "")>
+                            🚀 Gửi yêu cầu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Profile Modal End -->
+    <!-- Modal xác nhận hủy bán -->
+    <div class="modal fade" id="cancelProductModal" tabindex="-1" aria-labelledby="cancelProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="cancelProductForm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelProductModalLabel">Hủy bán sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="productId" id="cancelProductId" />
+                        <div class="mb-3">
+                            <label for="cancelReason" class="form-label">Lý do hủy bán</label>
+                            <textarea class="form-control" name="reason" id="cancelReason" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận hủy bán</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal xác nhận hủy bán end -->
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- jquery ui-->
+    <script src="~/js/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- Apexcharts Js -->
+    <script src="~/js/apexchart.js"></script>
+    <script src="~/js/custom-chart.js"></script>
+
+    <!-- Nav & tab upside js -->
+    <script src="~/js/nav-tab.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+
+    <!-- theme setting js -->
+    <script src="~/js/theme-setting.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Số sản phẩm mỗi trang
+        const PAGE_SIZE = 10;
+        let allProducts = [];
+        let currentPage = 1;
+
+        function renderProductsPage(page) {
+            let start = (page - 1) * PAGE_SIZE;
+            let end = start + PAGE_SIZE;
+            let products = allProducts.slice(start, end);
+
+            var html = '';
+            products.forEach(function(p) {
+                html += '<tr>';
+                html += '<td>' +
+                    (p.imageUrl ? '<img src="' + p.imageUrl + '" class="img-fluid" style="max-width:60px;max-height:60px;object-fit:cover;" alt="">' : 'N/A') +
+                    '</td>';
+                html += '<td>' + p.name + '</td>';
+                html += '<td>' + p.price + '</td>';
+                html += '<td>' + (p.imageDescription ? p.imageDescription : '-') + '</td>';
+                html += '<td>' +
+                    (p.approvalStatus === 'pending' ? '<span class="badge bg-warning">Chờ duyệt</span>' :
+                    p.approvalStatus === 'accepted' ? '<span class="badge bg-success">Đã duyệt</span>' :
+                    p.approvalStatus === 'rejected' ? '<span class="badge bg-danger">Từ chối</span>' :
+                    p.approvalStatus === 'cancelled' ? '<span class="badge bg-secondary">Đã hủy</span>' :
+                    p.approvalStatus) +
+                    '</td>';
+                html += '<td>';
+                if (p.approvalStatus === 'accepted') {
+                    html += '<button class="btn btn-danger btn-sm" onclick="showCancelModal(' + p.id + ')">Hủy bán</button>';
+                } else if (p.approvalStatus === 'pending') {
+                    html += '<span class="text-muted">-</span>';
+                } else if (p.approvalStatus === 'rejected' || p.approvalStatus === 'cancelled') {
+                    html += '<button class="btn btn-success btn-sm" onclick="resellProduct(' + p.id + ')">Bán lại</button>';
+                }
+                html += '</td>';
+                html += '</tr>';
+            });
+            $('#my-products-tbody').html(html);
+        }
+
+        function renderPagination() {
+            let totalPages = Math.ceil(allProducts.length / PAGE_SIZE);
+            let $pagination = $('#my-pagination ul.pagination');
+            if (totalPages <= 1) {
+                $('#my-pagination').hide();
+                return;
+            }
+            $('#my-pagination').show();
+            let html = '';
+            html += `<li class="page-item${currentPage === 1 ? ' disabled' : ''}">
+                        <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${currentPage - 1})">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                    </li>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<li class="page-item${i === currentPage ? ' active' : ''}">
+                            <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${i})">${i}</a>
+                        </li>`;
+            }
+            html += `<li class="page-item${currentPage === totalPages ? ' disabled' : ''}">
+                        <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${currentPage + 1})">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    </li>`;
+            $pagination.html(html);
+        }
+
+        function gotoPage(page) {
+            let totalPages = Math.ceil(allProducts.length / PAGE_SIZE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderProductsPage(currentPage);
+            renderPagination();
+        }
+
+        function loadMyProducts() {
+            $.get('/api/famer/products', function(products) {
+                allProducts = products;
+                currentPage = 1;
+                renderProductsPage(currentPage);
+                renderPagination();
+            });
+        }
+
+        $(document).ready(function() {
+            loadMyProducts();
+
+            // Xử lý submit hủy bán
+            $('#cancelProductForm').on('submit', function(e) {
+                e.preventDefault();
+                var productId = $('#cancelProductId').val();
+                var reason = $('#cancelReason').val();
+                // Gửi AJAX POST lên server (bạn cần tạo API hoặc action cho việc này)
+                $.post('/famer/cancelproduct', { productId: productId, reason: reason }, function(res) {
+                    $('#cancelProductModal').modal('hide');
+                    loadMyProducts();
+                    // Có thể hiện thông báo thành công ở đây
+                });
+            });
+        });
+
+        // Hiển thị modal xác nhận hủy bán
+        function showCancelModal(productId) {
+            $('#cancelProductId').val(productId);
+            $('#cancelReason').val('');
+            $('#cancelProductModal').modal('show');
+        }
+
+        // Thêm hàm bán lại sản phẩm
+        function resellProduct(productId) {
+            if (!confirm('Bạn có chắc chắn muốn bán lại sản phẩm này?')) return;
+            $.post('/famer/resellproduct', { productId: productId }, function(res) {
+                if (res.success) {
+                    loadMyProducts();
+                } else {
+                    alert('Không thể bán lại sản phẩm.');
+                }
+            }).fail(function(xhr) {
+                alert(xhr.responseText || 'Có lỗi xảy ra khi bán lại sản phẩm.');
+            });
+        }
+    </script>
+</body>
+
+</html>

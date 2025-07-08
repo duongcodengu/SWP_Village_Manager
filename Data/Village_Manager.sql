@@ -1,4 +1,4 @@
-﻿-- Tạo tất cả bảng SQL cho hệ thống quản lý nông sản - SQL Server Version
+-- Tạo tất cả bảng SQL cho hệ thống quản lý nông sản - SQL Server Version
 -- 1. Roles
 CREATE TABLE Roles (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -12,29 +12,12 @@ CREATE TABLE Users (
     password NVarchar(255) NOT NULL,
     email NVarchar(100) UNIQUE NOT NULL, -- check trùng email
     role_id INT NOT NULL,
+    HasAcceptedGeolocation BIT NOT NULL DEFAULT 0,
+    Phone Nvarchar(10) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
+    is_active BIT NOT NULL DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
--- dành cho bán lẻ
-CREATE TABLE RetailCustomer (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    full_name NVarchar(100),
-    phone NVarchar(20) UNIQUE NOT NULL, -- check trùng phone
-	CONSTRAINT CK_RetailCustomer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
--- dành cho bán buôn cần xác minh thêm các thông tin doanh nghiệp
-CREATE TABLE WholesaleCustomer (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    company_name NVarchar(100) UNIQUE NOT NULL, -- check trùng
-    contact_person NVarchar(100) NOT NULL, -- bắt buộc phải có
-    phone NVarchar(20) UNIQUE NOT NULL, -- check trùng phone
-	CONSTRAINT CK_WholesaleCustomer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
 -- 3. Farmer
 CREATE TABLE Farmer (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -54,6 +37,9 @@ CREATE TABLE Shipper (
     phone NVarchar(20) UNIQUE NOT NULL, -- check trùng
 	CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
     vehicle_info TEXT, -- bắt buộc phải có
+	status NVARCHAR(50) 
+    CONSTRAINT DF_status DEFAULT 'pending',
+    CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected', 'inactive')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
@@ -75,6 +61,8 @@ CREATE TABLE Product (
     quantity INT NOT NULL,
     processing_time DATE,
     farmer_id INT,
+	-- thêm thuộc tính này
+	approval_status NVARCHAR(20) DEFAULT 'pending' CHECK (approval_status IN ('pending', 'accepted', 'rejected')),
     FOREIGN KEY (category_id) REFERENCES ProductCategory(id),
     FOREIGN KEY (farmer_id) REFERENCES Farmer(id)
 );
@@ -89,33 +77,23 @@ CREATE TABLE ProductImage (
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
--- 7. Warehouse
-CREATE TABLE Warehouse (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    name NVarchar(100) UNIQUE NOT NULL,
-    location TEXT
-);
 
 -- 8. Stock kho hàng
 CREATE TABLE Stock (
     id INT PRIMARY KEY IDENTITY(1,1),
-    warehouse_id INT,
     product_id INT,
     quantity INT,
     last_updated DATETIME,
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(id),
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
 -- 9. hóa đơn nhập khẩu
 CREATE TABLE ImportInvoice (
     id INT PRIMARY KEY IDENTITY(1,1),
-    warehouse_id INT,
     supplier_name NVarchar(100),
     total_amount DECIMAL(12,2),
     created_at DATETIME,
 	purchase_time DATETIME,
-    FOREIGN KEY (warehouse_id) REFERENCES Warehouse(id)
 );
 
 -- 10. chi tiết hóa đơn nhập khảu
@@ -126,27 +104,6 @@ CREATE TABLE ImportInvoiceDetail (
     quantity INT,
     unit_price DECIMAL(10,2),
     FOREIGN KEY (import_invoice_id) REFERENCES ImportInvoice(id),
-    FOREIGN KEY (product_id) REFERENCES Product(id)
-);
-
--- 11. đơn bán buôn
-CREATE TABLE WholesaleOrder (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
-    order_date DATETIME,
-    status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned')),
-	confirmed_at DATETIME, -- xác nhận đơn hàng
-    FOREIGN KEY (user_id) REFERENCES Users(id)
-);
-
--- 12. WholesaleOrderItem
-CREATE TABLE WholesaleOrderItem (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    order_id INT,
-    product_id INT,
-    quantity INT,
-    unit_price DECIMAL(10,2),
-    FOREIGN KEY (order_id) REFERENCES WholesaleOrder(id),
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
@@ -187,18 +144,6 @@ CREATE TABLE CartItem (
     quantity INT,
     FOREIGN KEY (cart_id) REFERENCES Cart(id),
     FOREIGN KEY (product_id) REFERENCES Product(id)
-);
-
--- 17. Delivery -- bỏ Delivery_status bảng này chỉ những đơn deli r mới lưu vào đây ko cần status
-CREATE TABLE Delivery (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
-    order_id INT,
-    shipper_id INT,
-    shipping_fee DECIMAL(10,2),
-    start_time DATETIME,
-    end_time DATETIME,
-    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
 
 -- 18. ProcessingOrder
@@ -251,7 +196,7 @@ CREATE TABLE Feedback (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     order_id INT,
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     content TEXT,
     rating INT,
     created_at DATETIME,
@@ -274,7 +219,7 @@ CREATE TABLE Payment (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     order_id INT,
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     amount DECIMAL(10,2),
     paid_at DATETIME,
     method NVarchar(50) CHECK (method IN ('cash', 'card', 'bank_transfer')),
@@ -334,9 +279,7 @@ CREATE TABLE Staff (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     role NVarchar(100),
-    assigned_warehouse_id INT,
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (assigned_warehouse_id) REFERENCES Warehouse(id)
 );
 
 -- 30. Supplier
@@ -349,7 +292,7 @@ CREATE TABLE Supplier (
 -- hoàn hàng 
 CREATE TABLE ReturnOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
-    order_type NVarchar(10) CHECK (order_type IN ('retail', 'wholesale', 'import')),
+    order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
     order_id INT, -- bắt buộc phải kiểm tra trong code order_type 
     user_id INT,
     quantity INT,
@@ -357,23 +300,123 @@ CREATE TABLE ReturnOrder (
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+------------------------------------ADD Table--------------------------------------------------------------
 
+CREATE TABLE SupplyRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),   
+    requester_type NVARCHAR(10) CHECK (requester_type IN ('admin', 'farmer')) NOT NULL,
+    requester_id INT NOT NULL,   
+    receiver_id INT NOT NULL,   
+    farmer_id INT NOT NULL,     
+    product_name NVARCHAR(100) NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2), -- giá đề xuất
+    status NVARCHAR(20) CHECK (status IN ('pending', 'accepted', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+    responded_at DATETIME NULL,
+    FOREIGN KEY (requester_id) REFERENCES Users(id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(id),
+    FOREIGN KEY (farmer_id) REFERENCES Farmer(id),
+);
 
+CREATE TABLE FarmerRegistrationRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,	
+    full_name NVARCHAR(100) NOT NULL,
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+    reviewed_at DATETIME NULL,
+    reviewed_by INT NULL, -- admin user_id
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES Users(id)
+);
+CREATE TABLE ShipperRegistrationRequest (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,	
+    full_name NVARCHAR(100) NOT NULL,
+    phone NVARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    requested_at DATETIME DEFAULT GETDATE(),
+	vehicle_info TEXT, -- bắt buộc phải có
+    reviewed_at DATETIME NULL,
+    reviewed_by INT NULL, -- admin user_id
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES Users(id)
+);
+
+CREATE TABLE UserLocations (
+    Id INT PRIMARY KEY IDENTITY,
+    UserId int NOT NULL,
+    Label NVARCHAR(100),             
+    Address NVARCHAR(255),           
+    Latitude FLOAT NOT NULL,
+    Longitude FLOAT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (UserId) REFERENCES Users(Id)
+);
+
+CREATE TABLE Delivery (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    order_type NVARCHAR(10) CHECK (order_type IN ('retail', 'import')),
+    order_id INT,
+    shipper_id INT,
+    shipping_fee DECIMAL(10,2),
+    start_time DATETIME,
+    end_time DATETIME,
+    status NVARCHAR(50) CHECK (status IN ('assigned', 'in_transit', 'delivered', 'failed')), -- trạng thái đơn giao
+    customer_name NVARCHAR(100),      -- tên khách hàng nhận
+    customer_address NVARCHAR(255),   -- địa chỉ giao hàng
+    customer_phone NVARCHAR(20),      -- số điện thoại khách
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
+);
+
+CREATE TABLE DeliveryIssue (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    delivery_id INT,
+    shipper_id INT,
+    issue_type NVARCHAR(50),
+    description NVARCHAR(255),
+    reported_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES Delivery(id),
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
+);
+
+CREATE TABLE DeliveryProof (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    delivery_id INT,
+    shipper_id INT,
+    image_path NVARCHAR(255),
+    note NVARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES Delivery(id),
+    FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
+);
+
+CREATE TABLE ContactMessages (
+    Id INT PRIMARY KEY IDENTITY,
+    FirstName NVARCHAR(100),
+    LastName NVARCHAR(100),
+    Email NVARCHAR(150),
+    PhoneNumber NVARCHAR(20),
+    Message NVARCHAR(MAX),
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES
 ('admin'),
-('wholesale_staff'),
-('wholesale_customer'),
-('retail_staff'),
-('retail_customer'),
-('warehouse_staff'),
+('staff'),
+('customer'),
 ('shipper'),
 ('farmer');
 
-INSERT INTO Users (username, password, email, role_id)
-VALUES (N'admin', N'admin123', N'admin@example.com', 1);
+INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
+VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789);
 
+-- Các danh mục sản phẩm
 
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
@@ -383,4 +426,6 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Frozen Foods', N'back-end/svg/frozen.svg'),
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
+
+
 

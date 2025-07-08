@@ -1,0 +1,95 @@
+@model List<Village_Manager.Models.Dto.LogViewModel>
+@{
+    ViewData["Title"] = "Lịch sử hoạt động";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="page-wrapper compact-wrapper" id="pageWrapper">
+    <div class="page-body-wrapper">
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card card-table">
+                            <div class="card-body">
+                                <div class="title-header option-title">
+                                    <h5>Lịch sử hoạt động người dùng</h5>
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="text" id="searchInput" class="form-control"
+                                           placeholder="Tìm kiếm theo tên người dùng hoặc hành động...">
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered theme-table text-center align-middle" id="logTable">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Thời gian</th>
+                                                <th>Người dùng</th>
+                                                <th>Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td colspan="3">Không có dữ liệu lịch sử hoạt động.</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                foreach (var log in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@(log.CreatedAt?.ToString("dd/MM/yyyy HH:mm:ss"))</td>
+                                                        <td>@log.Username</td>
+                                                        <td>@log.Action</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <span>Trang @(ViewBag.CurrentPage) / @(ViewBag.TotalPages)</span>
+                                    <div class="d-inline-block ms-3">
+                                        @if (ViewBag.CurrentPage > 1)
+                                        {
+                                            <a class="btn btn-secondary mx-1"
+                                               href="@Url.Action("Logs", new { page = ViewBag.CurrentPage - 1 })">Trước</a>
+                                        }
+                                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                        {
+                                            <a class="btn btn-secondary mx-1"
+                                               href="@Url.Action("Logs", new { page = ViewBag.CurrentPage + 1 })">Sau</a>
+                                        }
+                                    </div>
+                                </div>
+
+                            </div> <!-- card-body -->
+                        </div> <!-- card -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const tableRows = document.querySelectorAll("#logTable tbody tr");
+
+            searchInput.addEventListener("input", function () {
+                const keyword = this.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(keyword) ? "" : "none";
+                });
+            });
+        });
+    </script>
+}

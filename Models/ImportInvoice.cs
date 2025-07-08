@@ -7,8 +7,6 @@ public partial class ImportInvoice
 {
     public int Id { get; set; }
 
-    public int? WarehouseId { get; set; }
-
     public string? SupplierName { get; set; }
 
     public decimal? TotalAmount { get; set; }
@@ -18,6 +16,4 @@ public partial class ImportInvoice
     public DateTime? PurchaseTime { get; set; }
 
     public virtual ICollection<ImportInvoiceDetail> ImportInvoiceDetails { get; set; } = new List<ImportInvoiceDetail>();
-
-    public virtual Warehouse? Warehouse { get; set; }
 }

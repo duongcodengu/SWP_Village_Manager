@@ -1,0 +1,283 @@
+
+﻿@using Village_Manager.Models
+@{
+    ViewData["Title"] = "Add Product";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+    var farmers = ViewBag.Farmers as List<Farmer>;
+    var categories = ViewBag.Categories as List<ProductCategory>;
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <!-- meta data -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <title>Fastkart - Add New Product</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+
+    <!-- Themify icon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
+
+    <!--Dropzon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/dropzone.css">
+
+    <!-- Feather icon css-->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+
+    <!-- Select2 css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/select2.min.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/chartist.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/date-picker.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
+
+    <!-- Bootstrap-tag input css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap-tagsinput.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+</head>
+
+<body>
+    <!-- tap on top start -->
+    <div class="tap-top">
+        <span class="lnr lnr-chevron-up"></span>
+    </div>
+    <!-- tap on tap end -->
+    <!-- page-wrapper start -->
+        <!-- Page Body start -->
+        <div class="page-body-wrapper">
+
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+            <form class="theme-form theme-form-2 mega-form" method="POST" action="/addproduct" enctype="multipart/form-data">
+                <!-- Product Information -->
+                @Html.AntiForgeryToken()
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header-2"><h5>Product Information</h5></div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Product Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Product Type</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="product_type" required>
+                                    <option value="processed">Processed</option>
+                                    <option value="raw">Raw</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Category</label>
+                                <div class="col-sm-9">
+                                    <select name="category_id" class="form-control" required>
+                                        <option disabled>-- Select Category --</option>
+                                        @foreach (var category in ViewBag.Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                        </div>
+
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Quantity</label>
+                            <div class="col-sm-9">
+                                <input type="number" name="quantity" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Price</label>
+                            <div class="col-sm-9">
+                                <input type="number" name="price" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Expiration Date</label>
+                            <div class="col-sm-9">
+                                <input type="date" name="expiration_date" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Processing Time</label>
+                            <div class="col-sm-9">
+                                <input type="date" name="processing_time" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Farmer</label>
+                            <div class="col-sm-9 d-flex">
+                                <input type="hidden" name="farmer_id" id="farmer_id" />
+                                <input type="text" class="form-control" id="farmer_name" name="farmer_name"
+                                       placeholder="Search farmer by name..." autocomplete="off" style="flex: 1;" />
+                            </div>
+                            <div class="col-sm-9 offset-sm-3">
+                                <span id="farmer-error" style="color:red; display:none;">You must select a valid farmer from the list.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Images -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header-2"><h5>Product Images</h5></div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Images</label>
+                            <div class="col-sm-9">
+                                <input type="file" name="images" class="form-control" multiple accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="mb-4 row">
+                            <label class="col-sm-3">Image Description</label>
+                            <div class="col-sm-9">
+                                <textarea name="image_description" class="form-control" rows="3" placeholder="Optional image description..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success">Add Product</button>
+                </div>
+            </form>
+
+
+                <!-- New Product Add End -->
+            </div>
+            <!-- Container-fluid End -->
+        </div>
+        <!-- Page Body End -->
+    </div>
+    <!-- page-wrapper End -->
+    <!-- Modal Start -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                    <p>Are you sure you want to log out?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="button-box">
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" onclick="location.href = 'login.html';"
+                                class="btn  btn--yes btn-primary">
+                            Yes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
+        <style>
+            .ui-autocomplete {
+                z-index: 9999;
+                background: white;
+                border: 1px solid #ccc;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        </style>
+
+        <script>
+                        $(function () {
+                let validFarmerSelected = false;
+
+                $("#farmer_name").autocomplete({
+                    minLength: 1,
+                    delay: 0,
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "/api/farmersearch",
+                            data: { term: request.term },
+                            success: function (data) {
+                                response(data);
+                            }
+                        });
+                    },
+                    select: function (event, ui) {
+                        $("#farmer_id").val(ui.item.id);
+                        $("#farmer_name").val(ui.item.label);
+                        validFarmerSelected = true;
+                        $("#farmer-error").hide();
+                        return false;
+                    },
+                    focus: function (event, ui) {
+                        $("#farmer_name").val(ui.item.label);
+                        return false;
+                    },
+                    close: function () {
+                        // Nếu người dùng không chọn gì từ dropdown
+                        if (!validFarmerSelected) {
+                            $("#farmer_id").val('');
+                            $("#farmer_name").val('');
+                            $("#farmer-error").show();
+                        }
+                    }
+                });
+
+                $("#farmer_name").on("input", function () {
+                    validFarmerSelected = false; // ✅ reset lại nếu người dùng tự gõ lại
+                });
+
+                $("form").on("submit", function (e) {
+                    if (!validFarmerSelected || !$("#farmer_id").val()) {
+                        e.preventDefault();
+                        $("#farmer-error").show();
+                        $("#farmer_name").focus();
+                    }
+                });
+            });
+        </script>
+    }
+</body>
+
+</html>

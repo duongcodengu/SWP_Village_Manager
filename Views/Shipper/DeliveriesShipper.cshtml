@@ -1,0 +1,208 @@
+@model List<Village_Manager.Models.Delivery>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Đơn hàng cần giao";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+<body>
+<div class="card shadow rounded-4 p-4">
+    <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-truck me-2"></i>Đơn hàng cần giao</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Địa chỉ</th>
+                    <th>Trạng thái</th>
+                    <th>Thời gian</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var delivery in Model)
+                    {
+                        <tr>
+                            <td>#@delivery.OrderId</td>
+                            <td>@delivery.CustomerName</td>
+                            <td>@delivery.CustomerAddress</td>
+                            <td>
+                                @if (delivery.Status == "assigned")
+                                {
+                                    <span class="badge bg-warning text-dark">Chờ giao</span>
+                                }
+                                else if (delivery.Status == "in_transit")
+                                {
+                                    <span class="badge bg-info text-dark">Đang giao</span>
+                                }
+                            </td>
+                            <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
+                            <td>
+                                @if (delivery.Status == "assigned")
+                                {
+                                    <form method="post" action="/Shipper/StartDelivery" style="display: inline;">
+                                        <input type="hidden" name="id" value="@delivery.Id" />
+                                        <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Bắt đầu giao hàng?')">
+                                            <i class="fa fa-play"></i> Bắt đầu giao
+                                        </button>
+                                    </form>
+                                }
+                                else if (delivery.Status == "in_transit")
+                                {
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)">
+                                        <i class="fa fa-check"></i> Xác nhận giao
+                                    </button>
+                                }
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#issueModal@(delivery.Id)">
+                                    <i class="fa fa-exclamation-triangle"></i> Báo sự cố
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Không có đơn hàng cần giao.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+        <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
+</div>
+
+<!-- Modal báo sự cố cho từng đơn hàng -->
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var delivery in Model)
+    {
+        <div class="modal fade" id="issueModal@(delivery.Id)" tabindex="-1" aria-labelledby="issueModalLabel@(delivery.Id)" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="issueModalLabel@(delivery.Id)">Báo cáo sự cố - Đơn #@delivery.OrderId</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" action="/Shipper/ReportIssue">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" value="@delivery.Id" />
+                            <div class="mb-3">
+                                <label for="reason@(delivery.Id)" class="form-label">Lý do sự cố:</label>
+                                <textarea class="form-control" id="reason@(delivery.Id)" name="reason" rows="3" required placeholder="Mô tả chi tiết sự cố gặp phải..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-danger">Gửi báo cáo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- Modal xác nhận giao hàng có upload bằng chứng -->
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var delivery in Model)
+    {
+        if (delivery.Status == "in_transit")
+        {
+            <div class="modal fade" id="proofModal@(delivery.Id)" tabindex="-1" aria-labelledby="proofModalLabel@(delivery.Id)" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="proofModalLabel@(delivery.Id)">Xác nhận giao hàng - Đơn #@delivery.OrderId</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" enctype="multipart/form-data" action="/Shipper/ConfirmDeliveryProof">
+                            <div class="modal-body">
+                                <input type="hidden" name="id" value="@delivery.Id" />
+                                <div class="mb-3">
+                                    <label for="proofImage@(delivery.Id)" class="form-label">Ảnh bằng chứng (nếu có):</label>
+                                    <input type="file" class="form-control" id="proofImage@(delivery.Id)" name="proofImage" accept="image/*" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="note@(delivery.Id)" class="form-label">Ghi chú:</label>
+                                    <textarea class="form-control" id="note@(delivery.Id)" name="note" rows="2" placeholder="Ghi chú thêm (nếu có)..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-primary">Xác nhận giao</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+</body>
+<!-- latest jquery-->
+<script src="~/js/jquery-3.6.0.min.js"></script>
+
+<!-- jquery ui-->
+<script src="~/js/jquery-ui.min.js"></script>
+
+<!-- Bootstrap js-->
+<script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+<script src="~/js/bootstrap/popper.min.js"></script>
+
+<!-- feather icon js-->
+<script src="~/js/feather/feather.min.js"></script>
+<script src="~/js/feather/feather-icon.js"></script>
+
+<!-- Lazyload Js -->
+<script src="~/js/lazysizes.min.js"></script>
+
+<!-- Slick js-->
+<script src="~/js/slick/slick.js"></script>
+<script src="~/js/slick/custom_slick.js"></script>
+
+<!-- Apexcharts Js -->
+<script src="~/js/apexchart.js"></script>
+<script src="~/js/custom-chart.js"></script>
+
+<!-- Nav & tab upside js -->
+<script src="~/js/nav-tab.js"></script>
+
+<!-- script js -->
+<script src="~/js/script.js"></script>
+
+<!-- theme setting js -->
+<script src="~/js/theme-setting.js"></script>
+</html>

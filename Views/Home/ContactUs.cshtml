@@ -1,0 +1,253 @@
+﻿@{
+    ViewData["Title"] = "Sign Up";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+
+<body>
+    <!-- Contact Box Section Start -->
+    <section class="contact-box-section">
+        <div class="container-fluid-lg">
+            <div class="row g-lg-5 g-3">
+                <div class="col-lg-6">
+                    <div class="left-sidebar-box">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                <div class="contact-image">
+                                    <img src="~/images/inner-page/contact-us.png"
+                                         class="img-fluid blur-up lazyloaded" alt="">
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="contact-title">
+                                    <h3>Get In Touch</h3>
+                                </div>
+
+                                <div class="contact-detail">
+                                    <div class="row g-4">
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="contact-detail-box">
+                                                <div class="contact-icon">
+                                                    <i class="fa-solid fa-phone"></i>
+                                                </div>
+                                                <div class="contact-detail-title">
+                                                    <h4>Phone</h4>
+                                                </div>
+
+                                                <div class="contact-detail-contain">
+                                                    <p>(+1) 618 190 496</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="contact-detail-box">
+                                                <div class="contact-icon">
+                                                    <i class="fa-solid fa-envelope"></i>
+                                                </div>
+                                                <div class="contact-detail-title">
+                                                    <h4>Email</h4>
+                                                </div>
+
+                                                <div class="contact-detail-contain">
+                                                    <p>geweto9420@chokxus.com</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="contact-detail-box">
+                                                <div class="contact-icon">
+                                                    <i class="fa-solid fa-location-dot"></i>
+                                                </div>
+                                                <div class="contact-detail-title">
+                                                    <h4>London Office</h4>
+                                                </div>
+
+                                                <div class="contact-detail-contain">
+                                                    <p>Cruce Casa de Postas 29</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                            <div class="contact-detail-box">
+                                                <div class="contact-icon">
+                                                    <i class="fa-solid fa-building"></i>
+                                                </div>
+                                                <div class="contact-detail-title">
+                                                    <h4>Bournemouth Office</h4>
+                                                </div>
+
+                                                <div class="contact-detail-contain">
+                                                    <p>Visitación de la Encina 22</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="col-lg-6">
+                    <div class="title d-xxl-none d-block">
+                        <h2>Contact Us</h2>
+                    </div>
+                    <div class="right-sidebar-box">
+                        <form method="post" action="/contact-us">
+                            <div class="row">
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="firstName" class="form-label">Họ</label>
+                                        <div class="custom-input">
+                                            <input type="text" class="form-control" id="firstName" name="FirstName"
+                                                   placeholder="Enter First Name">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="lastName" class="form-label">Tên</label>
+                                        <div class="custom-input">
+                                            <input type="text" class="form-control" id="lastName" name="LastName"
+                                                   placeholder="Enter Last Name">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="email" class="form-label">Email</label>
+                                        <div class="custom-input">
+                                            <input type="email" class="form-control" id="email" name="Email"
+                                                   placeholder="Enter Email Address">
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xxl-6 col-lg-12 col-sm-6">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="phone" class="form-label">Số điện thoại</label>
+                                        <div class="custom-input">
+                                            <input type="tel" class="form-control" id="phone" name="PhoneNumber"
+                                                   placeholder="Enter Your Phone Number" maxlength="10"
+                                                   oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+                                            <i class="fa-solid fa-mobile-screen-button"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="mb-md-4 mb-3 custom-form">
+                                        <label for="message" class="form-label">Lời nhắn</label>
+                                        <div class="custom-textarea">
+                                            <textarea class="form-control" id="message" name="Message"
+                                                      placeholder="Enter Your Message" rows="6"></textarea>
+                                            <i class="fa-solid fa-message"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-animation btn-md fw-bold ms-auto">Gửi tin nhắn</button>
+                            <div class="col-12">
+                                @if (TempData["Success"] != null)
+                                {
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        @TempData["Success"]
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Box Section End -->
+    <!-- Map Section Start -->
+    <section class="map-section mt-4">
+        <div class="container-fluid p-0">
+            <div class="map-box">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4650.78315366017!2d105.52271427601946!3d21.01242168833807!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135abc60e7d3f19%3A0x2be9d7d0b5abcbf4!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBGUFQgSMOgIE7hu5lp!5e1!3m2!1svi!2s!4v1751922793882!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        width="100%"
+                        height="450"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </section>
+    <!-- Map Section End -->
+
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- jquery ui-->
+    <script src="~/js/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+    <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- Wizard js -->
+    <script src="~/js/wizard.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+
+    <!-- theme setting js -->
+    <script src="~/js/theme-setting.js"></script>
+</body>
+
+</html>

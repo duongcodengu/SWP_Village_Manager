@@ -1,16 +1,12 @@
-﻿@{
+@inject Village_Manager.Data.AppDbContext _context
+@{
+
     var roleName = Context.Session.GetString("RoleName");
 }
-@using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Village_Manager.styles.css" asp-append-version="true" />
-    <title>@ViewData["Title"] - Fastkart</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,47 +17,48 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Dashboard</title>
-
+    <title>Fastkart - All User</title>
     <!-- Google font-->
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
 
     <!-- Linear Icon css -->
     <link rel="stylesheet" href="~/back-end/css/linearicon.css">
 
-    <!-- fontawesome css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+
+    <!-- Data Table css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
 
     <!-- Themify icon css-->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
 
-    <!-- ratio css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/ratio.css">
-
-    <!-- remixicon css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
-
-    <!-- Feather icon css-->
+    <!-- Feather icon css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
 
     <!-- Plugins css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
 
-    <!-- Bootstrap css-->
+    <!-- Bootstrap css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
-
-    <!-- vector map css -->
-    <link rel="stylesheet" type="text/css" href="~/back-end/css/vector-map.css">
-
-    <!-- Slick Slider Css -->
-    <link rel="stylesheet" href="~/back-end/css/vendors/slick.css">
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+
 </head>
+
 <body>
+    <!-- tap on top start -->
+    <div class="tap-top">
+        <span class="lnr lnr-chevron-up"></span>
+    </div>
+    <!-- tap on tap end -->
+    <!-- page-wrapper Start-->
     <div class="page-wrapper compact-wrapper" id="pageWrapper">
         <!-- Page Header Start-->
         <div class="page-header">
@@ -80,121 +77,216 @@
                         </a>
                     </div>
                 </div>
-
-                <form class="form-inline search-full" action="javascript:void(0)" method="get">
-                    <div class="form-group w-100">
-                        <div class="Typeahead Typeahead--twitterUsers">
-                            <div class="u-posRelative">
-                                <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                       placeholder="Search Fastkart .." name="q" title="" autofocus>
-                                <i class="close-search" data-feather="x"></i>
-                                <div class="spinner-border Typeahead-spinner" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="Typeahead-menu"></div>
-                        </div>
-                    </div>
-                </form>
+                @* thông báo *@
                 <div class="nav-right col-6 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <li>
-                            <span class="header-search">
-                                <i class="ri-search-line"></i>
-                            </span>
-                        </li>
                         <li class="onhover-dropdown">
                             <div class="notification-box">
                                 <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
+                                <span class="badge rounded-pill badge-theme" id="notif-badge">0</span>
                             </div>
-                            <ul class="notification-dropdown onhover-show-div">
+
+                            <ul class="notification-dropdown onhover-show-div" id="notif-dropdown">
                                 <li>
                                     <i class="ri-notification-line"></i>
-                                    <h6 class="f-18 mb-0">Notitications</h6>
+                                    <h6 class="f-18 mb-0">Thông báo</h6>
                                 </li>
                                 <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
+                                    <p class="text-center text-muted"></p>
                                 </li>
                             </ul>
                         </li>
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function () {
+                                function loadNotifications() {
+                                    fetch("/api/notificationapi/all-unread")
+                                        .then(res => {
+                                            if (!res.ok) throw new Error("Lỗi API");
+                                            return res.json();
+                                        })
+                                        .then(data => {
+                                            const badge = document.getElementById("notif-badge");
+                                            const dropdown = document.getElementById("notif-dropdown");
 
-                        <li>
-                            <div class="mode">
-                                <i class="ri-moon-line"></i>
-                            </div>
-                        </li>
-                        @{
-                            // lay session tu context
-                            var username = Context.Session.GetString("Username");
-                        }
-                        <li class="profile-nav onhover-dropdown pe-0 me-0">
-                            <div class="media profile-media">
-                                <img class="user-profile rounded-circle" src="~/back-end/images/users/4.jpg" alt="">
-                                <div class="user-name-hide media-body">
-                                    <span>@(string.IsNullOrEmpty(username) ? "My Account" : username)</span>
-                                    <p class="mb-0 font-roboto">@(string.IsNullOrEmpty(roleName) ? "" : roleName)<i class="middle ri-arrow-down-s-line"></i></p>
-                                </div>
-                            </div>
-                            <ul class="profile-dropdown onhover-show-div">
+                                            badge.textContent = data.unreadCount ?? 0;
+
+                                            // Render header + nút
+                                            dropdown.innerHTML = `
+                                                <li>
+                                                    <i class="ri-notification-line"></i>
+                                                    <h6 class="f-18 mb-0">Thông báo</h6>
+                                                    <div class="d-flex gap-2 mt-2">
+                                                        <button class="btn btn-sm btn-outline-danger notif-red-btn" id="notif-readall-btn">Đọc tất cả</button>
+                                                        <button class="btn btn-sm btn-outline-warning notif-yellow-btn" id="notif-showall-btn">Xem tất cả</button>
+                                                    </div>
+                                                </li>
+                                            `;
+
+                                            if (!data.notifications || data.notifications.length === 0) {
+                                                dropdown.innerHTML += `<li><p class="text-center text-muted">Không có thông báo nào.</p></li>`;
+                                            } else {
+                                                data.notifications.forEach(n => {
+                                                    dropdown.innerHTML += `
+                                                        <li>
+                                                            <p class="notif-item${n.is_read ? ' text-muted' : ' fw-bold'}"
+                                                                data-id="${n.id}" style="cursor:pointer;">
+                                                                <i class="fa fa-circle me-2 font-info"></i>
+                                                                ${n.content}
+                                                            </p>
+                                                        </li>`;
+                                                });
+                                            }
+
+                                            // Gán sự kiện cho từng thông báo
+                                            dropdown.querySelectorAll('.notif-item').forEach(item => {
+                                                item.addEventListener('click', function () {
+                                                    const notifId = this.getAttribute('data-id');
+                                                    fetch(`/api/notificationapi/read/${notifId}`, { method: 'POST' })
+                                                        .then(() => {
+                                                            this.classList.remove('fw-bold');
+                                                            this.classList.add('text-muted');
+                                                            loadNotifications(); // reload lại để cập nhật badge
+                                                        });
+                                                });
+                                            });
+
+                                            // Gán sự kiện cho nút Đọc tất cả
+                                            const readAllBtn = document.getElementById('notif-readall-btn');
+                                            if (readAllBtn) {
+                                                readAllBtn.onclick = function () {
+                                                    fetch('/api/notificationapi/readall', { method: 'POST' })
+                                                        .then(() => loadNotifications());
+                                                };
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error("Lỗi khi tải thông báo:", error);
+                                            document.getElementById("notif-dropdown").innerHTML += `
+                                                <li><p class="text-center text-danger">Không thể tải thông báo.</p></li>`;
+                                        });
+                                }
+
+                                loadNotifications();
+                                // tự động reload thông báo mỗi 30 giây:
+                                setInterval(loadNotifications, 30000);
+                            });
+                        </script>
+                        <script>
+                            // Sự kiện cho nút "Xem tất cả"
+                            document.addEventListener("click", function (e) {
+                                if (e.target && e.target.id === "notif-showall-btn") {
+                                    fetch("/api/notificationapi/all?all=true")
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            const list = document.getElementById("all-notifications-list");
+                                            if (!data.notifications || data.notifications.length === 0) {
+                                                list.innerHTML = `<p class="text-center text-muted">Không có thông báo nào.</p>`;
+                                            } else {
+                                                let html = '<ul class="list-group">';
+                                                data.notifications.forEach(n => {
+                                                    const time = new Date(n.created_at).toLocaleString("vi-VN");
+                                                    html += `
+                                                        <li class="list-group-item${n.is_read ? ' text-muted' : ' fw-bold'}">
+                                                            <i class="fa fa-circle me-2 font-info"></i>
+                                                            ${n.content}
+                                                        </li>`;
+                                                });
+                                                html += '</ul>';
+                                                list.innerHTML = html;
+                                            }
+                                            // Hiện modal
+                                            $('#allNotificationsModal').modal('show');
+                                        });
+                                }
+                            });
+                        </script>
+                        <style>
+                            .notif-red-btn {
+                                border-color: #dc3545 !important;
+                                color: #dc3545 !important;
+                                background: #fff !important;
+                            }
+
+                                .notif-red-btn:hover, .notif-red-btn:focus {
+                                    background: #dc3545 !important;
+                                    color: #fff !important;
+                                    border-color: #dc3545 !important;
+                                }
+
+                            .notif-yellow-btn {
+                                border-color: #ffc107 !important;
+                                color: #ffc107 !important;
+                                background: #fff !important;
+                            }
+
+                                .notif-yellow-btn:hover, .notif-yellow-btn:focus {
+                                    background: #ffc107 !important;
+                                    color: #fff !important;
+                                    border-color: #ffc107 !important;
+                                }
+                        </style>
+                        <div class="nav-right col-6 pull-right right-header p-0">
+                            <ul class="nav-menus">
                                 <li>
-                                    <a href="~/alluser">
-                                        <i data-feather="users"></i>
-                                        <span>Users</span>
-                                    </a>
+                                    <span class="header-search">
+                                        <i class="ri-search-line"></i>
+                                    </span>
                                 </li>
-                                <li>
-                                    <a href="order-list.html">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="">
-                                        <i data-feather="log-out"></i>
-                                        <span>Log out</span>
-                                    </a>
+                                @{
+                                    // lay session tu context
+                                    var username = Context.Session.GetString("Username");
+                                }
+                                <li class="profile-nav onhover-dropdown pe-0 me-0">
+                                    <div class="media profile-media">
+                                        <img class="user-profile rounded-circle" src="~/back-end/images/users/4.jpg" alt="">
+                                        <div class="user-name-hide media-body">
+                                            <span>@(string.IsNullOrEmpty(username) ? "My Account" : username)</span>
+                                            <p class="mb-0 font-roboto">@(string.IsNullOrEmpty(roleName) ? "" : roleName)<i class="middle ri-arrow-down-s-line"></i></p>
+                                        </div>
+                                    </div>
+                                    <ul class="profile-dropdown onhover-show-div">
+                                        <li>
+                                            <a href="/alluser">
+                                                <i data-feather="users"></i>
+                                                <span>Users</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="order-list.html">
+                                                <i data-feather="archive"></i>
+                                                <span>Orders</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="support-ticket.html">
+                                                <i data-feather="phone"></i>
+                                                <span>Spports Tickets</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="profilesetting">
+                                                <i data-feather="settings"></i>
+                                                <span>Settings</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="">
+                                                <i data-feather="log-out" href="/logout"></i>
+                                                <span>Log out</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
         <!-- Page Header Ends-->
+
+        <!-- Page Body Start -->
         <div class="page-body-wrapper">
+
             <!-- Page Sidebar Start-->
             <div class="sidebar-wrapper">
                 <div id="sidebarEffect"></div>
@@ -240,11 +332,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/products">Prodcts</a>
+                                            <a href="/products">Products</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-product.html">Add New Products</a>
+                                            <a href="/addproduct">Add New Products</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -256,11 +348,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="category.html">Category List</a>
+                                            <a href="/Category/listcate">Category List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-category.html">Add New Category</a>
+                                            <a asp-action="addCategory" asp-controller="Category">Add new Category</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -268,15 +360,34 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-settings-line"></i>
-                                        <span>Attributes</span>
+                                        <span>Famer</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="attributes.html">Attributes</a>
+                                            <a href="/famer">Famer</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-attributes.html">Add Attributes</a>
+                                            <a href="/addfamer">Add Famer</a>
+                                        </li>
+
+                                         <li>
+                                            <a href="/pendingproducts">Pending Products</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-list-settings-line"></i>
+                                        <span>Shipper</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="/shipper">Shipper</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="/admin/shipper-requests">Add Shipper</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -288,10 +399,10 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="~/alluser">All users</a>
+                                            <a href="/alluser">All users</a>
                                         </li>
                                         <li>
-                                            <a href="add-new-user.html">Add new user</a>
+                                            <a href="/adduser">Add New User</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -303,10 +414,10 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="role.html">All roles</a>
+                                            <a href="/role">All roles</a>
                                         </li>
                                         <li>
-                                            <a href="create-role.html">Create Role</a>
+                                            <a href="/createrole">Create roles</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -383,10 +494,19 @@
                                 </li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="support-ticket.html">
-                                        <i class="ri-phone-line"></i>
-                                        <span>Support Ticket</span>
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Hỗ trợ</span>
                                     </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="support">Yêu cầu hỗ trợ</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="create-coupon.html">Tiket</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 <li class="sidebar-list">
@@ -396,7 +516,7 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="profile-setting.html">Profile Setting</a>
+                                            <a href="/profilesetting">Profile Setting</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -414,6 +534,15 @@
                                         <span>List Page</span>
                                     </a>
                                 </li>
+
+
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="/logs">
+                                        <i class="ri-history-line"></i>
+                                        <span>Lịch sử hoạt động</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
 
@@ -424,10 +553,12 @@
                 </div>
             </div>
             <!-- Page Sidebar Ends-->
-            @RenderBody()
-		</div>
-        <!-- footer start-->
-        <div class="container-fluid">
+
+            <!-- Page Body Start-->
+            <div class="page-body-wrapper">
+                @RenderBody()
+                </div>
+            <!-- footer start-->
             <footer class="footer">
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
@@ -435,31 +566,24 @@
                     </div>
                 </div>
             </footer>
+        <!-- footer end-->
         </div>
-        <!-- footer End-->
     </div>
-
-    <!-- Modal Start -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog  modal-dialog-centered">
+    <!-- Modal hiển thị tất cả thông báo -->
+    <div class="modal fade" id="allNotificationsModal" tabindex="-1" aria-labelledby="allNotificationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                        <button type="button" onclick="location.href = '/logout';"
-                                class="btn  btn--yes btn-primary">
-                            Yes
-                        </button>
-                    </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="allNotificationsModalLabel">Tất cả thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body" id="all-notifications-list">
+                    <!-- Danh sách thông báo sẽ render ở đây -->
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal End -->
-
+            
     <!-- latest js -->
     <script src="~/back-end/js/jquery-3.6.0.min.js"></script>
 
@@ -474,39 +598,30 @@
     <script src="~/back-end/js/scrollbar/simplebar.js"></script>
     <script src="~/back-end/js/scrollbar/custom.js"></script>
 
-    <!-- Sidebar jquery -->
-    <script src="~/back-end/js/config.js"></script>
+    <!-- customizer js -->
+    <script src="~/back-end/js/customizer.js"></script>
 
-    <!-- tooltip init js -->
-    <script src="~/back-end/js/tooltip-init.js"></script>
+    <!-- Sidebar js -->
+    <script src="~/back-end/js/config.js"></script>
 
     <!-- Plugins JS -->
     <script src="~/back-end/js/sidebar-menu.js"></script>
     <script src="~/back-end/js/notify/bootstrap-notify.min.js"></script>
     <script src="~/back-end/js/notify/index.js"></script>
 
-    <!-- Apexchar js -->
-    <script src="~/back-end/js/chart/apex-chart/apex-chart1.js"></script>
-    <script src="~/back-end/js/chart/apex-chart/moment.min.js"></script>
-    <script src="~/back-end/js/chart/apex-chart/apex-chart.js"></script>
-    <script src="~/back-end/js/chart/apex-chart/stock-prices.js"></script>
-    <script src="~/back-end/js/chart/apex-chart/chart-custom1.js"></script>
+    <!-- Data table js -->
+    <script src="~/back-end/js/jquery.dataTables.js"></script>
+    <script src="~/back-end/js/custom-data-table.js"></script>
 
-
-    <!-- slick slider js -->
-    <script src="~/back-end/js/slick.min.js"></script>
-    <script src="~/back-end/js/custom-slick.js"></script>
-
-    <!-- customizer js -->
-    <script src="~/back-end/js/customizer.js"></script>
-
-    <!-- ratio js -->
-    <script src="~/back-end/js/ratio.js"></script>
+    <!-- all checkbox select js -->
+    <script src="~/back-end/js/checkbox-all-check.js"></script>
 
     <!-- sidebar effect -->
     <script src="~/back-end/js/sidebareffect.js"></script>
 
     <!-- Theme js -->
     <script src="~/back-end/js/script.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

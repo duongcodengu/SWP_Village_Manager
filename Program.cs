@@ -1,5 +1,7 @@
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
+using Village_Manager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer("vllage_manager_database")
+           .EnableSensitiveDataLogging()
+           .LogTo(Console.WriteLine, LogLevel.Information));
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 // Add session support
@@ -18,20 +23,32 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Add authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/access-denied";
+        options.LogoutPath = "/logout";
+    });
+
+// cau hinh email 
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession(); // Enable session support
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
-// mac dinh khi chay
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();
