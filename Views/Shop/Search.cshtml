@@ -5,7 +5,6 @@
 }
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -36,7 +35,6 @@
     <!-- Template css -->
     <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
 </head>
-
 <body>
     <!-- mobile fix menu start -->
     <div class="mobile-menu d-md-none d-block mobile-cart">
@@ -47,28 +45,24 @@
                     <span>Home</span>
                 </a>
             </li>
-
             <li class="mobile-category">
                 <a href="javascript:void(0)">
                     <i class="iconly-Category icli js-link"></i>
                     <span>Category</span>
                 </a>
             </li>
-
             <li>
                 <a href="search.html" class="search-box">
                     <i class="iconly-Search icli"></i>
                     <span>Search</span>
                 </a>
             </li>
-
             <li>
                 <a href="wishlist.html" class="notifi-wishlist">
                     <i class="iconly-Heart icli"></i>
                     <span>My Wish</span>
                 </a>
             </li>
-
             <li>
                 <a href="cart.html">
                     <i class="iconly-Bag-2 icli fly-cate"></i>
@@ -119,149 +113,105 @@
                             <div class="filter-category">
                                 <!-- Tiêu đề -->
                                 <div class="filter-title d-flex justify-content-between align-items-center">
-                                    <h2 class="mb-0">Search</h2>                 
+                                    <h2 class="mb-0">Search</h2>
                                 </div>
-
-                                <!-- Form search -->
-                                <form method="get" asp-controller="Shop" asp-action="Search" class="mb-3">
-                                    <div class="position-relative">
-                                        <input type="text" name="search" class="form-control pe-5"
-                                               placeholder="Enter product name" value="@(Context.Request.Query["search"])" />
-                                        <button type="submit"
-                                                class="btn position-absolute end-0 top-50 translate-middle-y me-3 p-0 border-0 bg-transparent">
-                                            <i class="fa fa-search text-muted"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                                <!-- Tag filter -->
-                                @if (ViewBag.SearchHistory is List<string> history && history.Count > 0)
-                                {
-                                    <a href="/shop/search?clear=true" class="text-success fw-semibold">Clear All</a>
-
-                                    <ul class="filter-category list-unstyled d-flex flex-wrap gap-2 mt-3">
-                                        @foreach (var keyword in history)
-                                        {
-                                            <li style="position: relative; padding-right: 30px;">
-                                                <a href="/shop/search?search=@keyword"
-                                                   class="text-dark text-decoration-none fw-semibold"
-                                                   style="cursor: pointer;">@keyword</a>
-
-                                                <!-- Xử lý dấu X bằng ::before như CSS đã có -->
-                                                <a href="/shop/search?remove=@keyword"
-                                                   style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; z-index: 2;">
-                                                    <!-- để mục tiêu xử lý bằng CSS ::before -->
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
+                                <div class="d-flex flex-column gap-2">
+                                    <form id="searchForm" class="mb-1">
+                                        <div class="position-relative">
+                                            <input type="text" id="searchBox" class="form-control pe-5" placeholder="Enter product name" />
+                                            <button type="submit"
+                                                    class="btn position-absolute end-0 top-50 translate-middle-y me-3 p-0 border-0 bg-transparent">
+                                                <i class="fa fa-search text-muted"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <button id="clearAllBtn" type="button"
+                                            class="text-success fw-semibold border-0 bg-transparent p-0 align-self-end mt-2">
+                                        Clear All
+                                    </button>
+                                    <ul id="searchHistoryList" class="d-flex flex-wrap"></ul>
                                 </div>
-
+                            </div>
                             <div class="accordion custom-accordion" id="accordionExample">
                                 <div class="accordion-item">
-    <h2 class="accordion-header">
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#categoryCollapse">
-            <span>Category</span>
-        </button>
-    </h2>
-    <div id="categoryCollapse" class="accordion-collapse collapse show">
-        <div class="accordion-body">
-            <form method="get" action="/shop/search">
-                <input type="hidden" name="search" value="@Context.Request.Query["search"]" />
-
-                        @foreach (var cat in ViewBag.Categories as List<Village_Manager.Models.ProductCategory>)
-                        {
-                            var isChecked = Context.Request.Query["categoryIds"].Contains(cat.Id.ToString());
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="categoryIds" value="@cat.Id" @(isChecked ? "checked" : "") />
-                                <label class="form-check-label">@cat.Name</label>
-                            </div>
-                        }
-                
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice">
-                            <span>Price</span>
-                        </button>
-                    </h2>
-                    <div id="collapsePrice" class="accordion-collapse collapse show">
-                        <div class="accordion-body">
-                            <div class="range-slider">
-                                <input type="text" id="price-range" name="price" value="" />
-                                <input type="hidden" id="minPrice" name="minPrice" />
-                                <input type="hidden" id="maxPrice" name="maxPrice" />
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#categoryCollapse">
+                                            <span>Category</span>
+                                        </button>
+                                    </h2>
+                                    <div id="categoryCollapse" class="accordion-collapse collapse show">
+                                        <div class="accordion-body">
+                                            <!--Category -->
+                                            @foreach (var cat in ViewBag.Categories as List<Village_Manager.Models.ProductCategory>)
+                                            {
+                                                var isChecked = Context.Request.Query["categoryIds"].Contains(cat.Id.ToString());
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="checkbox" name="categoryIds" value="@cat.Id" @(isChecked ? "checked" : "") />
+                                                    <label class="form-check-label">@cat.Name</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <!-- Price range-->
+                                    <div class="accordion-item mt-2">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice">
+                                                <span>Price</span>
+                                            </button>
+                                        </h2>
+                                        <div id="collapsePrice" class="accordion-collapse collapse show">
+                                            <div class="accordion-body">
+                                                <div class="range-slider" style="max-width: 100%;">
+                                                    <input type="text" id="price-range" name="price" value="" />
+                                                    <input type="hidden" id="minPrice" name="minPrice" />
+                                                    <input type="hidden" id="maxPrice" name="maxPrice" />
+                                                    <div class="d-flex justify-content-between gap-2 mt-2">
+                                                        <input type="text" class="form-control" id="manualMin" placeholder="Min price" />
+                                                        <input type="text" class="form-control" id="manualMax" placeholder="Max price" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Apply Filter-->
+                                    <div class="mt-3">
+                                        <button id="applyFilterBtn" class="btn w-100 fw-bold"
+                                                style="background-color: #0DA487; color: white; border-radius: 6px;" type="button">
+                                            Apply Filter
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <button type="submit" class="btn w-100 mt-3 fw-bold" style="background-color: #0DA487; color: white; border-radius: 6px;">
-    Apply Filter
-</button>
-            </form>
-        </div>
-    </div>
-</div>                             
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-custom-">
                     <div class="show-button">
                         <div class="filter-button-group mt-0">
                             <div class="filter-button d-inline-block d-lg-none">
                                 <a style="cursor: pointer;">
-                                    <i class="fa-solid fa-filter"></i> Filter Menu</a>
+                                    <i class="fa-solid fa-filter"></i> Filter Menu
+                                </a>
                             </div>
                         </div>
-
                         <div class="top-filter-menu">
                             <div class="category-dropdown">
                                 <h5 class="text-content">Sort By :</h5>
                                 <div class="dropdown">
-                                    <button class="dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                            data-bs-toggle="dropdown">
-                                        <span>Most Popular</span> <i class="fa-solid fa-angle-down"></i>
+                                    <button class="btn dropdown-toggle" type="button" id="sortDropdownButton"
+                                            data-bs-toggle="dropdown" aria-expanded="false" data-sort="">
+                                        <span id="currentSortLabel">Default</span>
+                                        <i class="fa-solid fa-angle-down"></i>
                                     </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" id="pop" href="javascript:void(0)">Popularity</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="low" href="javascript:void(0)">
-                                                Low - High
-                                                Price
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="high" href="javascript:void(0)">
-                                                High - Low
-                                                Price
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="rating" href="javascript:void(0)">
-                                                Average
-                                                Rating
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="aToz" href="javascript:void(0)">A - Z Order</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="zToa" href="javascript:void(0)">Z - A Order</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" id="off" href="javascript:void(0)">
-                                                % Off - Hight To
-                                                Low
-                                            </a>
-                                        </li>
+                                    <ul class="dropdown-menu" aria-labelledby="sortDropdownButton">
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="">Default</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_asc">Low - High Price</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_desc">High - Low Price</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_asc">A - Z Order</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_desc">Z - A Order</a></li>
                                     </ul>
                                 </div>
                             </div>
-
                             <div class="grid-option d-none d-md-block">
                                 <ul>
                                     <li class="grid-btn d-xxl-inline-block d-none active">
@@ -281,16 +231,17 @@
                             </div>
                         </div>
                     </div>
-
-                   <div class="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
+                    <div id="product-list" class="row g-sm-4 g-3 row-cols-xxl-4 row-cols-xl-3 row-cols-lg-2 row-cols-md-3 row-cols-2 product-list-section">
                         @foreach (var item in Model)
                         {
                             <div class="col">
                                 <div class="product-box-3 h-100 wow fadeInUp">
                                     <div class="product-header">
                                         <div class="product-image">
-                                            <a href="/shop/detail/@item.Id"><img src="@(item.ProductImages.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
-                                                 class="img-fluid blur-up lazyload" alt="@item.Name" /></a>
+                                            <a href="/shop/detail/@item.Id">
+                                                <img src="@(item.ProductImages.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
+                                                     class="img-fluid blur-up lazyload" alt="@item.Name" />
+                                            </a>
                                         </div>
                                     </div>
                                     <div class="product-footer">
@@ -300,7 +251,7 @@
                                             <p class="text-content mt-1 mb-2 product-content">Type: @item.ProductType</p>
                                             <h5 class="price text-dark">₫@item.Price.ToString("N0")</h5>
                                             <!-- Nút Add to Cart -->
-                                            <div class="cart_qty qty-box open mt-2"> 
+                                            <div class="cart_qty qty-box open mt-2">
                                                 <form method="post" asp-controller="Shop" asp-action="AddToCart" class="d-flex align-items-center">
                                                     <input type="hidden" name="productId" value="@item.Id" />
                                                     <div class="input-group bg-white w-auto">
@@ -309,14 +260,14 @@
                                                         <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
                                                     </div>
                                                     <script>
-                                                function adjustQty(btn, delta) {
-                                                    const input = btn.parentElement.querySelector('.qty-input');
-                                                    let val = parseInt(input.value) || 1;
-                                                    val += delta;
-                                                    if (val < 1) val = 1;
-                                                    input.value = val;
-                                                }
-                                                </script>
+                                                        function adjustQty(btn, delta) {
+                                                            const input = btn.parentElement.querySelector('.qty-input');
+                                                            let val = parseInt(input.value) || 1;
+                                                            val += delta;
+                                                            if (val < 1) val = 1;
+                                                            input.value = val;
+                                                        }
+                                                    </script>
                                                     <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </button>
@@ -328,7 +279,6 @@
                             </div>
                         }
                     </div>
-
                     <nav class="custom-pagination">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
@@ -368,37 +318,30 @@
                                 <div class="service-image">
                                     <img src="~/svg/product.svg" class="blur-up lazyload" alt="">
                                 </div>
-
                                 <div class="service-detail">
                                     <h5>Every Fresh Products</h5>
                                 </div>
                             </div>
-
                             <div class="service-box">
                                 <div class="service-image">
                                     <img src="~/svg/delivery.svg" class="blur-up lazyload" alt="">
                                 </div>
-
                                 <div class="service-detail">
                                     <h5>Free Delivery For Order Over $50</h5>
                                 </div>
                             </div>
-
                             <div class="service-box">
                                 <div class="service-image">
                                     <img src="~/svg/discount.svg" class="blur-up lazyload" alt="">
                                 </div>
-
                                 <div class="service-detail">
                                     <h5>Daily Mega Discounts</h5>
                                 </div>
                             </div>
-
                             <div class="service-box">
                                 <div class="service-image">
                                     <img src="~/svg/market.svg" class="blur-up lazyload" alt="">
                                 </div>
-
                                 <div class="service-detail">
                                     <h5>Best Price On The Market</h5>
                                 </div>
@@ -407,7 +350,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="main-footer section-b-space section-t-space">
                 <div class="row g-md-4 g-3">
                     <div class="col-xl-3 col-lg-4 col-sm-6">
@@ -417,13 +359,11 @@
                                     <img src="~/images/logo/1.png" class="blur-up lazyload" alt="">
                                 </a>
                             </div>
-
                             <div class="footer-logo-contain">
                                 <p>
                                     We are a friendly bar serving a variety of cocktails, wines and beers. Our bar is a
                                     perfect place for a couple.
                                 </p>
-
                                 <ul class="address">
                                     <li>
                                         <i data-feather="home"></i>
@@ -437,12 +377,10 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                         <div class="footer-title">
                             <h4>Categories</h4>
                         </div>
-
                         <div class="footer-contain">
                             <ul>
                                 <li>
@@ -466,12 +404,10 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="col-xl col-lg-2 col-sm-3">
                         <div class="footer-title">
                             <h4>Useful Links</h4>
                         </div>
-
                         <div class="footer-contain">
                             <ul>
                                 <li>
@@ -492,12 +428,10 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="col-xl-2 col-sm-3">
                         <div class="footer-title">
                             <h4>Help Center</h4>
                         </div>
-
                         <div class="footer-contain">
                             <ul>
                                 <li>
@@ -521,12 +455,10 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="col-xl-3 col-lg-4 col-sm-6">
                         <div class="footer-title">
                             <h4>Contact Us</h4>
                         </div>
-
                         <div class="footer-contact">
                             <ul>
                                 <li>
@@ -538,7 +470,6 @@
                                         </div>
                                     </div>
                                 </li>
-
                                 <li>
                                     <div class="footer-number">
                                         <i data-feather="mail"></i>
@@ -548,7 +479,6 @@
                                         </div>
                                     </div>
                                 </li>
-
                                 <li class="social-app">
                                     <h5 class="mb-2 text-content">Download App :</h5>
                                     <ul>
@@ -571,16 +501,13 @@
                     </div>
                 </div>
             </div>
-
             <div class="sub-footer section-small-space">
                 <div class="reserve">
                     <h6 class="text-content">©2022 Fastkart All rights reserved</h6>
                 </div>
-
                 <div class="payment">
                     <img src="~/images/payment/1.png" class="blur-up lazyload" alt="">
                 </div>
-
                 <div class="social-link">
                     <h6 class="text-content">Stay connected :</h6>
                     <ul>
@@ -627,7 +554,6 @@
                                      alt="">
                             </div>
                         </div>
-
                         <div class="col-lg-6">
                             <div class="right-sidebar-modal">
                                 <h4 class="title-name">Peanut Butter Bite Premium Butter Cookies 600 g</h4>
@@ -653,7 +579,6 @@
                                     <span class="ms-2">8 Reviews</span>
                                     <span class="ms-2 text-danger">6 sold in last 16 hours</span>
                                 </div>
-
                                 <div class="product-detail">
                                     <h4>Product Details :</h4>
                                     <p>
@@ -663,7 +588,6 @@
                                         muffin I love carrot cake sugar plum dessert bonbon.
                                     </p>
                                 </div>
-
                                 <ul class="brand-list">
                                     <li>
                                         <div class="brand-box">
@@ -671,14 +595,12 @@
                                             <h6>Black Forest</h6>
                                         </div>
                                     </li>
-
                                     <li>
                                         <div class="brand-box">
                                             <h5>Product Code:</h5>
                                             <h6>W0690034</h6>
                                         </div>
                                     </li>
-
                                     <li>
                                         <div class="brand-box">
                                             <h5>Product Type:</h5>
@@ -686,7 +608,6 @@
                                         </div>
                                     </li>
                                 </ul>
-
                                 <div class="select-size">
                                     <h4>Cake Size :</h4>
                                     <select class="form-select select-form-size">
@@ -698,7 +619,6 @@
                                         <option value="pink">With Pink Roses</option>
                                     </select>
                                 </div>
-
                                 <div class="modal-button">
                                     <button onclick="location.href = 'cart.html';"
                                             class="btn btn-md add-cart-button icon">
@@ -735,11 +655,9 @@
                             <input type="search" class="form-control" placeholder="Search Your Area">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </div>
-
                         <div class="disabled-box">
                             <h6>Select a Location</h6>
                         </div>
-
                         <ul class="location-select custom-height">
                             <li>
                                 <a href="javascript:void(0)">
@@ -747,63 +665,54 @@
                                     <span>Min: $130</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Arizona</h6>
                                     <span>Min: $150</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>California</h6>
                                     <span>Min: $110</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Colorado</h6>
                                     <span>Min: $140</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Florida</h6>
                                     <span>Min: $160</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Georgia</h6>
                                     <span>Min: $120</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Kansas</h6>
                                     <span>Min: $170</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Minnesota</h6>
                                     <span>Min: $120</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>New York</h6>
                                     <span>Min: $110</span>
                                 </a>
                             </li>
-
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Washington</h6>
@@ -839,49 +748,42 @@
                                         <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
                                              alt="">
                                     </a>
-
                                     <a href="shop-left-sidebar.html" class="deal-contain">
                                         <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
                             </li>
-
                             <li class="list-2">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
                                         <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
                                              alt="">
                                     </a>
-
                                     <a href="shop-left-sidebar.html" class="deal-contain">
                                         <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
                             </li>
-
                             <li class="list-3">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
                                         <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
                                              alt="">
                                     </a>
-
                                     <a href="shop-left-sidebar.html" class="deal-contain">
                                         <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
                             </li>
-
                             <li class="list-1">
                                 <div class="deal-offer-contain">
                                     <a href="shop-left-sidebar.html" class="deal-image">
                                         <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
                                              alt="">
                                     </a>
-
                                     <a href="shop-left-sidebar.html" class="deal-contain">
                                         <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
@@ -900,7 +802,6 @@
         <div class="add-image">
             <img src="~/images/cake/pro/1.jpg" class="img-fluid blur-up lazyload" alt="">
         </div>
-
         <div class="add-contain">
             <h6>Added to Cart</h6>
         </div>
@@ -912,7 +813,6 @@
             <button class="btn setting-button">
                 <i class="fa-solid fa-gear"></i>
             </button>
-
             <div class="theme-setting-2">
                 <div class="theme-box">
                     <ul>
@@ -928,7 +828,6 @@
                                 </form>
                             </div>
                         </li>
-
                         <li>
                             <div class="setting-name">
                                 <h4>Dark</h4>
@@ -937,12 +836,11 @@
                                 <button class="btn btn-2 outline" id="darkButton">Dark</button>
                                 <button class="btn btn-2 unline" id="lightButton">Light</button>
                             </div>
-                        </li>                      
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
-
         <div class="back-to-top">
             <a id="back-to-top" href="#">
                 <i class="fas fa-chevron-up"></i>
@@ -995,34 +893,280 @@
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
 
-<script>
-    $(document).ready(function () {
-        let from = parseInt('@Context.Request.Query["minPrice"]' ?? "0");
-        let to = parseInt('@Context.Request.Query["maxPrice"]' ?? "1000000");
+    <script>
+        $(document).ready(function () {
 
-        $("#price-range").ionRangeSlider({
-           type: "double",
-        min: 0,
-        max: 1000000,
-        from: from,
-        to: to,
-        prefix: "₫ ",
-        prettify_separator: ".",
-        decorate_both: true, // áp dụng định dạng cho cả hai đầu
-        values_separator: " - ", // Thêm khoảng cách giữa 2 giá trị
-        onFinish: function (data) {
-        $("#minPrice").val(data.from);
-        $("#maxPrice").val(data.to);
+            // ===== 1. Gọi API tìm kiếm sản phẩm =====
+            window.fetchProducts = function () {
+                const search = $("#searchBox").val()?.trim();
+                const sort = $("#sortDropdownButton").data("sort") || "";
+                const minPrice = $("#minPrice").val();
+                const maxPrice = $("#maxPrice").val();
+                const categoryIds = $("input[name='categoryIds']:checked").map(function () {
+                    return $(this).val();
+                }).get();
+
+                $.ajax({
+                    url: "/api/shopapi/products",
+                    data: {
+                        search: search,
+                        categoryIds: categoryIds,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        sort: sort
+                    },
+                    traditional: true,
+                    success: function (data) {
+                        window.renderProducts(data);
+                    },
+                    error: function (xhr) {
+                        console.error("API lỗi:", xhr.responseText);
+                    }
+                });
+            };
+
+            // ===== 2. Hiển thị danh sách sản phẩm =====
+            window.renderProducts = function (products) {
+                const container = $("#product-list");
+                container.empty();
+
+                if (products.length === 0) {
+                    container.append("<p>No products found.</p>");
+                    return;
+                }
+
+                products.forEach(p => {
+                    const imageUrl = p.image || "/images/product/default-product.png";
+                    const price = Number(p.price).toLocaleString();
+                    const category = p.categoryName || "";
+
+                    const html = `
+                        <div class="col">
+                            <div class="product-box-3 h-100 wow fadeInUp">
+                                <div class="product-header">
+                                    <div class="product-image">
+                                        <a href="/shop/detail/${p.id}">
+                                            <img src="${imageUrl}"
+                                                 onerror="this.onerror=null;this.src='/images/product/default-product.png';"
+                                                 class="img-fluid blur-up lazyload" alt="${p.name}" />
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="product-footer">
+                                    <div class="product-detail">
+                                        <span class="span-name">${category}</span>
+                                        <a href="/shop/detail/${p.id}" class="name theme-color">${p.name}</a>
+                                        <p class="text-content mt-1 mb-2 product-content">Type: ${p.productType}</p>
+                                        <h5 class="price text-dark">₫${price}</h5>
+                                        <div class="cart_qty qty-box open mt-2">
+                                            <div class="d-flex align-items-center">
+                                                <input type="hidden" class="product-id" value="${p.id}" />
+                                                <div class="input-group bg-white w-auto">
+                                                    <button type="button" onclick="adjustQty(this, -1)">
+                                                        <i class="fa fa-minus"></i>
+                                                    </button>
+                                                    <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                    <button type="button" onclick="adjustQty(this, 1)">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                                <button type="button" class="btn btn-sm ms-2 text-white" style="background-color: #4caf50;" onclick="handleAddToCart(this)">
+                                                    <i class="fa fa-shopping-cart"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    container.append(html);
+                });
+            };
+
+            // ===== 3. Lưu từ khóa tìm kiếm vào lịch sử =====
+            window.saveSearchHistory = function (keyword) {
+                let history = JSON.parse(sessionStorage.getItem("SearchHistory") || "[]");
+                if (!history.includes(keyword)) {
+                    history.push(keyword);
+                    sessionStorage.setItem("SearchHistory", JSON.stringify(history));
+                }
+                window.renderSearchHistory();
+            };
+
+            // ===== 4. Hiển thị lịch sử tìm kiếm =====
+            window.renderSearchHistory = function () {
+                const container = $("#searchHistoryList");
+                container.empty();
+                const history = JSON.parse(sessionStorage.getItem("SearchHistory") || "[]");
+
+                if (history.length === 0) {
+                    container.addClass("d-none");
+                    return;
+                }
+
+                container.removeClass("d-none");
+                history.forEach(keyword => {
+                    const li = `
+                        <li style="position: relative; padding-right: 30px;">
+                            <span class="keyword-item fw-semibold" data-key="${keyword}" style="cursor:pointer;">
+                                ${keyword}
+                            </span>
+                            <button class="btn-remove-keyword border-0 bg-transparent text-muted fw-bold"
+                                    data-key="${keyword}"
+                                    style="position:absolute;right:0;top:50%;transform:translateY(-50%);cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center">
+                            </button>
+                        </li>`;
+                    container.append(li);
+                });
+            };
+
+            // ===== 5. Khởi tạo thanh kéo giá =====
+        $(document).ready(function () {
+            let from = parseInt('@Context.Request.Query["minPrice"]' || "0");
+            let to = parseInt('@Context.Request.Query["maxPrice"]' || "1000000");
+
+            // Khởi tạo slider
+            $("#price-range").ionRangeSlider({
+                type: "double",
+                min: 0,
+                max: 1000000,
+                from: from,
+                to: to,
+                prefix: "₫ ",
+                prettify_separator: ".",
+                decorate_both: true,
+                values_separator: " - ",
+                onStart: function (data) {
+                    setTimeout(adjustSliderPosition, 100);
+                },
+                onChange: function (data) {
+                    adjustSliderPosition();
+                },
+                onFinish: function (data) {
+                    let minPrice = Math.min(data.from, 1000000);
+                    let maxPrice = Math.min(data.to, 1000000);
+
+                    $("#minPrice").val(minPrice);
+                    $("#maxPrice").val(maxPrice);
+
+                    $("#manualMin").val(formatNumber(minPrice));
+                    $("#manualMax").val(formatNumber(maxPrice));
+
+                    adjustSliderPosition();
+                }
+            });
+
+            const priceSlider = $("#price-range").data("ionRangeSlider");
+
+            function formatNumber(num) {
+                return Number(num).toLocaleString("vi-VN");
             }
+
+            function parseFormatted(val) {
+                return parseInt((val || "").toString().replaceAll(".", "")) || 0;
+            }
+
+            // Cập nhật giá trị khi nhập tay vào các input
+            $("#manualMin, #manualMax").on("input", function () {
+                const minVal = parseFormatted($("#manualMin").val());
+                const maxVal = parseFormatted($("#manualMax").val());
+
+                const maxLimit = 1000000;
+
+                let minClamped = Math.min(minVal, maxLimit);
+                let maxClamped = Math.min(maxVal, maxLimit);
+
+                // Cập nhật slider nếu giá trị hợp lệ
+                if (minClamped <= maxClamped) {
+                    priceSlider.update({
+                        from: minClamped,
+                        to: maxClamped
+                    });
+
+                    // Cập nhật giá trị cho input ẩn
+                    $("#minPrice").val(minClamped);
+                    $("#maxPrice").val(maxClamped);
+                }
+            });
+
+            // Khi người dùng rời khỏi ô nhập (blur), format lại giá trị
+            $("#manualMin, #manualMax").on("blur", function () {
+                let val = parseFormatted($(this).val());
+                if (val > 1000000) val = 1000000;
+                $(this).val(formatNumber(val));  // Hiển thị lại giá trị với dấu chấm
+            });
+
+            // Hàm điều chỉnh vị trí thanh slider khi kéo (cản lại khi chạm viền)
+            function adjustSliderPosition() {
+                const sliderWidth = $(".irs").width();
+                const maxPosition = $(".irs-to").position().left + $(".irs-to").outerWidth();
+                const minPosition = $(".irs-from").position().left;
+
+                // Nếu giá trị max vượt quá chiều rộng của slider, dừng lại
+                if (maxPosition > sliderWidth) {
+                    const maxLeft = sliderWidth - $(".irs-to").outerWidth();
+                    $(".irs-to").css("left", maxLeft);
+                }
+
+                // Nếu giá trị min vượt quá viền trái, dừng lại
+                if (minPosition < 0) {
+                    $(".irs-from").css("left", 0);
+                }
+            }
+
+            // Điều chỉnh lại slider khi thay đổi kích thước cửa sổ
+            $(window).resize(function () {
+                setTimeout(adjustSliderPosition, 100); // Trì hoãn để điều chỉnh đúng vị trí khi cửa sổ thay đổi
+            });
         });
 
-        // Gán giá trị ban đầu vào hidden inputs (trường hợp load lại trang)
-        $("#minPrice").val(from);
-        $("#maxPrice").val(to);
+            // ===== 6. Các xử lý sự kiện UI =====
+            $("#searchForm").submit(function (e) {
+                e.preventDefault();
+                const keyword = $("#searchBox").val()?.trim();
+                if (keyword) {
+                    window.saveSearchHistory(keyword);
+                    $("#searchBox").val(keyword);
+                }
+                window.fetchProducts();
+            });
 
-    });
-</script>
+            $(document).on("click", ".search-keyword", function () {
+                const keyword = $(this).data("key");
+                $("#searchBox").val(keyword);
+                window.fetchProducts();
+            });
 
+            $(document).on("click", ".btn-remove-keyword", function () {
+                const key = $(this).data("key");
+                let history = JSON.parse(sessionStorage.getItem("SearchHistory") || "[]");
+                history = history.filter(k => k !== key);
+                sessionStorage.setItem("SearchHistory", JSON.stringify(history));
+                window.renderSearchHistory();
+            });
+
+            $("#clearAllBtn").click(function () {
+                sessionStorage.removeItem("SearchHistory");
+                window.renderSearchHistory();
+            });
+
+            $(".dropdown-menu .dropdown-item").click(function () {
+                const label = $(this).text();
+                const sort = $(this).data("sort");
+                $("#currentSortLabel").text(label);
+                $("#sortDropdownButton").data("sort", sort);
+                window.fetchProducts();
+            });
+
+            $("#applyFilterBtn").click(function () {
+                window.fetchProducts();
+            });
+
+            // ===== 7. Khởi chạy ban đầu =====
+            window.renderSearchHistory();
+            window.fetchProducts();
+
+        });
+    </script>
 </body>
-
 </html>
