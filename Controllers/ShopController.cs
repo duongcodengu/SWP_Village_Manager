@@ -153,6 +153,14 @@ public class ShopController : Controller
             .FirstOrDefault(p => p.Id == item.ProductId);
             DefaultImage.EnsureSingle(item.Product, _env);
         }
+        // Lấy địa chỉ của user từ Session (giả sử đã lưu userId 1)
+        int userId = 1;
+
+        var addresses = _context.Addresses
+            .Where(a => a.UserId == userId)
+            .ToList();
+        ViewBag.Addresses = addresses;
+
         return View(cartItems);
     }
 
