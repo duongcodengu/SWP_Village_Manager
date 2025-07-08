@@ -186,7 +186,6 @@ public class ShopController : Controller
         if (product == null)
             return NotFound();
         DefaultImage.EnsureSingle(product, _env);
-
         return View(product);
     }
 }
