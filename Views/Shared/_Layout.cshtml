@@ -311,6 +311,13 @@
                                                             <a href="/adminretail">Retail Manager</a>
                                                         </li>
                                                     }
+                                                    @* neu role la 5 thi la customer *@
+                                                    @if (roleId == 5)
+                                                    {
+                                                        <li class="product-box-contain">
+                                                            <a href="/customerinfo">Account</a>
+                                                        </li>
+                                                    }
                                                     @* rold nao cung co *@
                                                     <li class="product-box-contain">
                                                         <a href="/logout">Log out</a>
