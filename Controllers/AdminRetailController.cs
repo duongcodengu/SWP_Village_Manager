@@ -214,38 +214,40 @@ namespace Village_Manager.Controllers
             return View("DiscountCode", list);
         }
 
-        // Tạo mã mới
-        [HttpPost]
+        // Hiển thị form tạo mới
+        [HttpGet]
         [Route("CreateDiscountCode")]
-        public IActionResult CreateDiscountCode(string Code, int DiscountPercent, int UsageLimit, string Status, DateTime? ExpiredAt)
+        public IActionResult CreateDiscountCode()
         {
-            if (Code.Length < 6 || DiscountPercent < 1 || DiscountPercent > 100 || UsageLimit < 1)
+            return View();
+        }
+
+        // POST: Tạo mới mã giảm giá
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("CreateDiscountCode")]
+        public IActionResult CreateDiscountCode(DiscountCodes model)
+        {
+            if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Dữ liệu không hợp lệ.";
-                return RedirectToAction("DiscountCodes");
+                return View(model); // Trả về lại form
             }
 
-            var exist = _context.DiscountCodes.Any(c => c.Code == Code);
+            var exist = _context.DiscountCodes.Any(c => c.Code == model.Code);
             if (exist)
             {
                 TempData["Error"] = "Mã giảm giá đã tồn tại.";
-                return RedirectToAction("DiscountCodes");
+                return View(model);
             }
 
-            _context.DiscountCodes.Add(new DiscountCode
-            {
-                Code = Code,
-                DiscountPercent = DiscountPercent,
-                UsageLimit = UsageLimit,
-                Status = Status,
-                ExpiredAt = ExpiredAt
-            });
+            model.CreatedAt = DateTime.Now;
+            _context.DiscountCodes.Add(model);
             _context.SaveChanges();
 
             TempData["Success"] = "Thêm thành công.";
             return RedirectToAction("DiscountCodes");
         }
-
     }
 }
 

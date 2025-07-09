@@ -1,6 +1,6 @@
 ﻿namespace Village_Manager.Models
 {
-    public class DiscountCode
+    public class DiscountCodes
     {
         public int Id { get; set; }
 

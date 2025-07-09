@@ -17,36 +17,44 @@ namespace Village_Manager.Controllers.api
             _context = context;
         }
 
-        // API áp dụng mã giảm giá với tổng đơn hàng
         [HttpGet("apply")]
-        public IActionResult ApplyDiscount(string code, decimal total)
+        public async Task<IActionResult> ApplyDiscount(string code, decimal totalAmount)
         {
             var now = DateTime.Now;
 
-            var discount = _context.DiscountCodes
-                .Where(c => c.Code == code
-                            && c.Status == "active"
-                            && (!c.ExpiredAt.HasValue || c.ExpiredAt > now)
-                            && c.UsageLimit > 0)
-                .FirstOrDefault();
+            var discount = await _context.DiscountCodes
+                .FirstOrDefaultAsync(c =>
+                    c.Code == code &&
+                    c.Status == "active" &&
+                    (!c.ExpiredAt.HasValue || c.ExpiredAt > now) &&
+                    c.UsageLimit > 0);
 
             if (discount == null)
-            {
                 return NotFound(new { message = "Mã không hợp lệ hoặc đã hết hạn." });
+
+            // Tính phần trăm và tiền giảm
+            decimal percent = discount.DiscountPercent;
+            decimal discountAmount = (percent / 100m) * totalAmount;
+            decimal finalAmount = totalAmount - discountAmount;
+
+            // Trừ lượt dùng
+            discount.UsageLimit -= 1;
+
+            // Nếu hết lượt → cập nhật trạng thái
+            if (discount.UsageLimit == 0)
+            {
+                discount.Status = "used";
             }
 
-            // Tính số tiền được giảm
-            var discountAmount = Math.Round(total * discount.DiscountPercent / 100, 2);
-            var totalAfterDiscount = total - discountAmount;
+            await _context.SaveChangesAsync();
 
             return Ok(new
             {
-                message = "Áp dụng mã thành công.",
                 code = discount.Code,
-                discountPercent = discount.DiscountPercent,
-                discountAmount,
-                totalBeforeDiscount = total,
-                totalAfterDiscount
+                discountPercent = percent,
+                discountAmount = Math.Round(discountAmount, 0),
+                finalAmount = Math.Round(finalAmount, 0),
+                message = "Áp dụng mã thành công."
             });
         }
     }

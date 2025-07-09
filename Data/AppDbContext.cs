@@ -98,7 +98,7 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<ContactMessages> ContactMessages { get; set; }
 
-    public DbSet<DiscountCode> DiscountCodes { get; set; }
+    public virtual DbSet<DiscountCodes> DiscountCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
