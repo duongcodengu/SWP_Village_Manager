@@ -97,9 +97,9 @@
                         <div class="log-in-button">
                             <ul>
                                 <li>
-                                    <a href="https://www.google.com/" class="btn google-button w-100">
-                                        <img src="~/images/inner-page/google.png" class="blur-up lazyload"
-                                             alt=""> Log In with Google
+                                    <a asp-controller="Account" asp-action="GoogleLogin" class="btn google-button w-100">
+                                        <img src="~/images/inner-page/google.png" asp-append-version="true" alt="Google logo">
+                                        Log In with Google
                                     </a>
                                 </li>
                                 
