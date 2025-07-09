@@ -177,5 +177,49 @@ namespace Village_Manager.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        [Route("changepassword")]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("changepassword")]
+        public IActionResult ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                ViewBag.Error = "Không tìm thấy người dùng.";
+                return View();
+            }
+
+            if (user.Password != oldPassword)
+            {
+                ViewBag.Error = "Mật khẩu cũ không chính xác.";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu mới và xác nhận không khớp.";
+                return View();
+            }
+
+            user.Password = newPassword;
+            _context.SaveChanges();
+
+            ViewBag.Message = "Đổi mật khẩu thành công!";
+            return View();
+        }
     }
 }
