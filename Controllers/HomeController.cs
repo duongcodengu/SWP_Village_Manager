@@ -96,15 +96,15 @@ namespace Village_Manager.Controllers
 
                 // role admin
                 if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
-                // check role
-                if (user.RoleId == 4)
-                {
-                    return RedirectToAction("DashboardShipper", "Shipper");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                    // check role
+                    if (user.RoleId == 4)
+                    {
+                        return RedirectToAction("DashboardShipper", "Shipper");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 if (user.RoleId == 5) // Retail Customer
                 {
                     return RedirectToAction("Index", "Home");
@@ -112,17 +112,17 @@ namespace Village_Manager.Controllers
                 else if (user.RoleId == 4) // Retail Staff
                 {
                     return RedirectToAction("Index", "Home");
+                }
                 else if (user.RoleId == 3)
                 {
                     return RedirectToAction("IndexCustomer", "Customer");
                 }
 
             }
-            ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
+                ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
 
-            return View();
+                return View();
         }
-
         //Contact us
         [HttpGet]
         [Route("contact-us")]

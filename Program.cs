@@ -31,6 +31,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/access-denied";
         options.LogoutPath = "/logout";
     });
+// Add HttpClient factory for API calls
+builder.Services.AddHttpClient();
 
 // cau hinh email 
 builder.Services.Configure<EmailSettings>(
@@ -45,6 +47,7 @@ app.UseSession(); // Enable session support
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.MapControllerRoute(
     name: "default",

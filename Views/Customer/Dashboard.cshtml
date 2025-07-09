@@ -57,11 +57,6 @@
                                     <div class="position-relative">
                                         <img src="~/images/inner-page/user/1.jpg"
                                              class="blur-up lazyload update_img" alt="">
-                                        <div class="cover-icon">
-                                            <i class="fa-solid fa-pen">
-                                                <input type="file" onchange="readURL(this,0)">
-                                            </i>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -169,64 +164,15 @@
                                         <div class="col-xxl-6">
                                             <div class="dashboard-content-title">
                                                 <h4>
-                                                    Contact Information <a href="javascript:void(0)"
+                                                    Thông tin khách hàng <a href="javascript:void(0)"
                                                                            data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
                                                 </h4>
                                             </div>
                                             <div class="dashboard-detail">
-                                                <h6 class="text-content">MARK JECNO</h6>
-                                                <h6 class="text-content">@ViewBag.Email</h6>
+                                                <h6 class="text-content">Username: @ViewBag.Username</h6>
+                                                <h6 class="text-content">Email: @ViewBag.Email</h6>
                                                 <a href="javascript:void(0)">Change Password</a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-6">
-                                            <div class="dashboard-content-title">
-                                                <h4>
-                                                    Newsletters <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#editProfile">Edit</a>
-                                                </h4>
-                                            </div>
-                                            <div class="dashboard-detail">
-                                                <h6 class="text-content">
-                                                    You are currently not subscribed to any
-                                                    newsletter
-                                                </h6>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="dashboard-content-title">
-                                                <h4>
-                                                    Address Book <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                    data-bs-target="#editProfile">Edit</a>
-                                                </h4>
-                                            </div>
-
-                                            <div class="row g-4">
-                                                <div class="col-xxl-6">
-                                                    <div class="dashboard-detail">
-                                                        <h6 class="text-content">Default Billing Address</h6>
-                                                        <h6 class="text-content">
-                                                            You have not set a default billing
-                                                            address.
-                                                        </h6>
-                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                           data-bs-target="#editProfile">Edit Address</a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-xxl-6">
-                                                    <div class="dashboard-detail">
-                                                        <h6 class="text-content">Default Shipping Address</h6>
-                                                        <h6 class="text-content">
-                                                            You have not set a default shipping
-                                                            address.
-                                                        </h6>
-                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                           data-bs-target="#editProfile">Edit Address</a>
-                                                    </div>
-                                                </div>
+                                                <h6 class="text-content">Địa chỉ: @ViewBag.Address</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -1193,84 +1139,6 @@
         </div>
     </section>
     <!-- User Dashboard Section End -->
-    <!-- Deal Box Modal Start -->
-    <div class="modal fade theme-modal deal-modal" id="deal-box" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title w-100" id="deal_today">Deal Today</h5>
-                        <p class="mt-1 text-content">Recommended deals for you.</p>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="deal-offer-box">
-                        <ul class="deal-offer-list">
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-2">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-3">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Deal Box Modal End -->
 
     <!-- Edit Profile Start -->
     <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
@@ -1284,19 +1152,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="row g-4">
-                        <div class="col-xxl-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="pname" value="Jack Jennas">
-                                    <label for="pname">Full Name</label>
-                                </div>
-                            </form>
-                        </div>
-
                         <div class="col-xxl-6">
                             <form>
                                 <div class="form-floating theme-form-floating">
-                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email">
+                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email" onchange="checkEmailChanged()">
                                     <label for="email1">Email address</label>
                                 </div>
                             </form>
@@ -1305,101 +1164,138 @@
                         <div class="col-xxl-6">
                             <form>
                                 <div class="form-floating theme-form-floating">
-                                    <input class="form-control" type="tel" value="4567891234" name="mobile" id="mobile"
+                                    <input class="form-control" type="tel" value="@ViewBag.Phone" name="mobile" id="mobile"
                                            maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
                                             this.value.slice(0, this.maxLength);">
-                                    <label for="mobile">Email address</label>
+                                    <label for="mobile">Phone Number</label>
                                 </div>
                             </form>
                         </div>
 
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address1"
-                                           value="8424 James Lane South San Francisco">
-                                    <label for="address1">Add Address</label>
-                                </div>
-                            </form>
-                        </div>
+                        <div class="col-xxl-12">
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="provinceSelect" onchange="onProvinceChange()">
+                                    <option value="">Chọn tỉnh</option>
+                                </select>
+                                <label for="provinceSelect">Tỉnh/Thành phố</label>
+                            </div>
 
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address2" value="CA 94080">
-                                    <label for="address2">Add Address 2</label>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="districtSelect" onchange="onDistrictChange()">
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <label for="districtSelect">Quận/Huyện</label>
+                            </div>
 
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect1">
-                                        <option selected>Choose Your Country</option>
-                                        <option value="kingdom">United Kingdom</option>
-                                        <option value="states">United States</option>
-                                        <option value="fra">France</option>
-                                        <option value="china">China</option>
-                                        <option value="spain">Spain</option>
-                                        <option value="italy">Italy</option>
-                                        <option value="turkey">Turkey</option>
-                                        <option value="germany">Germany</option>
-                                        <option value="russian">Russian Federation</option>
-                                        <option value="malay">Malaysia</option>
-                                        <option value="mexico">Mexico</option>
-                                        <option value="austria">Austria</option>
-                                        <option value="hong">Hong Kong SAR, China</option>
-                                        <option value="ukraine">Ukraine</option>
-                                        <option value="thailand">Thailand</option>
-                                        <option value="saudi">Saudi Arabia</option>
-                                        <option value="canada">Canada</option>
-                                        <option value="singa">Singapore</option>
-                                    </select>
-                                    <label for="floatingSelect">Country</label>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="wardSelect">
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                                <label for="wardSelect">Phường/Xã</label>
+                            </div>
 
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect">
-                                        <option selected>Choose Your City</option>
-                                        <option value="kingdom">India</option>
-                                        <option value="states">Canada</option>
-                                        <option value="fra">Dubai</option>
-                                        <option value="china">Los Angeles</option>
-                                        <option value="spain">Thailand</option>
-                                    </select>
-                                    <label for="floatingSelect">City</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address3" value="94080">
-                                    <label for="address3">Pin Code</label>
-                                </div>
-                            </form>
+                            <div class="form-floating theme-form-floating">
+                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, đường...">
+                                <label for="detailAddress">Địa chỉ chi tiết</label>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-animation btn-md fw-bold"
                             data-bs-dismiss="modal">
-                        Close
+                        Đóng
                     </button>
-                    <button type="button" data-bs-dismiss="modal"
-                            class="btn theme-bg-color btn-md fw-bold text-light">
-                        Save changes
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light" onclick="handleSave()">
+                        Lưu
                     </button>
+
                 </div>
             </div>
         </div>
     </div>
+    <!-- Edit Profile End -->
+
+    @* api lay địa chỉ *@
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const provinceSelect = document.getElementById("provinceSelect");
+            const districtSelect = document.getElementById("districtSelect");
+            const wardSelect = document.getElementById("wardSelect");
+
+            const selectedProvince = "@ViewBag.Province";
+            const selectedDistrict = "@ViewBag.District";
+            const selectedWard = "@ViewBag.Ward";
+
+            const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
+            const data = await res.json();
+
+            data.forEach(p => {
+                const option = document.createElement("option");
+                option.text = p.name;
+                option.value = p.code;
+                if (p.name === selectedProvince) option.selected = true;
+                provinceSelect.appendChild(option);
+            });
+
+            const province = data.find(p => p.name === selectedProvince);
+            if (province) {
+                province.districts.forEach(d => {
+                    const option = document.createElement("option");
+                    option.text = d.name;
+                    option.value = d.code;
+                    if (d.name === selectedDistrict) option.selected = true;
+                    districtSelect.appendChild(option);
+                });
+
+                const district = province.districts.find(d => d.name === selectedDistrict);
+                if (district) {
+                    district.wards.forEach(w => {
+                        const option = document.createElement("option");
+                        option.text = w.name;
+                        option.value = w.code;
+                        if (w.name === selectedWard) option.selected = true;
+                        wardSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
+        const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
+        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
+
+        async function handleSave() {
+            const email = document.getElementById("email1").value.trim();
+            const phone = document.getElementById("mobile").value.trim();
+            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
+            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
+            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
+            const detail = document.getElementById("detailAddress").value.trim();
+            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
+
+            // Kiểm tra có thay đổi gì không
+            const hasChanged =
+                email !== originalEmail ||
+                phone !== originalPhone ||
+                fullAddress !== originalAddress;
+
+            if (!hasChanged) {
+                alert("Bạn chưa thay đổi thông tin nào.");
+                return;
+            }
+
+            // Chuyển đến OTP để xác minh
+            const url = new URL('/otp', window.location.origin);
+            url.searchParams.set('email', email);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('address', fullAddress);
+            window.location.href = url.toString();
+        }
+    </script>
+
     <!-- Edit Profile End -->
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>

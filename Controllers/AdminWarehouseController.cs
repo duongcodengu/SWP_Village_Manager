@@ -827,7 +827,7 @@ public class AdminWarehouseController : Controller
     public IActionResult ChangeRole(int UserId)
     {
         // retail_customer = role_id 5
-        int newRoleId = 5;
+        int newRoleId = 3;
 
         var user = _context.Users.FirstOrDefault(u => u.Id == UserId);
         if (user != null)
