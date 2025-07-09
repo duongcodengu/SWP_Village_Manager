@@ -404,6 +404,19 @@ CREATE TABLE ContactMessages (
     Message NVARCHAR(MAX),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
+
+--Bảng mã giảm giá
+CREATE TABLE DiscountCode (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    code NVARCHAR(50) UNIQUE NOT NULL,
+    discount_percent INT NOT NULL CHECK (discount_percent >= 1 AND discount_percent <= 100),
+    status NVARCHAR(20) NOT NULL CHECK (status IN ('active', 'expired', 'used', 'disabled')),
+    usage_limit INT NOT NULL CHECK (usage_limit >= 1),
+    created_at DATETIME DEFAULT GETDATE(),
+    expired_at DATETIME NULL,
+    CONSTRAINT CK_DiscountCode_Length CHECK (LEN(code) >= 6)
+);
+
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES
@@ -427,14 +440,4 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
---Bảng mã giảm giá
-CREATE TABLE DiscountCode (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    code NVARCHAR(50) UNIQUE NOT NULL,
-    discount_percent INT NOT NULL CHECK (discount_percent >= 1 AND discount_percent <= 100),
-    status NVARCHAR(20) NOT NULL CHECK (status IN ('active', 'expired', 'used', 'disabled')),
-    usage_limit INT NOT NULL CHECK (usage_limit >= 1),
-    created_at DATETIME DEFAULT GETDATE(),
-    expired_at DATETIME NULL,
-    CONSTRAINT CK_DiscountCode_Length CHECK (LEN(code) >= 6)
-);
+

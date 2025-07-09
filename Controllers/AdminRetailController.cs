@@ -34,8 +34,7 @@ namespace Village_Manager.Controllers
 
             // Tổng số đơn hàng
             int totalRetailOrders = _context.RetailOrders.Count();
-            int totalWholesaleOrders = _context.WholesaleOrders.Count();
-            int totalOrders = totalRetailOrders + totalWholesaleOrders;
+            int totalOrders = totalRetailOrders;
             ViewBag.TotalOrders = totalOrders;
 
             // Lấy category (name, image_url)
@@ -61,18 +60,7 @@ namespace Village_Manager.Controllers
                       (ro, ri) => ri.Quantity * ri.UnitPrice)
                 .Sum();
 
-            // Bán buôn (Wholesale)
-            var wholesaleRevenue = _context.WholesaleOrders
-                .Where(wo => wo.Status == "confirmed"
-                    && wo.ConfirmedAt.HasValue
-                    && wo.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.WholesaleOrderItems,
-                      wo => wo.Id,
-                      wi => wi.OrderId,
-                      (wo, wi) => wi.Quantity * wi.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
+            decimal totalRevenue = (retailRevenue ?? 0);
             ViewBag.TotalRevenue = totalRevenue;
 
             return View();

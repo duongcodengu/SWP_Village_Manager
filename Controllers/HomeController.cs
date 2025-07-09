@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MailKit.Security;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
 //using Village_Manager.Extensions;
@@ -14,12 +17,15 @@ namespace Village_Manager.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly EmailSettings _emailSettings;
+        private static Dictionary<string, (string Otp, DateTime Expire)> otpStore = new();
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext context, IConfiguration configuration)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context, IConfiguration configuration, IOptions<EmailSettings> emailSettings)
         {
             _logger = logger;
             _context = context;
             _configuration = configuration;
+            _emailSettings = emailSettings.Value;
         }
 
         public IActionResult Index()
@@ -221,5 +227,89 @@ namespace Village_Manager.Controllers
             ViewBag.Message = "Đổi mật khẩu thành công!";
             return View();
         }
+
+        [HttpGet]
+        [Route("forgot")]
+        public IActionResult Forgot()
+        {
+            return View();
+        }
+
+        // Gửi OTP
+        [HttpPost("/forgot")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var normalizedEmail = email.Trim().ToLower();
+            var user = _context.Users.FirstOrDefault(u => u.Email.ToLower() == normalizedEmail);
+            if (user == null)
+                return BadRequest("Email không tồn tại.");
+
+            var otp = new Random().Next(100000, 999999).ToString();
+            otpStore[normalizedEmail] = (otp, DateTime.UtcNow.AddMinutes(10));
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
+            message.To.Add(new MailboxAddress("", normalizedEmail));
+            message.Subject = "Mã OTP đặt lại mật khẩu";
+            message.Body = new TextPart("plain") { Text = $"Mã OTP của bạn là: {otp} (hiệu lực 10 phút)." };
+
+            using var client = new MailKit.Net.Smtp.SmtpClient();
+            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(_emailSettings.SenderEmail, _emailSettings.AppPassword);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+
+            return Ok();
+        }
+
+        [HttpPost("/verify-otp")]
+        public IActionResult VerifyOtp(string email, string Otp0, string Otp1, string Otp2, string Otp3, string Otp4, string Otp5)
+        {
+            var normalizedEmail = email.Trim().ToLower();
+            var otp = $"{Otp0}{Otp1}{Otp2}{Otp3}{Otp4}{Otp5}";
+
+            if (otp.Length != 6 || !otp.All(char.IsDigit))
+                return BadRequest("OTP không hợp lệ.");
+
+            if (otpStore.TryGetValue(normalizedEmail, out var record))
+            {
+                if (record.Otp == otp && DateTime.UtcNow <= record.Expire)
+                {
+                    otpStore.Remove(normalizedEmail);
+                    return RedirectToAction("ResetPassword", new { email });
+                }
+            }
+
+            return BadRequest("OTP không đúng hoặc đã hết hạn.");
+        }
+
+        [HttpGet("/reset-password")]
+        public IActionResult ResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("Forgot");
+            }
+
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost("/reset-password-post")]
+        public async Task<IActionResult> ResetPasswordPost(string email, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            if (user == null)
+            {
+                return RedirectToAction("Forgot");
+            }
+
+            user.Password = newPassword;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Đặt lại mật khẩu thành công.";
+            return RedirectToAction("Login", "Home");
+        }
+
     }
 }
