@@ -14,27 +14,34 @@ namespace Village_Manager.Controllers
             _context = context;
             _configuration = configuration;
         }
+
         [HttpGet]
         [Route("dashboard")]
         public IActionResult DashBoard()
-        {
-            return View();
-        }
-        [HttpGet]
-        [Route("customer")]
-        public IActionResult IndexCustomer()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
             if (userId == null)
             {
-                return Redirect("/login");
+                return RedirectToAction("Login", "Home");
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            ViewBag.UserId = userId;
-            ViewBag.HasAcceptedGeo = user?.HasAcceptedGeolocation ?? false;
-
+            var totalOrders = _context.RetailOrders.Count(o => o.UserId == userId);
+            var pendingOrders = _context.RetailOrders.Count(o => o.UserId == userId && o.Status == "pending");
+            var address = _context.Addresses
+                .Where(a => a.UserId == userId)
+                .Select(a => a.AddressLine)
+                .FirstOrDefault();
+            if (user != null)
+            {
+                ViewBag.Email = user.Email;
+                ViewBag.Username = user.Username;
+                ViewBag.TotalOrders = totalOrders;
+                ViewBag.PendingOrders = pendingOrders;
+                ViewBag.Address = address ?? "Chưa có địa chỉ";
+                ViewBag.Phone = user.Phone ?? "Chưa có số điện thoại";
+            }
             return View();
         }
     }
