@@ -1,0 +1,51 @@
+﻿@model Village_Manager.Models.DiscountCodes
+@{
+    ViewData["Title"] = "Create Discount Code";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="page-wrapper compact-wrapper" id="pageWrapper">
+    <div class="page-body-wrapper">
+        <div class="page-body">
+            <div class="container mt-5">
+                <div class="card col-md-8 offset-md-2 shadow">
+                    <div class="card-header">
+                        <h4>Create New Discount Code</h4>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="CreateDiscountCode" method="post">
+                            <div class="mb-3">
+                                <label>Code</label>
+                                <input asp-for="Code" class="form-control" required minlength="6" />
+                            </div>
+                            <div class="mb-3">
+                                <label>Discount Percent</label>
+                                <input asp-for="DiscountPercent" type="number" class="form-control" min="1" max="100" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Usage Limit</label>
+                                <input asp-for="UsageLimit" type="number" class="form-control" min="1" required />
+                            </div>
+                            <div class="mb-3">
+                                <label>Status</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="active">Active</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label>Expired At</label>
+                                <input asp-for="ExpiredAt" type="date" class="form-control" />
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Create</button>
+                                <a asp-action="DiscountCodes" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
