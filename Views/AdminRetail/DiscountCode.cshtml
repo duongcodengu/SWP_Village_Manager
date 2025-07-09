@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewData["Title"] = "Discount Codes";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Danh sách mã giảm giá</h2>
+
+    <form asp-action="CreateDiscountCode" asp-controller="AdminRetail" method="post" class="row g-3 mt-3">
+        <div class="col-md-3">
+            <input name="Code" class="form-control" placeholder="Mã giảm giá (6+ ký tự)" required minlength="6" />
+        </div>
+        <div class="col-md-2">
+            <input name="DiscountPercent" type="number" class="form-control" placeholder="% giảm (1-100)" min="1" max="100" required />
+        </div>
+        <div class="col-md-2">
+            <input name="UsageLimit" type="number" class="form-control" placeholder="Số lượt dùng" min="1" required />
+        </div>
+        <div class="col-md-2">
+            <select name="Status" class="form-select">
+                <option value="active">Active</option>
+                <option value="disabled">Disabled</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input name="ExpiredAt" type="date" class="form-control" />
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary">Tạo</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Mã</th>
+                <th>% Giảm</th>
+                <th>Số lượt</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hết hạn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var code in Model)
+            {
+                <tr>
+                    <td>@code.Id</td>
+                    <td>@code.Code</td>
+                    <td>@code.DiscountPercent%</td>
+                    <td>@code.UsageLimit</td>
+                    <td>@code.Status</td>
+                    <td>@code.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                    <td>@code.ExpiredAt?.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
