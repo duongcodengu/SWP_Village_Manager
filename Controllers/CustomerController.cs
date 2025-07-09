@@ -26,7 +26,7 @@ namespace Village_Manager.Controllers
 
         [HttpGet]
         [Route("dashboard")]
-        public IActionResult DashBoard()
+        public async Task<IActionResult> DashBoard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -35,13 +35,13 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Login", "Home");
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-            var totalOrders = _context.RetailOrders.Count(o => o.UserId == userId);
-            var pendingOrders = _context.RetailOrders.Count(o => o.UserId == userId && o.Status == "pending");
-            var address = _context.Addresses
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var totalOrders = await _context.RetailOrders.CountAsync(o => o.UserId == userId);
+            var pendingOrders = await _context.RetailOrders.CountAsync(o => o.UserId == userId && o.Status == "pending");
+            var address = await _context.Addresses
                 .Where(a => a.UserId == userId)
                 .Select(a => a.AddressLine)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             if (user != null)
             {
                 ViewBag.Email = user.Email;
@@ -56,6 +56,16 @@ namespace Village_Manager.Controllers
                 ViewBag.Ward = addressParts.Length > 1 ? addressParts[1].Trim() : "";
                 ViewBag.District = addressParts.Length > 2 ? addressParts[2].Trim() : "";
                 ViewBag.Province = addressParts.Length > 3 ? addressParts[3].Trim() : "";
+
+                // --- THÊM PHẦN LẤY LỊCH SỬ ĐƠN HÀNG ---
+                var orderHistory = await _context.RetailOrders
+                                    .Where(o => o.UserId == userId)
+                                    .Include(o => o.RetailOrderItems)
+                                    .ThenInclude(oi => oi.Product)
+                                    .ThenInclude(p => p.ProductImages)
+                                    .OrderByDescending(o => o.OrderDate)
+                                    .ToListAsync();
+                ViewBag.OrderHistory = orderHistory;
             }
             else
             {

@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
 }
 
 <!DOCTYPE html>
@@ -171,345 +172,241 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="pills-order" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
                                 <div class="dashboard-order">
                                     <div class="title">
-                                        <h2>My Orders History</h2>
+                                        <h2>Lịch sử Đơn hàng</h2>
                                         <span class="title-leaf title-leaf-gray">
-                                            <svg class="icon-width bg-gray">
-                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
-                                            </svg>
+                                            <svg class="icon-width bg-gray"><use xlink:href="~/svg/leaf.svg#leaf"></use></svg>
                                         </span>
                                     </div>
 
-                                    <div class="order-contain">
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
-                                                </div>
-
-                                                <div class="order-detail">
-                                                    <h4>Delivers <span>Pending</span></h4>
-                                                    <h6 class="text-content">
-                                                        Gouda parmesan caerphilly mozzarella
-                                                        cottage cheese cauliflower cheese taleggio gouda.
-                                                    </h6>
-                                                </div>
+                                    <div class="order-history-container">
+                                        @if (orderHistory == null || !orderHistory.Any())
+                                        {
+                                            <div class="empty-order-history">
+                                                <i data-feather="shopping-bag"></i>
+                                                <h4>Bạn chưa có đơn hàng nào.</h4>
+                                                <p>Hãy bắt đầu mua sắm để xem lịch sử của bạn tại đây!</p>
+                                                <a asp-controller="Home" asp-action="Index" class="btn btn-primary-transparent">Bắt đầu mua sắm</a>
                                             </div>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var order in orderHistory)
+                                            {
+                                                <div class="order-card">
+                                                    <div class="order-card-header">
+                                                        <div class="header-left">
+                                                            <h5>Đơn hàng #@order.Id</h5>
+                                                            <p>Ngày đặt: @(order.OrderDate?.ToString("dd/MM/yyyy"))</p>
+                                                        </div>
+                                                        <div class="header-right">
+                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                            <h5 class="order-total">@(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h5>
+                                                        </div>
+                                                    </div>
 
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/1.png"
-                                                         class="blur-up lazyload" alt="">
-                                                </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Fantasy Crunchy Choco Chip Cookies</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        Cheddar dolcelatte gouda. Macaroni cheese
-                                                        cheese strings feta halloumi cottage cheese jarlsberg cheese
-                                                        triangles say cheese.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
+                                                    <div class="order-card-body">
+                                                        @foreach (var item in order.RetailOrderItems)
+                                                        {
+                                                            <div class="product-item">
+                                                                <div class="product-image">
+                                                                    @{
+                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                                                                    }
+                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
+                                                                </div>
+                                                                <div class="product-info">
+                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                                        <h6>@item.Product?.Name</h6>
+                                                                    </a>
+                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
+                                                                </div>
+                                                                <div class="product-quantity">
+                                                                    <span>x @item.Quantity</span>
+                                                                </div>
+                                                                <div class="product-total">
+                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
                                                                 </div>
                                                             </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
+                                                        }
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
-                                                </div>
-
-                                                <div class="order-detail">
-                                                    <h4>Delivered <span class="success-bg">Success</span></h4>
-                                                    <h6 class="text-content">
-                                                        Cheese on toast cheesy grin cheesy grin
-                                                        cottage cheese caerphilly everyone loves cottage cheese the big
-                                                        cheese.
-                                                    </h6>
-                                                </div>
-                                            </div>
-
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/2.png" alt=""
-                                                         class="blur-up lazyload">
-                                                </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Cold Brew Coffee Instant Coffee 50 g</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        Pecorino paneer port-salut when the cheese
-                                                        comes out everybody's happy red leicester mascarpone blue
-                                                        castello cauliflower cheese.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
-                                                </div>
-
-                                                <div class="order-detail">
-                                                    <h4>Delivere <span>Pending</span></h4>
-                                                    <h6 class="text-content">
-                                                        Cheesy grin boursin cheesy grin cheesecake
-                                                        blue castello cream cheese lancashire melted cheese.
-                                                    </h6>
-                                                </div>
-                                            </div>
-
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/3.png" alt=""
-                                                         class="blur-up lazyload">
-                                                </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Peanut Butter Bite Premium Butter Cookies 600 g</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        Cow bavarian bergkase mascarpone paneer
-                                                        squirty cheese fromage frais cheese slices when the cheese comes
-                                                        out everybody's happy.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
-                                                </div>
-
-                                                <div class="order-detail">
-                                                    <h4>Delivered <span class="success-bg">Success</span></h4>
-                                                    <h6 class="text-content">
-                                                        Caerphilly port-salut parmesan pecorino
-                                                        croque monsieur dolcelatte melted cheese cheese and wine.
-                                                    </h6>
-                                                </div>
-                                            </div>
-
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/4.png"
-                                                         class="blur-up lazyload" alt="">
-                                                </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>SnackAmor Combo Pack of Jowar Stick and Jowar Chips</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        The big cheese cream cheese pepper jack
-                                                        cheese slices danish fontina everyone loves cheese on toast
-                                                        bavarian bergkase.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </div>
+                            <style>
+                                .order-history-container {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 1.5rem; /* Khoảng cách giữa các đơn hàng */
+                                }
+
+                                .order-card {
+                                    background-color: #fff;
+                                    border: 1px solid #e0e0e0;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                                    overflow: hidden;
+                                    transition: all 0.3s ease;
+                                }
+
+                                    .order-card:hover {
+                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                                        transform: translateY(-2px);
+                                    }
+
+                                .order-card-header {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    padding: 1rem 1.5rem;
+                                    background-color: #f8f9fa;
+                                    border-bottom: 1px solid #e0e0e0;
+                                }
+
+                                    .order-card-header .header-left h5 {
+                                        margin: 0;
+                                        font-size: 1.1rem;
+                                        font-weight: 600;
+                                    }
+
+                                    .order-card-header .header-left p {
+                                        margin: 0;
+                                        font-size: 0.85rem;
+                                        color: #6c757d;
+                                    }
+
+                                    .order-card-header .header-right {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 1.5rem;
+                                        text-align: right;
+                                    }
+
+                                .order-total {
+                                    font-size: 1.2rem;
+                                    font-weight: 700;
+                                    color: var(--theme-color); /* Sử dụng màu chủ đạo của bạn */
+                                }
+
+                                .status-badge {
+                                    padding: 0.3rem 0.8rem;
+                                    border-radius: 50px;
+                                    font-size: 0.8rem;
+                                    font-weight: 600;
+                                    color: #fff;
+                                    text-transform: capitalize;
+                                }
+
+                                /* Màu sắc cho từng trạng thái */
+                                .status-delivered, .status-success {
+                                    background-color: #28a745;
+                                }
+
+                                .status-pending {
+                                    background-color: #ffc107;
+                                    color: #333;
+                                }
+
+                                .status-shipped {
+                                    background-color: #17a2b8;
+                                }
+
+                                .status-cancelled {
+                                    background-color: #dc3545;
+                                }
+
+                                .status-confirmed {
+                                    background-color: #0d6efd;
+                                }
+
+                                .status-returned {
+                                    background-color: #6c757d;
+                                }
+
+
+                                .order-card-body {
+                                    padding: 1rem 1.5rem;
+                                }
+
+                                .product-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                    padding: 1rem 0;
+                                    border-bottom: 1px solid #f1f1f1;
+                                }
+
+                                    .product-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
+
+                                    .product-item .product-image img {
+                                        width: 60px;
+                                        height: 60px;
+                                        object-fit: cover;
+                                        border-radius: 6px;
+                                    }
+
+                                    .product-item .product-info {
+                                        flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
+                                    }
+
+                                        .product-item .product-info h6 {
+                                            margin-bottom: 0.25rem;
+                                        }
+
+                                        .product-item .product-info a:hover h6 {
+                                            color: var(--theme-color);
+                                        }
+
+                                        .product-item .product-info p {
+                                            margin: 0;
+                                            font-size: 0.9rem;
+                                            color: #6c757d;
+                                        }
+
+                                    .product-item .product-quantity {
+                                        color: #6c757d;
+                                    }
+
+                                    .product-item .product-total h6 {
+                                        margin: 0;
+                                        font-weight: 600;
+                                        min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
+                                        text-align: right;
+                                    }
+
+                                /* CSS cho trường hợp không có đơn hàng */
+                                .empty-order-history {
+                                    text-align: center;
+                                    padding: 3rem 1rem;
+                                    border: 2px dashed #e0e0e0;
+                                    border-radius: 8px;
+                                    background-color: #f8f9fa;
+                                }
+
+                                    .empty-order-history i {
+                                        width: 60px;
+                                        height: 60px;
+                                        color: var(--theme-color);
+                                        margin-bottom: 1rem;
+                                    }
+
+                                    .empty-order-history h4 {
+                                        font-weight: 600;
+                                    }
+
+                                    .empty-order-history p {
+                                        color: #6c757d;
+                                        margin-bottom: 1.5rem;
+                                    }
+                            </style>
 
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel">
                                 <div class="dashboard-profile">
@@ -528,13 +425,6 @@
                                         </div>
                                         <div class="location-profile">
                                             <ul>
-                                                <li>
-                                                    <div class="location-box">
-                                                        <i data-feather="map-pin"></i>
-                                                        <h6>Downers Grove, IL</h6>
-                                                    </div>
-                                                </li>
-
                                                 <li>
                                                     <div class="location-box">
                                                         <i data-feather="mail"></i>
