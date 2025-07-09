@@ -95,33 +95,30 @@ namespace Village_Manager.Controllers
                 }
 
                 // role admin
-                if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
-                    // check role
-                    if (user.RoleId == 4)
+                switch (user.RoleId)
                     {
-                        return RedirectToAction("DashboardShipper", "Shipper");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                if (user.RoleId == 5) // Retail Customer
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (user.RoleId == 4) // Retail Staff
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (user.RoleId == 3)
-                {
-                    return RedirectToAction("IndexCustomer", "Customer");
-                }
+                        case 1: // Admin
+                            return RedirectToAction("Index", "Home");
 
+                        case 2: // Staff
+                            return RedirectToAction("Index", "Home");
+
+                        case 3: // Customer
+                            return RedirectToAction("IndexCustomer", "Customer");
+
+                        case 4: // Shipper
+                            return RedirectToAction("DashboardShipper", "Shipper");
+
+                        case 5: // Farmer
+                            return RedirectToAction("Index", "Home");
+
+                        default:
+                            return RedirectToAction("Login", "Home");
+                    }
             }
-                ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
+            ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
 
-                return View();
+            return View();
         }
         //Contact us
         [HttpGet]
@@ -179,6 +176,50 @@ namespace Village_Manager.Controllers
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [Route("changepassword")]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("changepassword")]
+        public IActionResult ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                ViewBag.Error = "Không tìm thấy người dùng.";
+                return View();
+            }
+
+            if (user.Password != oldPassword)
+            {
+                ViewBag.Error = "Mật khẩu cũ không chính xác.";
+                return View();
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu mới và xác nhận không khớp.";
+                return View();
+            }
+
+            user.Password = newPassword;
+            _context.SaveChanges();
+
+            ViewBag.Message = "Đổi mật khẩu thành công!";
+            return View();
         }
     }
 }

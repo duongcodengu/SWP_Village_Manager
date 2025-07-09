@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewData["Title"] = "Discount Codes";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="page-wrapper compact-wrapper" id="pageWrapper">
+    <div class="page-body-wrapper">
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card card-table">
+                            <div class="card-body">
+                                <div class="title-header option-title d-sm-flex d-block justify-content-between">
+                                    <h5>Discount Codes List</h5>
+                                </div>
+
+                                <div class="table-responsive mt-4">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Code</th>
+                                                <th>% Discount</th>
+                                                <th>Usage Limit</th>
+                                                <th>Status</th>
+                                                <th>Created At</th>
+                                                <th>Expired At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var code in Model)
+                                            {
+                                                <tr>
+                                                    <td>@code.Id</td>
+                                                    <td>@code.Code</td>
+                                                    <td>@code.DiscountPercent%</td>
+                                                    <td>@code.UsageLimit</td>
+                                                    <td>@code.Status</td>
+                                                    <td>@code.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                                                    <td>@code.ExpiredAt?.ToString("dd/MM/yyyy")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -202,6 +202,52 @@ namespace Village_Manager.Controllers
         [Route("alluser")]
         public IActionResult AllUser() => View();
 
+        // Hiển thị danh sách mã giảm giá
+        [HttpGet]
+        [Route("DiscountCodes")]
+        public IActionResult DiscountCodes()
+        {
+            var list = _context.DiscountCodes
+                .OrderByDescending(c => c.CreatedAt)
+                .ToList();
+
+            return View("DiscountCode", list);
+        }
+
+        // Hiển thị form tạo mới
+        [HttpGet]
+        [Route("CreateDiscountCode")]
+        public IActionResult CreateDiscountCode()
+        {
+            return View();
+        }
+
+        // POST: Tạo mới mã giảm giá
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("CreateDiscountCode")]
+        public IActionResult CreateDiscountCode(DiscountCodes model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Dữ liệu không hợp lệ.";
+                return View(model); // Trả về lại form
+            }
+
+            var exist = _context.DiscountCodes.Any(c => c.Code == model.Code);
+            if (exist)
+            {
+                TempData["Error"] = "Mã giảm giá đã tồn tại.";
+                return View(model);
+            }
+
+            model.CreatedAt = DateTime.Now;
+            _context.DiscountCodes.Add(model);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Thêm thành công.";
+            return RedirectToAction("DiscountCodes");
+        }
     }
 }
 
