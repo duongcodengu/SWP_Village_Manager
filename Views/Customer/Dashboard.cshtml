@@ -1,6 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model List<Village_Manager.Models.UserLocation>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -1103,298 +1103,75 @@
 
                                         <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
                                                 data-bs-toggle="modal" data-bs-target="#add-address">
-                                            <i data-feather="plus"
-                                               class="me-2"></i> Add New Address
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
                                         </button>
                                     </div>
 
                                     <div class="row g-sm-4 g-3">
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                            <div class="address-box">
-                                                <div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="jack"
-                                                               id="flexRadioDefault2" checked>
+                                        @foreach (var userLocation in Model)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                            id="flexRadioDefault1">
+                                                        </div>
+
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
+                                                        </div>
+
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
 
-                                                    <div class="label">
-                                                        <label>Home</label>
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+                                                        
                                                     </div>
-
-                                                    <div class="table-responsive address-table">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="2">Jack Jennas</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Address :</td>
-                                                                    <td>
-                                                                        <p>
-                                                                            8424 James Lane South San Francisco, CA 94080
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Pin Code :</td>
-                                                                    <td>+380</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Phone :</td>
-                                                                    <td>+ 812-710-3798</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group">
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#editProfile">
-                                                        <i data-feather="edit"></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#removeProfile">
-                                                        <i data-feather="trash-2"></i>
-                                                        Remove
-                                                    </button>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                            <div class="address-box">
-                                                <div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="jack"
-                                                               id="flexRadioDefault3">
-                                                    </div>
-
-                                                    <div class="label">
-                                                        <label>Office</label>
-                                                    </div>
-
-                                                    <div class="table-responsive address-table">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="2">Terry S. Sutton</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Address :</td>
-                                                                    <td>
-                                                                        <p>2280 Rose Avenue Kenner, LA 70062</p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Pin Code :</td>
-                                                                    <td>+25</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Phone :</td>
-                                                                    <td>+ 504-228-0969</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group">
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#editProfile">
-                                                        <i data-feather="edit"></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#removeProfile">
-                                                        <i data-feather="trash-2"></i>
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                            <div class="address-box">
-                                                <div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="jack"
-                                                               id="flexRadioDefault4">
-                                                    </div>
-
-                                                    <div class="label">
-                                                        <label>Neighbour</label>
-                                                    </div>
-
-                                                    <div class="table-responsive address-table">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="2">Juan M. McKeon</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Address :</td>
-                                                                    <td>
-                                                                        <p>1703 Carson Street Lexington, KY 40593</p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Pin Code :</td>
-                                                                    <td>+78</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Phone :</td>
-                                                                    <td>+ 859-257-0509</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group">
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#editProfile">
-                                                        <i data-feather="edit"></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#removeProfile">
-                                                        <i data-feather="trash-2"></i>
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                            <div class="address-box">
-                                                <div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="jack"
-                                                               id="flexRadioDefault5">
-                                                    </div>
-
-                                                    <div class="label">
-                                                        <label>Home 2</label>
-                                                    </div>
-
-                                                    <div class="table-responsive address-table">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="2">Gary M. Bailey</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Address :</td>
-                                                                    <td>
-                                                                        <p>
-                                                                            2135 Burning Memory Lane Philadelphia, PA
-                                                                            19135
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Pin Code :</td>
-                                                                    <td>+26</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Phone :</td>
-                                                                    <td>+ 215-335-9916</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group">
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#editProfile">
-                                                        <i data-feather="edit"></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#removeProfile">
-                                                        <i data-feather="trash-2"></i>
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                            <div class="address-box">
-                                                <div>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="jack"
-                                                               id="flexRadioDefault1">
-                                                    </div>
-
-                                                    <div class="label">
-                                                        <label>Home 2</label>
-                                                    </div>
-
-                                                    <div class="table-responsive address-table">
-                                                        <table class="table">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td colspan="2">Gary M. Bailey</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Address :</td>
-                                                                    <td>
-                                                                        <p>
-                                                                            2135 Burning Memory Lane Philadelphia, PA
-                                                                            19135
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Pin Code :</td>
-                                                                    <td>+26</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Phone :</td>
-                                                                    <td>+ 215-335-9916</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="button-group">
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#editProfile">
-                                                        <i data-feather="edit"></i>
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-sm add-button w-100" data-bs-toggle="modal"
-                                                            data-bs-target="#removeProfile">
-                                                        <i data-feather="trash-2"></i>
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        }
+                                    </div>                                 
                                 </div>
                             </div>
-
                             <div class="tab-pane fade" id="pills-card" role="tabpanel">
                                 <div class="dashboard-card">
                                     <div class="title title-flex">
@@ -2611,63 +2388,120 @@
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->
+    <!-- Edit address modal box start -->
+    <div class="modal fade" id="edit-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="edit-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="edit-label">
+                        </div>
+                        <div class="mb-3">
+                            <label>Address</label>
+                            <textarea class="form-control" id="edit-address-text" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit address modal box end -->
+    <script>
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('edit-id').value = btn.dataset.id;
+                    document.getElementById('edit-label').value = btn.dataset.label;
+                    document.getElementById('edit-address-text').value = btn.dataset.address;
+                });
+            });
+        console.log(data); // xem trước khi fetch
+    </script>
+    <script>
+            document.getElementById("edit-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value;
+            const label = document.getElementById("edit-label").value;
+            const address = document.getElementById("edit-address-text").value;
+
+            try {
+                const coords = await getCoordinatesFromAddress(address); // dùng LocationIQ
+
+                const data = {
+                    Id: parseInt(id),
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                const res = await fetch(`/api/location/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+                if (!res.ok) throw new Error("Lỗi khi cập nhật");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    </script>
     <!-- Add address modal box start -->
+    @{
+        var userId = Context.Session.GetInt32("UserId") ?? 0;
+    }
     <div class="modal fade theme-modal" id="add-address" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add a new address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <h5 class="modal-title">Add a new address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="form-floating mb-4 theme-form-floating">
-                            <input type="text" class="form-control" id="fname" placeholder="Enter First Name">
-                            <label for="fname">First Name</label>
-                        </div>
-                    </form>
+                    <form id="address-form">
+                        <input type="hidden" id="userId" value="@userId" />
+                        <input type="hidden" id="latitude" />
+                        <input type="hidden" id="longitude" />
 
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="text" class="form-control" id="lname" placeholder="Enter Last Name">
-                            <label for="lname">Last Name</label>
+                            <input type="text" class="form-control" id="fname" placeholder="Enter Name">
+                            <label for="fname">Name</label>
                         </div>
-                    </form>
 
-                    <form>
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="email" class="form-control" id="email" placeholder="Enter Email Address">
-                            <label for="email">Email Address</label>
-                        </div>
-                    </form>
-
-                    <form>
-                        <div class="form-floating mb-4 theme-form-floating">
-                            <textarea class="form-control" placeholder="Leave a comment here" id="address"
-                                      style="height: 100px"></textarea>
+                            <textarea class="form-control" placeholder="Enter Address" id="address" style="height: 100px"></textarea>
                             <label for="address">Enter Address</label>
                         </div>
-                    </form>
 
-                    <form>
-                        <div class="form-floating mb-4 theme-form-floating">
-                            <input type="email" class="form-control" id="pin" placeholder="Enter Pin Code">
-                            <label for="pin">Pin Code</label>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn theme-bg-color btn-md text-white">Save changes</button>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn theme-bg-color btn-md text-white" data-bs-dismiss="modal">
-                        Save
-                        changes
-                    </button>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Add address modal box end -->
     <!-- Location Modal Start -->
     <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
@@ -2768,135 +2602,6 @@
         </div>
     </div>
     <!-- Location Modal End -->
-    <!-- Edit Profile Start -->
-    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-4">
-                        <div class="col-xxl-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="pname" value="Jack Jennas">
-                                    <label for="pname">Full Name</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-6">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="email" class="form-control" id="email1" value="vicki.pope@gmail.com">
-                                    <label for="email1">Email address</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-6">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input class="form-control" type="tel" value="4567891234" name="mobile" id="mobile"
-                                           maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
-                                            this.value.slice(0, this.maxLength);">
-                                    <label for="mobile">Email address</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address1"
-                                           value="8424 James Lane South San Francisco">
-                                    <label for="address1">Add Address</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address2" value="CA 94080">
-                                    <label for="address2">Add Address 2</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect1">
-                                        <option selected>Choose Your Country</option>
-                                        <option value="kingdom">United Kingdom</option>
-                                        <option value="states">United States</option>
-                                        <option value="fra">France</option>
-                                        <option value="china">China</option>
-                                        <option value="spain">Spain</option>
-                                        <option value="italy">Italy</option>
-                                        <option value="turkey">Turkey</option>
-                                        <option value="germany">Germany</option>
-                                        <option value="russian">Russian Federation</option>
-                                        <option value="malay">Malaysia</option>
-                                        <option value="mexico">Mexico</option>
-                                        <option value="austria">Austria</option>
-                                        <option value="hong">Hong Kong SAR, China</option>
-                                        <option value="ukraine">Ukraine</option>
-                                        <option value="thailand">Thailand</option>
-                                        <option value="saudi">Saudi Arabia</option>
-                                        <option value="canada">Canada</option>
-                                        <option value="singa">Singapore</option>
-                                    </select>
-                                    <label for="floatingSelect">Country</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect">
-                                        <option selected>Choose Your City</option>
-                                        <option value="kingdom">India</option>
-                                        <option value="states">Canada</option>
-                                        <option value="fra">Dubai</option>
-                                        <option value="china">Los Angeles</option>
-                                        <option value="spain">Thailand</option>
-                                    </select>
-                                    <label for="floatingSelect">City</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address3" value="94080">
-                                    <label for="address3">Pin Code</label>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold"
-                            data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" data-bs-dismiss="modal"
-                            class="btn theme-bg-color btn-md fw-bold text-light">
-                        Save changes
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Profile End -->
     <!-- Edit Card Start -->
     <div class="modal fade theme-modal" id="editCard" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
@@ -2955,58 +2660,57 @@
         </div>
     </div>
     <!-- Edit Card End -->
-    <!-- Remove Profile Modal Start -->
-    <div class="modal fade theme-modal remove-profile" id="removeProfile" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+    <!-- Remove Address Modal Start -->
+    <div class="modal fade" id="remove-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box">
-                        <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
-                        </p>
+                <form id="remove-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xoá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
-                            data-bs-target="#removeAddress" data-bs-toggle="modal">
-                        Yes
-                    </button>
-                </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xoá địa chỉ này?</p>
+                        <input type="hidden" id="remove-id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    <div class="modal fade theme-modal remove-profile" id="removeAddress" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box text-center">
-                        <h4 class="text-content">It's Removed.</h4>
-                    </div>
-                </div>
-                <div class="modal-footer pt-0">
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light"
-                            data-bs-dismiss="modal">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Remove Profile Modal End -->
+    <script>
+        // Gán id vào hidden input khi click nút Remove
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('remove-id').value = btn.dataset.id;
+            });
+        });
+
+        // Submit form xoá
+        document.getElementById("remove-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("remove-id").value;
+
+            try {
+                const res = await fetch(`/api/location/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error("Xoá thất bại");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    <!-- Remove Address Modal End -->
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
 
@@ -3040,6 +2744,80 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    <script>
+        const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
+        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
+        async function getCoordinatesFromAddress(address) {
+            const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
+
+            return {
+                latitude: parseFloat(data[0].lat),
+                longitude: parseFloat(data[0].lon)
+            };
+        }
+
+        // 📦 Xử lý khi người dùng submit form
+        document.getElementById("address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            try {
+                // Lấy dữ liệu người dùng nhập
+                const userId = parseInt(document.getElementById("userId").value);
+                const label = document.getElementById("fname").value;
+                const address = document.getElementById("address").value;
+
+                if (!label || !address) {
+                    alert("Vui lòng nhập đầy đủ tên và địa chỉ.");
+                    return;
+                }
+
+                // 🔄 Gọi API để lấy tọa độ từ địa chỉ
+                const coords = await getCoordinatesFromAddress(address);
+
+                // Cập nhật giá trị vào input ẩn
+                document.getElementById("latitude").value = coords.latitude;
+                document.getElementById("longitude").value = coords.longitude;
+
+                // Chuẩn bị dữ liệu gửi đi
+                const data = {
+                    UserId: userId,
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                console.log("Gửi dữ liệu:", data);
+
+                // 📨 Gửi POST request đến API
+                const res = await fetch('/api/location/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Lỗi server:", errorText);
+                    throw new Error("Lỗi khi thêm địa chỉ.");
+                }
+
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>

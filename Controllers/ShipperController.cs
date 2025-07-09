@@ -112,28 +112,44 @@ namespace Village_Manager.Controllers
         [Route("admin/shipper/delete")]
         public async Task<IActionResult> DeleteShipper(int UserId)
         {
+            Console.WriteLine("UserId nhận được: " + UserId);
             try
             {
-                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == UserId);
+                Console.WriteLine($"[DeleteShipper] Received UserId: {UserId}");
 
+                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == UserId);
                 if (shipper == null)
                 {
-                    TempData["Error"] = "Không tìm thấy shipper.";
+                    TempData["Error"] = $"Không tìm thấy shipper với UserId = {UserId}";
                     return Redirect("/shipper");
                 }
 
-                // Soft delete thay vì Remove
-                shipper.Status = "pending"; 
-                await _context.SaveChangesAsync();
+                shipper.Status = "pending";
 
-                TempData["Success"] = "Đã gỡ quyền shipper.";
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+                if (user == null)
+                {
+                    TempData["Error"] = "Không tìm thấy user.";
+                    return Redirect("/shipper");
+                }
+
+                if (user.RoleId == 4)
+                {
+                    user.RoleId = 3;
+                    _context.Users.Update(user);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã gỡ quyền shipper và chuyển về khách hàng.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Lỗi khi xoá: {ex.Message}";
+                TempData["Error"] = $"Lỗi khi gỡ quyền: {ex.Message}";
             }
 
             return Redirect("/shipper");
         }
+
+
     }
 }

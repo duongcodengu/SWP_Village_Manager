@@ -84,9 +84,19 @@ namespace Village_Manager.Controllers
                         HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
                     }
                 }
+                if (user.RoleId == 4)
+                {
+                    var shipper = _context.Shippers.FirstOrDefault(f => f.UserId == user.Id);
+                    if (shipper != null)
+                    {
+                        HttpContext.Session.SetInt32("ShipperId", shipper.Id);
+                        HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
+                        HttpContext.Session.SetInt32("UserId", user.Id);
+                    }
+                }
 
                 // role admin
-                if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
+                if (user.RoleId == 1 || user.RoleId == 5)
                 {
                     return RedirectToAction("Index", "Home");
                 }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Village_Manager.Data;
+using Village_Manager.Models;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers
 {
@@ -18,7 +21,10 @@ namespace Village_Manager.Controllers
         [Route("dashboard")]
         public IActionResult DashBoard()
         {
-            return View();
+            var userLocations = _context.UserLocations
+                                .Include(u1 => u1.User)
+                                .ToList();
+            return View(userLocations);
         }
         [HttpGet]
         [Route("customer")]
@@ -36,6 +42,6 @@ namespace Village_Manager.Controllers
             ViewBag.HasAcceptedGeo = user?.HasAcceptedGeolocation ?? false;
 
             return View();
-        }
+        }        
     }
 }

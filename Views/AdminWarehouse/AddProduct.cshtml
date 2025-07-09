@@ -149,10 +149,21 @@
                                 <input type="hidden" name="farmer_id" id="farmer_id" />
                                 <input type="text" class="form-control" id="farmer_name" name="farmer_name"
                                        placeholder="Search farmer by name..." autocomplete="off" style="flex: 1;" />
+                                <div class="col-sm-6">
+                                    <select name="farmer_id" class="form-control" required>
+                                        <option disabled>-- Select Category --</option>
+                                        @foreach (var farmer in ViewBag.Farmers)
+                                        {
+                                            <option value="@farmer.Id">@farmer.FullName</option>
+                                        }
+                                    </select>
+                                </div>
                             </div>
+
                             <div class="col-sm-9 offset-sm-3">
                                 <span id="farmer-error" style="color:red; display:none;">You must select a valid farmer from the list.</span>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
