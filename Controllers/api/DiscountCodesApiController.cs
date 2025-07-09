@@ -37,10 +37,12 @@ namespace Village_Manager.Controllers.api
             decimal discountAmount = (percent / 100m) * totalAmount;
             decimal finalAmount = totalAmount - discountAmount;
 
+            // ➕ Lưu thông tin vào Session để sang Checkout đọc
+            HttpContext.Session.SetString("DiscountCode", discount.Code);
+            HttpContext.Session.SetString("DiscountAmount", Math.Round(discountAmount, 0).ToString());
+
             // Trừ lượt dùng
             discount.UsageLimit -= 1;
-
-            // Nếu hết lượt → cập nhật trạng thái
             if (discount.UsageLimit == 0)
             {
                 discount.Status = "used";

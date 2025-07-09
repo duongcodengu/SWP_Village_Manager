@@ -119,6 +119,8 @@ public class ShopController : Controller
 
     public IActionResult Checkout()
     {
+        TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode");
+        TempData["DiscountAmount"] = HttpContext.Session.GetString("DiscountAmount");
         // Lấy giỏ hàng từ Session
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         foreach (var item in cartItems)
