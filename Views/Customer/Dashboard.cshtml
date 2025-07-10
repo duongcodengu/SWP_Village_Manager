@@ -1,12 +1,13 @@
-﻿@{
+
+@{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
 }
 
+@model List<Village_Manager.Models.UserLocation>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -407,6 +408,252 @@
                                         margin-bottom: 1.5rem;
                                     }
                             </style>
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#add-address">
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-sm-4 g-3">
+                                        @foreach (var userLocation in Model)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                            id="flexRadioDefault1">
+                                                        </div>
+
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
+                                                        </div>
+
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>                                 
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-card" role="tabpanel">
+                                <div class="dashboard-card">
+                                    <div class="title title-flex">
+                                        <div>
+                                            <h2>My Card Details</h2>
+                                            <span class="title-leaf">
+                                                <svg class="icon-width bg-gray">
+                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                                </svg>
+                                            </span>
+                                        </div>
+
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#editCard">
+                                            <i data-feather="plus"
+                                               class="me-2"></i> Add New Card
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 2548</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>08/05</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Audrey Carol</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/1.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details card-visa">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1536</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>12/23</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Leah Heather</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/2.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details debit-card">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1366</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>05/21</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>mark jecno</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/3.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel">
                                 <div class="dashboard-profile">
@@ -522,6 +769,338 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-2">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-3">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-1">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Deal Box Modal End -->
+    <!-- Tap to top and theme setting button start -->
+    <div class="theme-option">
+        <div class="setting-box">
+            <button class="btn setting-button">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
+            <div class="theme-setting-2">
+                <div class="theme-box">
+                    <ul>
+                        <li>
+                            <div class="setting-name">
+                                <h4>Color</h4>
+                            </div>
+                            <div class="theme-setting-button color-picker">
+                                <form class="form-control">
+                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
+                                    <input type="color" class="form-control form-control-color" id="colorPick"
+                                           value="#0da487" title="Choose your color">
+                                </form>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>Dark</h4>
+                            </div>
+                            <div class="theme-setting-button">
+                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
+                                <button class="btn btn-2 unline" id="lightButton">Light</button>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top and theme setting button end -->
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- Edit address modal box start -->
+    <div class="modal fade" id="edit-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="edit-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="edit-label">
+                        </div>
+                        <div class="mb-3">
+                            <label>Address</label>
+                            <textarea class="form-control" id="edit-address-text" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit address modal box end -->
+    <script>
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('edit-id').value = btn.dataset.id;
+                    document.getElementById('edit-label').value = btn.dataset.label;
+                    document.getElementById('edit-address-text').value = btn.dataset.address;
+                });
+            });
+        console.log(data); // xem trước khi fetch
+    </script>
+    <script>
+            document.getElementById("edit-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value;
+            const label = document.getElementById("edit-label").value;
+            const address = document.getElementById("edit-address-text").value;
+
+            try {
+                const coords = await getCoordinatesFromAddress(address); // dùng LocationIQ
+
+                const data = {
+                    Id: parseInt(id),
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                const res = await fetch(`/api/location/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+                if (!res.ok) throw new Error("Lỗi khi cập nhật");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    </script>
+    <!-- Add address modal box start -->
+    @{
+        var userId = Context.Session.GetInt32("UserId") ?? 0;
+    }
+    <div class="modal fade theme-modal" id="add-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a new address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="address-form">
+                        <input type="hidden" id="userId" value="@userId" />
+                        <input type="hidden" id="latitude" />
+                        <input type="hidden" id="longitude" />
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="text" class="form-control" id="fname" placeholder="Enter Name">
+                            <label for="fname">Name</label>
+                        </div>
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <textarea class="form-control" placeholder="Enter Address" id="address" style="height: 100px"></textarea>
+                            <label for="address">Enter Address</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn theme-bg-color btn-md text-white">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add address modal box end -->
+    <!-- Location Modal Start -->
+    <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Choose your Delivery Location</h5>
+                    <p class="mt-1 text-content">Enter your address and we will specify the offer for your area.</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="location-list">
+                        <div class="search-input">
+                            <input type="search" class="form-control" placeholder="Search Your Area">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+
+                        <div class="disabled-box">
+                            <h6>Select a Location</h6>
+                        </div>
+
+                        <ul class="location-select custom-height">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Alabama</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Arizona</h6>
+                                    <span>Min: $150</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>California</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Colorado</h6>
+                                    <span>Min: $140</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Florida</h6>
+                                    <span>Min: $160</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Georgia</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Kansas</h6>
+                                    <span>Min: $170</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Minnesota</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>New York</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Washington</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Location Modal End -->
+    <!-- Edit Card Start -->
+    <div class="modal fade theme-modal" id="editCard" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel8">Edit Card</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -591,6 +1170,11 @@
         </div>
     </div>
     <!-- Edit Profile End -->
+                                    <input type="text" class="form-control" id="finame" value="Mark">
+                                    <label for="finame">First Name</label>
+                                </div>
+                            </form>
+                        </div>
 
     @* api lay địa chỉ *@
     <script>
@@ -634,6 +1218,80 @@
                         wardSelect.appendChild(option);
                     });
                 }
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <select class="form-select" id="floatingSelect12">
+                                        <option selected>Card Type</option>
+                                        <option value="kingdom">Visa Card</option>
+                                        <option value="states">MasterCard Card</option>
+                                        <option value="fra">RuPay Card</option>
+                                        <option value="china">Contactless Card</option>
+                                        <option value="spain">Maestro Card</option>
+                                    </select>
+                                    <label for="floatingSelect12">Card Type</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Card End -->
+    <!-- Remove Address Modal Start -->
+    <div class="modal fade" id="remove-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="remove-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xoá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xoá địa chỉ này?</p>
+                        <input type="hidden" id="remove-id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Gán id vào hidden input khi click nút Remove
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('remove-id').value = btn.dataset.id;
+            });
+        });
+
+        // Submit form xoá
+        document.getElementById("remove-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("remove-id").value;
+
+            try {
+                const res = await fetch(`/api/location/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error("Xoá thất bại");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
             }
         });
     </script>
@@ -673,6 +1331,7 @@
     </script>
 
     <!-- Edit Profile End -->
+    <!-- Remove Address Modal End -->
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
 
@@ -706,6 +1365,80 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    <script>
+        const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
+        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
+        async function getCoordinatesFromAddress(address) {
+            const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
+
+            return {
+                latitude: parseFloat(data[0].lat),
+                longitude: parseFloat(data[0].lon)
+            };
+        }
+
+        // 📦 Xử lý khi người dùng submit form
+        document.getElementById("address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            try {
+                // Lấy dữ liệu người dùng nhập
+                const userId = parseInt(document.getElementById("userId").value);
+                const label = document.getElementById("fname").value;
+                const address = document.getElementById("address").value;
+
+                if (!label || !address) {
+                    alert("Vui lòng nhập đầy đủ tên và địa chỉ.");
+                    return;
+                }
+
+                // 🔄 Gọi API để lấy tọa độ từ địa chỉ
+                const coords = await getCoordinatesFromAddress(address);
+
+                // Cập nhật giá trị vào input ẩn
+                document.getElementById("latitude").value = coords.latitude;
+                document.getElementById("longitude").value = coords.longitude;
+
+                // Chuẩn bị dữ liệu gửi đi
+                const data = {
+                    UserId: userId,
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                console.log("Gửi dữ liệu:", data);
+
+                // 📨 Gửi POST request đến API
+                const res = await fetch('/api/location/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Lỗi server:", errorText);
+                    throw new Error("Lỗi khi thêm địa chỉ.");
+                }
+
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>

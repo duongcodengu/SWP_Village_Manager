@@ -8,6 +8,7 @@ public partial class RetailOrder
     public int Id { get; set; }
 
     public int? UserId { get; set; }
+    public int ProductId { get; set; }
 
     public DateTime? OrderDate { get; set; }
 
@@ -18,4 +19,5 @@ public partial class RetailOrder
     public virtual ICollection<RetailOrderItem> RetailOrderItems { get; set; } = new List<RetailOrderItem>();
 
     public virtual User? User { get; set; }
+    public Product Product { get; set; }
 }

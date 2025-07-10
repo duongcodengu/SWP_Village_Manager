@@ -53,6 +53,7 @@
 </head>
 
 <body>
+    
     <!-- page-wrapper Start-->
     <div class="page-wrapper compact-wrapper" id="pageWrapper">
         <!-- Page Body Start -->
@@ -73,7 +74,15 @@
                                             </a>
                                         </form>
                                     </div>
+                                    @if (TempData["Success"] != null)
+                                    {
+                                        <div class="alert alert-success">@TempData["Success"]</div>
+                                    }
 
+                                    @if (TempData["Error"] != null)
+                                    {
+                                        <div class="alert alert-danger">@TempData["Error"]</div>
+                                    }
                                     <div class="table-responsive category-table">
                                         <table class="table all-package theme-table" id="table_id">
                                             <thead>
@@ -146,18 +155,6 @@
                                                                            data-username="@shipper.Username">
                                                                             <i class="ri-delete-bin-line"></i>
                                                                         </a>
-                                                                        <script>
-                                                                                $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
-                                                                                var button = $(event.relatedTarget);
-                                                                                var userid = button.data('userid');
-                                                                                var username = button.data('username');
-
-                                                                                var modal = $(this);
-                                                                                modal.find('input[name="UserId"]').val(userid);
-                                                                                modal.find('#confirmUsername').text(username);
-                                                                            });
-                                                                        </script>
-
                                                                     </li>
                                                                 </ul>
                                                             </td>
@@ -240,86 +237,28 @@
             <!-- Container-fluid end -->
         </div>
         <!-- Page Body End -->
-        <!-- Modal Start -->
-        <div class="modal fade" id="confirmRoleChangeModal" tabindex="-1" aria-labelledby="confirmRoleChangeModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form method="post" action="/famer/change-role">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmRoleChangeModalLabel">Chuyển vai trò người dùng</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Bạn có chắc muốn xóa vai trò của <strong id="modalUsername"></strong> khỏi <span class="badge bg-danger">Farmer </span> không ? </p>
-                            <input type="hidden" id="changeRoleUserId" name="UserId" />
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-danger">Xác nhận</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Modal End -->
     </div>
-
-    <!-- Delete Modal Box Start -->
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal xác nhận gỡ quyền shipper -->
+    <div class="modal fade" id="confirmRoleChangeModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box">
-                        <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
-                        </p>
+                <form method="post" action="/admin/shipper/delete">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Xác nhận gỡ quyền</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-target="#exampleModalToggle2"
-                            data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
-                    </button>
-                </div>
+                    <div class="modal-body">
+                        Bạn có chắc muốn gỡ quyền của <strong id="confirmUsername"></strong>?
+                        <input type="hidden" name="UserId" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xác nhận</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box text-center">
-                        <div class="wrapper">
-                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                            </svg>
-                        </div>
-                        <h4 class="text-content">It's Removed.</h4>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Delete Modal Box End -->
     <!-- Edit Farmer Modal -->
     <div class="modal fade" id="editFarmerModal" tabindex="-1" aria-labelledby="editFarmerModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -361,6 +300,18 @@
             </div>
         </div>
     </div>
+    <script>
+        $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var userid = button.data('userid');
+            var username = button.data('username');
+
+            var modal = $(this);
+            modal.find('input[name="UserId"]').val(userid);
+            modal.find('#confirmUsername').text(username);
+        });
+    </script>
+
 
     <!-- Bootstrap JS (quan trọng!) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

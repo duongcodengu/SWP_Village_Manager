@@ -1,4 +1,4 @@
-﻿using MailKit.Security;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -7,6 +7,7 @@ using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.Models.Dto;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers
 {
@@ -26,7 +27,33 @@ namespace Village_Manager.Controllers
 
         [HttpGet]
         [Route("dashboard")]
-        public async Task<IActionResult> DashBoard()
+        public IActionResult DashBoard()
+        {
+            var userLocations = _context.UserLocations
+                                .Include(u1 => u1.User)
+                                .ToList();
+            return View(userLocations);
+        }
+        [HttpGet]
+[Route("customerLocation")]
+public IActionResult IndexCustomer()
+{
+    var userId = HttpContext.Session.GetInt32("UserId");
+
+    if (userId == null)
+    {
+        return Redirect("/login");
+    }
+
+    var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+    ViewBag.UserId = userId;
+    ViewBag.HasAcceptedGeo = user?.HasAcceptedGeolocation ?? false;
+
+    return View();
+}
+        [HttpGet]
+        [Route("customer")]
+        public IActionResult IndexCustomer()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -155,6 +182,6 @@ namespace Village_Manager.Controllers
 
             return Redirect($"/otp?email={safeEmail}&phone={safePhone}&address={safeAddress}");
         }
-
+        }        
     }
-}
+
