@@ -1,15 +1,14 @@
-
-﻿using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
+using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
-    public class AdminRetailController : Controller
+    public class AdminRetailController(AppDbContext context, IConfiguration configuration) : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly AppDbContext _context = context;
+        private readonly IConfiguration _configuration = configuration;
 
 
         //dashboeard bắt đầu
@@ -89,16 +88,8 @@ namespace Village_Manager.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
-        // Hiển thị danh sách khách mua lẻ
-        [HttpGet]
-        [Route("allretailcustomers")]
-        public IActionResult AllRetailCustomers()
-        {
-            var model = _context.RetailCustomers
-                                .Include(rc => rc.User) 
-                                .ToList();
 
-            return View(model);
+            return View(products);
         }
 
         [HttpGet]
@@ -248,5 +239,27 @@ namespace Village_Manager.Controllers
         [Route("alluser")]
         public IActionResult AllUser() => View();
 
+        [HttpGet]
+        public IActionResult OrderListRetail()
+        {
+            return View(); // Tự động tìm OrderListRetail.cshtml trong thư mục /Views/AdminRetail/
+        }
+        public IActionResult OrderListProcessed()
+        {
+            return View();
+        }
+        public async Task<IActionResult> OrderDetailRetail(int id)
+        {
+            var order = await _context.RetailOrders
+                .Include(o => o.User)
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+
+            return View(order); // gắn vào OrderDetailRetail.cshtml
+        }
     }
 }
+
