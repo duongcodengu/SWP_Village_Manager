@@ -1,6 +1,7 @@
 ﻿@{
     var roleName = Context.Session.GetString("RoleName");
 }
+@RenderSection("Scripts", required: false)
 @using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
 <html lang="en">
@@ -240,11 +241,14 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/products">Prodcts</a>
+                                            <a href="/productsRetail">Sản Phẩm</a>
                                         </li>
 
                                         <li>
                                             <a href="add-new-product.html">Add New Products</a>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="AdminRetail" asp-action="HiddenProducts">Ngưng bán</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -325,10 +329,10 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="order-list.html">Order List</a>
+                                            <a href="/AdminRetail/OrderListRetail">Order List</a>
                                         </li>
                                         <li>
-                                            <a href="order-detail.html">Order Detail</a>
+                                            <a href="/AdminRetail/OrderListProcessed">Order processed</a>
                                         </li>
                                         <li>
                                             <a href="order-tracking.html">Order Tracking</a>
