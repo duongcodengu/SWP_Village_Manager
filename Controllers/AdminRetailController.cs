@@ -262,7 +262,7 @@ namespace Village_Manager.Controllers
         }
 
         [HttpGet]
-        [Route("AdminRetail/UpdateCustomer/{id}")]
+        [Route("EditCustomer/{id}")]
         public async Task<IActionResult> UpdateCustomer(int id)
         {
             var roleId = HttpContext.Session.GetInt32("RoleId");
@@ -272,14 +272,14 @@ namespace Village_Manager.Controllers
             if (user == null || user.RoleId != 3)
                 return NotFound();
 
-            return View("UpdateCustomer", user);
+            return View("EditCustomer", user);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("UpdateCustomer/{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id, string actionType, string? reason, string? newEmail, string? newPhone)
+        [Route("EditCustomer/{id}")]
+        public async Task<IActionResult> EditCustomer(int id, string actionType, string? reason, string? newEmail, string? newPhone)
         {
             var staffId = HttpContext.Session.GetInt32("UserId");
             var staffRole = HttpContext.Session.GetInt32("RoleId");
@@ -362,7 +362,7 @@ namespace Village_Manager.Controllers
 
             // Tạo nội dung thông báo gửi cho admin
             var content = $"[YÊU CẦU] Nhân viên (ID: {staffId}) đề nghị THÊM MỚI khách hàng:\n" +
-                          $"- Username: {username}\n- Email: {email}\n- Phone: {phone}\nLý do: {reason}";
+                          $"- Username: {username}\n- Email: {email}\n- Phone: {phone}";
 
             // Gửi thông báo cho toàn bộ admin
             var admins = await _context.Users.Where(u => u.RoleId == 1).ToListAsync();
