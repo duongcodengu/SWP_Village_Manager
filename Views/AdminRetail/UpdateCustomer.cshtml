@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Update Customer";
+    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+}
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-sm-8 m-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="title-header option-title">
+                                    <h5>Update Customer</h5>
+                                </div>
+
+                                @if (TempData["Error"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["Error"]</div>
+                                }
+                                @if (TempData["Success"] != null)
+                                {
+                                    <div class="alert alert-success">@TempData["Success"]</div>
+                                }
+
+                                <form class="theme-form theme-form-2 mega-form" method="post" asp-action="UpdateCustomer" asp-controller="AdminRetail">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="id" value="@ViewBag.UserId" />
+
+                                    <div class="card-header-1">
+                                        <h5>Thông tin muốn cập nhật</h5>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 form-label-title">Email mới</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="newEmail" class="form-control" type="email" placeholder="example@gmail.com" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 form-label-title">Số điện thoại mới</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="newPhone" class="form-control" type="text" placeholder="090..." />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 form-label-title">Hành động</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <select name="actionType" class="form-control" required>
+                                                <option value="">-- Chọn hành động --</option>
+                                                <option value="update">Cập nhật thông tin</option>
+                                                <option value="deactivate">Khóa tài khoản</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 form-label-title">Lý do</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <textarea name="reason" class="form-control" rows="3" placeholder="(Tùy chọn) Lý do yêu cầu cập nhật..."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-submit-button">
+                                        <button class="btn btn-animation ms-auto" type="submit">Gửi yêu cầu</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

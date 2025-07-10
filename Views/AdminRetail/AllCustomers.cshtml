@@ -1,0 +1,112 @@
+﻿@using System.Linq
+@model List<Village_Manager.Models.User>
+@{
+    ViewData["Title"] = "All Customers";
+    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+}
+
+<div class="page-body-wrapper">
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="title-header option-title">
+                                    <h5>All Customers</h5>
+                                </div>
+                                <form class="d-flex align-items-center gap-2" method="get" action="/AllCustomers">
+                                    <input type="text" name="searchUser" class="form-control form-control-sm" placeholder="Tìm customer..." value="@ViewBag.SearchUser" style="width: 220px;">
+                                    <button type="submit" class="btn btn-light btn-sm">Tìm</button>
+                                </form>
+                            </div>
+
+                            @if (TempData["Success"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    @TempData["Success"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            }
+
+                            <div class="table-responsive table-product">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Ngày tạo</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Any())
+                                        {
+                                            foreach (var user in Model)
+                                            {
+                                                <tr>
+                                                    <td>@user.Id</td>
+                                                    <td>@user.Username</td>
+                                                    <td>@user.Email</td>
+                                                    <td>@user.Phone</td>
+                                                    <td>@user.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                                                    <td>
+                                                        @(user.IsActive ? "Hoạt động" : "Đã khóa")
+                                                    </td>
+                                                    <td>
+                                                        <ul class="list-unstyled mb-0">
+                                                            <li>
+                                                                <a class="text-info" href="/Order/Detail/@user.Id">Xem đơn hàng</a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="btn btn-sm btn-warning" href="/AdminRetail/UpdateCustomer/@user.Id">
+                                                                    Yêu cầu cập nhật
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7" class="text-center">Không có khách hàng nào.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @if (ViewBag.TotalPages > 1)
+                            {
+                                <nav aria-label="Customer pagination">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                            <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@(ViewBag.CurrentPage - 1)">Previous</a>
+                                        </li>
+                                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                        {
+                                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                                <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@i">@i</a>
+                                            </li>
+                                        }
+                                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                            <a class="page-link" href="?searchUser=@ViewBag.SearchUser&page=@(ViewBag.CurrentPage + 1)">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Add Customer";
+    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+}
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-sm-8 m-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="title-header option-title">
+                                    <h5>Add Customer</h5>
+                                </div>
+
+                                @if (TempData["Error"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["Error"]</div>
+                                }
+                                @if (TempData["Success"] != null)
+                                {
+                                    <div class="alert alert-success">@TempData["Success"]</div>
+                                }
+
+                                <form class="theme-form theme-form-2 mega-form" method="post" href="/AddCustomer">
+                                    @Html.AntiForgeryToken()
+
+                                    <div class="card-header-1">
+                                        <h5>Customer Information</h5>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-lg-2 col-md-3 mb-0">Username</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="username" class="form-control" type="text" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="email" class="form-control" type="email" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 col-form-label form-label-title">Phone</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="phone" class="form-control" type="text" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-lg-2 col-md-3 col-form-label form-label-title">Password</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input id="Password" name="password" class="form-control" type="password" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="row align-items-center">
+                                        <label class="col-lg-2 col-md-3 col-form-label form-label-title">Confirm Password</label>
+                                        <div class="col-md-9 col-lg-10">
+                                            <input name="confirmPassword" class="form-control" type="password" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="card-submit-button">
+                                        <button class="btn btn-animation ms-auto" type="submit">Send Request</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("form").submit(function (e) {
+                var password = $("#Password").val();
+                var confirmPassword = $("input[name='confirmPassword']").val();
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert("Passwords do not match!");
+                    return false;
+                }
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert("Password must be at least 6 characters!");
+                    return false;
+                }
+            });
+        });
+    </script>
+}
+

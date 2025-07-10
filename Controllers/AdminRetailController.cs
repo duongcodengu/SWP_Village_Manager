@@ -18,7 +18,7 @@ namespace Village_Manager.Controllers
             var username = HttpContext.Session.GetString("Username");
             var roleId = HttpContext.Session.GetInt32("RoleId");
 
-            if (string.IsNullOrEmpty(username) || roleId != 1)
+            if (string.IsNullOrEmpty(username) || roleId != 2)
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -34,9 +34,7 @@ namespace Village_Manager.Controllers
 
             // Tổng số đơn hàng
             int totalRetailOrders = _context.RetailOrders.Count();
-            int totalWholesaleOrders = _context.WholesaleOrders.Count();
-            int totalOrders = totalRetailOrders + totalWholesaleOrders;
-            ViewBag.TotalOrders = totalOrders;
+            ViewBag.TotalOrders = totalRetailOrders;
 
             // Lấy category (name, image_url)
             var categories = _context.ProductCategory
@@ -61,18 +59,7 @@ namespace Village_Manager.Controllers
                       (ro, ri) => ri.Quantity * ri.UnitPrice)
                 .Sum();
 
-            // Bán buôn (Wholesale)
-            var wholesaleRevenue = _context.WholesaleOrders
-                .Where(wo => wo.Status == "confirmed"
-                    && wo.ConfirmedAt.HasValue
-                    && wo.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.WholesaleOrderItems,
-                      wo => wo.Id,
-                      wi => wi.OrderId,
-                      (wo, wi) => wi.Quantity * wi.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
+            decimal totalRevenue = (retailRevenue ?? 0);
             ViewBag.TotalRevenue = totalRevenue;
 
             return View();
@@ -198,9 +185,6 @@ namespace Village_Manager.Controllers
             return View("Products", products);
         }
 
-        [HttpGet]
-        [Route("alluser")]
-        public IActionResult AllUser() => View();
 
         // Hiển thị danh sách mã giảm giá
         [HttpGet]
@@ -248,6 +232,157 @@ namespace Village_Manager.Controllers
             TempData["Success"] = "Thêm thành công.";
             return RedirectToAction("DiscountCodes");
         }
+
+        [HttpGet]
+        [Route("AllCustomers")]
+        public async Task<IActionResult> AllCustomers(string searchUser, int page = 1)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            if (string.IsNullOrEmpty(username) || roleId != 2) // Only staff can manage
+            {
+                return View("404");
+            }
+
+            int pageSize = 10;
+            var usersQuery = _context.Users.Include(u => u.Role).Where(u => u.RoleId == 3); // Only customers
+
+            if (!string.IsNullOrEmpty(searchUser))
+                usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
+
+            int totalUsers = await usersQuery.CountAsync();
+            var users = await usersQuery.OrderByDescending(u => u.CreatedAt)
+                                        .Skip((page - 1) * pageSize)
+                                        .Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+            ViewBag.SearchUser = searchUser;
+            return View("AllCustomers", users);
+        }
+
+        [HttpGet]
+        [Route("AdminRetail/UpdateCustomer/{id}")]
+        public async Task<IActionResult> UpdateCustomer(int id)
+        {
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            if (roleId != 2) return View("404");
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.RoleId != 3)
+                return NotFound();
+
+            return View("UpdateCustomer", user);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("UpdateCustomer/{id}")]
+        public async Task<IActionResult> UpdateCustomer(int id, string actionType, string? reason, string? newEmail, string? newPhone)
+        {
+            var staffId = HttpContext.Session.GetInt32("UserId");
+            var staffRole = HttpContext.Session.GetInt32("RoleId");
+
+            // Chỉ cho phép staff gửi yêu cầu
+            if (staffId == null || staffRole != 2)
+                return View("404");
+
+            var customer = await _context.Users.FindAsync(id);
+            if (customer == null || customer.RoleId != 3)
+                return NotFound();
+
+            string? content = actionType.ToLower() switch
+            {
+                "deactivate" => $"[YÊU CẦU] Nhân viên (ID: {staffId}) đề nghị KHÓA tài khoản khách hàng '{customer.Username}' (ID: {customer.Id}). Lý do: {reason}",
+                "update" => $"[YÊU CẦU] Nhân viên (ID: {staffId}) đề nghị CẬP NHẬT thông tin cho khách hàng '{customer.Username}' (ID: {customer.Id}).\nEmail mới: {newEmail}, SĐT mới: {newPhone}. Lý do: {reason}",
+                _ => null
+            };
+
+            if (content == null)
+                return BadRequest("Loại hành động không hợp lệ.");
+
+            // Gửi thông báo đến tất cả admin
+            var admins = await _context.Users.Where(u => u.RoleId == 1).ToListAsync();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = content,
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Yêu cầu cập nhật tài khoản đã được gửi tới quản trị viên.";
+            return RedirectToAction("AllCustomers");
+        }
+
+        [HttpGet]
+        [Route("AddCustomer")]
+        public IActionResult AddCustomer()
+        {
+            // Chỉ staff mới có quyền gửi
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            if (roleId != 2) return View("404");
+
+            return View(); // trả về form để nhập thông tin customer
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("AddCustomer")]
+        public async Task<IActionResult> AddCustomer(string username, string email, string password, string phone, string? reason)
+        {
+            var staffId = HttpContext.Session.GetInt32("UserId");
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            if (staffId == null || roleId != 2)
+                return View("404");
+
+            // Validate sơ bộ
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                TempData["Error"] = "Vui lòng điền đầy đủ thông tin bắt buộc.";
+                return RedirectToAction("AddCustomer");
+            }
+
+            // Kiểm tra trùng username hoặc email
+            if (await _context.Users.AnyAsync(u => u.Username == username))
+            {
+                TempData["Error"] = "Username đã tồn tại.";
+                return RedirectToAction("AddCustomer");
+            }
+            if (await _context.Users.AnyAsync(u => u.Email == email))
+            {
+                TempData["Error"] = "Email đã tồn tại.";
+                return RedirectToAction("AddCustomer");
+            }
+
+            // Tạo nội dung thông báo gửi cho admin
+            var content = $"[YÊU CẦU] Nhân viên (ID: {staffId}) đề nghị THÊM MỚI khách hàng:\n" +
+                          $"- Username: {username}\n- Email: {email}\n- Phone: {phone}\nLý do: {reason}";
+
+            // Gửi thông báo cho toàn bộ admin
+            var admins = await _context.Users.Where(u => u.RoleId == 1).ToListAsync();
+            foreach (var admin in admins)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = admin.Id,
+                    Content = content,
+                    CreatedAt = DateTime.Now,
+                    IsRead = false
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Yêu cầu thêm khách hàng đã được gửi tới quản trị viên.";
+            return RedirectToAction("AddCustomer");
+        }
+
     }
 }
 
