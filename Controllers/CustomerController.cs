@@ -35,25 +35,8 @@ namespace Village_Manager.Controllers
             return View(userLocations);
         }
         [HttpGet]
-[Route("customerLocation")]
-public IActionResult IndexCustomer()
-{
-    var userId = HttpContext.Session.GetInt32("UserId");
-
-    if (userId == null)
-    {
-        return Redirect("/login");
-    }
-
-    var user = _context.Users.FirstOrDefault(u => u.Id == userId);
-    ViewBag.UserId = userId;
-    ViewBag.HasAcceptedGeo = user?.HasAcceptedGeolocation ?? false;
-
-    return View();
-}
-        [HttpGet]
         [Route("customer")]
-        public IActionResult IndexCustomer()
+        public async Task<IActionResult> IndexCustomer()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -71,6 +54,8 @@ public IActionResult IndexCustomer()
                 .FirstOrDefaultAsync();
             if (user != null)
             {
+                ViewBag.UserId = userId;
+                ViewBag.HasAcceptedGeo = user?.HasAcceptedGeolocation ?? false;
                 ViewBag.Email = user.Email;
                 ViewBag.Username = user.Username;
                 ViewBag.TotalOrders = totalOrders;

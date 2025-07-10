@@ -107,7 +107,7 @@ public class AdminWarehouseController : Controller
     }
     //ListProduct
     [HttpGet]
-    [Route("products")]
+    [Route("product")]
     public IActionResult Products()
     {
         var products = _context.Products
