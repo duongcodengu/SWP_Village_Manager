@@ -2,7 +2,7 @@
     ViewData["Title"] = "Order Detail";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
-@model Village_Manager.ViewModel.RetailOrderViewModel
+@model Village_Manager.ViewModel.RetailOrderItemViewModel
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -82,7 +82,7 @@
                                                 <div class="col-md-4 text-center">
                                                     @if (!string.IsNullOrEmpty(Model.ProductImageUrl))
                                                     {
-                                                        <img src="@Model.ProductImageUrl" class="img-fluid rounded" alt="Ảnh sản phẩm" style="max-height: 250px;" width="800" />
+                                                        <img src="@Model.ProductImageUrl" class="img-fluid rounded" alt="Ảnh sản phẩm" style="max-height: 450px;" width="800" />
                                                     }
                                                     else
                                                     {
@@ -92,7 +92,7 @@
                                                 <div class="col-md-8">
                                                     <dl class="row">
                                                         <dt class="col-sm-4">Order Id :</dt>
-                                                        <dd class="col-sm-8">@Model.Id</dd>
+                                                        <dd class="col-sm-8">@Model.OrderId</dd>
                                                         <dt class="col-sm-4">Họ tên:</dt>
                                                         <dd class="col-sm-8">@Model.UserName</dd>
 
@@ -104,7 +104,10 @@
 
                                                         <dt class="col-sm-4">Sản phẩm:</dt>
                                                         <dd class="col-sm-8">@Model.ProductName</dd>
-
+                                                        <dt class="col-sm-4">Số lượng:</dt>
+                                                        <dd class="col-sm-8">@Model.Quantity</dd>
+                                                        <dt class="col-sm-4">Giá:</dt>
+                                                        <dd class="col-sm-8">@Model.UnitPrice</dd>
                                                         <dt class="col-sm-4">Thời gian gửi:</dt>
                                                         <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy HH:mm")</dd>
 
@@ -113,12 +116,14 @@
                                                     </dl>
                                                 </div>
                                                 <div class="text-center mt-4">
-                                                    <a href="/listOrder" class="btn btn-secondary me-2">← Quay lại</a>
+                                                    <div class="d-flex justify-content-start gap-2">
+                                                        <a href="/listOrder" class="btn btn-secondary btn-sm">← Quay lại</a>
 
-                                                    <form method="post" action="/order/delete" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');">
-                                                        <input type="hidden" name="id" value="@Model.Id" />
-                                                        <button type="submit" class="btn btn-danger btn-sm ms-2">Xoá</button>
-                                                    </form>
+                                                        <form method="post" action="/order/delete" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');" class="d-inline">
+                                                            <input type="hidden" name="id" value="@Model.Id" />
+                                                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Xoá</button>
+                                                        </form>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

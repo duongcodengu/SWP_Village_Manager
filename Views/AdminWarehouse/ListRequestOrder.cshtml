@@ -101,11 +101,14 @@
                                                                     <td>@item.Phone</td>
                                                                     <td>@(item.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có")</td>
                                                                     <td>@item.Status</td>
-                                                                    <td>
-                                                                        <a href="/order/detail/@item.Id" class="btn btn-primary btn-sm">Xem chi tiết</a>
-                                                                        <form method="post" action="/deleteOrder/@item.Id" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');">
-                                                                            <button type="submit" class="btn btn-danger btn-sm ms-2">Xoá</button>
-                                                                        </form>
+                                                                    <td class="text-center">
+                                                                        <div class="d-flex justify-content-center gap-2">
+                                                                            <a href="/order/detail/@item.Id" class="btn btn-success btn-sm">Xem chi tiết</a>
+
+                                                                            <form method="post" action="/deleteOrder/@item.Id" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');">
+                                                                                <button type="submit" class="btn btn-danger btn-sm">Xoá</button>
+                                                                            </form>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             }

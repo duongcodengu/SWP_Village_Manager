@@ -88,10 +88,6 @@ namespace Village_Manager.Controllers
             using (var conn = new SqlConnection(connectionString))
             {
                 // lấy tên role name
-                int roleId = user.RoleId;
-                string roleName = "";
-                using (var conn = new SqlConnection(connectionString))
-                {
                     conn.Open();
                     var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
                     cmd.Parameters.AddWithValue("@roleId", roleId);
@@ -169,7 +165,7 @@ namespace Village_Manager.Controllers
                     }
             
             }
-        }
+        
         //Contact us
         [HttpGet]
         [Route("contact-us")]

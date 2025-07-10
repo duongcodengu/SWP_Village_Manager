@@ -113,12 +113,10 @@ CREATE TABLE ImportInvoiceDetail (
 CREATE TABLE RetailOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
-	product_id int,
     order_date DATETIME,
     status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned')),
 	confirmed_at DATETIME, -- xác nhận đơn hàng
     FOREIGN KEY (user_id) REFERENCES Users(id),
-	FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
 -- 14. RetailOrderItem

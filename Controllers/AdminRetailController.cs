@@ -561,7 +561,7 @@ namespace Village_Manager.Controllers
             var currentUserId = HttpContext.Session.GetInt32("UserId");
 
             // Chỉ cho phép admin chính (1) và admin bán lẻ (2)
-            if ( roleId != 2)
+            if (roleId != 2)
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -582,6 +582,7 @@ namespace Village_Manager.Controllers
             TempData["SuccessMessage"] = $"Đã xóa tài khoản {user.Username}";
 
             return RedirectToAction(roleId == 2 ? "AllCustomers" : "AllUser");
+        }
         [HttpGet]
         public IActionResult OrderListRetail()
         {

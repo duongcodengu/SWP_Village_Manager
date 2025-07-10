@@ -1056,8 +1056,6 @@ public class AdminWarehouseController : Controller
     {
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
-            .Include(o => o.Product)
-                .ThenInclude(p => p.ProductImages)
             .Where(o => o.Status == "shipped")
             .ToList();
 
@@ -1068,9 +1066,6 @@ public class AdminWarehouseController : Controller
             Phone = o.User?.Phone,
             Address = _context.UserLocations
                         .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
-
-            ProductName = o.Product?.Name ?? "Không có",
-            ProductImageUrl = o.Product?.ProductImages.FirstOrDefault()?.ImageUrl ?? "",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1078,14 +1073,13 @@ public class AdminWarehouseController : Controller
         return View(viewModel);
 
     }
-        // Trang: Hiển thị đơn hàng chờ duyệt
+
+    // Trang: Hiển thị đơn hàng chờ duyệt
     [HttpGet("addOrder")]
     public IActionResult AddOrder()
     {
         var pendingOrders = _context.RetailOrders
         .Include(o => o.User)
-        .Include(o => o.Product)    
-            .ThenInclude(p => p.ProductImages)
         .Where(o => o.Status == "pending")
         .ToList();
 
@@ -1097,9 +1091,6 @@ public class AdminWarehouseController : Controller
             Phone = o.User?.Phone,
             Address = _context.UserLocations
                         .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
-
-            ProductName = o.Product?.Name ?? "Không có",
-            ProductImageUrl = o.Product?.ProductImages.FirstOrDefault()?.ImageUrl ?? "",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1121,32 +1112,41 @@ public class AdminWarehouseController : Controller
 
         return RedirectToAction("ListRequestOrder");
     }
-    [HttpGet("/order/detail/{id}")]
-    public IActionResult Detail(int id)
+    [HttpGet("order/detail/{id}")]
+    public IActionResult OrderDetail(int id)
     {
         var order = _context.RetailOrders
             .Include(o => o.User)
-            .Include(o => o.Product)
-            .ThenInclude(p => p.ProductImages)
+            .Include(o => o.RetailOrderItems)
+                .ThenInclude(ri => ri.Product)
+                    .ThenInclude(p => p.ProductImages)
             .FirstOrDefault(o => o.Id == id);
 
-        if (order == null)
-            return NotFound();
+        if (order == null) return NotFound();
 
-        var viewModel = new RetailOrderViewModel
+        var firstItem = order.RetailOrderItems.FirstOrDefault(); // lấy 1 item làm ví dụ
+
+        var viewModel = new RetailOrderItemViewModel
         {
             Id = order.Id,
+            OrderId = order.Id,
             UserName = order.User?.Username,
             Phone = order.User?.Phone,
             Address = _context.UserLocations.FirstOrDefault(l => l.UserId == order.UserId)?.Address ?? "Không có",
-            ProductName = order.Product?.Name,
-            ProductImageUrl = order.Product?.ProductImages.FirstOrDefault()?.ImageUrl,
             OrderDate = order.OrderDate,
-            Status = order.Status
+            Status = order.Status,
+
+            ProductId = firstItem?.ProductId ?? 0,
+            ProductName = firstItem?.Product?.Name,
+            ProductImageUrl = firstItem?.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default.jpg",
+            Quantity = firstItem?.Quantity ?? 0,
+            UnitPrice = firstItem?.UnitPrice ?? 0,
+            Product = firstItem?.Product
         };
 
-        return View("OrderDetail", viewModel);
+        return View(viewModel);
     }
+
     [HttpPost("deleteOrder/{id}")]
     public IActionResult DeleteOrder(int id)
     {
@@ -1168,12 +1168,6 @@ public class AdminWarehouseController : Controller
         _context.SaveChanges();
 
         return Redirect("/listOrder"); 
-        await _context.SaveChangesAsync();
-        // Ghi log
-        int? userId = HttpContext.Session.GetInt32("UserId");
-        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt tài xế: {request.FullName} - Hành động: {action}");
-        TempData["Success"] = "Cập nhật yêu cầu thành công.";
-        return Redirect("admin/shipper-requests");
     }
 
 
