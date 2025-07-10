@@ -270,10 +270,17 @@
                                                             <a href="/adminwarehouse">Admin Manager</a>
                                                         </li>
                                                     }
+
+                                                    @if (roleId == 2)
+                                                    {
+                                                        <li class="product-box-contain">
+                                                            <a href="/AdminRetail">Staff Manager</a>
+                                                        </li>
+                                                    }
+                                                    @* rold nao cung co *@
                                                     <li class="product-box-contain">
                                                         <a href="/dashboard">My Profile</a>
                                                     </li>
-                                                    @* rold nao cung co *@
                                                     <li class="product-box-contain">
                                                         <a href="/logout">Log out</a>
                                                     </li>
