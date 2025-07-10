@@ -67,25 +67,22 @@
                                 }
                             </td>
                             <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
-                            <td>
-                                @if (delivery.Status == "assigned")
-                                {
-                                    <form method="post" action="/Shipper/StartDelivery" style="display: inline;">
-                                        <input type="hidden" name="id" value="@delivery.Id" />
-                                        <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Bắt đầu giao hàng?')">
-                                            <i class="fa fa-play"></i> Bắt đầu giao
-                                        </button>
-                                    </form>
-                                }
-                                else if (delivery.Status == "in_transit")
-                                {
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)">
-                                        <i class="fa fa-check"></i> Xác nhận giao
-                                    </button>
-                                }
-                                <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#issueModal@(delivery.Id)">
-                                    <i class="fa fa-exclamation-triangle"></i> Báo sự cố
-                                </button>
+                            <td class="text-center">
+                                <div class="d-flex flex-column gap-2 align-items-center">
+                                    <a asp-action="DeliveryDetail" asp-route-id="@delivery.Id" class="btn btn-info btn-sm px-3 fw-bold mb-1"><i class="fa fa-eye me-1"></i> Xem</a>
+                                    @if (delivery.Status == "assigned")
+                                    {
+                                        <form method="post" action="/Shipper/StartDelivery" style="display: inline;">
+                                            <input type="hidden" name="id" value="@delivery.Id" />
+                                            <button type="submit" class="btn btn-outline-success btn-sm px-3 fw-bold mb-1"><i class="fa fa-play me-1"></i> Bắt đầu giao</button>
+                                        </form>
+                                    }
+                                    else if (delivery.Status == "in_transit")
+                                    {
+                                        <button type="button" class="btn btn-outline-primary btn-sm px-3 fw-bold mb-1" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)"><i class="fa fa-check me-1"></i> Xác nhận giao</button>
+                                    }
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#issueModal@(delivery.Id)"><i class="fa fa-exclamation-triangle me-1"></i> Báo sự cố</button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -205,4 +202,38 @@
 
 <!-- theme setting js -->
 <script src="~/js/theme-setting.js"></script>
+
+<!-- Date Range Picker -->
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<script>
+$(document).ready(function() {
+    // Khởi tạo date range picker
+    $('#searchDateRange').daterangepicker({
+        locale: {
+            format: 'DD/MM/YYYY',
+            separator: ' - ',
+            applyLabel: 'Áp dụng',
+            cancelLabel: 'Hủy',
+            fromLabel: 'Từ',
+            toLabel: 'Đến',
+            customRangeLabel: 'Tùy chỉnh',
+            weekLabel: 'T',
+            daysOfWeek: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+            monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+            firstDay: 1
+        },
+        autoUpdateInput: false
+    });
+
+    $('#searchDateRange').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+    });
+
+    $('#searchDateRange').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
+});
+</script>
 </html>

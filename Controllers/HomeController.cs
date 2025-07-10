@@ -47,80 +47,87 @@ namespace Village_Manager.Controllers
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password && u.IsActive);
+            string inputEmail = email?.Trim().ToLower() ?? string.Empty;
+            string inputPassword = password?.Trim() ?? string.Empty;
+
+            // Tìm user theo email
+            var user = _context.Users.FirstOrDefault(u => u.Email.ToLower() == inputEmail);
+
+            if (user == null)
+            {
+                ViewBag.Error = "Email không tồn tại!";
+                return View();
+            }
+
+            if (!user.IsActive)
+            {
+                ViewBag.Error = "Tài khoản đã bị khóa!";
+                return View();
+            }
+            // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
+            if (user.RoleId != 4)
+            {
+                if (user.Password != inputPassword)
+                {
+                    ViewBag.Error = "Mật khẩu không đúng!";
+                    return View();
+                }
+            }
+
+            // lấy tên role name
+            int roleId = user.RoleId;
+            string roleName = "";
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            Console.WriteLine(connectionString);
-            if (user != null)
+            using (var conn = new SqlConnection(connectionString))
             {
-                // lấy tên role name
-                int roleId = user.RoleId;
-                string roleName = "";
-                using (var conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
-                    cmd.Parameters.AddWithValue("@roleId", roleId);
-
-                    var result = cmd.ExecuteScalar();
-                    roleName = result.ToString() ?? "";
-                }
-
-                // Xóa session cũ trước khi set mới
-                HttpContext.Session.Clear();
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetInt32("RoleId", user.RoleId);
-                HttpContext.Session.SetString("RoleName", roleName ?? "");
-
-                // Set thêm ShipperId nếu là shipper
-                if (user.RoleId == 4)
-                {
-                    var shipper = _context.Shippers.FirstOrDefault(s => s.UserId == user.Id);
-                    if (shipper != null)
-                    {
-                        HttpContext.Session.SetInt32("ShipperId", shipper.Id);
-                        HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
-                    }
-                }
-                // Set thêm FarmerId nếu là farmer
-                if (user.RoleId == 5)
-                {
-                    var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
-                    if (farmer != null)
-                    {
-                        HttpContext.Session.SetInt32("FarmerId", farmer.Id);
-                        HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
-                    }
-                }
-
-                // role admin
-                if (user.RoleId == 1 || user.RoleId == 3 || user.RoleId == 5)
-                // check role
-                if (user.RoleId == 4)
-                {
-                    return RedirectToAction("DashboardShipper", "Shipper");
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                if (user.RoleId == 5) // Retail Customer
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (user.RoleId == 4) // Retail Staff
-                {
-                    return RedirectToAction("Index", "Home");
-                else if (user.RoleId == 3)
-                {
-                    return RedirectToAction("IndexCustomer", "Customer");
-                }
-
+                conn.Open();
+                var cmd = new SqlCommand("SELECT name FROM Roles WHERE id = @roleId", conn);
+                cmd.Parameters.AddWithValue("@roleId", roleId);
+                var result = cmd.ExecuteScalar();
+                roleName = result?.ToString() ?? "";
             }
-            ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
 
-            return View();
+            // Xóa session cũ trước khi set mới
+            HttpContext.Session.Clear();
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetInt32("RoleId", user.RoleId);
+            HttpContext.Session.SetString("RoleName", roleName ?? "");
+
+            // Set thêm ShipperId nếu là shipper
+            if (user.RoleId == 4)
+            {
+                var shipper = _context.Shippers.FirstOrDefault(s => s.UserId == user.Id);
+                if (shipper != null)
+                {
+                    HttpContext.Session.SetInt32("ShipperId", shipper.Id);
+                    HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
+                }
+                return RedirectToAction("DashboardShipper", "Shipper");
+            }
+            // Set thêm FarmerId nếu là farmer
+            if (user.RoleId == 5)
+            {
+                var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
+                if (farmer != null)
+                {
+                    HttpContext.Session.SetInt32("FarmerId", farmer.Id);
+                    HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
+                }
+                return RedirectToAction("Index", "Home");
+            }
+            // role admin
+            if (user.RoleId == 1)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else if (user.RoleId == 3)
+            {
+                return RedirectToAction("IndexCustomer", "Customer");
+            }
+            // Nếu không khớp role nào thì về trang chủ
+            return RedirectToAction("Index", "Home");
         }
 
         //Contact us

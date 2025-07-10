@@ -29,5 +29,8 @@ public partial class Delivery
     [Column("customer_phone")]
     public string? CustomerPhone { get; set; }
 
+    public int? RetailOrderId => (OrderType == "retail" ? OrderId : null);
+    public virtual RetailOrder? RetailOrder { get; set; }
+
     public virtual Shipper? Shipper { get; set; }
 }

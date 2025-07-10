@@ -79,7 +79,7 @@ namespace Village_Manager.Controllers
         }
 
         [HttpGet]
-        [Route("products")]
+        [Route("product")]
         public IActionResult Products()
         {
             // Lấy dữ liệu thực từ database
@@ -199,7 +199,7 @@ namespace Village_Manager.Controllers
         }
 
         [HttpGet]
-        [Route("alluser")]
+        [Route("allcustomer")]
         public IActionResult AllUser() => View();
 
     }

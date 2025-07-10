@@ -1,6 +1,7 @@
+@model List<Village_Manager.Models.RetailOrder>
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Orders";
+    ViewData["Title"] = "Đơn hàng chờ nhận";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -12,93 +13,129 @@
     <meta name="keywords" content="Fastkart">
     <meta name="author" content="Fastkart">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
-
+    <title>Đơn hàng chờ nhận</title>
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
-
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
     <!-- bootstrap css -->
     <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
-
     <!-- Iconly css -->
     <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
-
     <!-- Template css -->
     <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
 </head>
 <body>
 <div class="container py-4">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
     <div class="card shadow rounded-4 p-4">
-        <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-list me-2"></i>Orders</h3>
+        <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-truck me-2"></i>Đơn hàng chờ nhận</h3>
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
+            <table class="table table-bordered table-hover align-middle rounded-3 overflow-hidden" style="background:#fff;">
+                <thead class="table-dark text-center align-middle">
                     <tr>
-                        <th>Order ID</th>
-                        <th>Product Name</th>
-                        <th>Customer</th>
-                        <th>Status</th>
-                        <th>Action</th>
+                        <th class="text-center">Mã đơn</th>
+                        <th class="text-center">Sản phẩm</th>
+                        <th class="text-center">Khách hàng</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr style="background:#f3f3f3;">
+                            <td class="text-center fw-bold">#@order.Id</td>
+                            <td class="text-center">
+                                @if (order.RetailOrderItems != null && order.RetailOrderItems.Any())
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                    @foreach (var item in order.RetailOrderItems)
+                                    {
+                                        <li>@item.Product?.Name <span class="text-muted">x @item.Quantity</span></li>
+                                    }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Không có sản phẩm</span>
+                                }
+                            </td>
+                            <td class="text-center">@order.User?.Username</td>
+                            <td class="text-center">
+                                @if (order.Status == "pending")
+                                {
+                                    <span class="badge bg-warning text-dark">Chờ nhận</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@order.Status</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex flex-column gap-2 align-items-center">
+                                    <a asp-action="RetailOrderDetail" asp-route-id="@order.Id" class="btn btn-info btn-sm px-3 fw-bold"><i class="fa fa-eye me-1"></i> Xem</a>
+                                    <form asp-action="AcceptOrder" method="post" style="display:inline">
+                                        <input type="hidden" name="retailOrderId" value="@order.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm px-3 fw-bold"><i class="fa fa-check me-1"></i> Nhận đơn</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
                     <tr>
-                        <td>#254834</td>
-                        <td>Choco Chip Cookies</td>
-                        <td>John Doe</td>
-                        <td><span class="badge bg-success">Shipped</span></td>
-                        <td><a href="#" class="btn btn-primary btn-sm">View</a></td>
+                        <td colspan="5" class="text-center text-muted py-4"><em>Không có đơn hàng nào chờ nhận.</em></td>
                     </tr>
-                    <tr>
-                        <td>#355678</td>
-                        <td>Premium Butter Cookies</td>
-                        <td>Jane Smith</td>
-                        <td><span class="badge bg-warning text-dark">Pending</span></td>
-                        <td><a href="#" class="btn btn-primary btn-sm">View</a></td>
-                    </tr>
+                }
                 </tbody>
             </table>
         </div>
+            <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
     </div>
 </div>
-</body>
 <!-- latest jquery-->
 <script src="~/js/jquery-3.6.0.min.js"></script>
-
 <!-- jquery ui-->
 <script src="~/js/jquery-ui.min.js"></script>
-
 <!-- Bootstrap js-->
 <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
 <script src="~/js/bootstrap/popper.min.js"></script>
-
 <!-- feather icon js-->
 <script src="~/js/feather/feather.min.js"></script>
 <script src="~/js/feather/feather-icon.js"></script>
-
 <!-- Lazyload Js -->
 <script src="~/js/lazysizes.min.js"></script>
-
 <!-- Slick js-->
 <script src="~/js/slick/slick.js"></script>
 <script src="~/js/slick/custom_slick.js"></script>
-
 <!-- Apexcharts Js -->
 <script src="~/js/apexchart.js"></script>
 <script src="~/js/custom-chart.js"></script>
-
 <!-- Nav & tab upside js -->
 <script src="~/js/nav-tab.js"></script>
-
 <!-- script js -->
 <script src="~/js/script.js"></script>
-
 <!-- theme setting js -->
 <script src="~/js/theme-setting.js"></script>
+</body>
 </html>

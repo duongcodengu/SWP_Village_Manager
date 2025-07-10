@@ -37,6 +37,48 @@
 <body>
 <div class="card shadow rounded-4 p-4">
     <h3 class="mb-4 fw-bold text-secondary"><i class="fa fa-history me-2"></i>Lịch sử giao hàng</h3>
+    
+    <!-- Form tìm kiếm -->
+    <div class="card mb-4 border-0 bg-light">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-2">
+                    <label for="searchOrderId" class="form-label fw-bold text-secondary">Mã đơn hàng:</label>
+                    <input type="text" class="form-control" id="searchOrderId" name="searchOrderId" 
+                           value="@ViewBag.SearchOrderId" placeholder="Nhập mã đơn...">
+                </div>
+                <div class="col-md-2">
+                    <label for="searchCustomer" class="form-label fw-bold text-secondary">Tên người đặt hàng:</label>
+                    <input type="text" class="form-control" id="searchCustomer" name="searchCustomer" 
+                           value="@ViewBag.SearchCustomer" placeholder="Nhập tên người đặt hàng...">
+                </div>
+                @* <div class="col-md-2">
+                    <label for="searchStatus" class="form-label fw-bold text-secondary">Trạng thái:</label>
+                    <select class="form-select" id="searchStatus" name="searchStatus">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="delivered" @(ViewBag.SearchStatus == "delivered" ? "selected" : "")>Đã giao</option>
+                        <option value="failed" @(ViewBag.SearchStatus == "failed" ? "selected" : "")>Thất bại</option>
+                    </select>
+                </div> *@
+                <div class="col-md-3">
+                    <label for="searchDateRange" class="form-label fw-bold text-secondary">Khoảng thời gian:</label>
+                    <input type="text" class="form-control" id="searchDateRange" name="searchDateRange" 
+                           value="@ViewBag.SearchDateRange" placeholder="Chọn khoảng thời gian...">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fa fa-search me-1"></i>Tìm kiếm
+                        </button>
+                        <a href="@Url.Action("HistoryShipper")" class="btn btn-outline-secondary">
+                            <i class="fa fa-refresh me-1"></i>Làm mới
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
@@ -47,14 +89,17 @@
                     <th>Trạng thái</th>
                     <th>Bắt đầu</th>
                     <th>Kết thúc</th>
+                    <th>Lý do thất bại</th>
                     <th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model != null && Model.Count > 0)
                 {
+                    var issues = ViewBag.DeliveryIssues as List<Village_Manager.Models.DeliveryIssue>;
                     foreach (var delivery in Model)
                     {
+                        var issue = issues?.FirstOrDefault(i => i.DeliveryId == delivery.Id);
                         var proof = proofs?.FirstOrDefault(p => p.DeliveryId == delivery.Id);
                         <tr>
                             <td>#@delivery.OrderId</td>
@@ -73,6 +118,16 @@
                             <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
                             <td>@delivery.EndTime?.ToString("HH:mm dd/MM/yyyy")</td>
                             <td>
+                                @if (delivery.Status == "failed" && issue != null)
+                                {
+                                    @issue.Description
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                            <td>
                                 @if (proof != null)
                                 {
                                     <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#proofModal@(delivery.Id)"><i class="fa fa-eye"></i> Xem</button>
@@ -88,7 +143,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center text-muted">Không có đơn hàng trong lịch sử.</td>
+                        <td colspan="8" class="text-center text-muted">Không có đơn hàng trong lịch sử.</td>
                     </tr>
                 }
             </tbody>
