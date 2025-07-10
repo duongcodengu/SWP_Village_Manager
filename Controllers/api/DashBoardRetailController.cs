@@ -35,50 +35,6 @@ namespace Village_Manager.Controllers.api
         }
 
 
-        //[HttpGet("total-revenue-by-month")]
-        //public IActionResult TotalRevenueByMonth([FromQuery] int year = 2024)
-        //{
-        //    var retailQuery = from order in _context.RetailOrders
-        //                      where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
-        //                      join item in _context.RetailOrderItems on order.Id equals item.OrderId
-        //                      select new
-        //                      {
-        //                          Month = order.ConfirmedAt.Value.Month,
-        //                          Revenue = item.Quantity * item.UnitPrice
-        //                      };
-
-        //    var wholesaleQuery = from order in _context.WholesaleOrders
-        //                         where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
-        //                         join item in _context.WholesaleOrderItems on order.Id equals item.OrderId
-        //                         select new
-        //                         {
-        //                             Month = order.ConfirmedAt.Value.Month,
-        //                             Revenue = item.Quantity * item.UnitPrice
-        //                         };
-
-        //    var allData = retailQuery.Concat(wholesaleQuery)
-        //        .ToList()
-        //        .GroupBy(x => x.Month)
-        //        .Select(g => new
-        //        {
-        //            Month = g.Key,
-        //            TotalRevenue = g.Sum(x => x.Revenue)
-        //        })
-        //        .OrderBy(x => x.Month)
-        //        .ToList();
-
-        //    var months = Enumerable.Range(1, 12).ToList();
-        //    var chartData = months.Select(m => allData.FirstOrDefault(x => x.Month == m)?.TotalRevenue ?? 0).ToList();
-
-        //    return Ok(new
-        //    {
-        //        categories = months.Select(m => new DateTime(year, m, 1).ToString("MMM")).ToList(),
-        //        series = new[]
-        //        {
-        //            new { name = "Tổng doanh thu", data = chartData }
-        //        }
-        //    });
-        //}
         [HttpGet("recent-sold")]
         
         public async Task<IActionResult> GetRecentOrders()
