@@ -1,11 +1,13 @@
-﻿@{
+
+@{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
 }
 
+@model List<Village_Manager.Models.UserLocation>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -57,11 +59,6 @@
                                     <div class="position-relative">
                                         <img src="~/images/inner-page/user/1.jpg"
                                              class="blur-up lazyload update_img" alt="">
-                                        <div class="cover-icon">
-                                            <i class="fa-solid fa-pen">
-                                                <input type="file" onchange="readURL(this,0)">
-                                            </i>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -84,13 +81,6 @@
                                 <button class="nav-link" id="pills-order-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-order" type="button">
                                     <i data-feather="shopping-bag"></i>Order
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-wishlist-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-wishlist" type="button">
-                                    <i data-feather="heart"></i>
-                                    Wishlist
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -169,863 +159,496 @@
                                         <div class="col-xxl-6">
                                             <div class="dashboard-content-title">
                                                 <h4>
-                                                    Contact Information <a href="javascript:void(0)"
+                                                    Thông tin khách hàng <a href="javascript:void(0)"
                                                                            data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
                                                 </h4>
                                             </div>
                                             <div class="dashboard-detail">
-                                                <h6 class="text-content">MARK JECNO</h6>
-                                                <h6 class="text-content">@ViewBag.Email</h6>
-                                                <a href="javascript:void(0)">Change Password</a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-6">
-                                            <div class="dashboard-content-title">
-                                                <h4>
-                                                    Newsletters <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#editProfile">Edit</a>
-                                                </h4>
-                                            </div>
-                                            <div class="dashboard-detail">
-                                                <h6 class="text-content">
-                                                    You are currently not subscribed to any
-                                                    newsletter
-                                                </h6>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <div class="dashboard-content-title">
-                                                <h4>
-                                                    Address Book <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                    data-bs-target="#editProfile">Edit</a>
-                                                </h4>
-                                            </div>
-
-                                            <div class="row g-4">
-                                                <div class="col-xxl-6">
-                                                    <div class="dashboard-detail">
-                                                        <h6 class="text-content">Default Billing Address</h6>
-                                                        <h6 class="text-content">
-                                                            You have not set a default billing
-                                                            address.
-                                                        </h6>
-                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                           data-bs-target="#editProfile">Edit Address</a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-xxl-6">
-                                                    <div class="dashboard-detail">
-                                                        <h6 class="text-content">Default Shipping Address</h6>
-                                                        <h6 class="text-content">
-                                                            You have not set a default shipping
-                                                            address.
-                                                        </h6>
-                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                           data-bs-target="#editProfile">Edit Address</a>
-                                                    </div>
-                                                </div>
+                                                <h6 class="text-content">Username: @ViewBag.Username</h6>
+                                                <h6 class="text-content">Email: @ViewBag.Email</h6>
+                                                <h6 class="text-content">Địa chỉ: @ViewBag.Address</h6>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="pills-wishlist" role="tabpanel">
-                                <div class="dashboard-wishlist">
-                                    <div class="title">
-                                        <h2>My Wishlist History</h2>
-                                        <span class="title-leaf title-leaf-gray">
-                                            <svg class="icon-width bg-gray">
-                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                    <div class="row g-sm-4 g-3">
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/2.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Vegetable</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">Fresh Bread and Pastry Flour 200 g</h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Cheesy feet
-                                                            cheesy grin brie. Mascarpone cheese and wine hard cheese the
-                                                            big cheese everyone loves smelly cheese macaroni cheese
-                                                            croque monsieur.
-                                                        </p>
-                                                        <h6 class="unit mt-1">250 ml</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$08.02</span>
-                                                            <del>$15.15</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/3.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Vegetable</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">
-                                                                Peanut Butter Bite Premium Butter Cookies
-                                                                600 g
-                                                            </h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Feta taleggio
-                                                            croque monsieur swiss manchego cheesecake dolcelatte
-                                                            jarlsberg. Hard cheese danish fontina boursin melted cheese
-                                                            fondue.
-                                                        </p>
-                                                        <h6 class="unit mt-1">350 G</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$04.33</span>
-                                                            <del>$10.36</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/4.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Snacks</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">
-                                                                SnackAmor Combo Pack of Jowar Stick and
-                                                                Jowar Chips
-                                                            </h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Lancashire
-                                                            hard cheese parmesan. Danish fontina mozzarella cream cheese
-                                                            smelly cheese cheese and wine cheesecake dolcelatte stilton.
-                                                            Cream cheese parmesan who moved my cheese when the cheese
-                                                            comes out everybody's happy cream cheese red leicester
-                                                            ricotta edam.
-                                                        </p>
-                                                        <h6 class="unit mt-1">570 G</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$12.52</span>
-                                                            <del>$13.62</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/5.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Snacks</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">
-                                                                Yumitos Chilli Sprinkled Potato Chips 100 g
-                                                            </h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Cheddar
-                                                            cheddar pecorino hard cheese hard cheese cheese and biscuits
-                                                            bocconcini babybel. Cow goat paneer cream cheese fromage
-                                                            cottage cheese cauliflower cheese jarlsberg.
-                                                        </p>
-                                                        <h6 class="unit mt-1">100 G</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$10.25</span>
-                                                            <del>$12.36</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/6.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Vegetable</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">Fantasy Crunchy Choco Chip Cookies</h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Bavarian
-                                                            bergkase smelly cheese swiss cut the cheese lancashire who
-                                                            moved my cheese manchego melted cheese. Red leicester paneer
-                                                            cow when the cheese comes out everybody's happy croque
-                                                            monsieur goat melted cheese port-salut.
-                                                        </p>
-                                                        <h6 class="unit mt-1">550 G</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$14.25</span>
-                                                            <del>$16.57</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/7.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Vegetable</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">Fresh Bread and Pastry Flour 200 g</h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Melted cheese
-                                                            babybel chalk and cheese. Port-salut port-salut cream cheese
-                                                            when the cheese comes out everybody's happy cream cheese
-                                                            hard cheese cream cheese red leicester.
-                                                        </p>
-                                                        <h6 class="unit mt-1">1 Kg</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$12.68</span>
-                                                            <del>$14.69</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-3 col-lg-6 col-md-4 col-sm-6">
-                                            <div class="product-box-3 theme-bg-white h-100">
-                                                <div class="product-header">
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/cake/product/2.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-
-                                                        <div class="product-header-top">
-                                                            <button class="btn wishlist-button close_button">
-                                                                <i data-feather="x"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-footer">
-                                                    <div class="product-detail">
-                                                        <span class="span-name">Vegetable</span>
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h5 class="name">Fresh Bread and Pastry Flour 200 g</h5>
-                                                        </a>
-                                                        <p class="text-content mt-1 mb-2 product-content">
-                                                            Squirty cheese
-                                                            cottage cheese cheese strings. Red leicester paneer danish
-                                                            fontina queso lancashire when the cheese comes out
-                                                            everybody's happy cottage cheese paneer.
-                                                        </p>
-                                                        <h6 class="unit mt-1">250 ml</h6>
-                                                        <h5 class="price">
-                                                            <span class="theme-color">$08.02</span>
-                                                            <del>$15.15</del>
-                                                        </h5>
-                                                        <div class="add-to-cart-box mt-2">
-                                                            <button class="btn btn-add-cart addcart-button"
-                                                                    tabindex="0">
-                                                                Add
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="pills-order" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
                                 <div class="dashboard-order">
                                     <div class="title">
-                                        <h2>My Orders History</h2>
+                                        <h2>Lịch sử Đơn hàng</h2>
                                         <span class="title-leaf title-leaf-gray">
-                                            <svg class="icon-width bg-gray">
-                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
-                                            </svg>
+                                            <svg class="icon-width bg-gray"><use xlink:href="~/svg/leaf.svg#leaf"></use></svg>
                                         </span>
                                     </div>
 
-                                    <div class="order-contain">
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
+                                    <div class="order-history-container">
+                                        @if (orderHistory == null || !orderHistory.Any())
+                                        {
+                                            <div class="empty-order-history">
+                                                <i data-feather="shopping-bag"></i>
+                                                <h4>Bạn chưa có đơn hàng nào.</h4>
+                                                <p>Hãy bắt đầu mua sắm để xem lịch sử của bạn tại đây!</p>
+                                                <a asp-controller="Home" asp-action="Index" class="btn btn-primary-transparent">Bắt đầu mua sắm</a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var order in orderHistory)
+                                            {
+                                                <div class="order-card">
+                                                    <div class="order-card-header">
+                                                        <div class="header-left">
+                                                            <h5>Đơn hàng #@order.Id</h5>
+                                                            <p>Ngày đặt: @(order.OrderDate?.ToString("dd/MM/yyyy"))</p>
+                                                        </div>
+                                                        <div class="header-right">
+                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                            <h5 class="order-total">@(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h5>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="order-card-body">
+                                                        @foreach (var item in order.RetailOrderItems)
+                                                        {
+                                                            <div class="product-item">
+                                                                <div class="product-image">
+                                                                    @{
+                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                                                                    }
+                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
+                                                                </div>
+                                                                <div class="product-info">
+                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                                        <h6>@item.Product?.Name</h6>
+                                                                    </a>
+                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
+                                                                </div>
+                                                                <div class="product-quantity">
+                                                                    <span>x @item.Quantity</span>
+                                                                </div>
+                                                                <div class="product-total">
+                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <style>
+                                .order-history-container {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 1.5rem; /* Khoảng cách giữa các đơn hàng */
+                                }
+
+                                .order-card {
+                                    background-color: #fff;
+                                    border: 1px solid #e0e0e0;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                                    overflow: hidden;
+                                    transition: all 0.3s ease;
+                                }
+
+                                    .order-card:hover {
+                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                                        transform: translateY(-2px);
+                                    }
+
+                                .order-card-header {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    padding: 1rem 1.5rem;
+                                    background-color: #f8f9fa;
+                                    border-bottom: 1px solid #e0e0e0;
+                                }
+
+                                    .order-card-header .header-left h5 {
+                                        margin: 0;
+                                        font-size: 1.1rem;
+                                        font-weight: 600;
+                                    }
+
+                                    .order-card-header .header-left p {
+                                        margin: 0;
+                                        font-size: 0.85rem;
+                                        color: #6c757d;
+                                    }
+
+                                    .order-card-header .header-right {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 1.5rem;
+                                        text-align: right;
+                                    }
+
+                                .order-total {
+                                    font-size: 1.2rem;
+                                    font-weight: 700;
+                                    color: var(--theme-color); /* Sử dụng màu chủ đạo của bạn */
+                                }
+
+                                .status-badge {
+                                    padding: 0.3rem 0.8rem;
+                                    border-radius: 50px;
+                                    font-size: 0.8rem;
+                                    font-weight: 600;
+                                    color: #fff;
+                                    text-transform: capitalize;
+                                }
+
+                                /* Màu sắc cho từng trạng thái */
+                                .status-delivered, .status-success {
+                                    background-color: #28a745;
+                                }
+
+                                .status-pending {
+                                    background-color: #ffc107;
+                                    color: #333;
+                                }
+
+                                .status-shipped {
+                                    background-color: #17a2b8;
+                                }
+
+                                .status-cancelled {
+                                    background-color: #dc3545;
+                                }
+
+                                .status-confirmed {
+                                    background-color: #0d6efd;
+                                }
+
+                                .status-returned {
+                                    background-color: #6c757d;
+                                }
+
+
+                                .order-card-body {
+                                    padding: 1rem 1.5rem;
+                                }
+
+                                .product-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                    padding: 1rem 0;
+                                    border-bottom: 1px solid #f1f1f1;
+                                }
+
+                                    .product-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
+
+                                    .product-item .product-image img {
+                                        width: 60px;
+                                        height: 60px;
+                                        object-fit: cover;
+                                        border-radius: 6px;
+                                    }
+
+                                    .product-item .product-info {
+                                        flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
+                                    }
+
+                                        .product-item .product-info h6 {
+                                            margin-bottom: 0.25rem;
+                                        }
+
+                                        .product-item .product-info a:hover h6 {
+                                            color: var(--theme-color);
+                                        }
+
+                                        .product-item .product-info p {
+                                            margin: 0;
+                                            font-size: 0.9rem;
+                                            color: #6c757d;
+                                        }
+
+                                    .product-item .product-quantity {
+                                        color: #6c757d;
+                                    }
+
+                                    .product-item .product-total h6 {
+                                        margin: 0;
+                                        font-weight: 600;
+                                        min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
+                                        text-align: right;
+                                    }
+
+                                /* CSS cho trường hợp không có đơn hàng */
+                                .empty-order-history {
+                                    text-align: center;
+                                    padding: 3rem 1rem;
+                                    border: 2px dashed #e0e0e0;
+                                    border-radius: 8px;
+                                    background-color: #f8f9fa;
+                                }
+
+                                    .empty-order-history i {
+                                        width: 60px;
+                                        height: 60px;
+                                        color: var(--theme-color);
+                                        margin-bottom: 1rem;
+                                    }
+
+                                    .empty-order-history h4 {
+                                        font-weight: 600;
+                                    }
+
+                                    .empty-order-history p {
+                                        color: #6c757d;
+                                        margin-bottom: 1.5rem;
+                                    }
+                            </style>
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#add-address">
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-sm-4 g-3">
+                                        @foreach (var userLocation in Model)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                            id="flexRadioDefault1">
+                                                        </div>
+
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
+                                                        </div>
+
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>                                 
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-card" role="tabpanel">
+                                <div class="dashboard-card">
+                                    <div class="title title-flex">
+                                        <div>
+                                            <h2>My Card Details</h2>
+                                            <span class="title-leaf">
+                                                <svg class="icon-width bg-gray">
+                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                                </svg>
+                                            </span>
+                                        </div>
+
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#editCard">
+                                            <i data-feather="plus"
+                                               class="me-2"></i> Add New Card
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 2548</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>08/05</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Audrey Carol</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/1.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div class="order-detail">
-                                                    <h4>Delivers <span>Pending</span></h4>
-                                                    <h6 class="text-content">
-                                                        Gouda parmesan caerphilly mozzarella
-                                                        cottage cheese cauliflower cheese taleggio gouda.
-                                                    </h6>
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
                                                 </div>
                                             </div>
 
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/1.png"
-                                                         class="blur-up lazyload" alt="">
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
                                                 </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Fantasy Crunchy Choco Chip Cookies</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        Cheddar dolcelatte gouda. Macaroni cheese
-                                                        cheese strings feta halloumi cottage cheese jarlsberg cheese
-                                                        triangles say cheese.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details card-visa">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1536</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>12/23</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Leah Heather</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/2.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div class="order-detail">
-                                                    <h4>Delivered <span class="success-bg">Success</span></h4>
-                                                    <h6 class="text-content">
-                                                        Cheese on toast cheesy grin cheesy grin
-                                                        cottage cheese caerphilly everyone loves cottage cheese the big
-                                                        cheese.
-                                                    </h6>
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
                                                 </div>
                                             </div>
 
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/2.png" alt=""
-                                                         class="blur-up lazyload">
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
                                                 </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Cold Brew Coffee Instant Coffee 50 g</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        Pecorino paneer port-salut when the cheese
-                                                        comes out everybody's happy red leicester mascarpone blue
-                                                        castello cauliflower cheese.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
                                             </div>
                                         </div>
 
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details debit-card">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1366</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>05/21</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>mark jecno</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/3.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div class="order-detail">
-                                                    <h4>Delivere <span>Pending</span></h4>
-                                                    <h6 class="text-content">
-                                                        Cheesy grin boursin cheesy grin cheesecake
-                                                        blue castello cream cheese lancashire melted cheese.
-                                                    </h6>
-                                                </div>
-                                            </div>
-
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/3.png" alt=""
-                                                         class="blur-up lazyload">
-                                                </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>Peanut Butter Bite Premium Butter Cookies 600 g</h3>
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
                                                     </a>
-                                                    <p class="text-content">
-                                                        Cow bavarian bergkase mascarpone paneer
-                                                        squirty cheese fromage frais cheese slices when the cheese comes
-                                                        out everybody's happy.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="order-box dashboard-bg-box">
-                                            <div class="order-container">
-                                                <div class="order-icon">
-                                                    <i data-feather="box"></i>
-                                                </div>
-
-                                                <div class="order-detail">
-                                                    <h4>Delivered <span class="success-bg">Success</span></h4>
-                                                    <h6 class="text-content">
-                                                        Caerphilly port-salut parmesan pecorino
-                                                        croque monsieur dolcelatte melted cheese cheese and wine.
-                                                    </h6>
                                                 </div>
                                             </div>
 
-                                            <div class="product-order-detail">
-                                                <a href="product-left-thumbnail.html" class="order-image">
-                                                    <img src="~/images/vegetable/product/4.png"
-                                                         class="blur-up lazyload" alt="">
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
                                                 </a>
-
-                                                <div class="order-wrap">
-                                                    <a href="product-left-thumbnail.html">
-                                                        <h3>SnackAmor Combo Pack of Jowar Stick and Jowar Chips</h3>
-                                                    </a>
-                                                    <p class="text-content">
-                                                        The big cheese cream cheese pepper jack
-                                                        cheese slices danish fontina everyone loves cheese on toast
-                                                        bavarian bergkase.
-                                                    </p>
-                                                    <ul class="product-size">
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Price : </h6>
-                                                                <h5>$20.68</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Rate : </h6>
-                                                                <div class="product-rating ms-2">
-                                                                    <ul class="rating">
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star" class="fill"></i>
-                                                                        </li>
-                                                                        <li>
-                                                                            <i data-feather="star"></i>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Sold By : </h6>
-                                                                <h5>Fresho</h5>
-                                                            </div>
-                                                        </li>
-
-                                                        <li>
-                                                            <div class="size-box">
-                                                                <h6 class="text-content">Quantity : </h6>
-                                                                <h5>250 G</h5>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1045,56 +668,14 @@
 
                                     <div class="profile-detail dashboard-bg-box">
                                         <div class="dashboard-title">
-                                            <h3>Profile Name</h3>
+                                            <h3>Xin chào! @ViewBag.Username</h3>
                                         </div>
-                                        <div class="profile-name-detail">
-                                            <div class="d-sm-flex align-items-center d-block">
-                                                <h3>@ViewBag.Username</h3>
-                                                <div class="product-rating profile-rating">
-                                                    <ul class="rating">
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star" class="fill"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star"></i>
-                                                        </li>
-                                                        <li>
-                                                            <i data-feather="star"></i>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-
-                                            <a href="javascript:void(0)" data-bs-toggle="modal"
-                                               data-bs-target="#editProfile">Edit</a>
-                                        </div>
-
                                         <div class="location-profile">
                                             <ul>
                                                 <li>
                                                     <div class="location-box">
-                                                        <i data-feather="map-pin"></i>
-                                                        <h6>Downers Grove, IL</h6>
-                                                    </div>
-                                                </li>
-
-                                                <li>
-                                                    <div class="location-box">
                                                         <i data-feather="mail"></i>
                                                         <h6>@ViewBag.Email</h6>
-                                                    </div>
-                                                </li>
-
-                                                <li>
-                                                    <div class="location-box">
-                                                        <i data-feather="check-square"></i>
-                                                        <h6>Licensed for 2 years</h6>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -1120,14 +701,6 @@
                                                     <table class="table">
                                                         <tbody>
                                                             <tr>
-                                                                <td>Gender :</td>
-                                                                <td>Female</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Birthday :</td>
-                                                                <td>21/05/1997</td>
-                                                            </tr>
-                                                            <tr>
                                                                 <td>Số điện thoại :</td>
                                                                 <td>
                                                                     <a href="javascript:void(0)">
@@ -1137,7 +710,7 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>Address :</td>
-                                                                <td>549 Sulphur Springs Road, Downers, IL</td>
+                                                                <td>@ViewBag.Address</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -1155,18 +728,15 @@
                                                                 <td>
                                                                     <a href="javascript:void(0)">
                                                                         @ViewBag.Email
-                                                                        <span data-bs-toggle="modal"
-                                                                              data-bs-target="#editProfile">Edit</span>
                                                                     </a>
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td>Password :</td>
+                                                                <td>Mật khẩu :</td>
                                                                 <td>
                                                                     <a href="javascript:void(0)">
                                                                         ●●●●●●
-                                                                        <span data-bs-toggle="modal"
-                                                                              data-bs-target="#editProfile">Edit</span>
+                                                                        <a href="/changepassword">Đổi mật khẩu</a>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -1182,7 +752,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -1193,29 +762,13 @@
         </div>
     </section>
     <!-- User Dashboard Section End -->
-    <!-- Deal Box Modal Start -->
-    <div class="modal fade theme-modal deal-modal" id="deal-box" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+
+    <!-- Edit Profile Start -->
+    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title w-100" id="deal_today">Deal Today</h5>
-                        <p class="mt-1 text-content">Recommended deals for you.</p>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="deal-offer-box">
-                        <ul class="deal-offer-list">
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
+                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
                                     <a href="shop-left-sidebar.html" class="deal-contain">
                                         <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
@@ -1271,32 +824,293 @@
         </div>
     </div>
     <!-- Deal Box Modal End -->
+    <!-- Tap to top and theme setting button start -->
+    <div class="theme-option">
+        <div class="setting-box">
+            <button class="btn setting-button">
+                <i class="fa-solid fa-gear"></i>
+            </button>
 
-    <!-- Edit Profile Start -->
-    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
+            <div class="theme-setting-2">
+                <div class="theme-box">
+                    <ul>
+                        <li>
+                            <div class="setting-name">
+                                <h4>Color</h4>
+                            </div>
+                            <div class="theme-setting-button color-picker">
+                                <form class="form-control">
+                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
+                                    <input type="color" class="form-control form-control-color" id="colorPick"
+                                           value="#0da487" title="Choose your color">
+                                </form>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>Dark</h4>
+                            </div>
+                            <div class="theme-setting-button">
+                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
+                                <button class="btn btn-2 unline" id="lightButton">Light</button>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top and theme setting button end -->
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- Edit address modal box start -->
+    <div class="modal fade" id="edit-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="edit-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="edit-label">
+                        </div>
+                        <div class="mb-3">
+                            <label>Address</label>
+                            <textarea class="form-control" id="edit-address-text" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit address modal box end -->
+    <script>
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('edit-id').value = btn.dataset.id;
+                    document.getElementById('edit-label').value = btn.dataset.label;
+                    document.getElementById('edit-address-text').value = btn.dataset.address;
+                });
+            });
+        console.log(data); // xem trước khi fetch
+    </script>
+    <script>
+            document.getElementById("edit-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value;
+            const label = document.getElementById("edit-label").value;
+            const address = document.getElementById("edit-address-text").value;
+
+            try {
+                const coords = await getCoordinatesFromAddress(address); // dùng LocationIQ
+
+                const data = {
+                    Id: parseInt(id),
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                const res = await fetch(`/api/location/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+                if (!res.ok) throw new Error("Lỗi khi cập nhật");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    </script>
+    <!-- Add address modal box start -->
+    @{
+        var userId = Context.Session.GetInt32("UserId") ?? 0;
+    }
+    <div class="modal fade theme-modal" id="add-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a new address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="address-form">
+                        <input type="hidden" id="userId" value="@userId" />
+                        <input type="hidden" id="latitude" />
+                        <input type="hidden" id="longitude" />
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="text" class="form-control" id="fname" placeholder="Enter Name">
+                            <label for="fname">Name</label>
+                        </div>
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <textarea class="form-control" placeholder="Enter Address" id="address" style="height: 100px"></textarea>
+                            <label for="address">Enter Address</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn theme-bg-color btn-md text-white">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add address modal box end -->
+    <!-- Location Modal Start -->
+    <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Choose your Delivery Location</h5>
+                    <p class="mt-1 text-content">Enter your address and we will specify the offer for your area.</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="location-list">
+                        <div class="search-input">
+                            <input type="search" class="form-control" placeholder="Search Your Area">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+
+                        <div class="disabled-box">
+                            <h6>Select a Location</h6>
+                        </div>
+
+                        <ul class="location-select custom-height">
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Alabama</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Arizona</h6>
+                                    <span>Min: $150</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>California</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Colorado</h6>
+                                    <span>Min: $140</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Florida</h6>
+                                    <span>Min: $160</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Georgia</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Kansas</h6>
+                                    <span>Min: $170</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Minnesota</h6>
+                                    <span>Min: $120</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>New York</h6>
+                                    <span>Min: $110</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0)">
+                                    <h6>Washington</h6>
+                                    <span>Min: $130</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Location Modal End -->
+    <!-- Edit Card Start -->
+    <div class="modal fade theme-modal" id="editCard" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
+                    <h5 class="modal-title" id="exampleModalLabel8">Edit Card</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-4">
-                        <div class="col-xxl-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="pname" value="Jack Jennas">
-                                    <label for="pname">Full Name</label>
-                                </div>
-                            </form>
-                        </div>
-
                         <div class="col-xxl-6">
                             <form>
                                 <div class="form-floating theme-form-floating">
-                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email">
+                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email" onchange="checkEmailChanged()">
                                     <label for="email1">Email address</label>
                                 </div>
                             </form>
@@ -1305,83 +1119,117 @@
                         <div class="col-xxl-6">
                             <form>
                                 <div class="form-floating theme-form-floating">
-                                    <input class="form-control" type="tel" value="4567891234" name="mobile" id="mobile"
+                                    <input class="form-control" type="tel" value="@ViewBag.Phone" name="mobile" id="mobile"
                                            maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
                                             this.value.slice(0, this.maxLength);">
-                                    <label for="mobile">Email address</label>
+                                    <label for="mobile">Phone Number</label>
                                 </div>
                             </form>
                         </div>
 
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address1"
-                                           value="8424 James Lane South San Francisco">
-                                    <label for="address1">Add Address</label>
+                        <div class="col-xxl-12">
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="provinceSelect" onchange="onProvinceChange()">
+                                    <option value="">Chọn tỉnh</option>
+                                </select>
+                                <label for="provinceSelect">Tỉnh/Thành phố</label>
+                            </div>
+
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="districtSelect" onchange="onDistrictChange()">
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <label for="districtSelect">Quận/Huyện</label>
+                            </div>
+
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="wardSelect">
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                                <label for="wardSelect">Phường/Xã</label>
+                            </div>
+
+                            <div class="form-floating theme-form-floating">
+                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, đường...">
+                                <label for="detailAddress">Địa chỉ chi tiết</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light" onclick="handleSave()">
+                        Lưu
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Profile End -->
+                                    <input type="text" class="form-control" id="finame" value="Mark">
+                                    <label for="finame">First Name</label>
                                 </div>
                             </form>
                         </div>
 
-                        <div class="col-12">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address2" value="CA 94080">
-                                    <label for="address2">Add Address 2</label>
-                                </div>
-                            </form>
-                        </div>
+    @* api lay địa chỉ *@
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const provinceSelect = document.getElementById("provinceSelect");
+            const districtSelect = document.getElementById("districtSelect");
+            const wardSelect = document.getElementById("wardSelect");
 
+            const selectedProvince = "@ViewBag.Province";
+            const selectedDistrict = "@ViewBag.District";
+            const selectedWard = "@ViewBag.Ward";
+
+            const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
+            const data = await res.json();
+
+            data.forEach(p => {
+                const option = document.createElement("option");
+                option.text = p.name;
+                option.value = p.code;
+                if (p.name === selectedProvince) option.selected = true;
+                provinceSelect.appendChild(option);
+            });
+
+            const province = data.find(p => p.name === selectedProvince);
+            if (province) {
+                province.districts.forEach(d => {
+                    const option = document.createElement("option");
+                    option.text = d.name;
+                    option.value = d.code;
+                    if (d.name === selectedDistrict) option.selected = true;
+                    districtSelect.appendChild(option);
+                });
+
+                const district = province.districts.find(d => d.name === selectedDistrict);
+                if (district) {
+                    district.wards.forEach(w => {
+                        const option = document.createElement("option");
+                        option.text = w.name;
+                        option.value = w.code;
+                        if (w.name === selectedWard) option.selected = true;
+                        wardSelect.appendChild(option);
+                    });
+                }
                         <div class="col-xxl-4">
                             <form>
                                 <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect1">
-                                        <option selected>Choose Your Country</option>
-                                        <option value="kingdom">United Kingdom</option>
-                                        <option value="states">United States</option>
-                                        <option value="fra">France</option>
-                                        <option value="china">China</option>
-                                        <option value="spain">Spain</option>
-                                        <option value="italy">Italy</option>
-                                        <option value="turkey">Turkey</option>
-                                        <option value="germany">Germany</option>
-                                        <option value="russian">Russian Federation</option>
-                                        <option value="malay">Malaysia</option>
-                                        <option value="mexico">Mexico</option>
-                                        <option value="austria">Austria</option>
-                                        <option value="hong">Hong Kong SAR, China</option>
-                                        <option value="ukraine">Ukraine</option>
-                                        <option value="thailand">Thailand</option>
-                                        <option value="saudi">Saudi Arabia</option>
-                                        <option value="canada">Canada</option>
-                                        <option value="singa">Singapore</option>
+                                    <select class="form-select" id="floatingSelect12">
+                                        <option selected>Card Type</option>
+                                        <option value="kingdom">Visa Card</option>
+                                        <option value="states">MasterCard Card</option>
+                                        <option value="fra">RuPay Card</option>
+                                        <option value="china">Contactless Card</option>
+                                        <option value="spain">Maestro Card</option>
                                     </select>
-                                    <label for="floatingSelect">Country</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect">
-                                        <option selected>Choose Your City</option>
-                                        <option value="kingdom">India</option>
-                                        <option value="states">Canada</option>
-                                        <option value="fra">Dubai</option>
-                                        <option value="china">Los Angeles</option>
-                                        <option value="spain">Thailand</option>
-                                    </select>
-                                    <label for="floatingSelect">City</label>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <input type="text" class="form-control" id="address3" value="94080">
-                                    <label for="address3">Pin Code</label>
+                                    <label for="floatingSelect12">Card Type</label>
                                 </div>
                             </form>
                         </div>
@@ -1390,17 +1238,100 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-animation btn-md fw-bold"
                             data-bs-dismiss="modal">
-                        Close
+                        Cancel
                     </button>
-                    <button type="button" data-bs-dismiss="modal"
-                            class="btn theme-bg-color btn-md fw-bold text-light">
-                        Save changes
-                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Edit Card End -->
+    <!-- Remove Address Modal Start -->
+    <div class="modal fade" id="remove-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="remove-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xoá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xoá địa chỉ này?</p>
+                        <input type="hidden" id="remove-id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Gán id vào hidden input khi click nút Remove
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('remove-id').value = btn.dataset.id;
+            });
+        });
+
+        // Submit form xoá
+        document.getElementById("remove-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("remove-id").value;
+
+            try {
+                const res = await fetch(`/api/location/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error("Xoá thất bại");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    <script>
+        const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
+        const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
+        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
+
+        async function handleSave() {
+            const email = document.getElementById("email1").value.trim();
+            const phone = document.getElementById("mobile").value.trim();
+            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
+            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
+            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
+            const detail = document.getElementById("detailAddress").value.trim();
+            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
+
+            // Kiểm tra có thay đổi gì không
+            const hasChanged =
+                email !== originalEmail ||
+                phone !== originalPhone ||
+                fullAddress !== originalAddress;
+
+            if (!hasChanged) {
+                alert("Bạn chưa thay đổi thông tin nào.");
+                return;
+            }
+
+            // Chuyển đến OTP để xác minh
+            const url = new URL('/otp', window.location.origin);
+            url.searchParams.set('email', email);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('address', fullAddress);
+            window.location.href = url.toString();
+        }
+    </script>
+
     <!-- Edit Profile End -->
+    <!-- Remove Address Modal End -->
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
 
@@ -1434,6 +1365,80 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    <script>
+        const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
+        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
+        async function getCoordinatesFromAddress(address) {
+            const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
+
+            return {
+                latitude: parseFloat(data[0].lat),
+                longitude: parseFloat(data[0].lon)
+            };
+        }
+
+        // 📦 Xử lý khi người dùng submit form
+        document.getElementById("address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            try {
+                // Lấy dữ liệu người dùng nhập
+                const userId = parseInt(document.getElementById("userId").value);
+                const label = document.getElementById("fname").value;
+                const address = document.getElementById("address").value;
+
+                if (!label || !address) {
+                    alert("Vui lòng nhập đầy đủ tên và địa chỉ.");
+                    return;
+                }
+
+                // 🔄 Gọi API để lấy tọa độ từ địa chỉ
+                const coords = await getCoordinatesFromAddress(address);
+
+                // Cập nhật giá trị vào input ẩn
+                document.getElementById("latitude").value = coords.latitude;
+                document.getElementById("longitude").value = coords.longitude;
+
+                // Chuẩn bị dữ liệu gửi đi
+                const data = {
+                    UserId: userId,
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                console.log("Gửi dữ liệu:", data);
+
+                // 📨 Gửi POST request đến API
+                const res = await fetch('/api/location/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Lỗi server:", errorText);
+                    throw new Error("Lỗi khi thêm địa chỉ.");
+                }
+
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>

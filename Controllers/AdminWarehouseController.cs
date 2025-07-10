@@ -5,6 +5,7 @@ using System.Text;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -135,15 +136,9 @@ public class AdminWarehouseController : Controller
     //Add Product
     [HttpGet("addproduct")]
     public IActionResult AddProduct()
-    { 
-        // Lấy danh sách danh mục sản phẩm
-        var categories = _context.ProductCategories
-            .Select(c => new { Id = c.Id, Name = c.Name })
-            .ToList();
-
-        ViewBag.Categories = categories;
-        ViewBag.Categories = _context.ProductCategories.ToList();
+    {
         ViewBag.Farmers = _context.Farmers.ToList();
+        ViewBag.Categories = _context.ProductCategories.ToList();
         return View();
     }
 
@@ -153,16 +148,20 @@ public class AdminWarehouseController : Controller
     {
         try
         {
+            DateTime? expirationDate = string.IsNullOrWhiteSpace(form["expiration_date"])
+                ? null
+                : DateTime.Parse(form["expiration_date"]);
+
             var product = new Product
             {
                 Name = form["name"],
                 ProductType = form["product_type"],
                 Quantity = int.Parse(form["quantity"]),
                 Price = decimal.Parse(form["price"]),
-                ExpirationDate = string.IsNullOrWhiteSpace(form["expiration_date"]) ? null : DateTime.Parse(form["expiration_date"]),
+                ExpirationDate = expirationDate,
                 ProcessingTime = string.IsNullOrWhiteSpace(form["processing_time"]) ? null : DateTime.Parse(form["processing_time"]),
                 FarmerId = int.TryParse(form["farmer_id"], out int farmerId) ? farmerId : (int?)null,
-                ApprovalStatus = "accepted"
+                ApprovalStatus = "accepted",
             };
 
             if (int.TryParse(form["category_id"], out int categoryId))
@@ -216,6 +215,7 @@ public class AdminWarehouseController : Controller
             return View();
         }
     }
+
 
 
     public async Task<IActionResult> Delete(int? id)
@@ -827,7 +827,7 @@ public class AdminWarehouseController : Controller
     public IActionResult ChangeRole(int UserId)
     {
         // retail_customer = role_id 5
-        int newRoleId = 5;
+        int newRoleId = 3;
 
         var user = _context.Users.FirstOrDefault(u => u.Id == UserId);
         if (user != null)
@@ -896,36 +896,6 @@ public class AdminWarehouseController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction("AddFamer"); 
     }
-    // view to pending products
-    [HttpGet]
-    [Route("pendingproducts")]
-    public IActionResult PendingProducts()
-    {
-        var pendingProducts = _context.Products
-            .Include(p => p.Category)
-            .Include(p => p.Farmer)
-            .Include(p => p.ProductImages)
-            .Where(p => p.ApprovalStatus == "pending")
-            .ToList();
-        return View(pendingProducts);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("approveproduct")]
-    public IActionResult ApproveProduct(int id, string action)
-    {
-        var product = _context.Products.Find(id);
-        if (product == null) return NotFound();
-
-        if (action == "accept")
-            product.ApprovalStatus = "accepted";
-        else if (action == "reject")
-            product.ApprovalStatus = "rejected";
-
-        _context.SaveChanges();
-        return RedirectToAction("PendingProducts");
-    }
     [HttpGet]
     [Route("shipper")]
     public IActionResult Shipper()
@@ -984,35 +954,170 @@ public class AdminWarehouseController : Controller
         if (request == null || request.Status != "pending")
         {
             TempData["Error"] = "Yêu cầu không hợp lệ hoặc đã xử lý.";
-            return Redirect("admin/shipper-requests");
+            return Redirect("/admin/shipper-requests");
         }
 
-        if (action == "accept")
+        try
         {
-            request.Status = "approved";
             request.ReviewedAt = DateTime.Now;
             request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
-            var newShipper = new Shipper
+            if (action == "accept")
             {
-                UserId = request.UserId,
-                FullName = request.FullName,
-                Phone = request.Phone,
-                VehicleInfo = request.VehicleInfo,
-                Status = "approved"
-            };
-            _context.Shippers.Add(newShipper);
+                request.Status = "approved";
+
+                // Tạo shipper mới
+                var newShipper = new Shipper
+                {
+                    UserId = request.UserId,
+                    FullName = request.FullName,
+                    Phone = request.Phone,
+                    VehicleInfo = request.VehicleInfo,
+                    Status = "approved"
+                };
+
+                _context.Shippers.Add(newShipper);
+
+                // Cập nhật role người dùng nếu là "customer"
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
+                if (user != null && user.RoleId == 3)
+                {
+                    user.RoleId = 4;
+                    _context.Users.Update(user);
+                }
+            }
+            else if (action == "reject")
+            {
+                request.Status = "rejected";
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Cập nhật yêu cầu thành công.";
         }
-        else if (action == "reject")
+        catch (Exception ex)
         {
-            request.Status = "rejected";
-            request.ReviewedAt = DateTime.Now;
-            request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
+            TempData["Error"] = "Đã xảy ra lỗi khi xử lý yêu cầu.";
         }
 
-        await _context.SaveChangesAsync();
-        TempData["Success"] = "Cập nhật yêu cầu thành công.";
-        return Redirect("admin/shipper-requests");
+        return Redirect("/admin/shipper-requests");
+    }
+    [HttpGet("listOrder")]
+    public IActionResult ListRequestOrder()
+    {
+        var shippedOrders = _context.RetailOrders
+            .Include(o => o.User)
+            .Include(o => o.Product)
+                .ThenInclude(p => p.ProductImages)
+            .Where(o => o.Status == "shipped")
+            .ToList();
+
+        var viewModel = shippedOrders.Select(o => new RetailOrderViewModel
+        {
+            Id = o.Id,
+            UserName = o.User?.Username,
+            Phone = o.User?.Phone,
+            Address = _context.UserLocations
+                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+
+            ProductName = o.Product?.Name ?? "Không có",
+            ProductImageUrl = o.Product?.ProductImages.FirstOrDefault()?.ImageUrl ?? "",
+            OrderDate = o.OrderDate,
+            Status = o.Status
+        }).ToList();
+
+        return View(viewModel);
+
+    }
+        // Trang: Hiển thị đơn hàng chờ duyệt
+    [HttpGet("addOrder")]
+    public IActionResult AddOrder()
+    {
+        var pendingOrders = _context.RetailOrders
+        .Include(o => o.User)
+        .Include(o => o.Product)    
+            .ThenInclude(p => p.ProductImages)
+        .Where(o => o.Status == "pending")
+        .ToList();
+
+        var viewModel = pendingOrders.Select(o => new RetailOrderViewModel
+        {
+            Id = o.Id,
+            Users = o.User,
+            UserName = o.User?.Username,
+            Phone = o.User?.Phone,
+            Address = _context.UserLocations
+                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+
+            ProductName = o.Product?.Name ?? "Không có",
+            ProductImageUrl = o.Product?.ProductImages.FirstOrDefault()?.ImageUrl ?? "",
+            OrderDate = o.OrderDate,
+            Status = o.Status
+        }).ToList();
+        return View(viewModel);
+    }
+
+    // POST: Admin duyệt đơn hàng
+    [HttpPost("acceptOrder")]
+    public IActionResult AcceptOrder(int id)
+    {
+        var order = _context.RetailOrders.FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        order.Status = "shipped";
+        _context.SaveChanges();
+
+        return RedirectToAction("ListRequestOrder");
+    }
+    [HttpGet("/order/detail/{id}")]
+    public IActionResult Detail(int id)
+    {
+        var order = _context.RetailOrders
+            .Include(o => o.User)
+            .Include(o => o.Product)
+            .ThenInclude(p => p.ProductImages)
+            .FirstOrDefault(o => o.Id == id);
+
+        if (order == null)
+            return NotFound();
+
+        var viewModel = new RetailOrderViewModel
+        {
+            Id = order.Id,
+            UserName = order.User?.Username,
+            Phone = order.User?.Phone,
+            Address = _context.UserLocations.FirstOrDefault(l => l.UserId == order.UserId)?.Address ?? "Không có",
+            ProductName = order.Product?.Name,
+            ProductImageUrl = order.Product?.ProductImages.FirstOrDefault()?.ImageUrl,
+            OrderDate = order.OrderDate,
+            Status = order.Status
+        };
+
+        return View("OrderDetail", viewModel);
+    }
+    [HttpPost("deleteOrder/{id}")]
+    public IActionResult DeleteOrder(int id)
+    {
+        var order = _context.RetailOrders
+                            .Include(o => o.RetailOrderItems) // tên navigation property
+                            .FirstOrDefault(o => o.Id == id);
+
+        if (order == null)
+            return NotFound();
+
+        // Xoá các bản ghi con
+        if (order.RetailOrderItems != null)
+        {
+            _context.RetailOrderItems.RemoveRange(order.RetailOrderItems);
+        }
+
+        // Xoá đơn hàng chính
+        _context.RetailOrders.Remove(order);
+        _context.SaveChanges();
+
+        return Redirect("/listOrder"); 
     }
 
 
