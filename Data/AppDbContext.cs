@@ -89,8 +89,24 @@ public partial class AppDbContext : DbContext
     public DbSet<ProductCategory> ProductCategory { get; set; }
 
 
+    public DbSet<HiddenProduct> HiddenProduct { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<HiddenProduct>(entity =>
+        {
+            entity.ToTable("HiddenProduct");
+
+            entity.Property(h => h.Reason)
+                  .HasColumnType("TEXT");
+
+            entity.Property(h => h.HiddenAt)
+                  .HasDefaultValueSql("GETDATE()");
+
+            entity.HasOne(h => h.Product)
+                  .WithMany() // hoặc .WithMany(p => p.HiddenRecords) nếu cần navigation ngược
+                  .HasForeignKey(h => h.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Address__3213E83F1C6D8869");
