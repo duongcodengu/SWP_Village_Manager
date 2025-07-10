@@ -15,94 +15,79 @@
                                 <div class="title-header option-title">
                                     <h5>Edit Customer</h5>
                                 </div>
-
-                                @if (TempData["Error"] != null)
-                                {
-                                    <div class="alert alert-danger">@TempData["Error"]</div>
-                                }
-                                @if (TempData["Success"] != null)
-                                {
-                                    <div class="alert alert-success">@TempData["Success"]</div>
-                                }
-
-                                <!-- Tab Navigation -->
-                                <ul class="nav nav-pills mb-3" role="tablist">
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
-                                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-account" type="button">Account</button>
+                                        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button">
+                                            Account
+                                        </button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-permission" type="button">Permission</button>
-                                    </li>
+                                    
                                 </ul>
 
-                                <!-- Tab Content -->
-                                <div class="tab-content">
-                                    <!-- Account Tab -->
-                                    <div class="tab-pane fade show active" id="tab-account" role="tabpanel">
-                                        <form asp-action="EditCustomer" asp-controller="AdminRetail" asp-route-id="@Model.Id" method="post" class="theme-form theme-form-2 mega-form">
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                        <form class="theme-form theme-form-2 mega-form" asp-action="EditCustomer" asp-controller="AdminRetail" asp-route-id="@Model.Id" method="post">
                                             @Html.AntiForgeryToken()
+                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">
-                                                <h5>Account Information</h5>
+                                                <h5>Customer Information</h5>
                                             </div>
 
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="form-label-title col-lg-2 col-md-3 mb-0">Username</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <input class="form-control" type="text" value="@Model.Username" disabled />
+                                            <div class="row">
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Username</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input asp-for="Username" class="form-control" type="text" required>
+                                                        <span asp-validation-for="Username" class="text-danger"></span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email mới</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <input name="newEmail" class="form-control" type="email" value="@Model.Email" placeholder="example@gmail.com" />
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email Address</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input asp-for="Email" class="form-control" type="email" required>
+                                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-lg-2 col-md-3 col-form-label form-label-title">Số điện thoại mới</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <input name="newPhone" class="form-control" type="text" value="@Model.Phone" placeholder="090..." />
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Phone Number</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input asp-for="Phone" class="form-control" type="text" required>
+                                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-lg-2 col-md-3 col-form-label form-label-title">Mật khẩu mới</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <input name="newPassword" class="form-control" type="password" />
-                                                    <small class="text-muted">Để trống nếu không đổi mật khẩu</small>
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">New Password</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input name="newPassword" class="form-control" type="password">
+                                                        <small class="text-muted">Leave blank to keep current password</small>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-lg-2 col-md-3 col-form-label form-label-title">Hành động</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <select name="actionType" class="form-control" required>
-                                                        <option value="">-- Chọn hành động --</option>
-                                                        <option value="update">Cập nhật thông tin</option>
-                                                        <option value="deactivate">Khóa tài khoản</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4 row align-items-center">
-                                                <label class="col-lg-2 col-md-3 col-form-label form-label-title">Lý do</label>
-                                                <div class="col-md-9 col-lg-10">
-                                                    <textarea name="reason" class="form-control" rows="3" placeholder="Lý do gửi yêu cầu cập nhật..."></textarea>
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Role</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <select asp-for="RoleId" class="form-control" required>
+                                                            <option value="">-- Select Role --</option>
+                                                            @foreach (var role in ViewBag.Roles)
+                                                            {
+                                                                <option value="@role.Id">@role.Name</option>
+                                                            }
+                                                        </select>
+                                                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="card-submit-button">
-                                                <button class="btn btn-animation ms-auto" type="submit">Gửi yêu cầu</button>
+                                                <button class="btn btn-animation ms-auto" type="submit">Update</button>
                                             </div>
                                         </form>
                                     </div>
-
-                                    
                                 </div>
-                                <!-- End tab content -->
-
                             </div>
                         </div>
                     </div>
