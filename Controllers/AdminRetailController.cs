@@ -49,56 +49,15 @@ namespace Village_Manager.Controllers
         // Trang tổng hợp để đẩy lên View
         public async Task<IActionResult> Dashboard()
         {
-            var username = HttpContext.Session.GetString("Username");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
-
-            if (string.IsNullOrEmpty(username) || roleId != 2)
-            {
-                Response.StatusCode = 404;
-                return View("404");
-            }
-
-            // Tổng số khách hàng
-            int totalCustomers = _context.Users.Count();
-            ViewBag.TotalCustomers = totalCustomers;
-
-            // Tổng số sản phẩm
-            int totalProducts = _context.Products.Count();
-            ViewBag.TotalProducts = totalProducts;
-
-            // Tổng số đơn hàng
-            int totalRetailOrders = _context.RetailOrders.Count();
-            int totalOrders = totalRetailOrders;
-            ViewBag.TotalOrders = totalOrders;
-
-            // Lấy category (name, image_url)
-            var categories = _context.ProductCategory
-                .Select(c => new
-                {
-                    Name = c.Name,
-                    ImageUrl = c.ImageUrl
-                }).ToList<dynamic>();
-            ViewBag.Categories = categories;
-
-            // Tổng doanh thu confirmed
-            decimal currentYear = DateTime.Now.Year;
-
-            // Bán lẻ (Retail)
-            var retailRevenue = _context.RetailOrders
-                .Where(ro => ro.Status == "confirmed"
-                    && ro.ConfirmedAt.HasValue
-                    && ro.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.RetailOrderItems,
-                      ro => ro.Id,
-                      ri => ri.OrderId,
-                      (ro, ri) => ri.Quantity * ri.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0);
-            ViewBag.TotalRevenue = totalRevenue;
+            ViewBag.TotalRevenue = await GetTotalRevenue();
+            ViewBag.TotalOrders = await GetTotalOrders();
+            ViewBag.TotalProducts = await GetTotalProducts();
+            ViewBag.TotalCustomers = await GetTotalCustomers();
+            ViewBag.Categories = await _context.ProductCategory.ToListAsync();
 
             return View();
         }
+
 
 
 
