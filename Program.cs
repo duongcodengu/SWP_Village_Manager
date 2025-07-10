@@ -1,49 +1,76 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// SQL Server
+// 🟢 1. Cấu hình EF Core với SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer("vllage_manager_database")
            .EnableSensitiveDataLogging()
-           .LogTo(Console.WriteLine, LogLevel.Information));
-// Add services to the container.
+           .LogTo(Console.WriteLine, LogLevel.Information);
+});
+
+// 🟢 2. Thêm MVC
 builder.Services.AddControllersWithViews();
-// Add session support
+
+// 🟢 3. Cấu hình Session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(60); // ton tai trong 60 phut
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
-// Add authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/login";
-        options.AccessDeniedPath = "/access-denied";
-        options.LogoutPath = "/logout";
-    });
+// 🟢 4. Cấu hình Authentication (Cookie + Google)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    options.LoginPath = "/login";
+    options.AccessDeniedPath = "/access-denied";
+    options.LogoutPath = "/logout";
+})
+.AddGoogle(options =>
+{
+    IConfigurationSection googleAuth = builder.Configuration.GetSection("Authentication:Google");
+    options.ClientId = googleAuth["ClientId"];
+    options.ClientSecret = googleAuth["ClientSecret"];
+    options.CallbackPath = "/signin-google";
+});
 
-// cau hinh email 
+// 🟢 5. Cấu hình gửi email (MailKit)
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 
+// 🟢 6. HttpClient dùng cho API nội bộ
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// 🔵 Middleware pipeline
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseSession(); // Enable session support
+
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.MapControllerRoute(

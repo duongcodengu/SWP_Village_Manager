@@ -138,13 +138,15 @@ namespace Village_Manager.Controllers
         [Route("admin/shipper/delete")]
         public async Task<IActionResult> DeleteShipper(int UserId)
         {
+            Console.WriteLine("UserId nhận được: " + UserId);
             try
             {
-                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == UserId);
+                Console.WriteLine($"[DeleteShipper] Received UserId: {UserId}");
 
+                var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == UserId);
                 if (shipper == null)
                 {
-                    TempData["Error"] = "Không tìm thấy shipper.";
+                    TempData["Error"] = $"Không tìm thấy shipper với UserId = {UserId}";
                     return Redirect("/shipper");
                 }
 
@@ -152,30 +154,166 @@ namespace Village_Manager.Controllers
                 shipper.Status = "pending";
                 await _context.SaveChangesAsync();
 
-                TempData["Success"] = "Đã gỡ quyền shipper.";
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+                if (user == null)
+                {
+                    TempData["Error"] = "Không tìm thấy user.";
+                    return Redirect("/shipper");
+                }
+
+                if (user.RoleId == 4)
+                {
+                    user.RoleId = 3;
+                    _context.Users.Update(user);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Đã gỡ quyền shipper và chuyển về khách hàng.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Lỗi khi xoá: {ex.Message}";
+                TempData["Error"] = $"Lỗi khi gỡ quyền: {ex.Message}";
             }
 
             return Redirect("/shipper");
         }
         
-        public IActionResult OrdersShipper()
+        public IActionResult OrdersShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "")
         {
-            return View();
+            var query = _context.RetailOrders
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(ri => ri.Product)
+                .Include(o => o.User)
+                .AsQueryable();
+
+            // Tìm kiếm theo mã đơn hàng
+            if (!string.IsNullOrWhiteSpace(searchOrderId))
+            {
+                if (int.TryParse(searchOrderId, out int orderId))
+                {
+                    query = query.Where(o => o.Id == orderId);
+                }
+            }
+
+            // Tìm kiếm theo tên khách hàng
+            if (!string.IsNullOrWhiteSpace(searchCustomer))
+            {
+                query = query.Where(o => o.User.Username.Contains(searchCustomer));
+            }
+
+            // Tìm kiếm theo trạng thái
+            if (!string.IsNullOrWhiteSpace(searchStatus))
+            {
+                query = query.Where(o => o.Status == searchStatus);
+            }
+            else
+            {
+                // Mặc định chỉ hiển thị đơn pending
+                query = query.Where(o => o.Status == "pending");
+            }
+
+            var orders = query.ToList();
+
+            ViewBag.SearchOrderId = searchOrderId;
+            ViewBag.SearchCustomer = searchCustomer;
+            ViewBag.SearchStatus = searchStatus;
+
+            return View(orders);
         }
-        public IActionResult DeliveriesShipper()
+
+        [HttpGet]
+        public IActionResult RetailOrderDetail(int id)
+        {
+            var order = _context.RetailOrders
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(ri => ri.Product)
+                .Include(o => o.User)
+                .FirstOrDefault(o => o.Id == id);
+            if (order == null)
+                return NotFound();
+            return View(order);
+        }
+
+        [HttpPost]
+        public IActionResult AcceptOrder(int retailOrderId)
+        {
+            int shipperId = HttpContext.Session.GetInt32("ShipperId") ?? 0;
+            var order = _context.RetailOrders.Include(o => o.User).FirstOrDefault(o => o.Id == retailOrderId && o.Status == "pending");
+            if (order != null && shipperId > 0)
+            {
+                var delivery = new Delivery
+                {
+                    OrderId = order.Id,
+                    OrderType = "retail",
+                    Status = "assigned",
+                    ShipperId = shipperId,
+                    CustomerName = order.User?.Username,
+                    // Thêm các trường khác nếu cần
+                };
+                _context.Deliveries.Add(delivery);
+                order.Status = "confirmed";
+                _context.SaveChanges();
+                TempData["Success"] = "Nhận đơn thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Không thể nhận đơn. Đơn đã được nhận hoặc có lỗi xảy ra.";
+            }
+            return RedirectToAction("OrdersShipper");
+        }
+        public IActionResult DeliveriesShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "")
         {
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
             if (!shipperId.HasValue)
                 return RedirectToAction("Login", "Home");
 
-            var deliveries = _context.Deliveries
-                .Where(d => d.ShipperId == shipperId && (d.Status == "assigned" || d.Status == "in_transit"))
-                .OrderBy(d => d.StartTime)
-                .ToList();
+            var query = _context.Deliveries
+                .Where(d => d.ShipperId == shipperId)
+                .AsQueryable();
+
+            // Tìm kiếm theo mã đơn hàng
+            if (!string.IsNullOrWhiteSpace(searchOrderId))
+            {
+                if (int.TryParse(searchOrderId, out int orderId))
+                {
+                    query = query.Where(d => d.OrderId == orderId);
+                }
+            }
+
+            // Tìm kiếm theo tên khách hàng
+            if (!string.IsNullOrWhiteSpace(searchCustomer))
+            {
+                query = query.Where(d => d.CustomerName.Contains(searchCustomer));
+            }
+
+            // Tìm kiếm theo trạng thái
+            if (!string.IsNullOrWhiteSpace(searchStatus))
+            {
+                query = query.Where(d => d.Status == searchStatus);
+            }
+            else
+            {
+                // Mặc định chỉ hiển thị đơn assigned và in_transit
+                query = query.Where(d => d.Status == "assigned" || d.Status == "in_transit");
+            }
+
+            // Tìm kiếm theo khoảng thời gian
+            if (!string.IsNullOrWhiteSpace(searchDateRange))
+            {
+                var dates = searchDateRange.Split(" - ");
+                if (dates.Length == 2 && DateTime.TryParse(dates[0], out DateTime startDate) && DateTime.TryParse(dates[1], out DateTime endDate))
+                {
+                    endDate = endDate.AddDays(1); // Bao gồm cả ngày cuối
+                    query = query.Where(d => d.StartTime >= startDate && d.StartTime < endDate);
+                }
+            }
+
+            var deliveries = query.OrderBy(d => d.StartTime).ToList();
+
+            ViewBag.SearchOrderId = searchOrderId;
+            ViewBag.SearchCustomer = searchCustomer;
+            ViewBag.SearchStatus = searchStatus;
+            ViewBag.SearchDateRange = searchDateRange;
 
             return View(deliveries);
         }
@@ -187,7 +325,8 @@ namespace Village_Manager.Controllers
 
             var shipper = _context.Shippers
                 .Where(s => s.Id == shipperId)
-                .Select(s => new {
+                .Select(s => new
+                {
                     s.Id,
                     s.FullName,
                     s.Phone,
@@ -201,23 +340,72 @@ namespace Village_Manager.Controllers
             ViewBag.Profile = shipper;
             return View();
         }
-        public IActionResult HistoryShipper()
+        public IActionResult HistoryShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "")
         {
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
             if (!shipperId.HasValue)
                 return RedirectToAction("Login", "Home");
 
-            var deliveries = _context.Deliveries
-                .Where(d => d.ShipperId == shipperId && (d.Status == "delivered" || d.Status == "failed"))
-                .OrderByDescending(d => d.EndTime)
-                .ToList();
+            var query = _context.Deliveries
+                .Where(d => d.ShipperId == shipperId)
+                .AsQueryable();
+
+            // Tìm kiếm theo mã đơn hàng
+            if (!string.IsNullOrWhiteSpace(searchOrderId))
+            {
+                if (int.TryParse(searchOrderId, out int orderId))
+                {
+                    query = query.Where(d => d.OrderId == orderId);
+                }
+            }
+
+            // Tìm kiếm theo tên khách hàng
+            if (!string.IsNullOrWhiteSpace(searchCustomer))
+            {
+                query = query.Where(d => d.CustomerName.Contains(searchCustomer));
+            }
+
+            // Tìm kiếm theo trạng thái
+            if (!string.IsNullOrWhiteSpace(searchStatus))
+            {
+                query = query.Where(d => d.Status == searchStatus);
+            }
+            else
+            {
+                // Mặc định chỉ hiển thị đơn delivered và failed
+                query = query.Where(d => d.Status == "delivered" || d.Status == "failed");
+            }
+
+            // Tìm kiếm theo khoảng thời gian
+            if (!string.IsNullOrWhiteSpace(searchDateRange))
+            {
+                var dates = searchDateRange.Split(" - ");
+                if (dates.Length == 2 && DateTime.TryParse(dates[0], out DateTime startDate) && DateTime.TryParse(dates[1], out DateTime endDate))
+                {
+                    endDate = endDate.AddDays(1); // Bao gồm cả ngày cuối
+                    query = query.Where(d => d.EndTime >= startDate && d.EndTime < endDate);
+                }
+            }
+
+            var deliveries = query.OrderByDescending(d => d.EndTime).ToList();
 
             // Lấy proof cho từng đơn
             var proofs = _context.DeliveryProofs
                 .Where(p => p.ShipperId == shipperId)
                 .ToList();
 
+            // Lấy lý do thất bại cho từng đơn
+            var issues = _context.DeliveryIssues
+                .Where(i => i.ShipperId == shipperId)
+                .ToList();
+
             ViewBag.DeliveryProofs = proofs;
+            ViewBag.DeliveryIssues = issues;
+            ViewBag.SearchOrderId = searchOrderId;
+            ViewBag.SearchCustomer = searchCustomer;
+            ViewBag.SearchStatus = searchStatus;
+            ViewBag.SearchDateRange = searchDateRange;
+
             return View(deliveries);
         }
         public IActionResult NotificationsShipper()
@@ -395,6 +583,19 @@ namespace Village_Manager.Controllers
             _context.SaveChanges();
             TempData["PasswordSuccess"] = "Đổi mật khẩu thành công.";
             return RedirectToAction("ProfileShipper");
+        }
+
+        [HttpGet]
+        public IActionResult DeliveryDetail(int id)
+        {
+            var delivery = _context.Deliveries
+                .Include(d => d.RetailOrder)
+                    .ThenInclude(ro => ro.RetailOrderItems)
+                        .ThenInclude(ri => ri.Product)
+                .FirstOrDefault(d => d.Id == id);
+            if (delivery == null)
+                return NotFound();
+            return View("OrderDetail", delivery);
         }
     }
 }

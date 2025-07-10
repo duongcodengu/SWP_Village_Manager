@@ -386,7 +386,7 @@ CREATE TABLE DeliveryIssue (
     FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
 
-CREATE TABLE DeliveryProof (
+CREATE TABLE DeliveryProofs (
     id INT PRIMARY KEY IDENTITY(1,1),
     delivery_id INT,
     shipper_id INT,
@@ -417,6 +417,18 @@ CREATE TABLE HiddenProduct (
     FOREIGN KEY (product_id) REFERENCES Product(id),
     
 );
+--Bảng mã giảm giá
+CREATE TABLE DiscountCode (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    code NVARCHAR(50) UNIQUE NOT NULL,
+    discount_percent INT NOT NULL CHECK (discount_percent >= 1 AND discount_percent <= 100),
+    status NVARCHAR(20) NOT NULL CHECK (status IN ('active', 'expired', 'used', 'disabled')),
+    usage_limit INT NOT NULL CHECK (usage_limit >= 1),
+    created_at DATETIME DEFAULT GETDATE(),
+    expired_at DATETIME NULL,
+    CONSTRAINT CK_DiscountCode_Length CHECK (LEN(code) >= 6)
+);
+
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES
@@ -441,47 +453,4 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
-
-
-INSERT INTO Product (name, category_id, price, expiration_date, product_type, quantity, processing_time, farmer_id)
-VALUES
-(N'Carrot Fresh', 1, 15000, '2025-12-31', 'raw', 200, NULL, 2),
-
-(N'Carrot Juice', 1, 35000, NULL, 'processed', 100, '2025-06-01', 2),
-
-(N'Organic Tomato', 1, 18000, '2025-11-30', 'raw', 150, NULL, 2),
-(N'Organic Cucumber', 1, 16000, '2025-12-01', 'raw', 9, NULL, 2),
-(N'Spinach Fresh', 1, 14000, '2025-10-01', 'raw', 50, NULL, 2),
-(N'Beef Jerky', 3, 90000, NULL, 'processed', 3, '2025-06-15', 2),
-(N'Avocado Smoothie', 1, 45000, NULL, 'processed', 5, '2025-07-01', 2);
-select * from product
-INSERT INTO Farmer (user_id, full_name, phone, address)
-VALUES (2, N'Trần Văn Nông', '0123456789', N'An Giang');
-
-INSERT INTO ProductImage (product_id, image_url, description)
-VALUES
-(1, '/images/product/carrot1.png', N'Ảnh cà rốt tươi'),
-(2, '/images/product/carrot-juice1.png', N'Ảnh nước ép cà rốt'),
-(3, '/images/product/tomato1.png', N'Ảnh cà chua hữu cơ'),
-(4, '/images/product/cucumber.png', N'Dưa leo hữu cơ'),
-(5, '/images/product/spinach.png', N'Cải bó xôi tươi'),
-(6, '/images/product/beefjerky.png', N'Thịt bò khô'),
-(7, '/images/product/avocadosmoothie.png', N'Sinh tố bơ');
-INSERT INTO RetailOrder (user_id, order_date, status, confirmed_at) VALUES
-(2, '2024-07-01', 'pending', NULL),
-(3, '2024-06-15', 'confirmed', '2024-06-16'),
-(4, '2024-06-20', 'shipped', '2024-06-21'),
-(5, '2024-06-10', 'delivered', '2024-06-11'),
-(6, '2024-06-05', 'cancelled', NULL),
-(2, '2024-06-25', 'confirmed', '2024-06-25'),
-(3, '2024-06-28', 'confirmed', '2024-06-28');
-select * from RetailOrderItem
-INSERT INTO RetailOrderItem (order_id, product_id, quantity, unit_price) VALUES
-(1, 3, 3, 15000), (1, 2, 2, 35000),
-(2, 2, 1, 35000), (2, 3, 4, 18000),
-(3, 3, 5, 15000),
-(4, 3, 2, 18000), (4, 2, 1, 35000),
-(5, 7, 10, 15000),
-(6, 4, 5, 16000), (6, 5, 3, 14000),
-(7, 6, 2, 90000), (7, 7, 4, 45000);
 

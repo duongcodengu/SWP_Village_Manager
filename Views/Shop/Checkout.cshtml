@@ -2,6 +2,11 @@
 @{
     ViewData["Title"] = "Checkout";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var subtotal = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+    var discount = TempData["DiscountAmount"] != null ? Convert.ToDecimal(TempData["DiscountAmount"]) : 0;
+    var finalTotal = subtotal - discount;
+    var couponCode = TempData["DiscountCode"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -677,15 +682,30 @@
 
                             @* tổng tiền *@
                             @{
-                                var subtotal = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+                               
                                 var shipping = 20000;
                                 var total = subtotal + shipping;
                             }
-                            <ul class="summery-total">
-                                <li><h4>Subtotal</h4><h4 class="price">₫@String.Format("{0:N0}", subtotal)</h4></li>
-                                <li class="pb-2"><h4>Shipping</h4><h4 class="price">₫@String.Format("{0:N0}", shipping)</h4></li>
-                                <li class="list-total"><h4>Total</h4><h4 class="price">₫@String.Format("{0:N0}", total)</h4></li>
+                            <ul class="summery-contain">
+                                <li>
+                                    <h4>Tạm tính</h4>
+                                    <h4 class="price">₫@String.Format("{0:N0}", subtotal)</h4>
+                                </li>
+
+                                @if (discount > 0)
+                                {
+                                    <li>
+                                        <h4>Giảm giá (@couponCode)</h4>
+                                        <h4 class="price text-danger">- ₫@String.Format("{0:N0}", discount)</h4>
+                                    </li>
+                                }
+
+                                <li class="list-total">
+                                    <h4>Tổng cộng</h4>
+                                    <h4 class="price theme-color">₫@String.Format("{0:N0}", finalTotal)</h4>
+                                </li>
                             </ul>
+
                             
                         </div>
                         <div class="button-group cart-button">

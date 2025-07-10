@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "OTP";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+
+<body>
+    <!-- log in section start -->
+    <section class="log-in-section otp-section section-b-space">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-xxl-6 col-xl-5 col-lg-6 d-lg-block d-none ms-auto">
+                    <div class="image-contain">
+                        <img src="~/images/inner-page/otp.png" class="img-fluid" alt="">
+                    </div>
+                </div>
+
+                <div class="col-xxl-4 col-xl-5 col-lg-6 col-sm-8 mx-auto">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="log-in-box">
+                            @if (TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger text-center" role="alert">
+                                    @TempData["Error"]
+                                </div>
+                            }
+                            <div class="log-in-title">
+                                <h3 class="text-title">Nhập mã OTP của bạn</h3>
+                                <h5 class="text-content">Mã OTP đã được gửi đến <span>@ViewBag.Email</span></h5>
+                            </div>
+
+                            <form method="post" action="/otp/confirm">
+                                <input type="hidden" name="Email" value="@ViewBag.Email" />
+                                <input type="hidden" name="Phone" value="@ViewBag.Phone" />
+                                <input type="hidden" name="Address" value="@ViewBag.Address" />
+
+                                <div id="otp" class="inputs d-flex flex-row justify-content-center">
+                                    <input class="text-center form-control rounded" type="text" name="Otp1" maxlength="1" required>
+                                    <input class="text-center form-control rounded" type="text" name="Otp2" maxlength="1" required>
+                                    <input class="text-center form-control rounded" type="text" name="Otp3" maxlength="1" required>
+                                    <input class="text-center form-control rounded" type="text" name="Otp4" maxlength="1" required>
+                                    <input class="text-center form-control rounded" type="text" name="Otp5" maxlength="1" required>
+                                    <input class="text-center form-control rounded" type="text" name="Otp6" maxlength="1" required>
+                                </div>
+
+                                <div class="send-box pt-4">
+                                    <h5>
+                                        Bạn không nhận được mã? <a href="/otp?email=@ViewBag.Email&phone=@ViewBag.Phone&address=@ViewBag.Address"
+                                                                   class="theme-color fw-bold">Gửi lại</a>
+                                    </h5>
+                                </div>
+
+                                <button class="btn btn-animation w-100 mt-3" type="submit">Xác minh</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Tự động nhảy qua ô tiếp theo
+        document.addEventListener("DOMContentLoaded", () => {
+            const inputs = document.querySelectorAll("#otp input");
+            inputs.forEach((input, index) => {
+                input.addEventListener("input", () => {
+                    if (input.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+            });
+        });
+    </script>
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+
+    <!-- otp js-->
+    <script src="~/js/otp.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/slick-animation.min.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+</body>
+
+</html>

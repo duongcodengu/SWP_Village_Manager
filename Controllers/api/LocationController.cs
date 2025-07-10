@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers.api
 {
@@ -92,8 +93,91 @@ namespace Village_Manager.Controllers.api
 
             return Ok(new { message = "Geolocation accepted" });
         }
+        [HttpPost("add")]
+        public async Task<IActionResult> Add([FromBody] UserLocationViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var location = new UserLocation
+            {
+                UserId = model.UserId,
+                Label = model.Label,
+                Address = model.Address,
+                Latitude = model.Latitude,
+                Longitude = model.Longitude,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.UserLocations.Add(location);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Đã thêm thành công." });
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update([FromBody] UserLocationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // ➕ Trả về lỗi rõ ràng
+            }
+            var location = await _context.UserLocations.FindAsync(model.Id);
+            if (location == null)
+                return NotFound(new { message = "Không tìm thấy địa chỉ." });
+
+            location.Label = model.Label;
+            location.Latitude = model.Latitude;
+            location.Longitude = model.Longitude;
+            location.CreatedAt = DateTime.UtcNow;
+
+            // Reverse geocode: lấy lại địa chỉ từ lat/lng
+            string apiKey = _config["LocationIQ:ApiKey"];
+            string reverseUrl = $"https://us1.locationiq.com/v1/reverse.php?key={apiKey}&lat={model.Latitude}&lon={model.Longitude}&format=json";
+
+            using var http = new HttpClient();
+            try
+            {
+                var response = await http.GetStringAsync(reverseUrl);
+                using var doc = JsonDocument.Parse(response);
+                var root = doc.RootElement;
+
+                if (root.TryGetProperty("display_name", out var displayName))
+                {
+                    location.Address = displayName.GetString();
+                }
+            }
+            catch
+            {
+                location.Address = model.Address; // fallback nếu API fail
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Đã cập nhật thành công." });
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var location = await _context.UserLocations.FindAsync(id);
+            if (location == null)
+                return NotFound(new { message = "Không tìm thấy địa chỉ." });
+
+            _context.UserLocations.Remove(location);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Đã xoá thành công." });
+        }
 
     }
+
+
+
+
+
+
+
+
     public class AcceptGeoRequest
     {
         public int UserId { get; set; }
