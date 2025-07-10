@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
-using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
-    public class AdminRetailController(AppDbContext context, IConfiguration configuration) : Controller
+    public class AdminRetailController : Controller
     {
-        private readonly AppDbContext _context = context;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
 
         //dashboeard bắt đầu
@@ -88,8 +89,16 @@ namespace Village_Manager.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
+        // Hiển thị danh sách khách mua lẻ
+        [HttpGet]
+        [Route("allretailcustomers")]
+        public IActionResult AllRetailCustomers()
+        {
+            var model = _context.RetailCustomers
+                                .Include(rc => rc.User) 
+                                .ToList();
 
-            return View(products);
+            return View(model);
         }
 
         [HttpGet]
@@ -241,4 +250,3 @@ namespace Village_Manager.Controllers
 
     }
 }
-
