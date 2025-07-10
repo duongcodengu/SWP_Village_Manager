@@ -25,7 +25,7 @@ namespace Village_Manager.Controllers
             }
 
             // Tổng số khách hàng
-            int totalCustomers = _context.Users.Count();
+            int totalCustomers = _context.Users.Count(u => u.RoleId == 3);
             ViewBag.TotalCustomers = totalCustomers;
 
             // Tổng số sản phẩm
