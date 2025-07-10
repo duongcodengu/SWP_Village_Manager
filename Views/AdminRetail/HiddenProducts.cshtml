@@ -1,0 +1,79 @@
+﻿@model List<Village_Manager.Models.Product>
+
+@{
+    ViewData["Title"] = "Hidden Products";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="page-wrapper compact-wrapper" id="pageWrapper">
+    <div class="page-body-wrapper">
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card card-table">
+                            <div class="card-body">
+                                <div class="title-header option-title d-sm-flex d-block">
+                                    <h5>Hidden Products List</h5>
+                                    <div class="right-options d-flex" style="gap: 15px;">
+                                        <a asp-action="Products" asp-controller="AdminRetail" class="btn btn-outline-primary">← Quay về danh sách bán</a>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table all-package theme-table table-product" id="table_id">
+                                        <thead>
+                                            <tr>
+                                                <th>Product Image</th>
+                                                <th>Product Name</th>
+                                                <th>Category</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var product in Model)
+                                            {
+                                                var imageUrl = product.ProductImages.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                                                <tr>
+                                                    <td><img src="@imageUrl" width="60" height="60" /></td>
+                                                    <td>@product.Name</td>
+                                                    <td>@product.ProductType</td>
+                                                    <td>@product.Quantity</td>
+                                                    <td>@product.Price.ToString("N0") VND</td>
+                                                    <td>
+                                                        <ul class="d-flex gap-2 list-unstyled">
+                                                            <li>
+                                                                <a asp-action="ProductDetail" asp-controller="AdminRetail" asp-route-id="@product.Id">
+                                                                    <i class="ri-eye-line"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a asp-controller="AdminRetail" asp-action="EditProduct" asp-route-id="@product.Id">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <form asp-action="RestoreProduct" asp-controller="AdminRetail" method="post" class="d-inline">
+                                                                    <input type="hidden" name="productId" value="@product.Id" />
+                                                                    <button type="submit" class="btn btn-sm btn-success">Hiện lại</button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                        
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

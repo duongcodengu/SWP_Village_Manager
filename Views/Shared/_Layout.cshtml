@@ -160,7 +160,7 @@
                                             <button type="button" class="btn p-0 position-relative header-wishlist">
                                                 <i data-feather="shopping-cart"></i>
                                                 <span class="position-absolute top-0 start-100 translate-middle badge">
-                                                    @(ViewBag.CartCount ?? 0)
+                                                    @Village_Manager.Utils.CartHelper.GetCartCount(Context)
                                                 </span>
                                             </button>
 
@@ -270,11 +270,10 @@
                                                             <a href="/adminwarehouse">Admin Manager</a>
                                                         </li>
                                                     }
-
                                                     @if (roleId == 2)
                                                     {
                                                         <li class="product-box-contain">
-                                                            <a href="/AdminRetail">Staff Manager</a>
+                                                            <a href="/adminretail">Staff Manager</a>
                                                         </li>
                                                     }
                                                     @* rold nao cung co *@

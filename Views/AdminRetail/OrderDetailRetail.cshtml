@@ -1,0 +1,64 @@
+﻿@model Village_Manager.Models.RetailOrder
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<div class="container-fluid mt-4 px-4">
+    <div class="row justify-content-end">
+        <div class="col-md-10 offset-md-2">
+            <div class="card shadow p-4">
+                <h3 class="mb-4">Chi tiết đơn hàng</h3>
+
+                <dl class="row">
+                    <dt class="col-sm-4">Mã đơn hàng</dt>
+                    <dd class="col-sm-8">@Model.Id</dd>
+
+                    <dt class="col-sm-4">Email khách hàng</dt>
+                    <dd class="col-sm-8">@Model.User?.Email</dd>
+
+                    <dt class="col-sm-4">Ngày đặt hàng</dt>
+                    <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy")</dd>
+
+                    <dt class="col-sm-4">Trạng thái</dt>
+                    <dd class="col-sm-8">@Model.Status</dd>
+
+                    <dt class="col-sm-4">Ngày xác nhận</dt>
+                    <dd class="col-sm-8">@Model.ConfirmedAt?.ToString("dd/MM/yyyy")</dd>
+                </dl>
+
+                <h5 class="mt-4">Danh sách sản phẩm</h5>
+                <div class="table-responsive mt-2">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.RetailOrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="AdminRetail" asp-action="ProductDetail" asp-route-id="@item.ProductId">
+                                            @item.Product?.Name
+                                        </a>
+                                    </td>
+                                    <td>@(item.UnitPrice != null ? item.UnitPrice.Value.ToString("N0") + " đ" : "N/A")</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@(item.UnitPrice* item.Quantity)đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <a asp-action="OrderListRetail" class="btn btn-secondary mt-3">Quay lại</a>
+            </div>
+        </div>
+    </div>
+</div>

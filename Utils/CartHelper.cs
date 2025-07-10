@@ -37,5 +37,10 @@ namespace Village_Manager.Utils
 
             return cartItems;
         }
+        public static int GetCartCount(HttpContext context)
+        {
+            var cartSession = context.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+            return cartSession.Sum(i => i.Quantity ?? 0);
+        }
     }
 }

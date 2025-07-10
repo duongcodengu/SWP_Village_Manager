@@ -137,6 +137,14 @@ namespace Village_Manager.Controllers
                         HttpContext.Session.SetInt32("UserId", user.Id);
                     }
                 }
+                else if (user.RoleId == 5) // Retail Customer
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (user.RoleId == 4) // Retail Staff
+                {
+                    return RedirectToAction("Index", "Home");
+                }
 
                 // role admin
                 switch (user.RoleId)
