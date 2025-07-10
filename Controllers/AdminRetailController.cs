@@ -6,11 +6,18 @@ using Village_Manager.Models;
 
 namespace Village_Manager.Controllers
 {
-    public class AdminRetailController(AppDbContext context, IConfiguration configuration) : Controller
+    public class AdminRetailController : Controller
     {
-        private readonly AppDbContext _context = context;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<AdminRetailController> _logger;
 
+        public AdminRetailController(AppDbContext context, IConfiguration configuration, ILogger<AdminRetailController> logger)
+        {
+            _context = context;
+            _configuration = configuration;
+            _logger = logger;
+        }
         // kiểm tra quyền truy cập
         [HttpGet]
         [Route("AdminRetail")]
@@ -19,7 +26,7 @@ namespace Village_Manager.Controllers
             var username = HttpContext.Session.GetString("Username");
             var roleId = HttpContext.Session.GetInt32("RoleId");
 
-            if (string.IsNullOrEmpty(username) || roleId != 1)
+            if (string.IsNullOrEmpty(username) || roleId != 2)
             {
                 Response.StatusCode = 404;
                 return View("404");
@@ -265,54 +272,93 @@ namespace Village_Manager.Controllers
 
         [HttpGet]
         [Route("EditCustomer/{id}")]
-        public async Task<IActionResult> UpdateCustomer(int id)
+        public async Task<IActionResult> EditCustomer(int id)
         {
-            var roleId = HttpContext.Session.GetInt32("RoleId");
-            if (roleId != 2) return View("404");
+            try
+            {
+                var roleId = HttpContext.Session.GetInt32("RoleId");
+                if (roleId != 2) return View("404");
 
-            ViewBag.Roles = _context.Roles.Where(r => r.Id == 3).ToList();
-
-            var user = await _context.Users.FindAsync(id);
-            if (user == null || user.RoleId != 3)
-                return NotFound();
-
-            return View("EditCustomer", user);
+                var user = await _context.Users.FindAsync(id);
+                if (user == null || user.RoleId != 3)
+                {
+                    return NotFound();
+                }
+                ViewBag.Roles = await _context.Roles.Where(r => r.Id == 3).ToListAsync();
+                return View("EditCustomer", user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading customer: {ex.Message}");
+                TempData["ErrorMessage"] = "Đã xảy ra lỗi khi tải thông tin khách hàng.";
+                return RedirectToAction("AllCustomers");
+            }
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("EditCustomer/{id}")]
-        public async Task<IActionResult> EditCustomer(int id, string actionType, string? reason, string? newEmail, string? newPhone)
+        public async Task<IActionResult> EditCustomer(int id, User user, string newPassword)
         {
-            var staffRole = HttpContext.Session.GetInt32("RoleId");
-            if (staffRole != 2)
-                return View("404");
-
-            var customer = await _context.Users.FindAsync(id);
-            if (customer == null || customer.RoleId != 3)
-                return NotFound();
-
-            if (actionType == "update")
+            try
             {
-                if (!string.IsNullOrWhiteSpace(newEmail)) customer.Email = newEmail.Trim();
-                if (!string.IsNullOrWhiteSpace(newPhone)) customer.Phone = newPhone.Trim();
-            }
-            else if (actionType == "deactivate")
-            {
-                customer.IsActive = false;
-            }
-            else
-            {
-                TempData["Error"] = "Hành động không hợp lệ.";
-                return RedirectToAction("EditCustomer", new { id });
-            }
+                var roleId = HttpContext.Session.GetInt32("RoleId");
+                if (roleId != 2) return View("404");
 
-            await _context.SaveChangesAsync();
-            TempData["Success"] = "Thông tin khách hàng đã được cập nhật thành công.";
-            return RedirectToAction("AllCustomers");
+                // Kiểm tra dữ liệu đầu vào
+                if (string.IsNullOrWhiteSpace(user.Username) || string.IsNullOrWhiteSpace(user.Email))
+                {
+                    ModelState.AddModelError("", "Vui lòng nhập đầy đủ thông tin bắt buộc.");
+                    return View(user);
+                }
+
+                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+                {
+                    ModelState.AddModelError("Phone", "Số điện thoại phải đúng 10 chữ số.");
+                    return View(user);
+                }
+
+                var existingUser = await _context.Users.FindAsync(id);
+                if (existingUser == null || existingUser.RoleId != 3)
+                {
+                    return NotFound();
+                }
+
+                // Kiểm tra trùng username/email
+                if (await _context.Users.AnyAsync(u => u.Username == user.Username && u.Id != id))
+                {
+                    ModelState.AddModelError("Username", "Username đã tồn tại.");
+                    return View(user);
+                }
+                if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Id != id))
+                {
+                    ModelState.AddModelError("Email", "Email đã tồn tại.");
+                    return View(user);
+                }
+
+                // Cập nhật thông tin
+                existingUser.Username = user.Username.Trim();
+                existingUser.Email = user.Email.Trim();
+                existingUser.Phone = user.Phone?.Trim();
+
+                if (!string.IsNullOrEmpty(newPassword))
+                {
+                    existingUser.Password = newPassword;
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Đã cập nhật thông tin khách hàng thành công.";
+                return RedirectToAction("AllCustomers");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi cập nhật khách hàng: {ex.Message}");
+                ModelState.AddModelError("", "Đã xảy ra lỗi khi cập nhật.");
+                return View(user);
+            }
         }
+
 
 
         [HttpGet]
