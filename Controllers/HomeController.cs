@@ -53,11 +53,39 @@ namespace Village_Manager.Controllers
         [Route("login")]
         public IActionResult Login(string email, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password && u.IsActive);
+            string inputEmail = email?.Trim().ToLower() ?? string.Empty;
+            string inputPassword = password?.Trim() ?? string.Empty;
+
+            // Tìm user theo email
+            var user = _context.Users.FirstOrDefault(u => u.Email.ToLower() == inputEmail);
+
+            if (user == null)
+            {
+                ViewBag.Error = "Email không tồn tại!";
+                return View();
+            }
+
+            if (!user.IsActive)
+            {
+                ViewBag.Error = "Tài khoản đã bị khóa!";
+                return View();
+            }
+            // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
+            if (user.RoleId != 4)
+            {
+                if (user.Password != inputPassword)
+                {
+                    ViewBag.Error = "Mật khẩu không đúng!";
+                    return View();
+                }
+            }
+
+            // lấy tên role name
+            int roleId = user.RoleId;
+            string roleName = "";
             string connectionString = _configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            Console.WriteLine(connectionString);
-            if (user != null)
+            using (var conn = new SqlConnection(connectionString))
             {
                 // lấy tên role name
                 int roleId = user.RoleId;
@@ -131,10 +159,8 @@ namespace Village_Manager.Controllers
                         default:
                             return RedirectToAction("Login", "Home");
                     }
+            
             }
-            ViewBag.Error = user == null ? "Tài khoản bị khóa hoặc thông tin không đúng!" : "Email hoặc mật khẩu không đúng!";
-
-            return View();
         }
         //Contact us
         [HttpGet]

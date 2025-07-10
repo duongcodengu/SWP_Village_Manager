@@ -175,7 +175,7 @@
                                                         <i class="fa fa-clock fa-2x text-warning"></i>
                                                     </div>
                                                     <div class="fs-1 fw-bold text-dark">@pending</div>
-                                                    <div class="text-muted small mt-1">Chờ nhận</div>
+                                                    <div class="text-muted small mt-1">Chờ giao hàng </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -216,7 +216,26 @@
                                                                 <tr>
                                                                     <td class="text-center">#@order.OrderId</td>
                                                                     <td>@order.CustomerName</td>
-                                                                    <td class="text-center">@order.Status</td>
+                                                                    <td class="text-center">
+                                                                        @switch(order.Status?.ToLower())
+                                                                        {
+                                                                            case "assigned":
+                                                                                <span class="badge bg-warning text-dark">Chờ giao</span>;
+                                                                                break;
+                                                                            case "in_transit":
+                                                                                <span class="badge bg-info text-dark">Đang giao</span>;
+                                                                                break;
+                                                                            case "delivered":
+                                                                                <span class="badge bg-success">Đã giao</span>;
+                                                                                break;
+                                                                            case "failed":
+                                                                                <span class="badge bg-danger">Thất bại</span>;
+                                                                                break;
+                                                                            default:
+                                                                                <span class="badge bg-secondary">@order.Status</span>;
+                                                                                break;
+                                                                        }
+                                                                    </td>
                                                                     <td>@order.CustomerAddress</td>
                                                                     <td class="text-center">@order.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
                                                                 </tr>

@@ -384,7 +384,7 @@ CREATE TABLE DeliveryIssue (
     FOREIGN KEY (shipper_id) REFERENCES Shipper(id)
 );
 
-CREATE TABLE DeliveryProof (
+CREATE TABLE DeliveryProofs (
     id INT PRIMARY KEY IDENTITY(1,1),
     delivery_id INT,
     shipper_id INT,

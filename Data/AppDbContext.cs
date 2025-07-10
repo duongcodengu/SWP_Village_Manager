@@ -212,6 +212,12 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.ShipperId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Delivery__shipper_id");
+
+            entity.HasOne(d => d.RetailOrder)
+                .WithMany()
+                .HasForeignKey(d => d.OrderId)
+                .HasPrincipalKey(r => r.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
 
@@ -927,6 +933,19 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("FK__Users__role_id__3F466844");
         });
 
+        // ... existing code ...
+        modelBuilder.Entity<DeliveryProof>(entity =>
+        {
+            entity.ToTable("DeliveryProofs");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DeliveryId).HasColumnName("delivery_id");
+            entity.Property(e => e.ShipperId).HasColumnName("shipper_id");
+            entity.Property(e => e.ImagePath).HasColumnName("image_path");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+        // ... existing code ...
+
         modelBuilder.Entity<UserLocation>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__UserLoca__3214EC07B578FC35");
@@ -941,6 +960,17 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserLocat__UserI__339FAB6E");
+        });
+
+        modelBuilder.Entity<DeliveryProof>(entity =>
+        {
+            entity.ToTable("DeliveryProofs");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DeliveryId).HasColumnName("delivery_id");
+            entity.Property(e => e.ShipperId).HasColumnName("shipper_id");
+            entity.Property(e => e.ImagePath).HasColumnName("image_path");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -205,6 +205,10 @@ public class AdminWarehouseController : Controller
                 await _context.SaveChangesAsync();
             }
 
+            // Ghi log
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Thêm sản phẩm: {product.Name}");
+
             return Redirect("/products");
         }
         catch (Exception ex)
@@ -253,6 +257,10 @@ public class AdminWarehouseController : Controller
         _context.ProductImages.RemoveRange(images);
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
+
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Xóa sản phẩm: {product.Name}");
 
         return Redirect("/products");
     }
@@ -337,6 +345,9 @@ public class AdminWarehouseController : Controller
         }
 
         await _context.SaveChangesAsync();
+        // Sau khi cập nhật thành công:
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Cập nhật sản phẩm: {model.Name}");
         return Redirect("/products");
     }
     [HttpGet]
@@ -424,7 +435,7 @@ public class AdminWarehouseController : Controller
         _context.Users.Remove(user);
         _context.SaveChanges();
         var currentUserId = HttpContext.Session.GetInt32("UserId");
-        LogHelper.SaveLog(_context, currentUserId, $"Xóa user: {user.Username} (ID: {user.Id})");
+        LogHelper.SaveLog(_context, currentUserId, $"Xóa người dùng: {user.Username} (ID: {user.Id})");
         return RedirectToAction("AllUser");
     }
 
@@ -534,8 +545,8 @@ public class AdminWarehouseController : Controller
             }
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
-            LogHelper.SaveLog(_context, currentUserId, $"Thêm user mới: {newUser.Username} (ID: {newUser.Id})");
-            TempData["SuccessMessage"] = "User created successfully!";
+            LogHelper.SaveLog(_context, currentUserId, $"Thêm người dùng mới: {newUser.Username} (ID: {newUser.Id})");
+            TempData["SuccessMessage"] = "Tạo người dùng thành công!";
             return RedirectToAction("AllUser");
         }
         catch (Exception ex)
@@ -548,14 +559,14 @@ public class AdminWarehouseController : Controller
     }
 
 
-    private string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
-    }
+    //private string HashPassword(string password)
+    //{
+    //    using (var sha256 = SHA256.Create())
+    //    {
+    //        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+    //        return Convert.ToBase64String(hashedBytes);
+    //    }
+    //}
 
     // EditUser (GET): Hiển thị form chỉnh sửa user
     [HttpGet]
@@ -706,9 +717,9 @@ public class AdminWarehouseController : Controller
             }
 
             var currentUserId = HttpContext.Session.GetInt32("UserId");
-            LogHelper.SaveLog(_context, currentUserId, $"Cập nhật user: {existingUser.Username} (ID: {existingUser.Id})");
+            LogHelper.SaveLog(_context, currentUserId, $"Cập nhật người dùng: {existingUser.Username} (ID: {existingUser.Id})");
             _logger.LogInformation($"User updated successfully. UserId: {id}");
-            TempData["SuccessMessage"] = "User updated successfully!";
+            TempData["SuccessMessage"] = "Tạo người dùng thành công!";
             return RedirectToAction("AllUser");
         }
         catch (Exception ex)
@@ -878,6 +889,9 @@ public class AdminWarehouseController : Controller
         }
 
         await _context.SaveChangesAsync();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt nông dân: {request.FullName}");
         return RedirectToAction("AddFamer");
     }
 
@@ -894,7 +908,43 @@ public class AdminWarehouseController : Controller
         request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
         await _context.SaveChangesAsync();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Từ chối nông dân: {request.FullName}");
         return RedirectToAction("AddFamer"); 
+    }
+    // view to pending products
+    [HttpGet]
+    [Route("pendingproducts")]
+    public IActionResult PendingProducts()
+    {
+        var pendingProducts = _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.Farmer)
+            .Include(p => p.ProductImages)
+            .Where(p => p.ApprovalStatus == "pending")
+            .ToList();
+        return View(pendingProducts);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("approveproduct")]
+    public IActionResult ApproveProduct(int id, string action)
+    {
+        var product = _context.Products.FirstOrDefault(p => p.Id == id);
+        if (product == null) return NotFound();
+
+        if (action == "accept")
+            product.ApprovalStatus = "accepted";
+        else if (action == "reject")
+            product.ApprovalStatus = "rejected";
+
+        _context.SaveChanges();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt sản phẩm: {product?.Name} - Hành động: {action}");
+        return RedirectToAction("PendingProducts");
     }
     [HttpGet]
     [Route("shipper")]
@@ -1118,6 +1168,12 @@ public class AdminWarehouseController : Controller
         _context.SaveChanges();
 
         return Redirect("/listOrder"); 
+        await _context.SaveChangesAsync();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt tài xế: {request.FullName} - Hành động: {action}");
+        TempData["Success"] = "Cập nhật yêu cầu thành công.";
+        return Redirect("admin/shipper-requests");
     }
 
 
@@ -1139,6 +1195,9 @@ public class AdminWarehouseController : Controller
         }
         user.IsActive = false;
         _context.SaveChanges();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Khóa tài khoản: {user?.Username}");
         TempData["SuccessMessage"] = $"Đã khóa tài khoản {user.Username}";
         return RedirectToAction("AllUser");
     }
@@ -1161,6 +1220,9 @@ public class AdminWarehouseController : Controller
         }
         user.IsActive = true;
         _context.SaveChanges();
+        // Ghi log
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Mở khóa tài khoản: {user?.Username}");
         TempData["SuccessMessage"] = $"Đã mở khóa tài khoản {user.Username}";
         return RedirectToAction("AllUser");
     }
@@ -1195,6 +1257,76 @@ public class AdminWarehouseController : Controller
 
         TempData["Success"] = "Success";
         return RedirectToAction("Support");
+    }
+
+    [HttpGet("/adminwarehouse/role/add")]
+    public IActionResult AddRole()
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        return View("~/Views/AdminWarehouse/AddRole.cshtml");
+    }
+
+    [HttpPost("/adminwarehouse/role/add")]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddRole(Role model)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        if (!ModelState.IsValid)
+        {
+            return View("~/Views/AdminWarehouse/AddRole.cshtml", model);
+        }
+        _context.Roles.Add(model);
+        _context.SaveChanges();
+        // Ghi log ngay sau khi lưu role
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Thêm vai trò: {model.Name}");
+        return RedirectToAction("Dashboard");
+    }
+
+    [HttpGet("/adminwarehouse/role/edit/{id}")]
+    public async Task<IActionResult> EditRole(int id)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var role = await _context.Roles.FindAsync(id);
+        if (role == null)
+        {
+            return NotFound();
+        }
+        return View("~/Views/AdminWarehouse/EditRole.cshtml", role);
+    }
+
+    [HttpPost("/adminwarehouse/role/edit/{id}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditRole(int id, Role model)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+        var role = await _context.Roles.FindAsync(id);
+        if (role == null)
+        {
+            return NotFound();
+        }
+        role.Name = model.Name;
+        await _context.SaveChangesAsync();
+        // Ghi log ngay sau khi lưu role
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Cập nhật vai trò: {model.Name}");
+        return RedirectToAction("Dashboard");
     }
 
 }

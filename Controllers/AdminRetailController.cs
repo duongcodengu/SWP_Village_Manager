@@ -75,7 +75,7 @@ namespace Village_Manager.Controllers
         }
 
         [HttpGet]
-        [Route("products")]
+        [Route("product")]
         public IActionResult Products()
         {
             // Lấy dữ liệu thực từ database
