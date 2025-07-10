@@ -10,80 +10,84 @@ namespace Village_Manager.Controllers
         private readonly AppDbContext _context = context;
         private readonly IConfiguration _configuration = configuration;
 
+
+        //dashboeard bắt đầu
         // kiểm tra quyền truy cập
+
+
+        //hiển thị tổng
+        private async Task<decimal> GetTotalRevenue()
+        {
+            var total = await _context.RetailOrderItems
+                .SumAsync(x => (decimal?)(x.Quantity * x.UnitPrice));
+            return total ?? 0;
+        }
+
+        private async Task<int> GetTotalOrders()
+        {
+            var total = await _context.RetailOrders.CountAsync();
+            return total;
+        }
+
+        private async Task<int> GetTotalProducts()
+        {
+            var total = await _context.Products.CountAsync();
+            return total;
+        }
+
+        private async Task<int> GetTotalCustomers()
+        {
+            var total = await _context.Users.CountAsync(u => u.RoleId == 3);
+            return total;
+        }
         [HttpGet]
         [Route("AdminRetail")]
-        public IActionResult Dashboard()
+        // Trang tổng hợp để đẩy lên View
+        public async Task<IActionResult> Dashboard()
         {
-            var username = HttpContext.Session.GetString("Username");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
-
-            if (string.IsNullOrEmpty(username) || roleId != 1)
-            {
-                Response.StatusCode = 404;
-                return View("404");
-            }
-
-            // Tổng số khách hàng
-            int totalCustomers = _context.Users.Count();
-            ViewBag.TotalCustomers = totalCustomers;
-
-            // Tổng số sản phẩm
-            int totalProducts = _context.Products.Count();
-            ViewBag.TotalProducts = totalProducts;
-
-            // Tổng số đơn hàng
-            int totalRetailOrders = _context.RetailOrders.Count();
-            int totalWholesaleOrders = _context.WholesaleOrders.Count();
-            int totalOrders = totalRetailOrders + totalWholesaleOrders;
-            ViewBag.TotalOrders = totalOrders;
-
-            // Lấy category (name, image_url)
-            var categories = _context.ProductCategory
-                .Select(c => new
-                {
-                    Name = c.Name,
-                    ImageUrl = c.ImageUrl
-                }).ToList<dynamic>();
-            ViewBag.Categories = categories;
-
-            // Tổng doanh thu confirmed
-            decimal currentYear = DateTime.Now.Year;
-
-            // Bán lẻ (Retail)
-            var retailRevenue = _context.RetailOrders
-                .Where(ro => ro.Status == "confirmed"
-                    && ro.ConfirmedAt.HasValue
-                    && ro.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.RetailOrderItems,
-                      ro => ro.Id,
-                      ri => ri.OrderId,
-                      (ro, ri) => ri.Quantity * ri.UnitPrice)
-                .Sum();
-
-            // Bán buôn (Wholesale)
-            var wholesaleRevenue = _context.WholesaleOrders
-                .Where(wo => wo.Status == "confirmed"
-                    && wo.ConfirmedAt.HasValue
-                    && wo.ConfirmedAt.Value.Year == currentYear)
-                .Join(_context.WholesaleOrderItems,
-                      wo => wo.Id,
-                      wi => wi.OrderId,
-                      (wo, wi) => wi.Quantity * wi.UnitPrice)
-                .Sum();
-
-            decimal totalRevenue = (retailRevenue ?? 0) + (wholesaleRevenue ?? 0);
-            ViewBag.TotalRevenue = totalRevenue;
+            ViewBag.TotalRevenue = await GetTotalRevenue();
+            ViewBag.TotalOrders = await GetTotalOrders();
+            ViewBag.TotalProducts = await GetTotalProducts();
+            ViewBag.TotalCustomers = await GetTotalCustomers();
+            ViewBag.Categories = await _context.ProductCategory.ToListAsync();
 
             return View();
         }
 
+
+
+
+
+        //phần admin quản lý sản phẩm bắt đầu
+
         [HttpGet]
-        [Route("products")]
-        public IActionResult Products()
+        [Route("productsRetail")]
+        public async Task<IActionResult> Products(string sortOrder, string keyword, int page = 1, int pageSize = 10)
         {
-            // Lấy dữ liệu thực từ database
-            var products = _context.Products.Include(p => p.ProductImages).ToList();
+            var query = _context.Products
+                .Include(p => p.ProductImages)
+                .Where(p => !_context.HiddenProduct.Any(h => h.ProductId == p.Id))
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+                query = query.Where(p => p.Name.Contains(keyword) || p.ProductType.Contains(keyword));
+
+            ViewBag.CurrentSort = sortOrder;
+
+            switch (sortOrder)
+            {
+                case "name_desc": query = query.OrderByDescending(p => p.Name); break;
+                case "price_asc": query = query.OrderBy(p => p.Price); break;
+                case "price_desc": query = query.OrderByDescending(p => p.Price); break;
+                case "expiry_asc": query = query.OrderBy(p => p.ExpirationDate); break;
+                default: query = query.OrderBy(p => p.Name); break;
+            }
+
+            int total = await query.CountAsync();
+            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
 
             return View(products);
         }
@@ -112,22 +116,7 @@ namespace Village_Manager.Controllers
         public async Task<IActionResult> EditProduct(Product model)
         {
 
-            //if (!ModelState.IsValid)
-            //{
-            //    foreach (var key in ModelState.Keys)
-            //    {
-            //        var errors = ModelState[key].Errors;
-            //        foreach (var error in errors)
-            //        {
-            //            Console.WriteLine($"Lỗi tại {key}: {error.ErrorMessage}");
-            //        }
-            //    }
-            //    //ViewBag.Categories = await _context.ProductCategory
-            //    //    .Select(c => new { c.Id, c.Name })
-            //    //    .ToListAsync();
 
-            //    //return View(model);
-            //}
 
             var product = await _context.Products
                 .Include(p => p.ProductImages)
@@ -138,18 +127,13 @@ namespace Village_Manager.Controllers
                 return NotFound();
             }
 
-         
+
             product.Name = model.Name;
             product.ProductType = model.ProductType;
             product.Quantity = model.Quantity;
             product.Price = model.Price;
 
-            // Cập nhật description trong bảng ProductImage
-            //var image = product.ProductImages.FirstOrDefault();
-            //if (image != null)
-            //{
-            //    image.Description = model.ProductImages.FirstOrDefault()?.Description ?? image.Description;
-            //}
+
 
             try
             {
@@ -196,6 +180,59 @@ namespace Village_Manager.Controllers
                 .ToList();
 
             return View("Products", products);
+        }
+        // hàm xóa mềm sản phẩm
+        public async Task<IActionResult> SoftDeleteProduct(int productId)
+        {
+            // Kiểm tra xem sản phẩm đã bị ẩn chưa
+            bool isAlreadyHidden = await _context.HiddenProduct
+                .AnyAsync(h => h.ProductId == productId);
+
+            if (!isAlreadyHidden)
+            {
+                var hidden = new HiddenProduct
+                {
+                    ProductId = productId,
+                    Reason = "Ẩn bởi admin bán lẻ",
+                    HiddenAt = DateTime.Now
+                };
+
+                _context.HiddenProduct.Add(hidden);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Products");
+        }
+        //hiển thị sản phẩm hạn chế
+        public async Task<IActionResult> HiddenProducts()
+        {
+            // Lấy danh sách sản phẩm có trong bảng HiddenProduct
+            var hiddenProductIds = await _context.HiddenProduct
+                .Select(h => h.ProductId)
+                .ToListAsync();
+
+            // Lấy thông tin chi tiết sản phẩm tương ứng
+            var products = await _context.Products
+                .Include(p => p.ProductImages)
+                .Where(p => hiddenProductIds.Contains(p.Id))
+                .ToListAsync();
+
+            return View(products);
+        }
+
+        // hiển thị lại sản phẩm bị hạn chế
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreProduct(int productId)
+        {
+            var hidden = await _context.HiddenProduct.FirstOrDefaultAsync(h => h.ProductId == productId);
+            if (hidden != null)
+            {
+                _context.HiddenProduct.Remove(hidden);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("HiddenProducts");
         }
 
         [HttpGet]
