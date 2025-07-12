@@ -15,15 +15,14 @@
                             <div class="card-body">
                                 <div class="title-header option-title d-sm-flex d-block">
                                     <h5>Products List</h5>
-                                    <div class="right-options d-flex" style="gap: 15px;">
-                                        <form asp-controller="AdminRetail" asp-action="SearchProducts" method="get" class="d-flex" style="gap: 10px;">
-                                            <input type="text" name="keyword" class="form-control" placeholder="Search product..." />
-                                            <button type="submit" class="btn btn-outline-primary">Search</button>
-                                        </form>
-
-                                        <ul>
-                                            <li><a class="btn btn-solid" href="add-new-product.html">Add Product</a></li>
-                                        </ul>
+                                    <div class="form-group mb-2 mb-sm-0">
+                                        <select id="sortOption" class="form-select">
+                                            <option value="">-- Sắp xếp theo --</option>
+                                            <option value="expSoon">Hạn sử dụng:thấp - cao</option>
+                                            <option value="expLate">Hạn sử dụng:cao - thấp</option>
+                                            <option value="qtyAsc">Số lượng: Ít → Nhiều</option>
+                                            <option value="qtyDesc">Số lượng: Nhiều → Ít</option>
+                                        </select>
                                     </div>
 
                                 </div>
@@ -106,3 +105,53 @@
 
     </div>
 </div>
+
+
+@section Scripts {
+    <script>
+        document.getElementById("sortOption").addEventListener("change", function () {
+            const option = this.value;
+            const tbody = document.querySelector("#table_id tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            rows.sort((a, b) => {
+                const getValue = (el, index) => el.children[index].textContent.trim();
+                       const parseDate = (str) => {
+            const parts = str.split("/");
+            if (parts.length !== 3) return new Date(0); // fallback nếu lỗi
+            return new Date(+parts[2], parts[1] - 1, +parts[0]); // new Date(year, monthIndex, day)
+        };
+
+                const parseNumber = str => parseInt(str.replace(/[^0-9]/g, '')) || 0;
+
+                let aVal, bVal;
+
+                switch (option) {
+                    case "expSoon":
+                        // col 5: Expiration Date, format dd/MM/yyyy
+                        aVal = parseDate(getValue(a, 4));
+                        bVal = parseDate(getValue(b, 4));
+                        return aVal - bVal;
+                    case "expLate":
+                        aVal = parseDate(getValue(a, 4));
+                        bVal = parseDate(getValue(b, 4));
+                        return bVal - aVal;
+                    case "qtyAsc":
+                        aVal = parseNumber(getValue(a, 3));
+                        bVal = parseNumber(getValue(b, 3));
+                        return aVal - bVal;
+                    case "qtyDesc":
+                        aVal = parseNumber(getValue(a, 3));
+                        bVal = parseNumber(getValue(b, 3));
+                        return bVal - aVal;
+                    default:
+                        return 0;
+                }
+            });
+
+            // Cập nhật lại bảng
+            tbody.innerHTML = "";
+            rows.forEach(row => tbody.appendChild(row));
+        });
+    </script>
+}

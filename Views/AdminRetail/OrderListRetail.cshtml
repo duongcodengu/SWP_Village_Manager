@@ -91,98 +91,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="nav-right col-6 pull-right right-header p-0">
-                    <ul class="nav-menus">
-                        <li>
-                            <span class="header-search">
-                                <i class="ri-search-line"></i>
-                            </span>
-                        </li>
-                        <li class="onhover-dropdown">
-                            <div class="notification-box">
-                                <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
-                            </div>
-                            <ul class="notification-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-notification-line"></i>
-                                    <h6 class="f-18 mb-0">Notitications</h6>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <div class="mode">
-                                <i class="ri-moon-line"></i>
-                            </div>
-                        </li>
-                        <li class="profile-nav onhover-dropdown pe-0 me-0">
-                            <div class="media profile-media">
-                                <img class="user-profile rounded-circle" src="assets/images/users/4.jpg" alt="">
-                                <div class="user-name-hide media-body">
-                                    <span>Emay Walter</span>
-                                    <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
-                                </div>
-                            </div>
-                            <ul class="profile-dropdown onhover-show-div">
-                                <li>
-                                    <a href="all-users.html">
-                                        <i data-feather="users"></i>
-                                        <span>Users</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="order-list.html">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                       href="javascript:void(0)">
-                                        <i data-feather="log-out"></i>
-                                        <span>Log out</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                
             </div>
         </div>
         <!-- Page Header Ends-->
@@ -191,16 +100,24 @@
            
             <!-- Order section Start -->
             <div class="page-body">
+
+
+                @* table for detail order start  *@
                 <!-- Table Start -->
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card card-table">
                                 <div class="card-body">
-                                    <div class="title-header option-title">
-                                        <h5>Order List</h5>
-                                        <a href="#" class="btn btn-solid">Download all orders</a>
+                                    <div class="title-header option-title d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Order List</h5>
+
+                                        <input type="text" id="searchInput"
+                                               placeholder="Tìm theo email..."
+                                               class="form-control form-control-sm w-auto ms-3"
+                                               style="width: 250px;" />
                                     </div>
+                                
                                     <div>
                                         <div class="table-responsive mt-3">
                                             <table class="table table-bordered align-middle text-center" id="orderTable">
@@ -226,174 +143,18 @@
                 </div>
                 <!-- Table End -->
                 <!-- footer start-->
-                <div class="container-fluid">
-                    <footer class="footer">
-                        <div class="row">
-                            <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
+                
             </div>
             <!-- Order section End -->
         </div>
         <!-- Page Body End-->
     </div>
     <!-- page-wrapper End -->
-    <!-- Modal start -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog  modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                        <button type="button" onclick="location.href = 'login.html';"
-                                class="btn  btn--yes btn-primary">
-                            Yes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal end -->
-    <!-- Delete Modal Box Start -->
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box">
-                        <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
-                            data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+   
+    
 
-    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="remove-box text-center">
-                        <div class="wrapper">
-                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                            </svg>
-                        </div>
-                        <h4 class="text-content">It's Removed.</h4>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Delete Modal Box End -->
-    <!-- Offcanvas Box Start -->
-    <div class="offcanvas offcanvas-end order-offcanvas" tabindex="-1" id="order-details"
-         aria-labelledby="offcanvasExampleLabel" aria-expanded="false">
-        <div class="offcanvas-header">
-            <h4 class="offcanvas-title" id="offcanvasExampleLabel">#573-685572</h4>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="order-date">
-                <h6>September 17, 2022 <span class="ms-3">8:12 PM</span></h6>
-                <a href="javascript:void(0)" class="d-block mt-1">Cancel Order</a>
-            </div>
-
-            <div class="accordion accordion-flush custome-accordion" id="accordionFlushExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingOne">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                            Status
-                        </button>
-                    </h2>
-                    <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
-                         data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            <ul class="status-list">
-                                <li>
-                                    <a href="javascript:void(0)">Shipped</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0)">Pending</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                            Accordion Item #2
-                        </button>
-                    </h2>
-                    <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
-                         data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            Placeholder content for this accordion, which is intended to
-                            demonstrate the <code>.accordion-flush</code> class. This is the second item's accordion
-                            body. Let's imagine this being filled with some actual content.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="flush-headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#flush-collapseThree" aria-expanded="false"
-                                aria-controls="flush-collapseThree">
-                            Accordion Item #3
-                        </button>
-                    </h2>
-                    <div id="flush-collapseThree" class="accordion-collapse collapse"
-                         aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">
-                            Placeholder content for this accordion, which is intended to
-                            demonstrate the <code>.accordion-flush</code> class. This is the third item's accordion
-                            body. Nothing more exciting happening here in terms of content, but just filling up the
-                            space to make it look, at least at first glance, a bit more representative of how this would
-                            look in a real-world application.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Offcanvas Box End -->
-    <!-- latest js -->
+    
+   
     <script src="assets/js/jquery-3.6.0.min.js"></script>
 
     <!-- Bootstrap js -->
@@ -435,9 +196,17 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
     <script>
+        let searching = false;
+
         async function loadOrders() {
+            if (searching) return; // nếu đang search thì không cập nhật tự động
+
             const res = await fetch("/api/OrderRetailApi/pending-orders");
             const orders = await res.json();
+            renderOrders(orders);
+        }
+
+        function renderOrders(orders) {
             const tbody = document.querySelector("#orderTable tbody");
             tbody.innerHTML = "";
 
@@ -447,41 +216,54 @@
                     <td>${order.id}</td>
                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
                     <td><a href="/AdminCustomer/Details/${order.customerEmail}">${order.customerEmail}</a></td>
-                    <td>${order.totalAmount.toLocaleString()}</td>
+                    <td>${order.totalAmount.toLocaleString()} đ</td>
                     <td>${order.status}</td>
                     <td class="text-nowrap">
-                                    
-            <a href="#" class="text-success me-2 p-0 border-0 bg-transparent" title="Accept" onclick="confirmAccept(${order.id})">
-                <i class="fa fa-circle-check"></i> <!-- hoặc thử fa-check-circle -->
-            </a>
-            <a href="#" class="text-danger me-2 p-0 border-0 bg-transparent" title="Cancel" onclick="confirmCancel(${order.id})">
-                <i class="fa fa-circle-xmark"></i> <!-- hoặc thử fa-xmark -->
-            </a>
-                   <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
-            <i class="fas fa-eye"></i>
-        </a>
-        
+                        <a href="#" class="text-success me-2 p-0 border-0 bg-transparent" title="Accept" onclick="confirmAccept(${order.id})">
+                            <i class="fa fa-circle-check"></i>
+                        </a>
+                        <a href="#" class="text-danger me-2 p-0 border-0 bg-transparent" title="Cancel" onclick="confirmCancel(${order.id})">
+                            <i class="fa fa-circle-xmark"></i>
+                        </a>
+                        <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </a>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         }
 
-        function confirmAccept(id) {
-            if (confirm("Are you sure you want to accept this order?")) {
-                fetch(`/api/OrderRetailApi/accept/${id}`, { method: 'POST' })
-                    .then(res => res.ok && loadOrders());
+        async function confirmAccept(id) {
+            if (confirm("Bạn có chắc muốn xác nhận đơn hàng này không?")) {
+                await fetch(`/api/OrderRetailApi/accept/${id}`, { method: 'POST' });
+                loadOrders();
             }
         }
 
-        function confirmCancel(id) {
-            if (confirm("Are you sure you want to cancel this order?")) {
-                fetch(`/api/OrderRetailApi/cancel/${id}`, { method: 'POST' })
-                    .then(res => res.ok && loadOrders());
+        async function confirmCancel(id) {
+            if (confirm("Bạn có chắc muốn hủy đơn hàng này không?")) {
+                await fetch(`/api/OrderRetailApi/cancel/${id}`, { method: 'POST' });
+                loadOrders();
             }
         }
 
-        setInterval(loadOrders, 2000);
+        // Search động
+        document.getElementById("searchInput").addEventListener("input", async function () {
+            const keyword = this.value.trim();
+            searching = keyword.length > 0;
+
+            if (!searching) {
+                loadOrders(); // nếu xóa input -> load lại bình thường
+                return;
+            }
+
+            const response = await fetch(`/api/OrderRetailApi/searchbynamestatuspending?keyword=${encodeURIComponent(keyword)}`);
+            const orders = await response.json();
+            renderOrders(orders);
+        });
+
+        setInterval(loadOrders, 2000); // auto update nếu không search
         window.onload = loadOrders;
     </script>
 }
