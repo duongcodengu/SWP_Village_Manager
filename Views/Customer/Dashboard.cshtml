@@ -3,6 +3,7 @@
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
+    var culture = new System.Globalization.CultureInfo("vi-VN");
 }
 
 @model List<Village_Manager.Models.UserLocation>
@@ -180,7 +181,7 @@
                             </div>
 
                             <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
-                                <div class="dashboard-order">
+                                <div id="orderHistoryContainer" class="dashboard-order">
                                     <div class="title">
                                         <h2>Lịch sử Đơn hàng</h2>
                                         <span class="title-leaf title-leaf-gray">
@@ -200,50 +201,32 @@
                                         }
                                         else
                                         {
-                                            @foreach (var order in orderHistory)
+                                            foreach (var order in orderHistory)
                                             {
+                                                var total = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
                                                 <div class="order-card">
                                                     <div class="order-card-header">
                                                         <div class="header-left">
                                                             <h5>Đơn hàng #@order.Id</h5>
-                                                            <p>Ngày đặt: @(order.OrderDate?.ToString("dd/MM/yyyy"))</p>
+                                                            <p>Ngày đặt: @order.OrderDate?.ToString("dd/MM/yyyy")</p>
                                                         </div>
                                                         <div class="header-right">
                                                             <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
-                                                            <h5 class="order-total">@(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h5>
+                                                            <h5 class="order-total">@string.Format(culture, "{0:C0}", total)</h5>
                                                         </div>
                                                     </div>
 
                                                     <div class="order-card-body">
-                                                        @foreach (var item in order.RetailOrderItems)
-                                                        {
-                                                            <div class="product-item">
-                                                                <div class="product-image">
-                                                                    @{
-                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
-                                                                    }
-                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
-                                                                </div>
-                                                                <div class="product-info">
-                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
-                                                                        <h6>@item.Product?.Name</h6>
-                                                                    </a>
-                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
-                                                                </div>
-                                                                <div class="product-quantity">
-                                                                    <span>x @item.Quantity</span>
-                                                                </div>
-                                                                <div class="product-total">
-                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
-                                                                </div>
-                                                            </div>
-                                                        }
+                                                        <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@order.Id" class="btn btn-primary" onclick="loadOrderDetail(@order.Id); return false;">
+                                                            Xem chi tiết
+                                                        </a>
                                                     </div>
                                                 </div>
                                             }
                                         }
                                     </div>
                                 </div>
+                                <div id="orderDetailContainer" style="display:none;"></div>
                             </div>
 
                             @* note *@
@@ -266,7 +249,7 @@
                                         </button>
                                     </div>
 
-                                    <div class="row g-sm-4 g-3">
+                            @*         <div class="row g-sm-4 g-3">
                                         @foreach (var userLocation in Model)
                                         {
                                             <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
@@ -330,7 +313,7 @@
                                         }
                                     </div>
                                 </div>
-                            </div>
+                            </div> *@
                             <style>
                                 .order-history-container {
                                     display: flex;
@@ -499,6 +482,22 @@
                                     color: #6c757d;
                                     margin-bottom: 1.5rem;
                                 }
+
+                                 .order-card-body .btn {
+                                     width: 25%;
+                                     font-size: 0.875rem; 
+                                     padding: 6px 14px; /* padding vừa đủ */
+                                     border-radius: 30px; /* bo tròn */
+                                     font-weight: 500;
+                                     background-color: #009879;
+                                     border: 1px solid #007a63;
+                                     transition: all 0.3s ease;
+                                 }
+
+                                 .order-card-body .btn:hover {
+                                      background-color: #009879;
+                                      border-color: #007a63;
+                                 }
                             </style>
                             <div class="tab-pane fade" id="pills-card" role="tabpanel">
                                 <div class="dashboard-card">
@@ -931,6 +930,22 @@
         </div>
     </div>
     <!-- Edit address modal box end -->
+<script>
+    function loadOrderDetail(orderId) {
+        fetch(`/customer/order-detail/${orderId}`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('orderDetailContainer').innerHTML = html;
+                document.getElementById('orderHistoryContainer').style.display = 'none';
+                document.getElementById('orderDetailContainer').style.display = 'block';
+            });
+    }
+
+    function backToOrderHistory() {
+        document.getElementById('orderDetailContainer').style.display = 'none';
+        document.getElementById('orderHistoryContainer').style.display = 'block';
+    }
+</script>
     <script>
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
