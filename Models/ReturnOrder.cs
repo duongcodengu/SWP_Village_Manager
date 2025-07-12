@@ -1,23 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Village_Manager.Models;
-
-public partial class ReturnOrder
+namespace Village_Manager.Models
 {
-    public int Id { get; set; }
+    [Table("ReturnOrder")]
+    public class ReturnOrder
+    {
+        [Column("id")]
+        public int Id { get; set; }
 
-    public string? OrderType { get; set; }
+        [Column("order_type")]
+        public string OrderType { get; set; }
 
-    public int? OrderId { get; set; }
+        [Column("order_id")]
+        public int OrderId { get; set; }
 
-    public int? UserId { get; set; }
+        [Column("user_id")]
+        public int UserId { get; set; }
 
-    public int? Quantity { get; set; }
+        [Column("quantity")]
+        public int Quantity { get; set; }
 
-    public string? Reason { get; set; }
+        [Column("reason")]
+        public string Reason { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
 
-    public virtual User? User { get; set; }
+        // Navigation property
+        public virtual User User { get; set; }
+    }
 }

@@ -209,7 +209,7 @@ namespace Village_Manager.Controllers
             else
             {
                 // Mặc định chỉ hiển thị đơn pending
-                query = query.Where(o => o.Status == "pending");
+                query = query.Where(o => o.Status == "confirmed");
             }
 
             var orders = query.ToList();
@@ -238,20 +238,24 @@ namespace Village_Manager.Controllers
         public IActionResult AcceptOrder(int retailOrderId)
         {
             int shipperId = HttpContext.Session.GetInt32("ShipperId") ?? 0;
-            var order = _context.RetailOrders.Include(o => o.User).FirstOrDefault(o => o.Id == retailOrderId && o.Status == "pending");
+            var order = _context.RetailOrders.Include(o => o.User)
+                .FirstOrDefault(o => o.Id == retailOrderId && o.Status == "confirmed");
             if (order != null && shipperId > 0)
             {
+                // Tạo bản ghi giao hàng
                 var delivery = new Delivery
                 {
                     OrderId = order.Id,
                     OrderType = "retail",
-                    Status = "assigned",
+                    Status = "assigned", // trạng thái của bảng Delivery
                     ShipperId = shipperId,
                     CustomerName = order.User?.Username,
-                    // Thêm các trường khác nếu cần
+                    StartTime = DateTime.Now
                 };
                 _context.Deliveries.Add(delivery);
-                order.Status = "confirmed";
+
+                // Cập nhật trạng thái đơn hàng
+                order.Status = "shipped"; // Đúng với CHECK constraint
                 _context.SaveChanges();
                 TempData["Success"] = "Nhận đơn thành công!";
             }
@@ -589,13 +593,57 @@ namespace Village_Manager.Controllers
         public IActionResult DeliveryDetail(int id)
         {
             var delivery = _context.Deliveries
+                .Include(d => d.Shipper)
                 .Include(d => d.RetailOrder)
-                    .ThenInclude(ro => ro.RetailOrderItems)
-                        .ThenInclude(ri => ri.Product)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefault(d => d.Id == id);
+
             if (delivery == null)
                 return NotFound();
-            return View("OrderDetail", delivery);
+
+            return View(delivery);
+        }
+
+        // Hiển thị đơn hàng đã trả (chỉ hiển thị đơn có status returned)
+        [HttpGet]
+        public IActionResult ReturnedOrders()
+        {
+            var returnedOrders = _context.RetailOrders
+                .Include(r => r.User)
+                .Include(r => r.RetailOrderItems)
+                    .ThenInclude(ri => ri.Product)
+                .Where(r => r.Status == "returned")
+                .OrderByDescending(r => r.OrderDate)
+                .ToList();
+
+            // Lấy lý do trả hàng từ ReturnOrder
+            var orderIds = returnedOrders.Select(o => o.Id).ToList();
+            var returnReasons = _context.ReturnOrders
+                .Where(r => orderIds.Contains(r.OrderId))
+                .ToDictionary(r => r.OrderId, r => r.Reason);
+            ViewBag.ReturnReasons = returnReasons;
+
+            return View(returnedOrders);
+        }
+
+        // Shipper nhận đơn trả hàng
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AcceptReturnOrder(int orderId)
+        {
+            var retailOrder = _context.RetailOrders.FirstOrDefault(o => o.Id == orderId && o.Status == "returned");
+            if (retailOrder == null)
+            {
+                TempData["Error"] = "Không tìm thấy đơn trả hàng.";
+                return RedirectToAction("ReturnedOrders");
+            }
+
+            // Cập nhật trạng thái để đơn biến mất khỏi danh sách
+            retailOrder.Status = "delivered";
+            _context.SaveChanges();
+
+            TempData["ReturnSuccess"] = "Đã nhận đơn trả hàng thành công!";
+            return RedirectToAction("ReturnedOrders");
         }
     }
 }

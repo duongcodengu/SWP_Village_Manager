@@ -94,6 +94,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<DiscountCodes> DiscountCodes { get; set; }
 
     public DbSet<HiddenProduct> HiddenProduct { get; set; }
+    public DbSet<Village_Manager.Models.ReturnOrder> ReturnOrder { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<HiddenProduct>(entity =>

@@ -50,6 +50,10 @@
                         {
                             <span class="badge bg-success">Đã xác nhận</span>
                         }
+                        else if (Model.Status == "delivered")
+                        {
+                            <span class="badge bg-success">Đã giao</span>
+                        }
                         else
                         {
                             <span class="badge bg-secondary">@Model.Status</span>
@@ -87,6 +91,21 @@
             else
             {
                 <p><em>Không có sản phẩm cho đơn hàng này.</em></p>
+            }
+            @if (Model.Status == "delivered")
+            {
+                <form asp-action="ReturnOrder" asp-controller="RetailOrder" method="post">
+                    <input type="hidden" name="orderId" value="@Model.Id" />
+                    <div class="mb-2">
+                        <label>Số lượng trả:</label>
+                        <input type="number" name="quantity" min="1" max="@Model.RetailOrderItems.Sum(i => i.Quantity)" required class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Lý do trả:</label>
+                        <input type="text" name="reason" required class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-danger">Trả hàng</button>
+                </form>
             }
         </div>
         <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
