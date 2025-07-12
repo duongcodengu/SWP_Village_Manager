@@ -504,9 +504,11 @@
                         <div class="button-group cart-button">
                             <ul>
                                 <li>
-                                    <button onclick="location.href='/shop/success'" class="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">
-                                        Place Order
-                                    </button>
+                                    <form action="/shop/place-order" method="post">
+                                        <button type="submit" class="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">
+                                            Đặt Hàng
+                                        </button>
+                                    </form>
                                 </li>
                                 <li>
                                     <button onclick="location.href='/shop/cart'" class="btn btn-md btn-light text-dark shopping-button">

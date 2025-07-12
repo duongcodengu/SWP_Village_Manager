@@ -271,20 +271,18 @@
 
 
                         <div class="card-body p-0">
-                            <div class="category-slider no-arrow">
+                            <div class="category-slider d-flex flex-nowrap overflow-auto gap-3 px-3 py-2">
                                 @if (categories != null && categories.Any())
                                 {
                                     foreach (var category in categories)
                                     {
-                                        <div>
-                                            <div class="dashboard-category">
-                                                <a href="javascript:void(0)" class="category-image">
-                                                    <img src="@category.ImageUrl" class="img-fluid" alt="@category.Name" />
-                                                </a>
-                                                <a href="javascript:void(0)" class="category-name">
-                                                    <h6>@category.Name</h6>
-                                                </a>
-                                            </div>
+                                        <div class="dashboard-category text-center" style="min-width: 120px;">
+                                            <a href="javascript:void(0)" class="category-image d-block mb-1">
+                                                <img src="@category.ImageUrl" class="img-fluid" alt="@category.Name" style="max-height: 60px;" />
+                                            </a>
+                                            <a href="javascript:void(0)" class="category-name">
+                                                <h6 class="mb-0">@category.Name</h6>
+                                            </a>
                                         </div>
                                     }
                                 }
@@ -294,6 +292,7 @@
                                 }
                             </div>
                         </div>
+
 
                         <!-- chart card section End -->
                         <!-- Revenue Report Card -->

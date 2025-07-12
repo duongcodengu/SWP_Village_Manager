@@ -431,9 +431,27 @@ public class AdminWarehouseController : Controller
         {
             return NotFound();
         }
-        // Xóa user khỏi database
+
+        // Xóa các bản ghi liên quan ở Farmer
+        var farmers = _context.Farmers.Where(f => f.UserId == id).ToList();
+        if (farmers.Any())
+        {
+            _context.Farmers.RemoveRange(farmers);
+        }
+
+        // Xóa các bản ghi liên quan ở Shipper (nếu có)
+        var shippers = _context.Shippers.Where(s => s.UserId == id).ToList();
+        if (shippers.Any())
+        {
+            _context.Shippers.RemoveRange(shippers);
+        }
+
+        // Có thể thêm các bảng liên quan khác nếu cần...
+
+        // Xóa user
         _context.Users.Remove(user);
         _context.SaveChanges();
+
         var currentUserId = HttpContext.Session.GetInt32("UserId");
         LogHelper.SaveLog(_context, currentUserId, $"Xóa người dùng: {user.Username} (ID: {user.Id})");
         return RedirectToAction("AllUser");
@@ -1044,7 +1062,7 @@ public class AdminWarehouseController : Controller
             await _context.SaveChangesAsync();
             TempData["Success"] = "Cập nhật yêu cầu thành công.";
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
             TempData["Error"] = "Đã xảy ra lỗi khi xử lý yêu cầu.";
         }

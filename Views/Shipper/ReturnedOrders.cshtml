@@ -1,0 +1,189 @@
+@model List<Village_Manager.Models.RetailOrder>
+@{
+    ViewBag.Title = "Đơn hàng đã trả - Chờ nhận";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/css/vendors/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .returned-orders-title {
+            display: flex;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #2d6a4f;
+        }
+        .returned-orders-title i {
+            margin-right: 12px;
+            color: #40916c;
+        }
+        .table-return {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            background: #fff;
+        }
+        .table-return thead {
+            background: #b7e4c7;
+        }
+        .table-return th {
+            color: #1b4332;
+            font-weight: 600;
+        }
+        .table-return tbody tr:hover {
+            background: #e9f5ec;
+            transition: background 0.2s;
+        }
+        .badge-returned {
+            background: #dc3545;
+            color: #fff;
+            font-size: 0.95rem;
+            padding: 0.4em 0.8em;
+            border-radius: 1em;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+            color: #888;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: #b7e4c7;
+            margin-bottom: 1rem;
+        }
+        .btn-accept {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+        .btn-accept:hover {
+            background: #218838;
+        }
+        .modal-dialog {
+            max-width: 500px;
+        }
+        @@media (max-width: 600px) {
+            .returned-orders-title {
+                font-size: 1.3rem;
+            }
+            .table-return th, .table-return td {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        @if (TempData["ReturnSuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="autoHideAlert">
+                @TempData["ReturnSuccess"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <script>
+                setTimeout(function() {
+                    var alertElem = document.getElementById('autoHideAlert');
+                    if (alertElem) {
+                        alertElem.classList.remove('show');
+                        alertElem.classList.add('fade');
+                        setTimeout(function() {
+                            alertElem.style.display = 'none';
+                        }, 500);
+                    }
+                }, 3000);
+            </script>
+        }
+        <div class="returned-orders-title">
+            <i class="fa-solid fa-rotate-left"></i> Đơn hàng đã trả - Chờ nhận
+        </div>
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-return align-middle">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Số lượng trả</th>
+                            <th>Lý do</th>
+                            <th>Ngày trả</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td><i class="fa-solid fa-receipt text-success"></i> <b>@order.Id</b></td>
+                                <td>@order.User?.Username</td>
+                                <td>@order.RetailOrderItems?.Sum(i => i.Quantity)</td>
+                                <td>
+                                    @{
+                                        var reasons = ViewBag.ReturnReasons as Dictionary<int, string>;
+                                        string reason = reasons != null && reasons.ContainsKey(order.Id) ? reasons[order.Id] : "Không có lý do";
+                                    }
+                                    @reason
+                                </td>
+                                <td>@order.OrderDate?.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <form asp-action="AcceptReturnOrder" method="post" style="display:inline">
+                                        <input type="hidden" name="orderId" value="@order.Id" />
+                                        <button type="submit" class="btn btn-accept">
+                                            <i class="fa-solid fa-check"></i> Nhận đơn
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        
+        else
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <div>Không có đơn hàng nào đang chờ nhận.</div>
+            </div>
+        }
+    </div>
+
+
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+    <!-- jquery ui-->
+    <script src="~/js/jquery-ui.min.js"></script>
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+    <!-- Apexcharts Js -->
+    <script src="~/js/apexchart.js"></script>
+    <script src="~/js/custom-chart.js"></script>
+    <!-- Nav & tab upside js -->
+    <script src="~/js/nav-tab.js"></script>
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+    <!-- theme setting js -->
+    <script src="~/js/theme-setting.js"></script>
+</body>
+</html> 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Utils;
 using Village_Manager.Data;
 using Village_Manager.Models;
@@ -166,13 +167,13 @@ public class ShopController : Controller
         return View(cartItems);
     }
 
-    public IActionResult PlaceOrder()
-    {
-        // Xoá giỏ hàng:
-        HttpContext.Session.Remove("Cart");
-        // Điều hướng đến trang thành công
-        return RedirectToAction("Success");
-    }
+    //public IActionResult PlaceOrder()
+    //{
+    //    // Xoá giỏ hàng:
+    //    HttpContext.Session.Remove("Cart");
+    //    // Điều hướng đến trang thành công
+    //    return RedirectToAction("Success");
+    //}
 
     public IActionResult Success()
     {
@@ -185,7 +186,7 @@ public class ShopController : Controller
             .FirstOrDefault(p => p.Id == item.ProductId);
         }
         ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1); // hoặc theo user hiện tại
-        ViewBag.OrderId = 1234;
+        ViewBag.OrderId = TempData["OrderId"] ?? 0;
         ViewBag.PaymentMethod = "Cash on Delivery";
         // Clear cart sau khi đặt hàng thành công nếu cần
         HttpContext.Session.Set("Cart", new List<CartItem>());
@@ -193,23 +194,130 @@ public class ShopController : Controller
         return View(cart); // Truyền vào Success.cshtml
     }
 
+    //place order
+
+
+    [HttpPost("/shop/place-order")]
+    public async Task<IActionResult> PlaceOrder()
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            TempData["Error"] = "Bạn chưa đăng nhập.";
+            return RedirectToAction("", "login");
+        }
+
+        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        if (cart == null || !cart.Any())
+        {
+            TempData["Error"] = "Bạn chưa có hàng trong giỏ hàng.";
+            return RedirectToAction("search", "shop");
+        }
+
+        // Tạo đơn hàng
+        var newOrder = new RetailOrder
+        {
+            UserId = userId.Value,
+            OrderDate = DateTime.Now,
+            Status = "pending"
+        };
+        _context.RetailOrders.Add(newOrder);
+        await _context.SaveChangesAsync(); // để lấy được OrderId
+
+        // Thêm chi tiết đơn hàng
+        foreach (var item in cart)
+        {
+            var product = await _context.Products.FindAsync(item.ProductId);
+            if (product != null)
+            {
+                var orderItem = new RetailOrderItem
+                {
+                    OrderId = newOrder.Id,
+                    ProductId = product.Id,
+                    Quantity = item.Quantity,
+                    UnitPrice = product.Price
+                };
+                _context.RetailOrderItems.Add(orderItem);
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Lưu OrderId để hiển thị ở trang thành công
+        HttpContext.Session.Set("Cart", new List<CartItem>()); // Xóa giỏ hàng
+        TempData["OrderId"] = newOrder.Id;
+
+        return RedirectToAction("Success");
+    }
+
+
+
     public IActionResult Tracking(string orderId)
     {
         // Có thể dùng ViewBag.OrderId = orderId; nếu muốn
         return View();
     }
 
-    public IActionResult Detail(int id)
+    public async Task<IActionResult> Detail(int id)
     {
-        var product = _context.Products
+        var product = await _context.Products
+            .Include(p => p.Category)
             .Include(p => p.ProductImages)
-            .Include(p => p.Farmer)
-            .Include(p => p.Category) // Nếu có navigation property tới Category
-            .FirstOrDefault(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (product == null)
-            return NotFound();
-        DefaultImage.EnsureSingle(product, _env);
-        return View(product);
+        if (product == null) return NotFound();
+
+        // Lấy sản phẩm liên quan cùng category, loại trừ chính nó
+        var relatedProducts = await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .Where(p => p.CategoryId == product.CategoryId && p.Id != id)
+            .Take(6) // Giới hạn 6 sản phẩm liên quan
+            .ToListAsync();
+
+        ViewBag.RelatedProducts = relatedProducts;
+
+        return View(product); // Truyền sản phẩm chính vào model, related qua ViewBag
     }
+    [HttpGet("top4-selling")]
+    public async Task<IActionResult> GetTopSelling()
+    {
+        var result = await _context.RetailOrderItems
+            .GroupBy(i => i.ProductId)
+            .Select(g => new {
+                ProductId = g.Key,
+                ProductName = g.First().Product.Name,
+                ImageUrl = g.First().Product.ProductImages.FirstOrDefault().ImageUrl,
+                TotalSold = g.Sum(x => x.Quantity * x.UnitPrice)
+            })
+            .OrderByDescending(x => x.TotalSold)
+            .Take(4)
+            .ToListAsync();
+
+        return Ok(result);
+    }
+
+    public async Task<IActionResult> RelateProduct(int id)
+    {
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (product == null) return NotFound();
+
+        // Lấy sản phẩm liên quan cùng category, loại trừ chính nó
+        var relatedProducts = await _context.Products
+            .Include(p => p.Category)
+            .Include(p => p.ProductImages)
+            .Where(p => p.CategoryId == product.CategoryId && p.Id != id)
+            .Take(6) // Giới hạn 6 sản phẩm liên quan
+            .ToListAsync();
+
+        ViewBag.RelatedProducts = relatedProducts;
+
+        return View(product); // Truyền sản phẩm chính vào model, related qua ViewBag
+    }
+
+
 }
