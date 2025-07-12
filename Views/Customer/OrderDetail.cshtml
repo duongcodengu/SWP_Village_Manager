@@ -1,0 +1,110 @@
+﻿@model Village_Manager.Models.RetailOrder
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = null;
+    var culture = new System.Globalization.CultureInfo("vi-VN");
+    var total = (decimal)ViewBag.TotalAmount;
+    var discountCode = ViewBag.DiscountCode as string;
+    var discountAmount = (decimal)ViewBag.DiscountAmount;
+    var finalAmount = (decimal)ViewBag.FinalAmount;
+}
+
+<div class="container my-5 order-container">
+    <h2 class="mb-4">Chi tiết đơn hàng #@Model.Id</h2>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5>Thông tin người nhận</h5>
+            <p><strong>Khách hàng:</strong> @Model.User?.Username</p>
+            <p><strong>Ngày đặt:</strong> @Model.OrderDate?.ToString("dd/MM/yyyy")</p>
+            <p><strong>Trạng thái:</strong> @Model.Status</p>
+            <p><strong>Địa chỉ giao hàng:</strong> @Model.User?.Addresses?.FirstOrDefault()?.AddressLine</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5>Danh sách sản phẩm</h5>
+            <table class="table table-bordered mt-3">
+                <thead class="table-light">
+                    <tr>
+                        <th></th>
+                        <th>Tên sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RetailOrderItems)
+                    {
+                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                        <tr>
+                            <td>
+                                <img src="@imageUrl" alt="@item.Product?.Name" width="60" height="60" style="object-fit: cover; border-radius: 5px;" />
+                            </td>
+                            <td>@item.Product?.Name</td>
+                            <td>@item.Quantity</td>
+                            <td>@(item.UnitPrice?.ToString("C0", culture))</td>
+                            <td>@(((decimal)(item.Quantity * (item.UnitPrice ?? 0))).ToString("C0", culture))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5>Tổng kết đơn hàng</h5>
+            <p><strong>Tổng tiền hàng:</strong> @total.ToString("C0", culture)</p>
+            @if (!string.IsNullOrEmpty(discountCode))
+            {
+                <p><strong>Mã giảm giá:</strong> @discountCode</p>
+                <p><strong>Số tiền giảm:</strong> @discountAmount.ToString("C0", culture)</p>
+            }
+            <h5 class="text-primary"><strong>Thành tiền:</strong> @finalAmount.ToString("C0", culture)</h5>
+        </div>
+    </div>
+
+    <a href="javascript:void(0);" onclick="backToOrderHistory()" class="btn btn-secondary">← Quay lại</a>
+
+    <style>
+        .order-container h2,
+        .order-container h5,
+        .order-container .text-primary {
+            color: #009879;
+        }
+
+        .order-container .btn-secondary {
+            width: 25%;
+            background-color: #009879;
+            border-color: #007a63;
+            font-size: 0.875rem; /* nhỏ hơn bình thường */
+            padding: 6px 14px;
+            border-radius: 30px; /* bo tròn */
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .order-container .btn-secondary:hover {
+                background-color: #009879;
+                border-color: #007a63;
+        }
+
+        .order-container .card {
+            border: 1px solid #c3e6cb;
+            border-radius: 10px;
+        }
+
+        .order-container .table th {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .order-container .table td {
+            vertical-align: middle;
+        }
+    </style>
+
+</div>

@@ -25,18 +25,18 @@ namespace Village_Manager.Controllers
             _emailSettings = emailSettings.Value;
         }
 
+        //[HttpGet]
+        //[Route("dashboard")]
+        //public IActionResult DashBoard()
+        //{
+        //    var userLocations = _context.UserLocations
+        //                        .Include(u1 => u1.User)
+        //                        .ToList();
+        //    return View(userLocations);
+        //}
         [HttpGet]
         [Route("dashboard")]
-        public IActionResult DashBoard()
-        {
-            var userLocations = _context.UserLocations
-                                .Include(u1 => u1.User)
-                                .ToList();
-            return View(userLocations);
-        }
-        [HttpGet]
-        [Route("customer")]
-        public async Task<IActionResult> IndexCustomer()
+        public async Task<IActionResult> DashBoard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -86,6 +86,41 @@ namespace Village_Manager.Controllers
             }
             return View();
         }
+
+        [HttpGet("customer/order-detail/{id}")]
+        public async Task<IActionResult> OrderDetail(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "Home");
+
+            var order = await _context.RetailOrders
+                .Where(o => o.Id == id && o.UserId == userId)
+                .Include(o => o.RetailOrderItems)
+                    .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.ProductImages)
+                .Include(o => o.User)
+                    .ThenInclude(u => u.Addresses)
+                .FirstOrDefaultAsync();
+
+            if (order == null)
+                return NotFound();
+
+            // Lấy mã giảm giá từ session nếu có
+            var discountCode = HttpContext.Session.GetString("DiscountCode");
+            var discountAmountStr = HttpContext.Session.GetString("DiscountAmount");
+            decimal discountAmount = 0;
+            if (decimal.TryParse(discountAmountStr, out var value))
+                discountAmount = value;
+
+            ViewBag.DiscountCode = discountCode;
+            ViewBag.DiscountAmount = discountAmount;
+            ViewBag.TotalAmount = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
+            ViewBag.FinalAmount = ViewBag.TotalAmount - discountAmount;
+
+            return PartialView("OrderDetail", order);
+        }
+
 
         [HttpGet("/otp")]
         public async Task<IActionResult> Otp(string email, string phone, string address)
