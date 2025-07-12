@@ -184,6 +184,8 @@ public class ShopController : Controller
             item.Product = _context.Products
             .Include(p => p.ProductImages)
             .FirstOrDefault(p => p.Id == item.ProductId);
+
+            DefaultImage.EnsureSingle(item.Product, _env);
         }
         ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1); // hoặc theo user hiện tại
         ViewBag.OrderId = TempData["OrderId"] ?? 0;
@@ -244,7 +246,6 @@ public class ShopController : Controller
         await _context.SaveChangesAsync();
 
         // Lưu OrderId để hiển thị ở trang thành công
-        HttpContext.Session.Set("Cart", new List<CartItem>()); // Xóa giỏ hàng
         TempData["OrderId"] = newOrder.Id;
 
         return RedirectToAction("Success");

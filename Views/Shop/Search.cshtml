@@ -1168,5 +1168,28 @@
 
         });
     </script>
+    <script>
+        window.handleAddToCart = function(btn) {
+            // Lấy id sản phẩm và số lượng
+            const productId = $(btn).closest('.cart_qty').find('.product-id').val();
+            const quantity = $(btn).closest('.cart_qty').find('.qty-input').val() || 1;
+
+            $.ajax({
+                url: '/Shop/AddToCart',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    quantity: quantity
+                },
+                success: function(res) {
+                    // Reload lại trang hoặc fetch lại sản phẩm
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Add to cart failed!');
+                }
+            });
+        };
+    </script>
 </body>
 </html>
