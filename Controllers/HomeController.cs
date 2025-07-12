@@ -103,16 +103,8 @@ namespace Village_Manager.Controllers
                 HttpContext.Session.SetInt32("RoleId", user.RoleId);
                 HttpContext.Session.SetString("RoleName", roleName ?? "");
 
-                // Set thêm ShipperId nếu là shipper
-                if (user.RoleId == 4)
-                {
-                    var shipper = _context.Shippers.FirstOrDefault(s => s.UserId == user.Id);
-                    if (shipper != null)
-                    {
-                        HttpContext.Session.SetInt32("ShipperId", shipper.Id);
-                        HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
-                    }
-                }
+              
+          
                 // Set thêm FarmerId nếu là farmer
                 if (user.RoleId == 5)
                 {
@@ -121,11 +113,13 @@ namespace Village_Manager.Controllers
                     {
                         HttpContext.Session.SetInt32("FarmerId", farmer.Id);
                         HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
+
                     }
                 }
                 if (user.RoleId == 4)
                 {
                     var shipper = _context.Shippers.FirstOrDefault(f => f.UserId == user.Id);
+
                     if (shipper != null)
                     {
                         HttpContext.Session.SetInt32("ShipperId", shipper.Id);
@@ -133,14 +127,7 @@ namespace Village_Manager.Controllers
                         HttpContext.Session.SetInt32("UserId", user.Id);
                     }
                 }
-                else if (user.RoleId == 5) // Retail Customer
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                else if (user.RoleId == 4) // Retail Staff
-                {
-                    return RedirectToAction("Index", "Home");
-                }
+                
 
                 // role admin
                 switch (user.RoleId)

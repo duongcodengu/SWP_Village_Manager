@@ -30,10 +30,22 @@
 <div class="container py-4">
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="autoHideAlert">
             <i class="fa fa-check-circle me-2"></i>@TempData["Success"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        <script>
+            setTimeout(function() {
+                var alertElem = document.getElementById('autoHideAlert');
+                if (alertElem) {
+                    alertElem.classList.remove('show');
+                    alertElem.classList.add('fade');
+                    setTimeout(function() {
+                        alertElem.style.display = 'none';
+                    }, 500);
+                }
+            }, 3000);
+        </script>
     }
     @if (TempData["Error"] != null)
     {
