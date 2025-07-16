@@ -1,48 +1,42 @@
-/*=====================
-      Color Picker
-==========================*/
-var color_picker1 = document.getElementById("colorPick").value;
-document.getElementById("colorPick").onchange = function () {
-    color_picker1 = this.value;
-    document.body.style.setProperty("--theme-color", color_picker1);
-    document.body.style.setProperty("--theme-color-rgb", color_picker1);
-};
+// ===== Color Picker =====
+document.getElementById("colorPick")?.addEventListener("change", function () {
+    const color = this.value;
+    document.documentElement.style.setProperty("--theme-color", color);
+    document.documentElement.style.setProperty("--theme-color-rgb", color);
+    localStorage.setItem("theme-color", color);
+});
 
-/*========================
- Dark setting js
- ==========================*/
+// ===== Dark / Light Toggle =====
 $("#darkButton").on("click", function () {
-    var href = $("#color-link").attr("href");
-    $("body").removeClass("light");
-    $("body").addClass("dark");
-    document
-        .getElementById("color-link")
-        .setAttribute("href", "~/css/dark.css");
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+    document.getElementById("color-link").setAttribute("href", "/css/dark.css");
+    localStorage.setItem("theme", "dark");
 });
 
 $("#lightButton").on("click", function () {
-    var href = $("#color-link").attr("href");
-    $("body").removeClass("dark");
-    $("body").addClass("light");
-    document
-        .getElementById("color-link")
-        .setAttribute("href", "~/css/style.css");
-    console
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+    document.getElementById("color-link").setAttribute("href", "/css/style.css");
+    localStorage.setItem("theme", "light");
 });
 
-/*========================
-   RTL setting js
-   ==========================*/
-$(".rtl").on("click", function () {
-    if ($("body").hasClass("ltr")) {
-        $("html").attr("dir", "rtl");
-        $("body").removeClass("ltr");
-        $("body").addClass("rtl");
-        $("#rtl-link").attr("href", "~/css/vendors/bootstrap.rtl.css");
+// ===== RTL / LTR Toggle =====
+$(".theme-setting-button.rtl").on("click", "button", function () {
+    const isRTL = $(this).text().trim().toLowerCase() === "rtl";
+    if (isRTL) {
+        document.documentElement.setAttribute("dir", "rtl");
+        $("#rtl-link").attr("href", "/css/vendors/bootstrap.rtl.css");
+        localStorage.setItem("direction", "rtl");
     } else {
-        $("html").attr("dir", "");
-        $("body").removeClass("rtl");
-        $("body").addClass("ltr");
-        $("#rtl-link").attr("href", "~/css/vendors/bootstrap.css");
+        document.documentElement.setAttribute("dir", "ltr");
+        $("#rtl-link").attr("href", "/css/vendors/bootstrap.css");
+        localStorage.setItem("direction", "ltr");
     }
+});
+
+window.addEventListener("DOMContentLoaded", function () {
+    const savedColor = localStorage.getItem("theme-color");
+    const input = document.getElementById("colorPick");
+    if (savedColor && input) input.value = savedColor;
 });

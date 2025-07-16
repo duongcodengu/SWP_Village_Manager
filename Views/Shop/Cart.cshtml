@@ -48,35 +48,35 @@
             <li class="active">
                 <a href="index.html">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>Trang chủ</span>
                 </a>
             </li>
 
             <li class="mobile-category">
                 <a href="javascript:void(0)">
                     <i class="iconly-Category icli js-link"></i>
-                    <span>Category</span>
+                    <span>Danh mục</span>
                 </a>
             </li>
 
             <li>
                 <a href="search.html" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>STìm kiếm</span>
                 </a>
             </li>
 
             <li>
                 <a href="wishlist.html" class="notifi-wishlist">
                     <i class="iconly-Heart icli"></i>
-                    <span>My Wish</span>
+                    <span>Danh sách ước</span>
                 </a>
             </li>
 
             <li>
                 <a href="cart.html">
                     <i class="iconly-Bag-2 icli fly-cate"></i>
-                    <span>Cart</span>
+                    <span>Giỏ hàng</span>
                 </a>
             </li>
         </ul>
@@ -88,7 +88,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="breadcrumb-contain">
-                        <h2>Cart</h2>
+                        <h2>Chi tiết giỏ hàng</h2>
                         <nav>
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item">
@@ -96,7 +96,7 @@
                                         <i class="fa-solid fa-house"></i>
                                     </a>
                                 </li>
-                                <li class="breadcrumb-item active">Cart</li>
+                                <li class="breadcrumb-item active">Giỏ hàng</li>
                             </ol>
                         </nav>
                     </div>
@@ -118,7 +118,7 @@
                                     {
                                         <tr>
                                             <td colspan="5" class="text-center p-4">
-                                                <h4 class="text-muted">Your cart is empty.</h4>
+                                                <h4 class="text-muted">Giỏ hàng của bạn trống.</h4>
                                             </td>
                                         </tr>
                                     }
@@ -143,11 +143,11 @@
                                                     </div>
                                                 </td>
                                                 <td class="price">
-                                                    <h4 class="table-title text-content">Price</h4>
+                                                    <h4 class="table-title text-content">Đơn giá</h4>
                                                     <h5>₫@String.Format("{0:N0}", item.Product?.Price)</h5>
                                                 </td>
                                                 <td class="quantity">
-                                                    <h4 class="table-title text-content">Qty</h4>
+                                                    <h4 class="table-title text-content">Số lượng</h4>
                                                     <div class="cart_qty qty-box">
                                                         <div class="input-group bg-white">
                                                             <button type="button" class="qty-left-minus bg-gray" onclick="updateQty(@item.ProductId, -1)">
@@ -161,13 +161,13 @@
                                                     </div>
                                                 </td>
                                                 <td class="subtotal">
-                                                    <h4 class="table-title text-content">Total</h4>
+                                                    <h4 class="table-title text-content">Số tiền</h4>
                                                     <h5>₫@String.Format("{0:N0}", (item.Product?.Price ?? 0) * item.Quantity)</h5>
                                                 </td>
                                                 <td class="save-remove">
-                                                    <h4 class="table-title text-content">Action</h4>
+                                                    <h4 class="table-title text-content">Thao tác</h4>
                                                     <a class="remove close_button text-danger" href="/shop/removefromcart/@item.ProductId">
-                                                        <strong>Remove</strong>
+                                                        <strong>Xóa</strong>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -182,25 +182,25 @@
                 <div class="col-xxl-3">
                     <div class="summery-box p-sticky">
                         <div class="summery-header">
-                            <h3>Cart Total</h3>
+                            <h3>Thanh toán</h3>
                         </div>
 
                         <div class="summery-contain">
                             <div class="coupon-cart">
-                                <h6 class="text-content mb-2">Coupon Apply</h6>
+                                <h6 class="text-content mb-2">Mã giảm giá</h6>
                                 <div class="mb-3 coupon-box input-group">
-                                    <input type="text" id="couponCode" class="form-control" placeholder="Enter Coupon Code Here..." />
-                                    <button type="button" class="btn-apply" id="applyCouponBtn">Apply</button>
+                                    <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã ở đây." />
+                                    <button type="button" class="btn-apply" id="applyCouponBtn">Áp dụng</button>
                                 </div>
                             </div>
 
                             <ul>
                                 <li>
-                                    <h4>Subtotal</h4>
+                                    <h4>Tạm tính</h4>
                                     <h4 class="price">₫<span id="subtotalAmount">@String.Format("{0:N0}", total)</span></h4>
                                 </li>
                                 <li>
-                                    <h4>Coupon Discount</h4>
+                                    <h4>Giảm giá</h4>
                                     <h4 class="price">(-) ₫<span id="discountAmount">0</span></h4>
                                 </li>
                             </ul>
@@ -208,7 +208,7 @@
 
                         <ul class="summery-total">
                             <li class="list-total border-top-0">
-                                <h4>Total (VND)</h4>
+                                <h4>Tổng tiền</h4>
                                 <h4 class="price theme-color">₫<span id="finalAmount">@String.Format("{0:N0}", total)</span></h4>
                             </li>
                         </ul>
@@ -217,12 +217,12 @@
                             <ul>
                                 <li>
                                     <button onclick="location.href = '/shop/checkout'" class="btn btn-md fw-bold text-white theme-bg-color">
-                                        Process To Checkout
+                                        Đi đến thanh toán
                                     </button>
                                 </li>
                                 <li>
                                     <button onclick="location.href = '/'" class="btn btn-light shopping-button text-dark">
-                                        <i class="fa-solid fa-arrow-left-long"></i>Return To Shopping
+                                        <i class="fa-solid fa-arrow-left-long"></i>Quay lại mua sắm
                                     </button>
                                 </li>
                             </ul>
@@ -296,6 +296,16 @@
                             <div class="theme-setting-button">
                                 <button class="btn btn-2 outline" id="darkButton">Dark</button>
                                 <button class="btn btn-2 unline" id="lightButton">Light</button>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
                             </div>
                         </li>
                     </ul>

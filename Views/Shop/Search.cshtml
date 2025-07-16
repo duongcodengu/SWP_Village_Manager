@@ -42,31 +42,31 @@
             <li class="active">
                 <a href="index.html">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>Trang chủ</span>
                 </a>
             </li>
             <li class="mobile-category">
                 <a href="javascript:void(0)">
                     <i class="iconly-Category icli js-link"></i>
-                    <span>Category</span>
+                    <span>Danh mục</span>
                 </a>
             </li>
             <li>
                 <a href="search.html" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>Tìm kiếm</span>
                 </a>
             </li>
             <li>
                 <a href="wishlist.html" class="notifi-wishlist">
                     <i class="iconly-Heart icli"></i>
-                    <span>My Wish</span>
+                    <span>Danh sách ước</span>
                 </a>
             </li>
             <li>
                 <a href="cart.html">
                     <i class="iconly-Bag-2 icli fly-cate"></i>
-                    <span>Cart</span>
+                    <span>Giỏ hàng</span>
                 </a>
             </li>
         </ul>
@@ -78,7 +78,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="breadcrumb-contain">
-                        <h2>Shop List</h2>
+                        <h2>Danh sách sản phẩm</h2>
                         <nav>
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item">
@@ -86,7 +86,7 @@
                                         <i class="fa-solid fa-house"></i>
                                     </a>
                                 </li>
-                                <li class="breadcrumb-item active">Shop List</li>
+                                <li class="breadcrumb-item active">Sản phẩm</li>
                             </ol>
                         </nav>
                     </div>
@@ -105,20 +105,19 @@
                             <div class="back-button">
                                 <h3><i class="fa-solid fa-arrow-left"></i> Back</h3>
                             </div>
-                            <!-- TIÊU ĐỀ "FILTER" Ở TRÊN CÙNG, CĂN GIỮA -->
                             <div class="text-center mb-4">
-                                <h2 class="fw-bold">Filter</h2>
+                                <h2 class="fw-bold">Lọc</h2>
                             </div>
                             <!-- FORM SEARCH -->
                             <div class="filter-category">
                                 <!-- Tiêu đề -->
                                 <div class="filter-title d-flex justify-content-between align-items-center">
-                                    <h2 class="mb-0">Search</h2>
+                                    <h2 class="mb-0">Tìm kiếm</h2>
                                 </div>
                                 <div class="d-flex flex-column gap-2">
                                     <form id="searchForm" class="mb-1">
                                         <div class="position-relative">
-                                            <input type="text" id="searchBox" class="form-control pe-5" placeholder="Enter product name" />
+                                            <input type="text" id="searchBox" class="form-control pe-5" placeholder="Nhập tên sản phẩm" />
                                             <button type="submit"
                                                     class="btn position-absolute end-0 top-50 translate-middle-y me-3 p-0 border-0 bg-transparent">
                                                 <i class="fa fa-search text-muted"></i>
@@ -127,7 +126,7 @@
                                     </form>
                                     <button id="clearAllBtn" type="button"
                                             class="text-success fw-semibold border-0 bg-transparent p-0 align-self-end mt-2">
-                                        Clear All
+                                        Xóa lịch sử
                                     </button>
                                     <ul id="searchHistoryList" class="d-flex flex-wrap"></ul>
                                 </div>
@@ -136,7 +135,7 @@
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
                                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#categoryCollapse">
-                                            <span>Category</span>
+                                            <span>Danh mục</span>
                                         </button>
                                     </h2>
                                     <div id="categoryCollapse" class="accordion-collapse collapse show">
@@ -156,7 +155,7 @@
                                     <div class="accordion-item mt-2">
                                         <h2 class="accordion-header">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice">
-                                                <span>Price</span>
+                                                <span>Khoảng giá</span>
                                             </button>
                                         </h2>
                                         <div id="collapsePrice" class="accordion-collapse collapse show">
@@ -177,7 +176,7 @@
                                     <div class="mt-3">
                                         <button id="applyFilterBtn" class="btn w-100 fw-bold"
                                                 style="background-color: #0DA487; color: white; border-radius: 6px;" type="button">
-                                            Apply Filter
+                                            Áp dụng
                                         </button>
                                     </div>
                                 </div>
@@ -190,25 +189,25 @@
                         <div class="filter-button-group mt-0">
                             <div class="filter-button d-inline-block d-lg-none">
                                 <a style="cursor: pointer;">
-                                    <i class="fa-solid fa-filter"></i> Filter Menu
+                                    <i class="fa-solid fa-filter"></i> Danh sách lọc
                                 </a>
                             </div>
                         </div>
                         <div class="top-filter-menu">
                             <div class="category-dropdown">
-                                <h5 class="text-content">Sort By :</h5>
+                                <h5 class="text-content">Sắp xếp theo :</h5>
                                 <div class="dropdown">
                                     <button class="btn dropdown-toggle" type="button" id="sortDropdownButton"
                                             data-bs-toggle="dropdown" aria-expanded="false" data-sort="">
-                                        <span id="currentSortLabel">Default</span>
+                                        <span id="currentSortLabel">Mặc định</span>
                                         <i class="fa-solid fa-angle-down"></i>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="sortDropdownButton">
-                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="">Default</a></li>
-                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_asc">Low - High Price</a></li>
-                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_desc">High - Low Price</a></li>
-                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_asc">A - Z Order</a></li>
-                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_desc">Z - A Order</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="">Mặc định</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_asc">Giá thấp -> cao</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="price_desc">Giá cao -> thấp</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_asc">Tên từ A -> Z</a></li>
+                                        <li><a href="javascript:void(0)" class="dropdown-item" data-sort="name_desc">Tên từ Z -> A</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -248,7 +247,7 @@
                                         <div class="product-detail">
                                             <span class="span-name">@item.Category?.Name</span>
                                             <a href="/shop/detail/@item.Id" class="name theme-color">@item.Name</a>
-                                            <p class="text-content mt-1 mb-2 product-content">Type: @item.ProductType</p>
+                                            <p class="text-content mt-1 mb-2 product-content">Tình trạng: @item.ProductType</p>
                                             <h5 class="price text-dark">₫@item.Price.ToString("N0")</h5>
                                             <!-- Nút Add to Cart -->
                                             <div class="cart_qty qty-box open mt-2">
@@ -813,6 +812,7 @@
             <button class="btn setting-button">
                 <i class="fa-solid fa-gear"></i>
             </button>
+
             <div class="theme-setting-2">
                 <div class="theme-box">
                     <ul>
@@ -828,6 +828,7 @@
                                 </form>
                             </div>
                         </li>
+
                         <li>
                             <div class="setting-name">
                                 <h4>Dark</h4>
@@ -837,10 +838,21 @@
                                 <button class="btn btn-2 unline" id="lightButton">Light</button>
                             </div>
                         </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
+
         <div class="back-to-top">
             <a id="back-to-top" href="#">
                 <i class="fas fa-chevron-up"></i>
@@ -956,7 +968,7 @@
                                     <div class="product-detail">
                                         <span class="span-name">${category}</span>
                                         <a href="/shop/detail/${p.id}" class="name theme-color">${p.name}</a>
-                                        <p class="text-content mt-1 mb-2 product-content">Type: ${p.productType}</p>
+                                        <p class="text-content mt-1 mb-2 product-content">Tình trạng: ${p.productType}</p>
                                         <h5 class="price text-dark">₫${price}</h5>
                                         <div class="cart_qty qty-box open mt-2">
                                             <div class="d-flex align-items-center">
