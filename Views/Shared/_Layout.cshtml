@@ -14,9 +14,64 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Village_Manager.styles.css" asp-append-version="true" />
     <title>@ViewData["Title"] - Fastkart</title>
+
+    <style>
+        html.dark .fullpage-loader {
+            background-color: #1e1e1e !important;
+        }
+
+        html.light .fullpage-loader {
+            background-color: white !important;
+        }
+    </style>
+
+    <script>
+        (function () {
+            const themeColor = localStorage.getItem("theme-color");
+            const theme = localStorage.getItem("theme");
+            const direction = localStorage.getItem("direction");
+
+            //theme color
+            if (themeColor) {
+                document.documentElement.style.setProperty("--theme-color", themeColor);
+                document.documentElement.style.setProperty("--theme-color-rgb", themeColor);
+            }
+
+            //dark/light
+            if (theme === "dark") {
+                document.documentElement.classList.remove("light");
+                document.documentElement.classList.add("dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.documentElement.classList.add("light");
+            }
+
+            //RTL/LTR
+            if (direction === "rtl") {
+                document.documentElement.setAttribute("dir", "rtl");
+            } else {
+                document.documentElement.setAttribute("dir", "ltr");
+            }
+
+            //#color-link -> CSS
+            const applyThemeCss = () => {
+                const colorLink = document.getElementById("color-link");
+                if (colorLink) {
+                    if (theme === "dark") {
+                        colorLink.setAttribute("href", "/css/dark.css");
+                    } else {
+                        colorLink.setAttribute("href", "/css/style.css");
+                    }
+                } else {
+                    setTimeout(applyThemeCss, 100);
+                }
+            };
+            applyThemeCss();
+        })();
+    </script>
+
 </head>
 <body>
-
     <style>
         .nav-link-new {
             display: block;
@@ -50,7 +105,7 @@
                 <div class="row">
                     <div class="col-xxl-3 d-xxl-block d-none">
                         <div class="top-left-header">
-                            <span class="text-white">Từ vườn đến bàn – Sạch từng hạt, ngon từng vị.</span>
+                            <span class="text-white" style="white-space: nowrap";>Từ vườn đến bàn – Sạch từng hạt, ngon từng vị.</span>
                         </div>
                     </div>
 
@@ -111,23 +166,23 @@
                             </a>
 
                             <div class="middle-box">
-                                <form method="get" asp-controller="Shop" asp-action="Search" class="search-box"> 
-                                    <div class="input-group"> 
-                                        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm" /> 
-                                        <button class="btn" type="submit"> <i data-feather="search"></i> </button> 
-                                    </div> 
+                                <form method="get" asp-controller="Shop" asp-action="Search" class="search-box">
+                                    <div class="input-group">
+                                        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm" />
+                                        <button class="btn" type="submit"> <i data-feather="search"></i> </button>
+                                    </div>
                                 </form>
                             </div>
 
                             <div class="rightside-box">
-                                <form method="get" asp-controller="Shop" asp-action="Search" class="search-full"> 
-                                    <div class="input-group"> 
-                                        <span class="input-group-text"> <i data-feather="search" class="font-light"></i> </span> 
-                                        <input type="text" name="search" class="form-control search-type" placeholder="Search here.." /> 
-                                        <button class="input-group-text" type="submit"> <i data-feather="arrow-right" class="font-light"></i> </button> 
-                                        <span class="input-group-text close-search"> <i data-feather="x" class="font-light"></i> </span> 
-                                    </div> 
-                                    </form>
+                                <form method="get" asp-controller="Shop" asp-action="Search" class="search-full">
+                                    <div class="input-group">
+                                        <span class="input-group-text"> <i data-feather="search" class="font-light"></i> </span>
+                                        <input type="text" name="search" class="form-control search-type" placeholder="Tìm kiếm sản phẩm" />
+                                        <button class="input-group-text" type="submit"> <i data-feather="arrow-right" class="font-light"></i> </button>
+                                        <span class="input-group-text close-search"> <i data-feather="x" class="font-light"></i> </span>
+                                    </div>
+                                </form>
 
                                 <ul class="right-side-menu">
                                     <li class="right-side">
@@ -177,11 +232,11 @@
                                                     {
                                                         foreach (var item in cartItems)
                                                         {
-                                                           <li class="product-box-contain">
+                                                            <li class="product-box-contain">
                                                                 <div class="drop-cart d-flex">
                                                                     <a href="/shop/detail/@item.ProductId" class="drop-image">
                                                                         <img src="@(item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")"
-                                                         class="blur-up lazyloaded" alt="@item.Product?.Name" />
+                                                                             class="blur-up lazyloaded" alt="@item.Product?.Name" />
                                                                     </a>
 
                                                                     <div class="drop-contain w-100">
@@ -208,20 +263,20 @@
                                                     }
                                                     else
                                                     {
-                                                        <li class="text-center p-2">Your cart is empty.</li>
+                                                        <li class="text-center p-2">Giỏ hàng của bạn trống.</li>
                                                     }
                                                 </ul>
 
                                                 <div class="price-box">
-                                                    <h5>Total :</h5>
+                                                    <h5>Tổng:</h5>
                                                     <h4 class="theme-color fw-bold">₫@String.Format("{0:N0}", total)</h4>
                                                 </div>
 
 
                                                 <div class="button-group">
-                                                    <a href="/shop/cart" class="btn btn-sm cart-button">View Cart</a>
+                                                    <a href="/shop/cart" class="btn btn-sm cart-button">Xem giỏ hàng</a>
                                                     <a href="/shop/checkout" class="btn btn-sm cart-button theme-bg-color
-                                                    text-white">Checkout</a>
+                                                    text-white">Thanh toán</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -251,10 +306,10 @@
                                             <div class="onhover-div onhover-div-login">
                                                 <ul class="user-box-name">
                                                     <li class="product-box-contain">
-                                                        <a href="/login">Log In</a>
+                                                        <a href="/login">Đăng nhập</a>
                                                     </li>
                                                     <li class="product-box-contain">
-                                                        <a href="signup">Register</a>
+                                                        <a href="signup">Đăng ký</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -267,21 +322,21 @@
                                                     @if (roleId == 1)
                                                     {
                                                         <li class="product-box-contain">
-                                                            <a href="/adminwarehouse">Admin Manager</a>
+                                                            <a href="/adminwarehouse">Quản lý kho (Admin)</a>
                                                         </li>
                                                     }
                                                     @if (roleId == 2)
                                                     {
                                                         <li class="product-box-contain">
-                                                            <a href="/adminretail">Staff Manager</a>
+                                                            <a href="/adminretail">Quản lý bán lẻ (Staff)</a>
                                                         </li>
                                                     }
                                                     @* rold nao cung co *@
                                                     <li class="product-box-contain">
-                                                        <a href="/dashboard">My Profile</a>
+                                                        <a href="/dashboard">Trang cá nhân</a>
                                                     </li>
                                                     <li class="product-box-contain">
-                                                        <a href="/logout">Log out</a>
+                                                        <a href="/logout">Đăng xuất</a>
                                                     </li>
                                                     <li class="product-box-contain">
                                                         <a href="/changepassword">Đổi mật khẩu</a>
@@ -305,12 +360,12 @@
                         <div class="header-nav-left">
                             <button class="dropdown-category">
                                 <i data-feather="align-left"></i>
-                                <span>All Categories</span>
+                                <span>Danh Mục</span>
                             </button>
 
                             <div class="category-dropdown">
                                 <div class="category-title">
-                                    <h5>Categories</h5>
+                                    <h5>Danh mục</h5>
                                     <button type="button" class="btn p-0 close-button text-content">
                                         <i class="fa-solid fa-xmark"></i>
                                     </button>
@@ -334,15 +389,14 @@
                                     </div>
                                     <div class="offcanvas-body">
                                         <ul class="navbar-nav">
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="/becomefamer">Đăng ký Famer</a>
-                                            </li>
-
                                             <li class="nav-item dropdown">
-                                                <a class="nav-link-new" href="/shop/search">All Products</a>
+                                                <a class="nav-link-new" href="/shop/search">Tất cả Sản phẩm</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link-new" href="/dashboardfamer">Famer Dashboard</a>
+                                                <a class="nav-link-new" href="/becomefamer">Đăng ký Farmer</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link-new" href="/dashboardfamer">Farmer Dashboard</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link-new" href="/shipperbecome">Đăng ký Shipper</a>
@@ -396,35 +450,35 @@
             <li class="active">
                 <a href="index.html">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>Trang chủ</span>
                 </a>
             </li>
 
             <li class="mobile-category">
                 <a href="javascript:void(0)">
                     <i class="iconly-Category icli js-link"></i>
-                    <span>Category</span>
+                    <span>Danh mục</span>
                 </a>
             </li>
 
             <li>
                 <a href="search.html" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>Tìm kiếm</span>
                 </a>
             </li>
 
             <li>
                 <a href="wishlist.html" class="notifi-wishlist">
                     <i class="iconly-Heart icli"></i>
-                    <span>My Wish</span>
+                    <span>Danh sách ước</span>
                 </a>
             </li>
 
             <li>
                 <a href="/shop/cart">
                     <i class="iconly-Bag-2 icli fly-cate"></i>
-                    <span>Cart</span>
+                    <span>Giỏ hàng</span>
                 </a>
             </li>
         </ul>
@@ -688,6 +742,7 @@
             </div>
         </div>
     </div>
+
     <style>
         .notification-item {
             font-size: 0.9rem;
@@ -845,5 +900,6 @@
                 border-color: #ffc107 !important;
             }
     </style>
+
 </body>
 </html>

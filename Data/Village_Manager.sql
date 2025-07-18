@@ -1,7 +1,19 @@
 -- Tạo tất cả bảng SQL cho hệ thống quản lý nông sản - SQL Server Version
+
+--IF EXISTS (SELECT name FROM sys.databases WHERE name = N'vllage_manager_database')
+--BEGIN
+--    ALTER DATABASE [vllage_manager_database] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+--    DROP DATABASE [vllage_manager_database];
+--END
+--GO
+
+--CREATE DATABASE [vllage_manager_database];
+--GO
+
+--USE [vllage_manager_database];
+--GO
+
 -- 1. Roles
-
-
 CREATE TABLE Roles (
     id INT PRIMARY KEY IDENTITY(1,1),
     name NVarchar(50) NOT NULL UNIQUE -- chỉ tồn tại 1 name role
@@ -20,14 +32,15 @@ CREATE TABLE Users (
     is_active BIT NOT NULL DEFAULT 1,
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
+
 -- 3. Farmer
 CREATE TABLE Farmer (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     full_name NVarchar(100),
     phone NVarchar(20) UNIQUE NOT NULL, -- check trùng
-	CONSTRAINT CK_Farmer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    address TEXT NOT NULL, -- bắt buộc phải có
+    CONSTRAINT CK_Farmer_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
+    address NVARCHAR(MAX) NOT NULL, -- bắt buộc phải có
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
@@ -37,10 +50,10 @@ CREATE TABLE Shipper (
     user_id INT,
     full_name NVarchar(100),
     phone NVarchar(20) UNIQUE NOT NULL, -- check trùng
-	CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
-    vehicle_info TEXT, -- bắt buộc phải có
-	status NVARCHAR(50) 
-    CONSTRAINT DF_status DEFAULT 'pending',
+    CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
+    vehicle_info NVARCHAR(MAX), -- bắt buộc phải có
+    status NVARCHAR(50) 
+        CONSTRAINT DF_status DEFAULT 'pending',
     CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected', 'inactive')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
@@ -49,7 +62,7 @@ CREATE TABLE Shipper (
 CREATE TABLE ProductCategory (
     id INT PRIMARY KEY IDENTITY(1,1),
     name NVarchar(100) UNIQUE, -- không đc trùng danh mục
-	imageUrl NVarchar(100)
+    imageUrl NVarchar(100)
 );
 
 -- 6. Product
@@ -63,8 +76,8 @@ CREATE TABLE Product (
     quantity INT NOT NULL,
     processing_time DATE,
     farmer_id INT,
-	-- thêm thuộc tính này
-	approval_status NVARCHAR(20) DEFAULT 'pending' CHECK (approval_status IN ('pending', 'accepted', 'rejected')),
+    -- thêm thuộc tính này
+    approval_status NVARCHAR(20) DEFAULT 'pending' CHECK (approval_status IN ('pending', 'accepted', 'rejected')),
     FOREIGN KEY (category_id) REFERENCES ProductCategory(id),
     FOREIGN KEY (farmer_id) REFERENCES Farmer(id)
 );
@@ -74,11 +87,10 @@ CREATE TABLE ProductImage (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT,
     image_url NVarchar(255),
-    description NVarchar,
+    description NVARCHAR(MAX),
     uploaded_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
-
 
 -- 8. Stock kho hàng
 CREATE TABLE Stock (
@@ -95,7 +107,7 @@ CREATE TABLE ImportInvoice (
     supplier_name NVarchar(100),
     total_amount DECIMAL(12,2),
     created_at DATETIME,
-	purchase_time DATETIME,
+    purchase_time DATETIME
 );
 
 -- 10. chi tiết hóa đơn nhập khảu
@@ -115,8 +127,8 @@ CREATE TABLE RetailOrder (
     user_id INT,
     order_date DATETIME,
     status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned')),
-	confirmed_at DATETIME, -- xác nhận đơn hàng
-    FOREIGN KEY (user_id) REFERENCES Users(id),
+    confirmed_at DATETIME, -- xác nhận đơn hàng
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
 -- 14. RetailOrderItem
@@ -178,18 +190,17 @@ CREATE TABLE ProductProcessingHistory (
     FOREIGN KEY (product_id) REFERENCES Product(id)
 );
 
-
 -- 20. ProcessedProduct - dùng để lưu tất cả kết quả 
 CREATE TABLE ProcessedProduct (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT,
-	history_id INT,
+    history_id INT,
     processed_date DATE,
     return_date DATE,
-    processing_note TEXT,
-	total_weight DECIMAL(10,2),
-	image_url NVarchar(255),
-	description TEXT,
+    processing_note NVARCHAR(MAX),
+    total_weight DECIMAL(10,2),
+    image_url NVarchar(255),
+    description NVARCHAR(MAX),
     FOREIGN KEY (history_id) REFERENCES ProductProcessingHistory(id)
 );
 
@@ -199,7 +210,7 @@ CREATE TABLE Feedback (
     user_id INT,
     order_id INT,
     order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
-    content TEXT,
+    content NVARCHAR(MAX),
     rating INT,
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
@@ -209,7 +220,7 @@ CREATE TABLE Feedback (
 CREATE TABLE Address (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
-    address_line TEXT,
+    address_line NVARCHAR(MAX),
     city NVarchar(100),
     province NVarchar(100),
     postal_code NVarchar(20),
@@ -225,16 +236,16 @@ CREATE TABLE Payment (
     amount DECIMAL(10,2),
     paid_at DATETIME,
     method NVarchar(50) CHECK (method IN ('cash', 'card', 'bank_transfer')),
-	payment_type NVarchar(10) CHECK (payment_type IN ('receive', 'refund'))
-	-- chỉ nhận tiền mặt chuyển khoản hoặc qua visa
+    payment_type NVarchar(10) CHECK (payment_type IN ('receive', 'refund')),
+    -- chỉ nhận tiền mặt chuyển khoản hoặc qua visa
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
 -- 24. TransportRoute
 CREATE TABLE TransportRoute (
     id INT PRIMARY KEY IDENTITY(1,1),
-    start_location TEXT,
-    end_location TEXT,
+    start_location NVARCHAR(MAX),
+    end_location NVARCHAR(MAX),
     distance_km DECIMAL(10,2),
     estimated_time NVarchar(50)
 );
@@ -243,7 +254,7 @@ CREATE TABLE TransportRoute (
 CREATE TABLE Notification (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
-    content TEXT,
+    content NVARCHAR(MAX),
     created_at DATETIME,
     is_read BIT DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES Users(id)
@@ -253,7 +264,7 @@ CREATE TABLE Notification (
 CREATE TABLE Log (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
-    action TEXT,
+    action NVARCHAR(MAX),
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
@@ -262,7 +273,7 @@ CREATE TABLE Log (
 CREATE TABLE Session (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
-    session_token TEXT,
+    session_token NVARCHAR(MAX),
     created_at DATETIME,
     expires_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
@@ -272,7 +283,7 @@ CREATE TABLE Session (
 CREATE TABLE Report (
     id INT PRIMARY KEY IDENTITY(1,1),
     title NVarchar(100),
-    content TEXT,
+    content NVARCHAR(MAX),
     created_at DATETIME
 );
 
@@ -281,14 +292,14 @@ CREATE TABLE Staff (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     role NVarchar(100),
-    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
 -- 30. Supplier
 CREATE TABLE Supplier (
     id INT PRIMARY KEY IDENTITY(1,1),
     name NVarchar(100) UNIQUE NOT NULL, -- check trùng
-    contact_info TEXT NOT NULL
+    contact_info NVARCHAR(MAX) NOT NULL
 );
 
 -- hoàn hàng 
@@ -298,7 +309,7 @@ CREATE TABLE ReturnOrder (
     order_id INT, -- bắt buộc phải kiểm tra trong code order_type 
     user_id INT,
     quantity INT,
-    reason TEXT,
+    reason NVARCHAR(MAX),
     created_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
@@ -318,15 +329,15 @@ CREATE TABLE SupplyRequest (
     responded_at DATETIME NULL,
     FOREIGN KEY (requester_id) REFERENCES Users(id),
     FOREIGN KEY (receiver_id) REFERENCES Users(id),
-    FOREIGN KEY (farmer_id) REFERENCES Farmer(id),
+    FOREIGN KEY (farmer_id) REFERENCES Farmer(id)
 );
 
 CREATE TABLE FarmerRegistrationRequest (
     id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,	
+    user_id INT NOT NULL,
     full_name NVARCHAR(100) NOT NULL,
     phone NVARCHAR(20) UNIQUE NOT NULL,
-    address TEXT NOT NULL,
+    address NVARCHAR(MAX) NOT NULL,
     status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
     requested_at DATETIME DEFAULT GETDATE(),
     reviewed_at DATETIME NULL,
@@ -334,15 +345,16 @@ CREATE TABLE FarmerRegistrationRequest (
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (reviewed_by) REFERENCES Users(id)
 );
+
 CREATE TABLE ShipperRegistrationRequest (
     id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,	
+    user_id INT NOT NULL,
     full_name NVARCHAR(100) NOT NULL,
     phone NVARCHAR(20) UNIQUE NOT NULL,
-    address TEXT NOT NULL,
+    address NVARCHAR(MAX) NOT NULL,
     status NVARCHAR(20) CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
     requested_at DATETIME DEFAULT GETDATE(),
-	vehicle_info TEXT, -- bắt buộc phải có
+    vehicle_info NVARCHAR(MAX), -- bắt buộc phải có
     reviewed_at DATETIME NULL,
     reviewed_by INT NULL, -- admin user_id
     FOREIGN KEY (user_id) REFERENCES Users(id),
@@ -410,13 +422,11 @@ CREATE TABLE ContactMessages (
 CREATE TABLE HiddenProduct (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
-    
-    reason TEXT NULL, -- tùy chọn: lý do ẩn sản phẩm
+    reason NVARCHAR(MAX) NULL, -- tùy chọn: lý do ẩn sản phẩm
     hidden_at DATETIME DEFAULT GETDATE(),
-    
-    FOREIGN KEY (product_id) REFERENCES Product(id),
-    
+    FOREIGN KEY (product_id) REFERENCES Product(id)
 );
+
 --Bảng mã giảm giá
 CREATE TABLE DiscountCodes (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -452,5 +462,3 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Frozen Foods', N'back-end/svg/frozen.svg'),
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
-
-

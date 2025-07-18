@@ -8,9 +8,10 @@
     var orderId = ViewBag.OrderId?.ToString() ?? "";
     var paymentMethod = ViewBag.PaymentMethod?.ToString() ?? "N/A";
     var itemCount = Model.Sum(i => i.Quantity);
-    var subtotal = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+    var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
     var discount = 0; // sau có thể lấy từ DB
-    var total = subtotal - discount;
+    var shipping = 20000;
+    var finalTotal = total - discount + shipping;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -53,35 +54,35 @@
             <li class="active">
                 <a href="index.html">
                     <i class="iconly-Home icli"></i>
-                    <span>Home</span>
+                    <span>Trang chủ</span>
                 </a>
             </li>
 
             <li class="mobile-category">
                 <a href="javascript:void(0)">
                     <i class="iconly-Category icli js-link"></i>
-                    <span>Category</span>
+                    <span>Danh mục</span>
                 </a>
             </li>
 
             <li>
                 <a href="search.html" class="search-box">
                     <i class="iconly-Search icli"></i>
-                    <span>Search</span>
+                    <span>Tìm kiếm</span>
                 </a>
             </li>
 
             <li>
                 <a href="wishlist.html" class="notifi-wishlist">
                     <i class="iconly-Heart icli"></i>
-                    <span>My Wish</span>
+                    <span>Danh sách ước</span>
                 </a>
             </li>
 
             <li>
                 <a href="cart.html">
                     <i class="iconly-Bag-2 icli fly-cate"></i>
-                    <span>Cart</span>
+                    <span>Giỏ hàng</span>
                 </a>
             </li>
         </ul>
@@ -140,18 +141,18 @@
                             </div>
 
                             <div class="order-contain">
-                                <h3 class="theme-color">Order Success</h3>
-                                <h5 class="text-content">Payment Is Successfully And Your Order Is On The Way</h5>
-                                <h6>Transaction ID: orderid</h6>
+                                <h3 class="theme-color">Đặt hàng thành công</h3>
+                                <h5 class="text-content">Thanh toán đơn hàng thành công, vui lòng xem chi tiết bên dưới</h5>
+                                <h6>Mã giao dịch: @orderId</h6>
                                 <div class="d-flex justify-content-between align-items-center mt-4">
-                                    <button onclick="location.href='/'" class="btn btn-light shopping-button text-dark"> 
+                                    <button onclick="location.href='/'" class="btn btn-light shopping-button text-dark">
                                         <i class="fa-solid fa-house me-2"></i>
-                                        Home Page
+                                        Về trang chủ
                                     </button>
                                     <button onclick="location.href='/shop/tracking'" class="btn btn-md fw-bold text-white theme-bg-color">
-                                        Track Order
+                                        Theo dõi đơn
                                     </button>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -186,26 +187,23 @@
                                                             <li class="name">
                                                                 <a href="/shop/detail/@product?.Id">@product?.Name</a>
                                                             </li>
-                                                            <li class="text-content">
-                                                                Quantity - @item.Quantity
-                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
                                             </td>
 
                                             <td class="price">
-                                                <h4 class="table-title text-content">Price</h4>
+                                                <h4 class="table-title text-content">Đơn giá</h4>
                                                 <h6 class="theme-color">₫@String.Format("{0:N0}", product?.Price ?? 0)</h6>
                                             </td>
 
                                             <td class="quantity">
-                                                <h4 class="table-title text-content">Qty</h4>
+                                                <h4 class="table-title text-content">Số lượng</h4>
                                                 <h4 class="text-title">@item.Quantity</h4>
                                             </td>
 
                                             <td class="subtotal">
-                                                <h4 class="table-title text-content">Total</h4>
+                                                <h4 class="table-title text-content">Tổng cộng</h4>
                                                 <h5>₫@String.Format("{0:N0}", total)</h5>
                                             </td>
                                         </tr>
@@ -221,24 +219,28 @@
                         <div class="col-lg-12 col-sm-6">
                             <div class="summery-box">
                                 <div class="summery-header">
-                                    <h3>Price Details</h3>
-                                    <h5 class="ms-auto theme-color">(@itemCount Items)</h5>
+                                    <h3>Chi tiết</h3>
+                                    <h5 class="ms-auto theme-color">(@itemCount Sản phẩm)</h5>
                                 </div>
                                 <ul class="summery-contain">
                                     <li>
-                                        <h4>Subtotal</h4>
-                                        <h4 class="price">₫@string.Format("{0:N0}", subtotal)</h4>
+                                        <h4>Tổng tiền</h4>
+                                        <h4 class="price">₫@string.Format("{0:N0}", total)</h4>
                                     </li>
                                     <li>
-                                        <h4>Coupon Discount</h4>
+                                        <h4>Giảm giá</h4>
                                         <h4 class="price text-danger">(-) ₫@discount.ToString("N0")</h4>
+                                    </li>
+                                    <li>
+                                        <h4>Phí vận chuyển</h4>
+                                        <h4 class="price">₫@String.Format("{0:N0}", shipping)</h4>
                                     </li>
                                 </ul>
 
                                 <ul class="summery-total">
                                     <li class="list-total">
-                                        <h4>Total (VND)</h4>
-                                        <h4 class="price theme-color">₫@string.Format("{0:N0}", total)</h4>
+                                        <h4>Tổng thanh toán</h4>
+                                        <h4 class="price theme-color">₫@string.Format("{0:N0}", finalTotal)</h4>
                                     </li>
                                 </ul>
                             </div>
@@ -248,7 +250,7 @@
                         <div class="col-lg-12 col-sm-6">
                             <div class="summery-box">
                                 <div class="summery-header d-block">
-                                    <h3>Shipping Address</h3>
+                                    <h3>Địa chỉ giao hàng</h3>
                                 </div>
 
                                 <ul class="summery-contain pb-0 border-bottom-0">
@@ -259,19 +261,19 @@
                                             <h4 class="mt-2">@address.City, @address.Province</h4>
                                         </li>
                                         <li class="pb-0">
-                                            <h6 class="text-content">Postal Code: @address.PostalCode</h6>
-                                        </li>
-                                        <li class="pb-0">
-                                            <h4>Expected Date Of Delivery:</h4>
+                                            <h6 class="text-content">Mã bưu chính: @address.PostalCode</h6>
                                         </li>
                                     }
                                     else
                                     {
-                                        <li class="d-block">No address selected.</li>
+                                        <li class="d-block">Chưa chọn địa chỉ nào.</li>
                                     }
                                 </ul>
 
                                 <ul class="summery-total">
+                                    <li class="pb-0">
+                                        <h4>Ngày giao hàng dự kiến:</h4>
+                                    </li>
                                     <li class="list-total border-top-0 pt-2">
                                         <h4 class="fw-bold">@DateTime.Now.AddDays(1).ToString("dd-MM-yyyy")</h4>
                                     </li>
@@ -283,7 +285,7 @@
                         <div class="col-12">
                             <div class="summery-box">
                                 <div class="summery-header d-block">
-                                    <h3>Payment Method</h3>
+                                    <h3>Phương thức thanh toán</h3>
                                 </div>
 
                                 <ul class="summery-contain pb-0 border-bottom-0">
