@@ -1,0 +1,1372 @@
+
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
+    var orders = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
+}
+
+@model List<Village_Manager.Models.UserLocation>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+
+<body>
+    <!-- User Dashboard Section Start -->
+    <section class="user-dashboard-section section-b-space">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-xxl-3 col-lg-4">
+                    <div class="dashboard-left-sidebar">
+                        <div class="close-button d-flex d-lg-none">
+                            <button class="close-sidebar">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="profile-box">
+                            <div class="cover-image">
+                                <img src="~/images/inner-page/cover-img.jpg" class="img-fluid blur-up lazyload"
+                                     alt="">
+                            </div>
+
+                            <div class="profile-contain">
+                                <div class="profile-image">
+                                    <div class="position-relative">
+                                        <img src="~/images/inner-page/user/1.jpg"
+                                             class="blur-up lazyload update_img" alt="">
+                                    </div>
+                                </div>
+
+                                <div class="profile-name">
+                                    <h3>@ViewBag.Username</h3>
+                                    <h6 class="text-content">@ViewBag.Email</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-pills user-nav-pills" id="pills-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="pills-dashboard-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-dashboard" type="button">
+                                    <i data-feather="home"></i>
+                                    DashBoard
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-order-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-order" type="button">
+                                    <i data-feather="shopping-bag"></i>Order
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-profile" type="button" role="tab">
+                                    <i data-feather="user"></i>
+                                    Profile
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-address-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-address" type="button" role="tab">
+                                    <i data-feather="map-pin"></i>Address
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-deliorder-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-deliorder" type="button" role="tab">
+                                    <i data-feather="map-pin"></i>Hủy hàng
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xxl-9 col-lg-8">
+                    <button class="btn left-dashboard-show btn-animation btn-md fw-bold d-block mb-4 d-lg-none">
+                        Show
+                        Menu
+                    </button>
+                    <div class="dashboard-right-sidebar">
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel">
+                                <div class="dashboard-home">
+                                    <div class="title">
+                                        <h2>My Dashboard</h2>
+                                        <span class="title-leaf">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="dashboard-user-name">
+                                        <h6 class="text-content">Xin chào, <b class="text-title">@ViewBag.Username</b></h6>
+                                        <p class="text-content">
+                                            Từ Bảng điều khiển Tài khoản của tôi, bạn có thể
+                                            xem ảnh chụp nhanh về hoạt động tài khoản gần đây của mình và cập nhật thông tin tài khoản
+                                            . Chọn liên kết bên dưới để xem hoặc chỉnh sửa thông tin.
+                                        </p>
+                                    </div>
+
+                                    <div class="total-box">
+                                        <div class="row g-sm-4 g-3">
+                                            <div class="col-xxl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="total-contain">
+                                                    <img src="~/images/svg/order.svg"
+                                                         class="img-1 blur-up lazyload" alt="">
+                                                    <img src="~/images/svg/order.svg" class="blur-up lazyload"
+                                                         alt="">
+                                                    <div class="total-detail">
+                                                        <h5>Tổng số đơn hàng</h5>
+                                                        <h3>@ViewBag.TotalOrders</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-6 col-lg-6 col-md-6 col-sm-6">
+                                                <div class="total-contain">
+                                                    <img src="~/images/svg/pending.svg"
+                                                         class="img-1 blur-up lazyload" alt="">
+                                                    <img src="~/images/svg/pending.svg" class="blur-up lazyload"
+                                                         alt="">
+                                                    <div class="total-detail">
+                                                        <h5>Đơn hàng đang xử lý</h5>
+                                                        <h3>@ViewBag.PendingOrders</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="dashboard-title">
+                                        <h3>Account Information</h3>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-xxl-6">
+                                            <div class="dashboard-content-title">
+                                                <h4>
+                                                    Thông tin khách hàng <a href="javascript:void(0)"
+                                                                           data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
+                                                </h4>
+                                            </div>
+                                            <div class="dashboard-detail">
+                                                <h6 class="text-content">Username: @ViewBag.Username</h6>
+                                                <h6 class="text-content">Email: @ViewBag.Email</h6>
+                                                <h6 class="text-content">Địa chỉ: @ViewBag.Address</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
+                                <div class="dashboard-order">
+                                    <div class="title">
+                                        <h2>Lịch sử Đơn hàng</h2>
+                                        <span class="title-leaf title-leaf-gray">
+                                            <svg class="icon-width bg-gray"><use xlink:href="~/svg/leaf.svg#leaf"></use></svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="order-history-container">
+                                        @if (orderHistory == null || !orderHistory.Any())
+                                        {
+                                            <div class="empty-order-history">
+                                                <i data-feather="shopping-bag"></i>
+                                                <h4>Bạn chưa có đơn hàng nào.</h4>
+                                                <p>Hãy bắt đầu mua sắm để xem lịch sử của bạn tại đây!</p>
+                                                <a asp-controller="Home" asp-action="Index" class="btn btn-primary-transparent">Bắt đầu mua sắm</a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var order in orderHistory)
+                                            {
+                                                <div class="order-card">
+                                                    <div class="header-right text-end">
+                                                        <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                        <h5 class="order-total">
+                                                            @(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))
+                                                        </h5>
+
+                                                        @if (order.Status == "pending")
+                                                        {
+                                                            <a asp-action="CancelOrder" asp-controller="Customer"
+                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                               class="btn btn-sm btn-outline-danger mt-1">Huỷ hàng</a>
+                                                        }
+                                                        else if (order.Status == "delivered")
+                                                        {
+                                                            <a asp-action="ReturnOrder" asp-controller="Customer"
+                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                               class="btn btn-sm btn-outline-warning mt-1">Hoàn hàng</a>
+                                                        }
+                                                    </div>
+
+                                                    <div class="order-card-body">
+                                                        @foreach (var item in order.RetailOrderItems)
+                                                        {
+                                                            <div class="product-item">
+                                                                <div class="product-image">
+                                                                    @{
+                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                                                                    }
+                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
+                                                                </div>
+                                                                <div class="product-info">
+                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                                        <h6>@item.Product?.Name</h6>
+                                                                    </a>
+                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
+                                                                </div>
+                                                                <div class="product-quantity">
+                                                                    <span>x @item.Quantity</span>
+                                                                </div>
+                                                                <div class="product-total">
+                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* <div class="tab-pane fade" id="pills-deliorder" role="tab" aria-labelledby="pills-deliorder-tab">
+                                        <div class="dashboard-home">
+                                            <div class="title">
+                                                <h2>Hủy Đơn</h2>
+                                    </div>
+                                    @if (orders != null && orders.Any())
+                                    {
+                                        <div class="row g-4">
+                                            @foreach (var order in orders)
+                                            {
+                                                <div class="col-12">
+                                                    <div class="card p-3">
+                                                        <h5>Đơn hàng #@order.Id - @order.Status.ToUpper()</h5>
+                                                        <p>
+                                                            Ngày đặt:
+                                                            @(order?.OrderDate != null
+                                                                 ? order.OrderDate.Value.ToString("dd/MM/yyyy")
+                                                                : "Không xác định")
+                                                </p>
+
+
+                                                        <ul>
+                                                            @foreach (var item in order.RetailOrderItems)
+                                                            {
+                                                                <li>
+                                                                    @(item?.Product?.Name ?? "Không có tên sản phẩm")
+                                                                    - SL: @(item?.Quantity ?? 0)
+                                                                    - Đơn giá: @(item?.UnitPrice != null ? item.UnitPrice.Value.ToString("N0") : "0")
+                                                                </li>
+
+                                                            }
+                                                        </ul>
+
+                                                        @if (order.Status == "pending")
+                                                        {
+                                                            <form asp-action="CancelOrder" asp-controller="Customer" method="post">
+                                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                                <button type="submit" class="btn btn-danger">Hủy đơn hàng</button>
+                                                            </form>
+                                                        }
+                                                        else if (order.Status == "delivered")
+                                                        {
+                                                            <form asp-action="SubmitReturn" asp-controller="Customer" method="post" enctype="multipart/form-data">
+                                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                                <div class="mb-2">
+                                                                    <label>Ảnh sản phẩm hoàn:</label>
+                                                                    <input type="file" name="ReturnImage" required class="form-control" />
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <label>Lý do hoàn hàng:</label>
+                                                                    <textarea name="Reason" class="form-control" required></textarea>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-warning">Hoàn hàng</button>
+                                                            </form>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-danger">Bạn không có đơn hàng nào cần hủy hoặc hoàn.</p>
+                                    }
+                                       
+                                </div>
+                            </div> *@
+                            @* note
+
+                            <div class="tab-pane fade" id="pills-address" role="tab" aria-labelledby="pills-address-tab">
+                                <div class="dashboard-address">
+                                    <div class="title title-flex">
+                                        <div>
+                                            <h2>My Address Book</h2>
+                                            <span class="title-leaf">
+                                                <svg class="icon-width bg-gray">
+                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                                </svg>
+                                            </span>
+                                        </div>
+
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#add-address">
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
+                                        </button>
+                                    </div> *@
+                                  @*   <div class="row g-sm-4 g-3">
+                                        @foreach (var userLocation in Model)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                                   id="flexRadioDefault1">
+                                                        </div>
+
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
+                                                        </div>
+
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div> *@
+
+                                </div>
+                            </div>
+                            <style>
+                                .order-history-container {
+                                    display: flex;
+                                    flex-direction: column;
+                                    gap: 1.5rem; /* Khoảng cách giữa các đơn hàng */
+                                }
+
+                                .order-card {
+                                    background-color: #fff;
+                                    border: 1px solid #e0e0e0;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                                    overflow: hidden;
+                                    transition: all 0.3s ease;
+                                }
+
+                                .order-card:hover {
+                                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                                    transform: translateY(-2px);
+                                }
+
+                                .order-card-header {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    padding: 1rem 1.5rem;
+                                    background-color: #f8f9fa;
+                                    border-bottom: 1px solid #e0e0e0;
+                                }
+
+                                .order-card-header .header-left h5 {
+                                    margin: 0;
+                                    font-size: 1.1rem;
+                                    font-weight: 600;
+                                }
+
+                                .order-card-header .header-left p {
+                                    margin: 0;
+                                    font-size: 0.85rem;
+                                    color: #6c757d;
+                                }
+
+                                .order-card-header .header-right {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1.5rem;
+                                    text-align: right;
+                                }
+
+                                .order-total {
+                                    font-size: 1.2rem;
+                                    font-weight: 700;
+                                    color: var(--theme-color); /* Sử dụng màu chủ đạo của bạn */
+                                }
+
+                                .status-badge {
+                                    padding: 0.3rem 0.8rem;
+                                    border-radius: 50px;
+                                    font-size: 0.8rem;
+                                    font-weight: 600;
+                                    color: #fff;
+                                    text-transform: capitalize;
+                                }
+
+                                /* Màu sắc cho từng trạng thái */
+                                .status-delivered, .status-success {
+                                    background-color: #28a745;
+                                }
+
+                                .status-pending {
+                                    background-color: #ffc107;
+                                    color: #333;
+                                }
+
+                                .status-shipped {
+                                    background-color: #17a2b8;
+                                }
+
+                                .status-cancelled {
+                                    background-color: #dc3545;
+                                }
+
+                                .status-confirmed {
+                                    background-color: #0d6efd;
+                                }
+
+                                .status-returned {
+                                    background-color: #6c757d;
+                                }
+
+
+                                .order-card-body {
+                                    padding: 1rem 1.5rem;
+                                }
+
+                                .product-item {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 1rem;
+                                    padding: 1rem 0;
+                                    border-bottom: 1px solid #f1f1f1;
+                                }
+
+                                .product-item:last-child {
+                                    border-bottom: none;
+                                    padding-bottom: 0;
+                                }
+
+                                .product-item .product-image img {
+                                    width: 60px;
+                                    height: 60px;
+                                    object-fit: cover;
+                                    border-radius: 6px;
+                                }
+
+                                .product-item .product-info {
+                                    flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
+                                }
+
+                                .product-item .product-info h6 {
+                                    margin-bottom: 0.25rem;
+                                }
+
+                                .product-item .product-info a:hover h6 {
+                                    color: var(--theme-color);
+                                }
+
+                                .product-item .product-info p {
+                                    margin: 0;
+                                    font-size: 0.9rem;
+                                    color: #6c757d;
+                                }
+
+                                .product-item .product-quantity {
+                                    color: #6c757d;
+                                }
+
+                                .product-item .product-total h6 {
+                                    margin: 0;
+                                    font-weight: 600;
+                                    min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
+                                    text-align: right;
+                                }
+
+                                /* CSS cho trường hợp không có đơn hàng */
+                                .empty-order-history {
+                                    text-align: center;
+                                    padding: 3rem 1rem;
+                                    border: 2px dashed #e0e0e0;
+                                    border-radius: 8px;
+                                    background-color: #f8f9fa;
+                                }
+
+                                .empty-order-history i {
+                                    width: 60px;
+                                    height: 60px;
+                                    color: var(--theme-color);
+                                    margin-bottom: 1rem;
+                                }
+
+                                .empty-order-history h4 {
+                                    font-weight: 600;
+                                }
+
+                                .empty-order-history p {
+                                    color: #6c757d;
+                                    margin-bottom: 1.5rem;
+                                }
+                            </style>
+                            <div class="tab-pane fade" id="pills-card" role="tabpanel">
+                                <div class="dashboard-card">
+                                    <div class="title title-flex">
+                                        <div>
+                                            <h2>My Card Details</h2>
+                                            <span class="title-leaf">
+                                                <svg class="icon-width bg-gray">
+                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                                </svg>
+                                            </span>
+                                        </div>
+
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#editCard">
+                                            <i data-feather="plus"
+                                               class="me-2"></i> Add New Card
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-4">
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 2548</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>08/05</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Audrey Carol</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/1.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details card-visa">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1536</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>12/23</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>Leah Heather</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/2.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
+                                            <div class="payment-card-detail">
+                                                <div class="card-details debit-card">
+                                                    <div class="card-number">
+                                                        <h4>XXXX - XXXX - XXXX - 1366</h4>
+                                                    </div>
+
+                                                    <div class="valid-detail">
+                                                        <div class="title">
+                                                            <span>valid</span>
+                                                            <span>thru</span>
+                                                        </div>
+                                                        <div class="date">
+                                                            <h3>05/21</h3>
+                                                        </div>
+                                                        <div class="primary">
+                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="name-detail">
+                                                        <div class="name">
+                                                            <h5>mark jecno</h5>
+                                                        </div>
+                                                        <div class="card-img">
+                                                            <img src="~/images/payment-icon/3.jpg"
+                                                                 class="img-fluid blur-up lazyloaded" alt="">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="edit-card">
+                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                       data-bs-target="#removeProfile">
+                                                        <i class="far fa-minus-square"></i> delete
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div class="edit-card-mobile">
+                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
+                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
+                                                <a href="javascript:void(0)">
+                                                    <i class="far fa-minus-square"></i>
+                                                    delete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel">
+                                <div class="dashboard-profile">
+                                    <div class="title">
+                                        <h2>My Profile</h2>
+                                        <span class="title-leaf">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="profile-detail dashboard-bg-box">
+                                        <div class="dashboard-title">
+                                            <h3>Xin chào! @ViewBag.Username</h3>
+                                        </div>
+                                        <div class="location-profile">
+                                            <ul>
+                                                <li>
+                                                    <div class="location-box">
+                                                        <i data-feather="mail"></i>
+                                                        <h6>@ViewBag.Email</h6>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="profile-description">
+                                            <p>
+                                                Residences can be classified by and how they are connected to
+                                                neighbouring residences and land. Different types of housing tenure can
+                                                be used for the same physical type.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-about dashboard-bg-box">
+                                        <div class="row">
+                                            <div class="col-xxl-7">
+                                                <div class="dashboard-title mb-3">
+                                                    <h3>Profile About</h3>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Số điện thoại :</td>
+                                                                <td>
+                                                                    <a href="javascript:void(0)">
+                                                                        @ViewBag.Phone
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Address :</td>
+                                                                <td>@ViewBag.Address</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="dashboard-title mb-3">
+                                                    <h3>Login Details</h3>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Email :</td>
+                                                                <td>
+                                                                    <a href="javascript:void(0)">
+                                                                        @ViewBag.Email
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Mật khẩu :</td>
+                                                                <td>
+                                                                    <a href="javascript:void(0)">
+                                                                        ●●●●●●
+                                                                        <a href="/changepassword">Đổi mật khẩu</a>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xxl-5">
+                                                <div class="profile-image">
+                                                    <img src="~/images/inner-page/dashboard-profile.png"
+                                                         class="img-fluid blur-up lazyload" alt="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- User Dashboard Section End -->
+
+    <!-- Edit Profile Start -->
+    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-2">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-3">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="list-1">
+                                <div class="deal-offer-contain">
+                                    <a href="shop-left-sidebar.html" class="deal-image">
+                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
+                                             alt="">
+                                    </a>
+
+                                    <a href="shop-left-sidebar.html" class="deal-contain">
+                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Deal Box Modal End -->
+    <!-- Tap to top and theme setting button start -->
+    <div class="theme-option">
+        <div class="setting-box">
+            <button class="btn setting-button">
+                <i class="fa-solid fa-gear"></i>
+            </button>
+
+            <div class="theme-setting-2">
+                <div class="theme-box">
+                    <ul>
+                        <li>
+                            <div class="setting-name">
+                                <h4>Color</h4>
+                            </div>
+                            <div class="theme-setting-button color-picker">
+                                <form class="form-control">
+                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
+                                    <input type="color" class="form-control form-control-color" id="colorPick"
+                                           value="#0da487" title="Choose your color">
+                                </form>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>Dark</h4>
+                            </div>
+                            <div class="theme-setting-button">
+                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
+                                <button class="btn btn-2 unline" id="lightButton">Light</button>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="setting-name">
+                                <h4>RTL</h4>
+                            </div>
+                            <div class="theme-setting-button rtl">
+                                <button class="btn btn-2 rtl-unline">LTR</button>
+                                <button class="btn btn-2 rtl-outline">RTL</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top and theme setting button end -->
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- Edit address modal box start -->
+    <div class="modal fade" id="edit-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="edit-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-id">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" class="form-control" id="edit-label">
+                        </div>
+                        <div class="mb-3">
+                            <label>Address</label>
+                            <textarea class="form-control" id="edit-address-text" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit address modal box end -->
+    <script>
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('edit-id').value = btn.dataset.id;
+                    document.getElementById('edit-label').value = btn.dataset.label;
+                    document.getElementById('edit-address-text').value = btn.dataset.address;
+                });
+            });
+        console.log(data); // xem trước khi fetch
+    </script>
+    <script>
+            document.getElementById("edit-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("edit-id").value;
+            const label = document.getElementById("edit-label").value;
+            const address = document.getElementById("edit-address-text").value;
+
+            try {
+                const coords = await getCoordinatesFromAddress(address); // dùng LocationIQ
+
+                const data = {
+                    Id: parseInt(id),
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                const res = await fetch(`/api/location/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+                if (!res.ok) throw new Error("Lỗi khi cập nhật");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    </script>
+    <!-- Add address modal box start -->
+    @{
+        var userId = Context.Session.GetInt32("UserId") ?? 0;
+    }
+    <div class="modal fade theme-modal" id="add-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a new address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="address-form">
+                        <input type="hidden" id="userId" value="@userId" />
+                        <input type="hidden" id="latitude" />
+                        <input type="hidden" id="longitude" />
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <input type="text" class="form-control" id="fname" placeholder="Enter Name">
+                            <label for="fname">Name</label>
+                        </div>
+
+                        <div class="form-floating mb-4 theme-form-floating">
+                            <textarea class="form-control" placeholder="Enter Address" id="address" style="height: 100px"></textarea>
+                            <label for="address">Enter Address</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-md" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn theme-bg-color btn-md text-white">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add address modal box end -->
+
+    @* api lay địa chỉ *@
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const provinceSelect = document.getElementById("provinceSelect");
+            const districtSelect = document.getElementById("districtSelect");
+            const wardSelect = document.getElementById("wardSelect");
+
+            const selectedProvince = "@ViewBag.Province";
+            const selectedDistrict = "@ViewBag.District";
+            const selectedWard = "@ViewBag.Ward";
+
+            const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
+            const data = await res.json();
+
+            data.forEach(p => {
+                const option = document.createElement("option");
+                option.text = p.name;
+                option.value = p.code;
+                if (p.name === selectedProvince) option.selected = true;
+                provinceSelect.appendChild(option);
+            });
+
+            const province = data.find(p => p.name === selectedProvince);
+            if (province) {
+                province.districts.forEach(d => {
+                    const option = document.createElement("option");
+                    option.text = d.name;
+                    option.value = d.code;
+                    if (d.name === selectedDistrict) option.selected = true;
+                    districtSelect.appendChild(option);
+                });
+
+                const district = province.districts.find(d => d.name === selectedDistrict);
+                if (district) {
+                    district.wards.forEach(w => {
+                        const option = document.createElement("option");
+                        option.text = w.name;
+                        option.value = w.code;
+                        if (w.name === selectedWard) option.selected = true;
+                        wardSelect.appendChild(option);
+                    });
+                }
+                        <div class="col-xxl-4">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <select class="form-select" id="floatingSelect12">
+                                        <option selected>Card Type</option>
+                                        <option value="kingdom">Visa Card</option>
+                                        <option value="states">MasterCard Card</option>
+                                        <option value="fra">RuPay Card</option>
+                                        <option value="china">Contactless Card</option>
+                                        <option value="spain">Maestro Card</option>
+                                    </select>
+                                    <label for="floatingSelect12">Card Type</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Card End -->
+    </script>
+    <!-- Remove Address Modal Start -->
+    <div class="modal fade" id="remove-address" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="remove-address-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác nhận xoá</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xoá địa chỉ này?</p>
+                        <input type="hidden" id="remove-id">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Xoá</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Gán id vào hidden input khi click nút Remove
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('remove-id').value = btn.dataset.id;
+            });
+        });
+
+        // Submit form xoá
+        document.getElementById("remove-address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById("remove-id").value;
+
+            try {
+                const res = await fetch(`/api/location/delete/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!res.ok) throw new Error("Xoá thất bại");
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+    <script>
+        const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
+        const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
+        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
+
+        async function handleSave() {
+            const email = document.getElementById("email1").value.trim();
+            const phone = document.getElementById("mobile").value.trim();
+            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
+            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
+            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
+            const detail = document.getElementById("detailAddress").value.trim();
+            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
+
+            // Kiểm tra có thay đổi gì không
+            const hasChanged =
+                email !== originalEmail ||
+                phone !== originalPhone ||
+                fullAddress !== originalAddress;
+
+            if (!hasChanged) {
+                alert("Bạn chưa thay đổi thông tin nào.");
+                return;
+            }
+
+            // Chuyển đến OTP để xác minh
+            const url = new URL('/otp', window.location.origin);
+            url.searchParams.set('email', email);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('address', fullAddress);
+            window.location.href = url.toString();
+        }
+    </script>
+
+    <!-- Edit Profile End -->
+    <!-- Remove Address Modal End -->
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- jquery ui-->
+    <script src="~/js/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- Quantity js -->
+    <script src="~/js/quantity-2.js"></script>
+
+    <!-- Nav & tab upside js -->
+    <script src="~/js/nav-tab.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+
+    <!-- theme setting js -->
+    <script src="~/js/theme-setting.js"></script>
+    <script>
+        const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
+        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
+        async function getCoordinatesFromAddress(address) {
+            const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
+
+            return {
+                latitude: parseFloat(data[0].lat),
+                longitude: parseFloat(data[0].lon)
+            };
+        }
+
+        // 📦 Xử lý khi người dùng submit form
+        document.getElementById("address-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            try {
+                // Lấy dữ liệu người dùng nhập
+                const userId = parseInt(document.getElementById("userId").value);
+                const label = document.getElementById("fname").value;
+                const address = document.getElementById("address").value;
+
+                if (!label || !address) {
+                    alert("Vui lòng nhập đầy đủ tên và địa chỉ.");
+                    return;
+                }
+
+                // 🔄 Gọi API để lấy tọa độ từ địa chỉ
+                const coords = await getCoordinatesFromAddress(address);
+
+                // Cập nhật giá trị vào input ẩn
+                document.getElementById("latitude").value = coords.latitude;
+                document.getElementById("longitude").value = coords.longitude;
+
+                // Chuẩn bị dữ liệu gửi đi
+                const data = {
+                    UserId: userId,
+                    Label: label,
+                    Address: address,
+                    Latitude: coords.latitude,
+                    Longitude: coords.longitude
+                };
+
+                console.log("Gửi dữ liệu:", data);
+
+                // 📨 Gửi POST request đến API
+                const res = await fetch('/api/location/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error("Lỗi server:", errorText);
+                    throw new Error("Lỗi khi thêm địa chỉ.");
+                }
+
+                const result = await res.json();
+                alert(result.message);
+                location.reload();
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        });
+    </script>
+
+
+    
+
+</body>
+
+</html>

@@ -611,6 +611,9 @@ public partial class AppDbContext : DbContext
                 .HasColumnType("text")
                 .HasColumnName("reason");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.ImageUrl)
+        .HasColumnName("image_url")
+        .HasColumnType("nvarchar(max)");
 
             entity.HasOne(d => d.User).WithMany(p => p.ReturnOrders)
                 .HasForeignKey(d => d.UserId)
