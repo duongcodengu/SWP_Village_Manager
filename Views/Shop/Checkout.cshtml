@@ -5,7 +5,9 @@
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
     var shipping = 20000;
-    var finalTotal = total + shipping;
+    var discount = ViewBag.DiscountAmount;
+    var subTotal = total - discount;
+    var finalTotal = total - discount + shipping;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -473,7 +475,7 @@
                             <ul class="summery-contain">
                                 <li>
                                     <h4>Tổng tiền</h4>
-                                    <h4 class="price">₫@String.Format("{0:N0}", total)</h4>
+                                    <h4 class="price">₫@String.Format("{0:N0}", subTotal)</h4>
                                 </li>
 
                                 <li>
