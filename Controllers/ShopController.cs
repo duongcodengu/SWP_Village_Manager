@@ -164,16 +164,10 @@ public class ShopController : Controller
             .ToList();
         ViewBag.Addresses = addresses;
 
+        ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
+
         return View(cartItems);
     }
-
-    //public IActionResult PlaceOrder()
-    //{
-    //    // Xoá giỏ hàng:
-    //    HttpContext.Session.Remove("Cart");
-    //    // Điều hướng đến trang thành công
-    //    return RedirectToAction("Success");
-    //}
 
     public IActionResult Success()
     {
@@ -190,14 +184,11 @@ public class ShopController : Controller
         ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1); // hoặc theo user hiện tại
         ViewBag.OrderId = TempData["OrderId"] ?? 0;
         ViewBag.PaymentMethod = "Cash on Delivery";
-        // Clear cart sau khi đặt hàng thành công nếu cần
-        HttpContext.Session.Set("Cart", new List<CartItem>());
+
+        ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
 
         return View(cart); // Truyền vào Success.cshtml
     }
-
-    //place order
-
 
     [HttpPost("/shop/place-order")]
     public async Task<IActionResult> PlaceOrder()
@@ -250,8 +241,6 @@ public class ShopController : Controller
 
         return RedirectToAction("Success");
     }
-
-
 
     public IActionResult Tracking(string orderId)
     {

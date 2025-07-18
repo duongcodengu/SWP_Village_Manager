@@ -7,11 +7,12 @@
     var address = ViewBag.Address as Village_Manager.Models.Address;
     var orderId = ViewBag.OrderId?.ToString() ?? "";
     var paymentMethod = ViewBag.PaymentMethod?.ToString() ?? "N/A";
-    var itemCount = Model.Sum(i => i.Quantity);
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
-    var discount = 0; // sau có thể lấy từ DB
+    var discount = ViewBag.DiscountAmount != null ? (int)ViewBag.DiscountAmount : 0;
     var shipping = 20000;
     var finalTotal = total - discount + shipping;
+    var itemCount = Model.Sum(i => i.Quantity);
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -229,7 +230,7 @@
                                     </li>
                                     <li>
                                         <h4>Giảm giá</h4>
-                                        <h4 class="price text-danger">(-) ₫@discount.ToString("N0")</h4>
+                                        <h4 class="price text-danger">-₫@discount.ToString("N0")</h4>
                                     </li>
                                     <li>
                                         <h4>Phí vận chuyển</h4>
