@@ -34,6 +34,12 @@
 
     <!-- Template css -->
     <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+
+    <style>
+        #price-range {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <!-- mobile fix menu start -->
@@ -1033,9 +1039,18 @@
             };
 
             // ===== 5. Khởi tạo thanh kéo giá =====
-        $(document).ready(function () {
+             $(document).ready(function () {
             let from = parseInt('@Context.Request.Query["minPrice"]' || "0");
             let to = parseInt('@Context.Request.Query["maxPrice"]' || "1000000");
+
+            // Đảm bảo from < to ít nhất 1 đơn vị
+            if (to - from <= 0) {
+                to = from + 1;
+                if (to > 1000000) {
+                    to = 1000000;
+                    from = to - 1;
+                }
+            }
 
             // Khởi tạo slider
             $("#price-range").ionRangeSlider({
@@ -1048,21 +1063,36 @@
                 prettify_separator: ".",
                 decorate_both: true,
                 values_separator: " - ",
-                onStart: function (data) {
+                drag_interval: true,
+                min_interval: 1,
+
+                onStart: function () {
                     setTimeout(adjustSliderPosition, 100);
                 },
+
                 onChange: function (data) {
                     adjustSliderPosition();
                 },
-                onFinish: function (data) {
-                    let minPrice = Math.min(data.from, 1000000);
-                    let maxPrice = Math.min(data.to, 1000000);
 
+                onFinish: function (data) {
+                    let minPrice = Math.min(data.from, 999999);
+                    let maxPrice = Math.max(data.to, minPrice + 1);
+
+                    // Cập nhật input ẩn
                     $("#minPrice").val(minPrice);
                     $("#maxPrice").val(maxPrice);
 
+                    // Cập nhật input tay
                     $("#manualMin").val(formatNumber(minPrice));
                     $("#manualMax").val(formatNumber(maxPrice));
+
+                    // Nếu kéo sai, cập nhật lại slider
+                    if (data.from !== minPrice || data.to !== maxPrice) {
+                        priceSlider.update({
+                            from: minPrice,
+                            to: maxPrice
+                        });
+                    }
 
                     adjustSliderPosition();
                 }
@@ -1078,41 +1108,69 @@
                 return parseInt((val || "").toString().replaceAll(".", "")) || 0;
             }
 
-            // Cập nhật giá trị khi nhập tay vào các input
+            // Cập nhật slider khi nhập tay
             $("#manualMin, #manualMax").on("input", function () {
-                const minVal = parseFormatted($("#manualMin").val());
-                const maxVal = parseFormatted($("#manualMax").val());
+                let minVal = parseFormatted($("#manualMin").val());
+                let maxVal = parseFormatted($("#manualMax").val());
 
                 const maxLimit = 1000000;
 
-                let minClamped = Math.min(minVal, maxLimit);
-                let maxClamped = Math.min(maxVal, maxLimit);
+                minVal = Math.min(minVal, maxLimit - 1);
+                maxVal = Math.min(maxVal, maxLimit);
 
-                // Cập nhật slider nếu giá trị hợp lệ
-                if (minClamped <= maxClamped) {
-                    priceSlider.update({
-                        from: minClamped,
-                        to: maxClamped
-                    });
-
-                    // Cập nhật giá trị cho input ẩn
-                    $("#minPrice").val(minClamped);
-                    $("#maxPrice").val(maxClamped);
+                if (minVal >= maxVal) {
+                    if ($(this).attr("id") === "manualMin") {
+                        minVal = Math.max(0, maxVal - 1);
+                    } else {
+                        maxVal = minVal + 1;
+                    }
                 }
+
+                priceSlider.update({
+                    from: minVal,
+                    to: maxVal
+                });
+
+                $("#minPrice").val(minVal);
+                $("#maxPrice").val(maxVal);
             });
 
-            // Khi người dùng rời khỏi ô nhập (blur), format lại giá trị
+            // Khi blur, format lại và đảm bảo logic
             $("#manualMin, #manualMax").on("blur", function () {
-                let val = parseFormatted($(this).val());
-                if (val > 1000000) val = 1000000;
-                $(this).val(formatNumber(val));  // Hiển thị lại giá trị với dấu chấm
+                let minVal = parseFormatted($("#manualMin").val());
+                let maxVal = parseFormatted($("#manualMax").val());
+
+                const maxLimit = 1000000;
+
+                minVal = Math.min(minVal, maxLimit - 1);
+                maxVal = Math.min(maxVal, maxLimit);
+
+                if (minVal >= maxVal) {
+                    if ($(this).attr("id") === "manualMin") {
+                        minVal = Math.max(0, maxVal - 1);
+                    } else {
+                        maxVal = minVal + 1;
+                    }
+                }
+
+                $("#manualMin").val(formatNumber(minVal));
+                $("#manualMax").val(formatNumber(maxVal));
+
+                priceSlider.update({
+                    from: minVal,
+                    to: maxVal
+                });
+
+                $("#minPrice").val(minVal);
+                $("#maxPrice").val(maxVal);
             });
 
-            // Hàm điều chỉnh vị trí thanh slider khi kéo (cản lại khi chạm viền)
+            // Căn chỉnh lại vị trí thanh slider
             function adjustSliderPosition() {
                 const sliderWidth = $(".irs").width();
                 const maxPosition = $(".irs-to").position().left + $(".irs-to").outerWidth();
                 const minPosition = $(".irs-from").position().left;
+                const irsSingle = document.querySelector(".irs-single");
 
                 // Nếu giá trị max vượt quá chiều rộng của slider, dừng lại
                 if (maxPosition > sliderWidth) {
@@ -1124,13 +1182,31 @@
                 if (minPosition < 0) {
                     $(".irs-from").css("left", 0);
                 }
+
+                const container = document.querySelector(".irs");
+
+                if (!irsSingle || !container) return;
+
+                const singleRect = irsSingle.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                if (singleRect.left < containerRect.left) {
+                    irsSingle.style.left = "0px";
+                }
+
+                const overflowRight = singleRect.right - containerRect.right;
+                if (overflowRight > 0) {
+                    const currentLeft = parseFloat(getComputedStyle(irsSingle).left) || 0;
+                    irsSingle.style.left = (currentLeft - overflowRight) + "px";
+                }
             }
 
             // Điều chỉnh lại slider khi thay đổi kích thước cửa sổ
             $(window).resize(function () {
-                setTimeout(adjustSliderPosition, 100); // Trì hoãn để điều chỉnh đúng vị trí khi cửa sổ thay đổi
+                setTimeout(adjustSliderPosition, 100);
             });
         });
+
 
             // ===== 6. Các xử lý sự kiện UI =====
             $("#searchForm").submit(function (e) {
