@@ -17,12 +17,13 @@ namespace Village_Manager.Controllers
         private readonly IConfiguration _configuration;
         private readonly EmailSettings _emailSettings;
         private static Dictionary<string, (string Otp, DateTime Expire)> otpStore = new();
-
-        public CustomerController( AppDbContext context, IConfiguration configuration, IOptions<EmailSettings> emailSettings)
+        private readonly IWebHostEnvironment _env;
+        public CustomerController( AppDbContext context, IConfiguration configuration, IOptions<EmailSettings> emailSettings, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
             _emailSettings = emailSettings.Value;
+            _env = env;
         }
 
         //[HttpGet]
@@ -35,7 +36,7 @@ namespace Village_Manager.Controllers
         //    return View(userLocations);
         //}
         [HttpGet]
-        [Route("dashboard")]
+        [Route("customer")]
         public async Task<IActionResult> DashBoard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -202,6 +203,114 @@ namespace Village_Manager.Controllers
 
             return Redirect($"/otp?email={safeEmail}&phone={safePhone}&address={safeAddress}");
         }
-        }        
+                
     }
+
+        // hoàn hàng
+        [HttpGet]
+        public IActionResult CancelOrder(int orderId, string type)
+        {
+            ViewBag.OrderId = orderId;
+            ViewBag.OrderType = type;
+            return View("CancelOrder");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelOrder(int orderId, string type, string reason)
+        {
+            var userId = GetCurrentUserId(); // Tự viết logic lấy user ID
+
+            // Update trạng thái order
+            var order = await _context.RetailOrders.FindAsync(orderId);
+            if (order != null && order.Status == "pending")
+            {
+                order.Status = "cancelled";
+
+                _context.ReturnOrders.Add(new ReturnOrder
+                {
+                    OrderId = orderId,
+                    OrderType = type,
+                    UserId = userId,
+                    Quantity = (int)order.RetailOrderItems.Sum(i => i.Quantity),
+                    Reason = reason,
+                    CreatedAt = DateTime.Now
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Customer");
+        }
+
+        [HttpGet]
+        public IActionResult ReturnOrder(int orderId, string type)
+        {
+            ViewBag.OrderId = orderId;
+            ViewBag.OrderType = type;
+            return View("ReturnOrder");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReturnOrder(int orderId, string type, string reason, IFormFile image)
+        {
+            var userId = GetCurrentUserId();
+            string imageUrl = null;
+
+            if (image != null)
+            {
+                var folderName = "images/Reasonreturn"; // Đường dẫn thư mục cần lưu
+                var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+                var relativePath = Path.Combine(folderName, fileName); // images/Reasonreturn/abc.jpg
+                var savePath = Path.Combine(_env.WebRootPath, relativePath); // wwwroot/images/Reasonreturn/abc.jpg
+
+                using var stream = new FileStream(savePath, FileMode.Create);
+                await image.CopyToAsync(stream);
+
+                imageUrl = "/" + relativePath.Replace("\\", "/"); // Lưu URL phục vụ truy cập
+            }
+
+
+            var order = await _context.RetailOrders.FindAsync(orderId);
+            if (order != null && order.Status == "delivered")
+            {
+                order.Status = "returned";
+
+                _context.ReturnOrders.Add(new ReturnOrder
+                {
+                    OrderId = orderId,
+                    OrderType = type,
+                    UserId = userId,
+                    Quantity = (int)order.RetailOrderItems.Sum(i => i.Quantity),
+                    Reason = reason,
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = imageUrl
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Customer");
+        }
+        
+        private int GetCurrentUserId()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            return (int)userId;
+
+            throw new Exception("Người dùng chưa đăng nhập hoặc Session đã hết hạn.");
+        }
+
+
+
+        public async Task<IActionResult> CancelOrder()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ReturnOrder()
+        {
+            return View();
+        }
+    }
+}
 

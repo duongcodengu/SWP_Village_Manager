@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Huỷ đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewData["Title"] = "Hoàn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fastkart">
+    <meta name="keywords" content="Fastkart">
+    <meta name="author" content="Fastkart">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>On-demand last-mile delivery</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h3>Lý do huỷ đơn hàng</h3>
+        <form asp-action="CancelOrder" method="post">
+            <input type="hidden" name="orderId" value="@ViewBag.OrderId" />
+            <input type="hidden" name="type" value="@ViewBag.OrderType" />
+            <div class="mb-3">
+                <textarea class="form-control" name="reason" rows="4" placeholder="Nhập lý do huỷ đơn hàng..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Xác nhận huỷ</button>
+        </form>
+    </div>
+   
+    </script>
+    <!-- Bg overlay Start -->
+    <div class="bg-overlay"></div>
+    <!-- Bg overlay End -->
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+
+    <!-- otp js-->
+    <script src="~/js/otp.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/slick-animation.min.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+</body>
+
+</html>
+

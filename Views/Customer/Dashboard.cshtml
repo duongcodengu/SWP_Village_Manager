@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
     var culture = new System.Globalization.CultureInfo("vi-VN");
+    var orders = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
 }
 
 @model List<Village_Manager.Models.UserLocation>
@@ -95,6 +96,12 @@
                                 <button class="nav-link" id="pills-address-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-address" type="button" role="tab">
                                     <i data-feather="map-pin"></i>Address
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-deliorder-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-deliorder" type="button" role="tab">
+                                    <i data-feather="map-pin"></i>Hủy hàng
                                 </button>
                             </li>
                         </ul>
@@ -201,25 +208,53 @@
                                         }
                                         else
                                         {
-                                            foreach (var order in orderHistory)
+                                            @foreach (var order in orderHistory)
                                             {
-                                                var total = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
                                                 <div class="order-card">
-                                                    <div class="order-card-header">
-                                                        <div class="header-left">
-                                                            <h5>Đơn hàng #@order.Id</h5>
-                                                            <p>Ngày đặt: @order.OrderDate?.ToString("dd/MM/yyyy")</p>
-                                                        </div>
-                                                        <div class="header-right">
-                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
-                                                            <h5 class="order-total">@string.Format(culture, "{0:C0}", total)</h5>
-                                                        </div>
+                                                    <div class="header-right text-end">
+                                                        <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                        <h5 class="order-total">
+                                                            @(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))
+                                                        </h5>
+
+                                                        @if (order.Status == "pending")
+                                                        {
+                                                            <a asp-action="CancelOrder" asp-controller="Customer"
+                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                               class="btn btn-sm btn-outline-danger mt-1">Huỷ hàng</a>
+                                                        }
+                                                        else if (order.Status == "delivered")
+                                                        {
+                                                            <a asp-action="ReturnOrder" asp-controller="Customer"
+                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                               class="btn btn-sm btn-outline-warning mt-1">Hoàn hàng</a>
+                                                        }
                                                     </div>
 
                                                     <div class="order-card-body">
-                                                        <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@order.Id" class="btn btn-primary" onclick="loadOrderDetail(@order.Id); return false;">
-                                                            Xem chi tiết
-                                                        </a>
+                                                        @foreach (var item in order.RetailOrderItems)
+                                                        {
+                                                            <div class="product-item">
+                                                                <div class="product-image">
+                                                                    @{
+                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                                                                    }
+                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
+                                                                </div>
+                                                                <div class="product-info">
+                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
+                                                                        <h6>@item.Product?.Name</h6>
+                                                                    </a>
+                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
+                                                                </div>
+                                                                <div class="product-quantity">
+                                                                    <span>x @item.Quantity</span>
+                                                                </div>
+                                                                <div class="product-total">
+                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
+                                                                </div>
+                                                            </div>
+                                                        }
                                                     </div>
                                                 </div>
                                             }
@@ -230,6 +265,76 @@
                             </div>
 
                             @* note *@
+                            </div>
+
+                            @* <div class="tab-pane fade" id="pills-deliorder" role="tab" aria-labelledby="pills-deliorder-tab">
+                                        <div class="dashboard-home">
+                                            <div class="title">
+                                                <h2>Hủy Đơn</h2>
+                                    </div>
+                                    @if (orders != null && orders.Any())
+                                    {
+                                        <div class="row g-4">
+                                            @foreach (var order in orders)
+                                            {
+                                                <div class="col-12">
+                                                    <div class="card p-3">
+                                                        <h5>Đơn hàng #@order.Id - @order.Status.ToUpper()</h5>
+                                                        <p>
+                                                            Ngày đặt:
+                                                            @(order?.OrderDate != null
+                                                                 ? order.OrderDate.Value.ToString("dd/MM/yyyy")
+                                                                : "Không xác định")
+                                                </p>
+
+
+                                                        <ul>
+                                                            @foreach (var item in order.RetailOrderItems)
+                                                            {
+                                                                <li>
+                                                                    @(item?.Product?.Name ?? "Không có tên sản phẩm")
+                                                                    - SL: @(item?.Quantity ?? 0)
+                                                                    - Đơn giá: @(item?.UnitPrice != null ? item.UnitPrice.Value.ToString("N0") : "0")
+                                                                </li>
+
+                                                            }
+                                                        </ul>
+
+                                                        @if (order.Status == "pending")
+                                                        {
+                                                            <form asp-action="CancelOrder" asp-controller="Customer" method="post">
+                                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                                <button type="submit" class="btn btn-danger">Hủy đơn hàng</button>
+                                                            </form>
+                                                        }
+                                                        else if (order.Status == "delivered")
+                                                        {
+                                                            <form asp-action="SubmitReturn" asp-controller="Customer" method="post" enctype="multipart/form-data">
+                                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                                <div class="mb-2">
+                                                                    <label>Ảnh sản phẩm hoàn:</label>
+                                                                    <input type="file" name="ReturnImage" required class="form-control" />
+                                                                </div>
+                                                                <div class="mb-2">
+                                                                    <label>Lý do hoàn hàng:</label>
+                                                                    <textarea name="Reason" class="form-control" required></textarea>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-warning">Hoàn hàng</button>
+                                                            </form>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-danger">Bạn không có đơn hàng nào cần hủy hoặc hoàn.</p>
+                                    }
+                                       
+                                </div>
+                            </div> *@
+                            @* note
 
                             <div class="tab-pane fade" id="pills-address" role="tab" aria-labelledby="pills-address-tab">
                                 <div class="dashboard-address">
@@ -250,6 +355,8 @@
                                     </div>
 
                             @*         <div class="row g-sm-4 g-3">
+                                    </div> *@
+                                  @*   <div class="row g-sm-4 g-3">
                                         @foreach (var userLocation in Model)
                                         {
                                             <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
@@ -314,6 +421,10 @@
                                     </div>
                                 </div>
                             </div> *@
+                                    </div> *@
+
+                                </div>
+                            </div>
                             <style>
                                 .order-history-container {
                                     display: flex;
