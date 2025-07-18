@@ -428,7 +428,7 @@ CREATE TABLE HiddenProduct (
 );
 
 --Bảng mã giảm giá
-CREATE TABLE DiscountCode (
+CREATE TABLE DiscountCodes (
     id INT PRIMARY KEY IDENTITY(1,1),
     code NVARCHAR(50) UNIQUE NOT NULL,
     discount_percent INT NOT NULL CHECK (discount_percent >= 1 AND discount_percent <= 100),
