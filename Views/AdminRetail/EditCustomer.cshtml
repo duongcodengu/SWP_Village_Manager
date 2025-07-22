@@ -18,7 +18,7 @@
                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button">
-                                            Account
+                                            Tài khoản
                                         </button>
                                     </li>
                                     
@@ -31,12 +31,12 @@
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">
-                                                <h5>Customer Information</h5>
+                                                <h5>Thông tin khách hàng</h5>
                                             </div>
 
                                             <div class="row">
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Username</label>
+                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Tên</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Username" class="form-control" type="text" required>
                                                         <span asp-validation-for="Username" class="text-danger"></span>
@@ -44,7 +44,7 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email Address</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Email" class="form-control" type="email" required>
                                                         <span asp-validation-for="Email" class="text-danger"></span>
@@ -52,7 +52,7 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Phone Number</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Số điện thoại</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Phone" class="form-control" type="text" required>
                                                         <span asp-validation-for="Phone" class="text-danger"></span>
@@ -60,15 +60,15 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">New Password</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Mật khẩu mới</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input name="newPassword" class="form-control" type="password">
-                                                        <small class="text-muted">Leave blank to keep current password</small>
+                                                        <small class="text-muted">Để trống để giữ mật khẩu hiện tại</small>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Role</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <select asp-for="RoleId" class="form-control" required>
                                                             <option value="">-- Select Role --</option>
@@ -83,7 +83,7 @@
                                             </div>
 
                                             <div class="card-submit-button">
-                                                <button class="btn btn-animation ms-auto" type="submit">Update</button>
+                                                <button class="btn btn-animation ms-auto" type="submit">Cập nhập</button>
                                             </div>
                                         </form>
                                     </div>
