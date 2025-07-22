@@ -63,7 +63,7 @@
 @{
     ViewData["Title"] = "Dashboard Shipper";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var total = ViewBag.TotalDeliveries ?? 0;
+    var delivering = ViewBag.DeliveringDeliveries ?? 0;
     var pending = ViewBag.PendingDeliveries ?? 0;
     var completed = ViewBag.CompletedDeliveries ?? 0;
     var recent = ViewBag.RecentDeliveries as List<Village_Manager.Models.Delivery>;
@@ -103,32 +103,32 @@
                             <ul class="nav flex-column gap-2 w-100 user-nav-pills">
                                 <li class="nav-item">
                                     <a href="/dashboardshipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-home"></i> <span>Dashboard</span>
+                                        <i class="fa fa-home"></i> <span>Trang chủ</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/Shipper/OrdersShipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-list"></i> <span>Orders</span>
+                                        <i class="fa fa-list"></i> <span>Đơn chờ nhận</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/Shipper/DeliveriesShipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-truck"></i> <span>Deliveries</span>
+                                        <i class="fa fa-truck"></i> <span>Đơn cần giao</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/Shipper/ProfileShipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-user"></i> <span>Profile</span>
+                                        <i class="fa fa-user"></i> <span>Hồ sơ</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/Shipper/HistoryShipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-history"></i> <span>History</span>
+                                        <i class="fa fa-history"></i> <span>Lịch sử giao</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/Shipper/NotificationsShipper" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-bell"></i> <span>Notifications</span>
+                                        <i class="fa fa-bell"></i> <span>Thông báo</span>
                                     </a>
                                 </li>
                                 <!-- Thêm menu đơn hàng đã trả -->
@@ -139,7 +139,7 @@
                                 </li>
                                 <li class="nav-item mt-2">
                                     <a href="/logout" class="nav-link d-flex align-items-center gap-2">
-                                        <i class="fa fa-sign-out-alt"></i> <span>Log Out</span>
+                                        <i class="fa fa-sign-out-alt"></i> <span>Đăng xuất</span>
                                     </a>
                                 </li>
                             </ul>
@@ -163,27 +163,30 @@
                                     </div>
                                     <div class="row g-4 mb-4">
                                         <div class="col-6 col-lg-3">
-                                            <div class="card border-0 shadow h-100 rounded-4 text-center">
-                                                <div class="card-body py-4">
-                                                    <div class="mb-2">
-                                                        <i class="fa fa-cube fa-2x text-primary"></i>
+                                            <a href="/Shipper/DeliveriesShipper?searchStatus=in_transit" style="text-decoration:none;">
+                                                <div class="card border-0 shadow h-100 rounded-4 text-center" style="cursor:pointer;">
+                                                    <div class="card-body py-4">
+                                                        <div class="mb-2">
+                                                            <i class="fa fa-truck fa-2x text-info"></i>
+                                                        </div>
+                                                        <div class="fs-1 fw-bold text-dark">@delivering</div>
+                                                        <div class="text-muted small mt-1">Đang giao hàng</div>
                                                     </div>
-                                                    <div class="fs-1 fw-bold text-dark">@total</div>
-                                                    <div class="text-muted small mt-1">Tổng đơn giao</div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
-                                      
                                         <div class="col-6 col-lg-3">
-                                            <div class="card border-0 shadow h-100 rounded-4 text-center">
-                                                <div class="card-body py-4">
-                                                    <div class="mb-2">
-                                                        <i class="fa fa-clock fa-2x text-warning"></i>
+                                            <a href="/Shipper/DeliveriesShipper?searchStatus=assigned" style="text-decoration:none;">
+                                                <div class="card border-0 shadow h-100 rounded-4 text-center" style="cursor:pointer;">
+                                                    <div class="card-body py-4">
+                                                        <div class="mb-2">
+                                                            <i class="fa fa-clock fa-2x text-warning"></i>
+                                                        </div>
+                                                        <div class="fs-1 fw-bold text-dark">@pending</div>
+                                                        <div class="text-muted small mt-1">Chờ giao hàng </div>
                                                     </div>
-                                                    <div class="fs-1 fw-bold text-dark">@pending</div>
-                                                    <div class="text-muted small mt-1">Chờ giao hàng </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </div>
                                         <div class="col-6 col-lg-3">
                                             <div class="card border-0 shadow h-100 rounded-4 text-center">
@@ -200,7 +203,7 @@
                                     <div class="card border-0 shadow rounded-4">
                                         <div class="card-header bg-white d-flex justify-content-between align-items-center rounded-top-4">
                                             <h5 class="mb-0 fw-bold">Đơn hàng gần nhất</h5>
-                                            <a href="/ShipperView/DeliveriesShipper" class="btn btn-sm btn-outline-primary rounded-pill px-3">Xem tất cả</a>
+                                            <a href="/Shipper/DeliveriesShipper" class="btn btn-sm btn-outline-primary rounded-pill px-3">Xem tất cả</a>
                                         </div>
                                         <div class="card-body p-0">
                                             <div class="table-responsive">
@@ -223,24 +226,29 @@
                                                                     <td class="text-center">#@order.OrderId</td>
                                                                     <td>@order.CustomerName</td>
                                                                     <td class="text-center">
-                                                                        @switch(order.Status?.ToLower())
-                                                                        {
-                                                                            case "assigned":
-                                                                                <span class="badge bg-warning text-dark">Chờ giao</span>;
-                                                                                break;
-                                                                            case "in_transit":
-                                                                                <span class="badge bg-info text-dark">Đang giao</span>;
-                                                                                break;
-                                                                            case "delivered":
-                                                                                <span class="badge bg-success">Đã giao</span>;
-                                                                                break;
-                                                                            case "failed":
-                                                                                <span class="badge bg-danger">Thất bại</span>;
-                                                                                break;
-                                                                            default:
-                                                                                <span class="badge bg-secondary">@order.Status</span>;
-                                                                                break;
+                                                                        @{
+                                                                            string statusVN = order.Status switch
+                                                                            {
+                                                                                "assigned" => "Chờ giao",
+                                                                                "shipped" => "Đang giao",
+                                                                                "in_transit" => "Đang giao",
+                                                                                "delivered" => "Đã giao",
+                                                                                "failed" => "Thất bại",
+                                                                                "cancelled" => "Đã huỷ",
+                                                                                _ => order.Status
+                                                                            };
+                                                                            string badgeClass = order.Status switch
+                                                                            {
+                                                                                "assigned" => "bg-info text-dark",
+                                                                                "shipped" => "bg-warning text-dark",
+                                                                                "in_transit" => "bg-warning text-dark",
+                                                                                "delivered" => "bg-success",
+                                                                                "failed" => "bg-danger",
+                                                                                "cancelled" => "bg-orange text-white",
+                                                                                _ => "bg-secondary"
+                                                                            };
                                                                         }
+                                                                        <span class="badge @badgeClass">@statusVN</span>
                                                                     </td>
                                                                     <td>@order.CustomerAddress</td>
                                                                     <td class="text-center">@order.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>

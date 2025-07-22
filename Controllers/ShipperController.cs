@@ -21,23 +21,19 @@ namespace Village_Manager.Controllers
             if (!shipperId.HasValue)
                 return RedirectToAction("Login", "Home");
 
-            // Tổng đơn giao
-            var totalDeliveries = _context.Deliveries.Count(d => d.ShipperId == shipperId);
-
+            // Đơn đang giao
+            var deliveringDeliveries = _context.Deliveries.Count(d => d.ShipperId == shipperId && (d.Status == "shipped" || d.Status == "in_transit"));
             // Đơn chờ nhận
             var pendingDeliveries = _context.Deliveries.Count(d => d.ShipperId == shipperId && d.Status == "assigned");
-
             // Đơn hoàn thành
             var completedDeliveries = _context.Deliveries.Count(d => d.ShipperId == shipperId && d.Status == "delivered");
-
             // Đơn hàng gần nhất
             var recentDeliveries = _context.Deliveries
                 .Where(d => d.ShipperId == shipperId)
                 .OrderByDescending(d => d.StartTime)
                 .Take(5)
                 .ToList();
-
-            ViewBag.TotalDeliveries = totalDeliveries;
+            ViewBag.DeliveringDeliveries = deliveringDeliveries;
             ViewBag.PendingDeliveries = pendingDeliveries;
             ViewBag.CompletedDeliveries = completedDeliveries;
             ViewBag.RecentDeliveries = recentDeliveries;
@@ -178,7 +174,7 @@ namespace Village_Manager.Controllers
             return Redirect("/shipper");
         }
         
-        public IActionResult OrdersShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "")
+        public IActionResult OrdersShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", int page = 1, int pageSize = 10)
         {
             var query = _context.RetailOrders
                 .Include(o => o.RetailOrderItems)
@@ -212,8 +208,12 @@ namespace Village_Manager.Controllers
                 query = query.Where(o => o.Status == "confirmed");
             }
 
-            var orders = query.ToList();
+            int totalItems = query.Count();
+            var orders = query.OrderByDescending(o => o.Id).Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+            ViewBag.TotalItems = totalItems;
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
             ViewBag.SearchOrderId = searchOrderId;
             ViewBag.SearchCustomer = searchCustomer;
             ViewBag.SearchStatus = searchStatus;
@@ -265,7 +265,7 @@ namespace Village_Manager.Controllers
             }
             return RedirectToAction("OrdersShipper");
         }
-        public IActionResult DeliveriesShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "")
+        public IActionResult DeliveriesShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "", int page = 1, int pageSize = 10)
         {
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
             if (!shipperId.HasValue)
@@ -312,8 +312,12 @@ namespace Village_Manager.Controllers
                 }
             }
 
-            var deliveries = query.OrderBy(d => d.StartTime).ToList();
+            int totalItems = query.Count();
+            var deliveries = query.OrderByDescending(d => d.StartTime).Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+            ViewBag.TotalItems = totalItems;
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
             ViewBag.SearchOrderId = searchOrderId;
             ViewBag.SearchCustomer = searchCustomer;
             ViewBag.SearchStatus = searchStatus;
@@ -344,7 +348,7 @@ namespace Village_Manager.Controllers
             ViewBag.Profile = shipper;
             return View();
         }
-        public IActionResult HistoryShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "")
+        public IActionResult HistoryShipper(string searchOrderId = "", string searchCustomer = "", string searchStatus = "", string searchDateRange = "", int page = 1, int pageSize = 10)
         {
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
             if (!shipperId.HasValue)
@@ -391,20 +395,21 @@ namespace Village_Manager.Controllers
                 }
             }
 
-            var deliveries = query.OrderByDescending(d => d.EndTime).ToList();
+            int totalItems = query.Count();
+            var deliveries = query.OrderByDescending(d => d.EndTime).Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Lấy proof cho từng đơn
-            var proofs = _context.DeliveryProofs
-                .Where(p => p.ShipperId == shipperId)
-                .ToList();
-
-            // Lấy lý do thất bại cho từng đơn
-            var issues = _context.DeliveryIssues
-                .Where(i => i.ShipperId == shipperId)
-                .ToList();
-
+            var deliveryIds = deliveries.Select(d => d.Id).ToList(); // Id là int
+            var proofs = _context.DeliveryProofs.Where(p => p.DeliveryId.HasValue && deliveryIds.Contains(p.DeliveryId.Value)).ToList();
             ViewBag.DeliveryProofs = proofs;
+
+            // Lấy issue cho từng đơn
+            var issues = _context.DeliveryIssues.Where(i => deliveryIds.Contains(i.DeliveryId)).ToList();
             ViewBag.DeliveryIssues = issues;
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
             ViewBag.SearchOrderId = searchOrderId;
             ViewBag.SearchCustomer = searchCustomer;
             ViewBag.SearchStatus = searchStatus;
