@@ -306,13 +306,15 @@ CREATE TABLE Supplier (
 CREATE TABLE ReturnOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
     order_type NVarchar(10) CHECK (order_type IN ('retail', 'import')),
-    order_id INT, -- bắt buộc phải kiểm tra trong code order_type 
+    order_id INT, -- b?t bu?c ph?i ki?m tra trong code order_type 
     user_id INT,
     quantity INT,
-    reason NVARCHAR(MAX),
+    reason TEXT,
     created_at DATETIME,
+	image_url NVARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+
 ------------------------------------ADD Table--------------------------------------------------------------
 
 CREATE TABLE SupplyRequest (
