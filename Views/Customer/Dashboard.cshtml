@@ -1,13 +1,9 @@
-
 @{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
-    var culture = new System.Globalization.CultureInfo("vi-VN");
-    var orders = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
+    var location = ViewBag.Location as List<Village_Manager.Models.UserLocation>;
 }
-
-@model List<Village_Manager.Models.UserLocation>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,12 +94,6 @@
                                     <i data-feather="map-pin"></i>Address
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-deliorder-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-deliorder" type="button" role="tab">
-                                    <i data-feather="map-pin"></i>Hủy hàng
-                                </button>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -174,7 +164,7 @@
                                             <div class="dashboard-content-title">
                                                 <h4>
                                                     Thông tin khách hàng <a href="javascript:void(0)"
-                                                                           data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
+                                                                            data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
                                                 </h4>
                                             </div>
                                             <div class="dashboard-detail">
@@ -188,7 +178,7 @@
                             </div>
 
                             <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
-                                <div id="orderHistoryContainer" class="dashboard-order">
+                                <div class="dashboard-order">
                                     <div class="title">
                                         <h2>Lịch sử Đơn hàng</h2>
                                         <span class="title-leaf title-leaf-gray">
@@ -211,24 +201,15 @@
                                             @foreach (var order in orderHistory)
                                             {
                                                 <div class="order-card">
-                                                    <div class="header-right text-end">
-                                                        <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
-                                                        <h5 class="order-total">
-                                                            @(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))
-                                                        </h5>
-
-                                                        @if (order.Status == "pending")
-                                                        {
-                                                            <a asp-action="CancelOrder" asp-controller="Customer"
-                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-danger mt-1">Huỷ hàng</a>
-                                                        }
-                                                        else if (order.Status == "delivered")
-                                                        {
-                                                            <a asp-action="ReturnOrder" asp-controller="Customer"
-                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-warning mt-1">Hoàn hàng</a>
-                                                        }
+                                                    <div class="order-card-header">
+                                                        <div class="header-left">
+                                                            <h5>Đơn hàng #@order.Id</h5>
+                                                            <p>Ngày đặt: @(order.OrderDate?.ToString("dd/MM/yyyy"))</p>
+                                                        </div>
+                                                        <div class="header-right">
+                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                            <h5 class="order-total">@(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h5>
+                                                        </div>
                                                     </div>
 
                                                     <div class="order-card-body">
@@ -261,7 +242,92 @@
                                         }
                                     </div>
                                 </div>
-                                <div id="orderDetailContainer" style="display:none;"></div>
+                            </div>
+
+                            @* note *@
+
+                            <div class="tab-pane fade" id="pills-address" role="tab" aria-labelledby="pills-address-tab">
+                                <div class="dashboard-address">
+                                    <div class="title title-flex">
+                                        <div>
+                                            <h2>My Address Book</h2>
+                                            <span class="title-leaf">
+                                                <svg class="icon-width bg-gray">
+                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                                </svg>
+                                            </span>
+                                        </div>
+
+                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
+                                                data-bs-toggle="modal" data-bs-target="#add-address">
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
+                                        </button>
+                                    </div>
+
+                                    <div class="row g-sm-4 g-3">
+                                        @foreach (var userLocation in location)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                                   id="flexRadioDefault1">
+                                                        </div>
+
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
+                                                        </div>
+
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                             <style>
                                 .order-history-container {
@@ -279,10 +345,10 @@
                                     transition: all 0.3s ease;
                                 }
 
-                                .order-card:hover {
-                                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-                                    transform: translateY(-2px);
-                                }
+                                    .order-card:hover {
+                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                                        transform: translateY(-2px);
+                                    }
 
                                 .order-card-header {
                                     display: flex;
@@ -293,24 +359,24 @@
                                     border-bottom: 1px solid #e0e0e0;
                                 }
 
-                                .order-card-header .header-left h5 {
-                                    margin: 0;
-                                    font-size: 1.1rem;
-                                    font-weight: 600;
-                                }
+                                    .order-card-header .header-left h5 {
+                                        margin: 0;
+                                        font-size: 1.1rem;
+                                        font-weight: 600;
+                                    }
 
-                                .order-card-header .header-left p {
-                                    margin: 0;
-                                    font-size: 0.85rem;
-                                    color: #6c757d;
-                                }
+                                    .order-card-header .header-left p {
+                                        margin: 0;
+                                        font-size: 0.85rem;
+                                        color: #6c757d;
+                                    }
 
-                                .order-card-header .header-right {
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 1.5rem;
-                                    text-align: right;
-                                }
+                                    .order-card-header .header-right {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 1.5rem;
+                                        text-align: right;
+                                    }
 
                                 .order-total {
                                     font-size: 1.2rem;
@@ -366,46 +432,46 @@
                                     border-bottom: 1px solid #f1f1f1;
                                 }
 
-                                .product-item:last-child {
-                                    border-bottom: none;
-                                    padding-bottom: 0;
-                                }
+                                    .product-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
 
-                                .product-item .product-image img {
-                                    width: 60px;
-                                    height: 60px;
-                                    object-fit: cover;
-                                    border-radius: 6px;
-                                }
+                                    .product-item .product-image img {
+                                        width: 60px;
+                                        height: 60px;
+                                        object-fit: cover;
+                                        border-radius: 6px;
+                                    }
 
-                                .product-item .product-info {
-                                    flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
-                                }
+                                    .product-item .product-info {
+                                        flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
+                                    }
 
-                                .product-item .product-info h6 {
-                                    margin-bottom: 0.25rem;
-                                }
+                                        .product-item .product-info h6 {
+                                            margin-bottom: 0.25rem;
+                                        }
 
-                                .product-item .product-info a:hover h6 {
-                                    color: var(--theme-color);
-                                }
+                                        .product-item .product-info a:hover h6 {
+                                            color: var(--theme-color);
+                                        }
 
-                                .product-item .product-info p {
-                                    margin: 0;
-                                    font-size: 0.9rem;
-                                    color: #6c757d;
-                                }
+                                        .product-item .product-info p {
+                                            margin: 0;
+                                            font-size: 0.9rem;
+                                            color: #6c757d;
+                                        }
 
-                                .product-item .product-quantity {
-                                    color: #6c757d;
-                                }
+                                    .product-item .product-quantity {
+                                        color: #6c757d;
+                                    }
 
-                                .product-item .product-total h6 {
-                                    margin: 0;
-                                    font-weight: 600;
-                                    min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
-                                    text-align: right;
-                                }
+                                    .product-item .product-total h6 {
+                                        margin: 0;
+                                        font-weight: 600;
+                                        min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
+                                        text-align: right;
+                                    }
 
                                 /* CSS cho trường hợp không có đơn hàng */
                                 .empty-order-history {
@@ -416,37 +482,21 @@
                                     background-color: #f8f9fa;
                                 }
 
-                                .empty-order-history i {
-                                    width: 60px;
-                                    height: 60px;
-                                    color: var(--theme-color);
-                                    margin-bottom: 1rem;
-                                }
+                                    .empty-order-history i {
+                                        width: 60px;
+                                        height: 60px;
+                                        color: var(--theme-color);
+                                        margin-bottom: 1rem;
+                                    }
 
-                                .empty-order-history h4 {
-                                    font-weight: 600;
-                                }
+                                    .empty-order-history h4 {
+                                        font-weight: 600;
+                                    }
 
-                                .empty-order-history p {
-                                    color: #6c757d;
-                                    margin-bottom: 1.5rem;
-                                }
-
-                                 .order-card-body .btn {
-                                     width: 25%;
-                                     font-size: 0.875rem; 
-                                     padding: 6px 14px; /* padding vừa đủ */
-                                     border-radius: 30px; /* bo tròn */
-                                     font-weight: 500;
-                                     background-color: #009879;
-                                     border: 1px solid #007a63;
-                                     transition: all 0.3s ease;
-                                 }
-
-                                 .order-card-body .btn:hover {
-                                      background-color: #009879;
-                                      border-color: #007a63;
-                                 }
+                                    .empty-order-history p {
+                                        color: #6c757d;
+                                        margin-bottom: 1.5rem;
+                                    }
                             </style>
                             <div class="tab-pane fade" id="pills-card" role="tabpanel">
                                 <div class="dashboard-card">
@@ -731,66 +781,65 @@
         </div>
     </section>
     <!-- User Dashboard Section End -->
-
     <!-- Edit Profile Start -->
     <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-2">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-3">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                    <a href="shop-left-sidebar.html" class="deal-contain">
+                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                    </a>
                 </div>
+                </li>
+
+                <li class="list-2">
+                    <div class="deal-offer-contain">
+                        <a href="shop-left-sidebar.html" class="deal-image">
+                            <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
+                                 alt="">
+                        </a>
+
+                        <a href="shop-left-sidebar.html" class="deal-contain">
+                            <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                            <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                        </a>
+                    </div>
+                </li>
+
+                <li class="list-3">
+                    <div class="deal-offer-contain">
+                        <a href="shop-left-sidebar.html" class="deal-image">
+                            <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
+                                 alt="">
+                        </a>
+
+                        <a href="shop-left-sidebar.html" class="deal-contain">
+                            <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                            <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                        </a>
+                    </div>
+                </li>
+
+                <li class="list-1">
+                    <div class="deal-offer-contain">
+                        <a href="shop-left-sidebar.html" class="deal-image">
+                            <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
+                                 alt="">
+                        </a>
+
+                        <a href="shop-left-sidebar.html" class="deal-contain">
+                            <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                            <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
+                        </a>
+                    </div>
+                </li>
+                </ul>
             </div>
         </div>
+    </div>
+    </div>
     </div>
     <!-- Deal Box Modal End -->
     <!-- Tap to top and theme setting button start -->
@@ -879,22 +928,6 @@
         </div>
     </div>
     <!-- Edit address modal box end -->
-<script>
-    function loadOrderDetail(orderId) {
-        fetch(`/customer/order-detail/${orderId}`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('orderDetailContainer').innerHTML = html;
-                document.getElementById('orderHistoryContainer').style.display = 'none';
-                document.getElementById('orderDetailContainer').style.display = 'block';
-            });
-    }
-
-    function backToOrderHistory() {
-        document.getElementById('orderDetailContainer').style.display = 'none';
-        document.getElementById('orderHistoryContainer').style.display = 'block';
-    }
-</script>
     <script>
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -981,77 +1014,76 @@
     </div>
 
     <!-- Add address modal box end -->
-
     @* api lay địa chỉ *@
     <script>
-        document.addEventListener("DOMContentLoaded", async function () {
-            const provinceSelect = document.getElementById("provinceSelect");
-            const districtSelect = document.getElementById("districtSelect");
-            const wardSelect = document.getElementById("wardSelect");
+            document.addEventListener("DOMContentLoaded", async function () {
+                const provinceSelect = document.getElementById("provinceSelect");
+                const districtSelect = document.getElementById("districtSelect");
+                const wardSelect = document.getElementById("wardSelect");
 
-            const selectedProvince = "@ViewBag.Province";
-            const selectedDistrict = "@ViewBag.District";
-            const selectedWard = "@ViewBag.Ward";
+                const selectedProvince = "@ViewBag.Province";
+                const selectedDistrict = "@ViewBag.District";
+                const selectedWard = "@ViewBag.Ward";
 
-            const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
-            const data = await res.json();
+                const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
+                const data = await res.json();
 
-            data.forEach(p => {
-                const option = document.createElement("option");
-                option.text = p.name;
-                option.value = p.code;
-                if (p.name === selectedProvince) option.selected = true;
-                provinceSelect.appendChild(option);
-            });
-
-            const province = data.find(p => p.name === selectedProvince);
-            if (province) {
-                province.districts.forEach(d => {
+                data.forEach(p => {
                     const option = document.createElement("option");
-                    option.text = d.name;
-                    option.value = d.code;
-                    if (d.name === selectedDistrict) option.selected = true;
-                    districtSelect.appendChild(option);
+                    option.text = p.name;
+                    option.value = p.code;
+                    if (p.name === selectedProvince) option.selected = true;
+                    provinceSelect.appendChild(option);
                 });
 
-                const district = province.districts.find(d => d.name === selectedDistrict);
-                if (district) {
-                    district.wards.forEach(w => {
+                const province = data.find(p => p.name === selectedProvince);
+                if (province) {
+                    province.districts.forEach(d => {
                         const option = document.createElement("option");
-                        option.text = w.name;
-                        option.value = w.code;
-                        if (w.name === selectedWard) option.selected = true;
-                        wardSelect.appendChild(option);
+                        option.text = d.name;
+                        option.value = d.code;
+                        if (d.name === selectedDistrict) option.selected = true;
+                        districtSelect.appendChild(option);
                     });
-                }
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect12">
-                                        <option selected>Card Type</option>
-                                        <option value="kingdom">Visa Card</option>
-                                        <option value="states">MasterCard Card</option>
-                                        <option value="fra">RuPay Card</option>
-                                        <option value="china">Contactless Card</option>
-                                        <option value="spain">Maestro Card</option>
-                                    </select>
-                                    <label for="floatingSelect12">Card Type</label>
-                                </div>
-                            </form>
+
+                    const district = province.districts.find(d => d.name === selectedDistrict);
+                    if (district) {
+                        district.wards.forEach(w => {
+                            const option = document.createElement("option");
+                            option.text = w.name;
+                            option.value = w.code;
+                            if (w.name === selectedWard) option.selected = true;
+                            wardSelect.appendChild(option);
+                        });
+                    }
+                            <div class="col-xxl-4">
+                                <form>
+                                    <div class="form-floating theme-form-floating">
+                                        <select class="form-select" id="floatingSelect12">
+                                            <option selected>Card Type</option>
+                                            <option value="kingdom">Visa Card</option>
+                                            <option value="states">MasterCard Card</option>
+                                            <option value="fra">RuPay Card</option>
+                                            <option value="china">Contactless Card</option>
+                                            <option value="spain">Maestro Card</option>
+                                        </select>
+                                        <label for="floatingSelect12">Card Type</label>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold"
-                            data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-animation btn-md fw-bold"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Edit Card End -->
+        <!-- Edit Card End -->
     </script>
     <!-- Remove Address Modal Start -->
     <div class="modal fade" id="remove-address" tabindex="-1">
@@ -1174,17 +1206,28 @@
     <script src="~/js/theme-setting.js"></script>
     <script>
         const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
-        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
-        async function getCoordinatesFromAddress(address) {
+            async function getCoordinatesFromAddress(address) {
             const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
 
+                    const firstResult = data[0];
+
+        if (
+            !firstResult ||
+            !firstResult.display_name ||
+            !firstResult.display_name.toLowerCase().includes("việt nam") ||
+            firstResult.lat === undefined ||
+            firstResult.lon === undefined
+        ) {
+            throw new Error("Địa chỉ không đủ rõ ràng. Vui lòng nhập địa chỉ cụ thể hơn.");
+        }
+
             return {
-                latitude: parseFloat(data[0].lat),
-                longitude: parseFloat(data[0].lon)
+                latitude: parseFloat(firstResult.lat),
+                longitude: parseFloat(firstResult.lon)
             };
         }
 
@@ -1246,7 +1289,7 @@
     </script>
 
 
-    
+
 
 </body>
 

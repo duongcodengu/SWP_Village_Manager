@@ -105,7 +105,7 @@ namespace Village_Manager.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Yêu cầu đã được gửi. Vui lòng chờ xét duyệt.";
-            return RedirectToAction("shipperbecome");
+            return Redirect("shipperbecome");
         }
 
         //udpateShipper
