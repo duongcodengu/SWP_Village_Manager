@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Quên mật khẩu";
+    ViewData["Title"] = "Fogot";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
@@ -36,6 +36,10 @@
 </head>
 
 <body>
+    @{
+        ViewData["Title"] = "Quên mật khẩu";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
     <section class="log-in-section section-b-space forgot-section">
         <div class="container-fluid-lg w-100">
             <div class="row">
@@ -49,7 +53,7 @@
                     <div class="d-flex align-items-center justify-content-center h-100">
                         <div class="log-in-box">
                             <div class="log-in-title">
-                                <h3>Chào mừng đến với FamViệt</h3>
+                                <h3>Welcome To Fastkart</h3>
                                 <h4>Quên mật khẩu</h4>
                             </div>
 
@@ -58,7 +62,7 @@
                                     <div class="col-12">
                                         <div class="form-floating theme-form-floating log-in-form">
                                             <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
-                                            <label for="email">Địa chỉ email</label>
+                                            <label for="email">Email Address</label>
                                         </div>
                                     </div>
 
@@ -199,16 +203,6 @@
             });
         </script>
     }
-
-    <!-- Tap to top button start -->
-    <div class="theme-option">
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top button end -->
 
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>

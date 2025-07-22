@@ -1,7 +1,7 @@
 ﻿@model List<Village_Manager.Models.CartItem>
 @using System.Globalization
 @{
-    ViewData["Title"] = "Giỏ hàng";
+    ViewData["Title"] = "Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);

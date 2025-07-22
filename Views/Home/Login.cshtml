@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Đăng nhập";
+    ViewData["Title"] = "Log In";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     // Lấy thông báo từ controller
@@ -50,7 +50,7 @@
                 <div class="col-xxl-4 col-xl-5 col-lg-6 col-sm-8 mx-auto">
                     <div class="log-in-box">
                         <div class="log-in-title">
-                            <h3>Chào mừng đến với FamViệt</h3>
+                            <h3>Chào mừng đến với FamViet</h3>
                             <h4>Đăng nhập tài khoản của bạn</h4>
                         </div>
 
@@ -65,14 +65,14 @@
                             <form class="row g-4" asp-action="Login" method="post">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
-                                        <input type="email" name="email" class="form-control" id="email" placeholder="Địa chỉ email">
+                                        <input type="email" name="email" class="form-control" id="email" placeholder="Email Address">
                                         <label for="email">Địa chỉ email</label>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form position-relative">
-                                        <input type="password" name="password" class="form-control" id="password" placeholder="Mật khẩu">
+                                        <input type="password" name="password" class="form-control" id="password" placeholder="Password">
                                         <label for="password">Mật khẩu</label>
                                         <span class="toggle-password" style="position:absolute; top:50%; right:15px; transform:translateY(-50%); cursor:pointer;">
                                             <i class="fa fa-eye-slash" id="togglePassword"></i>
@@ -91,7 +91,7 @@
                         </div>
 
                         <div class="other-log-in">
-                            <h6>hoặc</h6>
+                            <h6>or</h6>
                         </div>
 
                         <div class="log-in-button">
@@ -111,7 +111,7 @@
 
                         <div class="container">
                             <div class="sign-up-box">
-                                <h4>Bạn chưa có tài khoản?</h4>
+                                <h4>Bạn không có mật khẩu?</h4>
                                 <a href="/signup">Đăng ký</a>
                             </div>
 
@@ -139,15 +139,6 @@
         </div>
     </section>
     <!-- log in section end -->
-    <!-- Tap to top button start -->
-    <div class="theme-option">
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top button end -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->
