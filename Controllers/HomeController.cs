@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
@@ -99,7 +100,18 @@ namespace Village_Manager.Controllers
         //login
         [HttpGet]
         [Route("login")]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }else
+            {
+                return View();
+            }
+                
+        } 
+        
 
         // Xử lý đăng nhập
         [HttpPost]
@@ -192,10 +204,10 @@ namespace Village_Manager.Controllers
                             return RedirectToAction("Index", "Home");
 
                         case 3: // Customer
-                            return RedirectToAction("IndexCustomer", "Customer");
+                            return RedirectToAction("Index", "Home");
 
                         case 4: // Shipper
-                            return RedirectToAction("DashboardShipper", "Shipper");
+                            return RedirectToAction("Index", "Home");
 
                         case 5: // Farmer
                             return RedirectToAction("Index", "Home");
@@ -253,7 +265,17 @@ namespace Village_Manager.Controllers
         // đăng ký
         [HttpGet]
         [Route("signup")]
-        public IActionResult SignUp() => View();
+        public IActionResult SignUp()
+        {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
+            else
+            {
+                return View();
+            }
+        }
 
 
         // Đăng xuất
@@ -268,6 +290,10 @@ namespace Village_Manager.Controllers
         [Route("changepassword")]
         public IActionResult ChangePassword()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("Login");
+            }
             return View();
         }
 
@@ -312,6 +338,10 @@ namespace Village_Manager.Controllers
         [Route("forgot")]
         public IActionResult Forgot()
         {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
             return View();
         }
 
@@ -370,7 +400,10 @@ namespace Village_Manager.Controllers
             {
                 return RedirectToAction("Forgot");
             }
-
+            else if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
             ViewBag.Email = email;
             return View();
         }

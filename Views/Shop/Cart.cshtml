@@ -42,69 +42,6 @@
 </head>
 
 <body>
-    <!-- mobile fix menu start -->
-    <div class="mobile-menu d-md-none d-block mobile-cart">
-        <ul>
-            <li class="active">
-                <a href="index.html">
-                    <i class="iconly-Home icli"></i>
-                    <span>Trang chủ</span>
-                </a>
-            </li>
-
-            <li class="mobile-category">
-                <a href="javascript:void(0)">
-                    <i class="iconly-Category icli js-link"></i>
-                    <span>Danh mục</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="search.html" class="search-box">
-                    <i class="iconly-Search icli"></i>
-                    <span>STìm kiếm</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="wishlist.html" class="notifi-wishlist">
-                    <i class="iconly-Heart icli"></i>
-                    <span>Danh sách ước</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="cart.html">
-                    <i class="iconly-Bag-2 icli fly-cate"></i>
-                    <span>Giỏ hàng</span>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <!-- mobile fix menu end -->
-    <!-- Breadcrumb Section Start -->
-    <section class="breadcrumb-section pt-0">
-        <div class="container-fluid-lg">
-            <div class="row">
-                <div class="col-12">
-                    <div class="breadcrumb-contain">
-                        <h2>Chi tiết giỏ hàng</h2>
-                        <nav>
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item">
-                                    <a href="index.html">
-                                        <i class="fa-solid fa-house"></i>
-                                    </a>
-                                </li>
-                                <li class="breadcrumb-item active">Giỏ hàng</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Breadcrumb Section End -->
     <!-- Cart Section Start -->
     <section class="cart-section section-b-space">
         <div class="container-fluid-lg">
@@ -118,7 +55,7 @@
                                     {
                                         <tr>
                                             <td colspan="5" class="text-center p-4">
-                                                <h4 class="text-muted">Giỏ hàng của bạn trống.</h4>
+                                                <h4 class="text-muted">Giỏ hàng của bạn trống</h4>
                                             </td>
                                         </tr>
                                     }
@@ -189,18 +126,18 @@
                             <div class="coupon-cart">
                                 <h6 class="text-content mb-2">Mã giảm giá</h6>
                                 <div class="mb-3 coupon-box input-group">
-                                    <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã ở đây." />
-                                    <button type="button" class="btn-apply" id="applyCouponBtn">Áp dụng</button>
+                                    <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã ..." />
+                                    <button type="button" class="btn-apply" id="applyCouponBtn">Sử dụng</button>
                                 </div>
                             </div>
 
                             <ul>
                                 <li>
-                                    <h4>Tạm tính</h4>
+                                    <h4>Tổng số tiền: </h4>
                                     <h4 class="price">₫<span id="subtotalAmount">@String.Format("{0:N0}", total)</span></h4>
                                 </li>
                                 <li>
-                                    <h4>Giảm giá</h4>
+                                    <h4>Giảm giá: </h4>
                                     <h4 class="price">(-) ₫<span id="discountAmount">0</span></h4>
                                 </li>
                             </ul>
@@ -208,7 +145,7 @@
 
                         <ul class="summery-total">
                             <li class="list-total border-top-0">
-                                <h4>Tổng tiền</h4>
+                                <h4>Tổng: </h4>
                                 <h4 class="price theme-color">₫<span id="finalAmount">@String.Format("{0:N0}", total)</span></h4>
                             </li>
                         </ul>
@@ -217,7 +154,7 @@
                             <ul>
                                 <li>
                                     <button onclick="location.href = '/shop/checkout'" class="btn btn-md fw-bold text-white theme-bg-color">
-                                        Đi đến thanh toán
+                                        Thanh toán
                                     </button>
                                 </li>
                                 <li>
@@ -266,60 +203,6 @@
             }
         });
     </script>
-    <!-- Tap to top and theme setting button start -->
-    <div class="theme-option">
-        <div class="setting-box">
-            <button class="btn setting-button">
-                <i class="fa-solid fa-gear"></i>
-            </button>
-
-            <div class="theme-setting-2">
-                <div class="theme-box">
-                    <ul>
-                        <li>
-                            <div class="setting-name">
-                                <h4>Color</h4>
-                            </div>
-                            <div class="theme-setting-button color-picker">
-                                <form class="form-control">
-                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
-                                    <input type="color" class="form-control form-control-color" id="colorPick"
-                                           value="#0da487" title="Choose your color">
-                                </form>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="setting-name">
-                                <h4>Dark</h4>
-                            </div>
-                            <div class="theme-setting-button">
-                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
-                                <button class="btn btn-2 unline" id="lightButton">Light</button>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="setting-name">
-                                <h4>RTL</h4>
-                            </div>
-                            <div class="theme-setting-button rtl">
-                                <button class="btn btn-2 rtl-unline">LTR</button>
-                                <button class="btn btn-2 rtl-outline">RTL</button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top and theme setting button end -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->

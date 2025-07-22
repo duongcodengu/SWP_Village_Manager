@@ -204,7 +204,7 @@ namespace Village_Manager.Controllers
             return Redirect($"/otp?email={safeEmail}&phone={safePhone}&address={safeAddress}");
         }
                 
-    }
+    
 
         // hoàn hàng
         [HttpGet]

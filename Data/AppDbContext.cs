@@ -94,23 +94,6 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<DiscountCodes> DiscountCodes { get; set; }
 
     public DbSet<HiddenProduct> HiddenProduct { get; set; }
-    public DbSet<Village_Manager.Models.ReturnOrder> ReturnOrder { get; set; }
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<HiddenProduct>(entity =>
-        {
-            entity.ToTable("HiddenProduct");
-
-            entity.Property(h => h.Reason)
-                  .HasColumnType("TEXT");
-
-            entity.Property(h => h.HiddenAt)
-                  .HasDefaultValueSql("GETDATE()");
-
-            entity.HasOne(h => h.Product)
-                  .WithMany() // hoặc .WithMany(p => p.HiddenRecords) nếu cần navigation ngược
-                  .HasForeignKey(h => h.ProductId)
-                  .OnDelete(DeleteBehavior.Cascade);
     public virtual DbSet<HomepageImage> HomepageImages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1036,6 +1019,22 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ImagePath).HasColumnName("image_path");
             entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+        });
+
+        modelBuilder.Entity<HiddenProduct>(entity =>
+        {
+            entity.ToTable("HiddenProduct");
+
+            entity.Property(h => h.Reason)
+                  .HasColumnType("TEXT");
+
+            entity.Property(h => h.HiddenAt)
+                  .HasDefaultValueSql("GETDATE()");
+
+            entity.HasOne(h => h.Product)
+                  .WithMany()
+                  .HasForeignKey(h => h.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);

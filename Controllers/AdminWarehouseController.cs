@@ -110,6 +110,12 @@ public class AdminWarehouseController : Controller
     [Route("product")]
     public IActionResult Products()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var products = _context.Products
             .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
@@ -122,6 +128,12 @@ public class AdminWarehouseController : Controller
     [Route("productdetail")]
     public IActionResult ProductDetail(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var product = _context.Products
                     .Include(p => p.ProductImages)
                     .Include(p => p.Category)
@@ -137,6 +149,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("addproduct")]
     public IActionResult AddProduct()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         ViewBag.Farmers = _context.Farmers.ToList();
         ViewBag.Categories = _context.ProductCategories.ToList();
         return View();
@@ -220,10 +238,14 @@ public class AdminWarehouseController : Controller
         }
     }
 
-
-
     public async Task<IActionResult> Delete(int? id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         if (id == null)
             return NotFound();
 
@@ -239,6 +261,12 @@ public class AdminWarehouseController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var product = await _context.Products.FindAsync(id);
         if (product == null)
             return NotFound();
@@ -270,6 +298,12 @@ public class AdminWarehouseController : Controller
     [Route("updateproduct")]
     public async Task<IActionResult> UpdateProduct(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var product = await _context.Products.FindAsync(id);
         if (product == null)
             return NotFound();
@@ -285,6 +319,12 @@ public class AdminWarehouseController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateProduct(Product model, List<IFormFile> ImageUpdate)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var product = await _context.Products
             .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.Id == model.Id);
@@ -354,6 +394,12 @@ public class AdminWarehouseController : Controller
     [Route("searchProduct")]
     public async Task<IActionResult> SearchProduct(string search)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         if (string.IsNullOrEmpty(search))
         {
             return Redirect("products"); 
@@ -576,17 +622,6 @@ public class AdminWarehouseController : Controller
         }
     }
 
-
-    //private string HashPassword(string password)
-    //{
-    //    using (var sha256 = SHA256.Create())
-    //    {
-    //        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-    //        return Convert.ToBase64String(hashedBytes);
-    //    }
-    //}
-
-    // EditUser (GET): Hiển thị form chỉnh sửa user
     [HttpGet]
     [Route("/edituser/{id}")]
     public async Task<IActionResult> EditUser(int id)
@@ -753,6 +788,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("profilesetting")]
     public IActionResult Index()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
@@ -766,6 +807,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("createrole")]
     public IActionResult CreateRole()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
@@ -811,6 +858,12 @@ public class AdminWarehouseController : Controller
     [Route("famer")]
     public IActionResult Famer()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var farmers = (from f in _context.Farmers
                        join u in _context.Users on f.UserId equals u.Id
                        join r in _context.Roles on u.RoleId equals r.Id
@@ -837,6 +890,12 @@ public class AdminWarehouseController : Controller
     [Route("famer/update")]
     public IActionResult UpdateFarmer(int FarmerId, string FarmerName, string FarmerPhone, string FarmerAddress)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var farmer = _context.Farmers.FirstOrDefault(f => f.Id == FarmerId);
         if (farmer != null)
         {
@@ -855,7 +914,13 @@ public class AdminWarehouseController : Controller
     [Route("famer/change-role")]
     public IActionResult ChangeRole(int UserId)
     {
-        // retail_customer = role_id 5
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
         int newRoleId = 3;
 
         var user = _context.Users.FirstOrDefault(u => u.Id == UserId);
@@ -871,6 +936,12 @@ public class AdminWarehouseController : Controller
     [Route("addfamer")]
     public IActionResult AddFamer()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var pending = _context.FarmerRegistrationRequests
             .Where(r => r.Status == "pending")
             .OrderByDescending(r => r.RequestedAt)
@@ -882,6 +953,12 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Approve(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
         if (request == null || request.Status != "pending")
@@ -916,6 +993,12 @@ public class AdminWarehouseController : Controller
     [HttpPost]
     public async Task<IActionResult> Reject(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
         if (request == null || request.Status != "pending")
@@ -936,6 +1019,12 @@ public class AdminWarehouseController : Controller
     [Route("pendingproducts")]
     public IActionResult PendingProducts()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var pendingProducts = _context.Products
             .Include(p => p.Category)
             .Include(p => p.Farmer)
@@ -950,6 +1039,12 @@ public class AdminWarehouseController : Controller
     [Route("approveproduct")]
     public IActionResult ApproveProduct(int id, string action)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var product = _context.Products.FirstOrDefault(p => p.Id == id);
         if (product == null) return NotFound();
 
@@ -968,6 +1063,12 @@ public class AdminWarehouseController : Controller
     [Route("shipper")]
     public IActionResult Shipper()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var result = (from shipper in _context.Shippers
                       join request in _context.ShipperRegistrationRequests
                       on shipper.UserId equals request.UserId
@@ -992,6 +1093,12 @@ public class AdminWarehouseController : Controller
     [Route("admin/shipper-requests")]
     public IActionResult ShipperRequests()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var result = _context.ShipperRegistrationRequests
             .Include(r => r.User)
             .Where(r => r.Status == "pending")
@@ -1016,6 +1123,12 @@ public class AdminWarehouseController : Controller
     [Route("admin_shipperrequest_update")]
     public async Task<IActionResult> UpdateShipperRequest(int id, string action)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var request = await _context.ShipperRegistrationRequests
             .FirstOrDefaultAsync(r => r.Id == id);
 
@@ -1072,6 +1185,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("listOrder")]
     public IActionResult ListRequestOrder()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
             .Where(o => o.Status == "shipped")
@@ -1096,6 +1215,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("addOrder")]
     public IActionResult AddOrder()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var pendingOrders = _context.RetailOrders
         .Include(o => o.User)
         .Where(o => o.Status == "pending")
@@ -1119,6 +1244,12 @@ public class AdminWarehouseController : Controller
     [HttpPost("acceptOrder")]
     public IActionResult AcceptOrder(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var order = _context.RetailOrders.FirstOrDefault(o => o.Id == id);
         if (order == null)
         {
@@ -1133,6 +1264,12 @@ public class AdminWarehouseController : Controller
     [HttpGet("order/detail/{id}")]
     public IActionResult OrderDetail(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var order = _context.RetailOrders
             .Include(o => o.User)
             .Include(o => o.RetailOrderItems)
@@ -1165,9 +1302,15 @@ public class AdminWarehouseController : Controller
         return View(viewModel);
     }
 
-    [HttpPost("deleteOrder/{id}")]
+    [HttpPost("deletOrrder/{id}")]
     public IActionResult DeleteOrder(int id)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var order = _context.RetailOrders
                             .Include(o => o.RetailOrderItems) // tên navigation property
                             .FirstOrDefault(o => o.Id == id);
@@ -1244,6 +1387,12 @@ public class AdminWarehouseController : Controller
     [Route("support")]
     public async Task<IActionResult> Support()
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var tickets = await _context.ContactMessages
             .OrderByDescending(t => t.CreatedAt)
             .ToListAsync();
@@ -1255,6 +1404,12 @@ public class AdminWarehouseController : Controller
     [Route("support/reply")]
     public async Task<IActionResult> Reply(int Id, string Email, string Content)
     {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.SenderEmail));
         message.To.Add(new MailboxAddress("", Email));
