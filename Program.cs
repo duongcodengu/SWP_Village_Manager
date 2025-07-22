@@ -54,7 +54,6 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-
 // 🔵 Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {

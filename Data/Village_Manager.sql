@@ -439,6 +439,20 @@ CREATE TABLE DiscountCodes (
     CONSTRAINT CK_DiscountCode_Length CHECK (LEN(code) >= 6)
 );
 
+CREATE TABLE HomepageImage (
+    id INT PRIMARY KEY IDENTITY(1,1), -- Giả định là int và tự tăng
+    product_image_id INT NULL,
+    section NVARCHAR(50) NOT NULL,
+    display_order INT DEFAULT 0,
+    is_active BIT DEFAULT 1,
+    Banner NVARCHAR(500) NULL,
+    Position NVARCHAR(50) NULL,
+    CONSTRAINT FK_HomepageImage_ProductImage
+        FOREIGN KEY (product_image_id)
+        REFERENCES ProductImage(id)
+        ON DELETE SET NULL
+);
+
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES
@@ -463,16 +477,4 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Milk & Dairies', N'back-end/svg/milk.svg'),
 (N'Pet Food', N'back-end/svg/pet.svg');
 
-CREATE TABLE HomepageImage (
-    id INT PRIMARY KEY IDENTITY(1,1), -- Giả định là int và tự tăng
-    product_image_id INT NULL,
-    section NVARCHAR(50) NOT NULL,
-    display_order INT DEFAULT 0,
-    is_active BIT DEFAULT 1,
-    Banner NVARCHAR(500) NULL,
-    Position NVARCHAR(50) NULL,
-    CONSTRAINT FK_HomepageImage_ProductImage
-        FOREIGN KEY (product_image_id)
-        REFERENCES ProductImage(id)
-        ON DELETE SET NULL
-);
+

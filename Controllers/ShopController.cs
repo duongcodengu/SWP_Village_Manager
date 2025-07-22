@@ -169,6 +169,15 @@ public class ShopController : Controller
         return View(cartItems);
     }
 
+    //public IActionResult PlaceOrder()
+    //{
+    //    // Xoá giỏ hàng:
+    //    HttpContext.Session.Remove("Cart");
+    //    // Điều hướng đến trang thành công
+    //    return RedirectToAction("Success");
+    //}
+    [HttpGet]
+    [Route("shop/success")]
     public IActionResult Success()
     {
         // Hiển thị trang thành công
@@ -181,15 +190,16 @@ public class ShopController : Controller
 
             DefaultImage.EnsureSingle(item.Product, _env);
         }
-        ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1); // hoặc theo user hiện tại
+        ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1);
         ViewBag.OrderId = TempData["OrderId"] ?? 0;
         ViewBag.PaymentMethod = "Cash on Delivery";
 
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
 
-        return View(cart); // Truyền vào Success.cshtml
+        return View(cart);
     }
 
+    //place order
     [HttpPost("/shop/place-order")]
     public async Task<IActionResult> PlaceOrder()
     {

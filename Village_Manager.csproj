@@ -11,18 +11,22 @@
     <Compile Remove="Services\**" />
     <Compile Remove="Shipper\**" />
     <Compile Remove="Views\AdminWarehouse\NewFolder\**" />
+    <Compile Remove="Views\NewFolder\**" />
     <Content Remove="Repositories\**" />
     <Content Remove="Services\**" />
     <Content Remove="Shipper\**" />
     <Content Remove="Views\AdminWarehouse\NewFolder\**" />
+    <Content Remove="Views\NewFolder\**" />
     <EmbeddedResource Remove="Repositories\**" />
     <EmbeddedResource Remove="Services\**" />
     <EmbeddedResource Remove="Shipper\**" />
     <EmbeddedResource Remove="Views\AdminWarehouse\NewFolder\**" />
+    <EmbeddedResource Remove="Views\NewFolder\**" />
     <None Remove="Repositories\**" />
     <None Remove="Services\**" />
     <None Remove="Shipper\**" />
     <None Remove="Views\AdminWarehouse\NewFolder\**" />
+    <None Remove="Views\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-  <Folder Include="Views\NewFolder\" />
   <Folder Include="wwwroot\uploads\" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

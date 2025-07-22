@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
@@ -99,8 +100,18 @@ namespace Village_Manager.Controllers
         //login
         [HttpGet]
         [Route("login")]
-        public IActionResult Login() => View();
-
+        public IActionResult Login()
+        {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }else
+            {
+                return View();
+            }
+                
+        } 
+        
         // Xử lý đăng nhập
         [HttpPost]
         [Route("login")]
@@ -147,62 +158,61 @@ namespace Village_Manager.Controllers
 
                     var result = cmd.ExecuteScalar();
                     roleName = result.ToString() ?? "";
-                }
+            }
 
-                // Xóa session cũ trước khi set mới
-                HttpContext.Session.Clear();
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetInt32("RoleId", user.RoleId);
-                HttpContext.Session.SetString("RoleName", roleName ?? "");
+            // Xóa session cũ trước khi set mới
+            HttpContext.Session.Clear();
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetInt32("RoleId", user.RoleId);
+            HttpContext.Session.SetString("RoleName", roleName ?? "");
 
               
           
-                // Set thêm FarmerId nếu là farmer
-                if (user.RoleId == 5)
+            // Set thêm FarmerId nếu là farmer
+            if (user.RoleId == 5)
+            {
+                var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
+                if (farmer != null)
                 {
-                    var farmer = _context.Farmers.FirstOrDefault(f => f.UserId == user.Id);
-                    if (farmer != null)
-                    {
-                        HttpContext.Session.SetInt32("FarmerId", farmer.Id);
-                        HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
+                    HttpContext.Session.SetInt32("FarmerId", farmer.Id);
+                    HttpContext.Session.SetString("FarmerName", farmer.FullName ?? "");
 
-                    }
                 }
-                if (user.RoleId == 4)
+            }
+            if (user.RoleId == 4)
+            {
+                var shipper = _context.Shippers.FirstOrDefault(f => f.UserId == user.Id);
+
+                if (shipper != null)
                 {
-                    var shipper = _context.Shippers.FirstOrDefault(f => f.UserId == user.Id);
-
-                    if (shipper != null)
-                    {
-                        HttpContext.Session.SetInt32("ShipperId", shipper.Id);
-                        HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
-                        HttpContext.Session.SetInt32("UserId", user.Id);
-                    }
+                    HttpContext.Session.SetInt32("ShipperId", shipper.Id);
+                    HttpContext.Session.SetString("ShipperName", shipper.FullName ?? "");
+                    HttpContext.Session.SetInt32("UserId", user.Id);
                 }
-                
+            }
 
-                // role admin
-                switch (user.RoleId)
-                    {
-                        case 1: // Admin
-                            return RedirectToAction("Index", "Home");
+            // role admin
+            switch (user.RoleId)
+                {
+                    case 1: // Admin
+                        return RedirectToAction("Index", "Home");
 
-                        case 2: // Staff
-                            return RedirectToAction("Index", "Home");
+                    case 2: // Staff
+                        return RedirectToAction("Index", "Home");
 
-                        case 3: // Customer
-                            return RedirectToAction("IndexCustomer", "Customer");
+                    case 3: // Customer
+                        return RedirectToAction("Index", "Home");
 
-                        case 4: // Shipper
-                            return RedirectToAction("DashboardShipper", "Shipper");
+                    case 4: // Shipper
+                        return RedirectToAction("Index", "Home");
 
-                        case 5: // Farmer
-                            return RedirectToAction("Index", "Home");
+                    case 5: // Farmer
+                        return RedirectToAction("Index", "Home");
 
-                        default:
-                            return RedirectToAction("Login", "Home");
-                    }
+                    default:
+                        return RedirectToAction("Login", "Home");
+                }
             
             }
         
@@ -253,7 +263,88 @@ namespace Village_Manager.Controllers
         // đăng ký
         [HttpGet]
         [Route("signup")]
-        public IActionResult SignUp() => View();
+        public IActionResult SignUp()
+        {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
+            else
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [Route("signup")]
+        public IActionResult SignUp(string fullname, string email, string password, string terms, string phone)
+        {
+            fullname = fullname?.Trim();
+            email = email?.Trim().ToLower();
+            password = password?.Trim();
+            phone = phone?.Trim();
+
+            // Kiểm tra dữ liệu rỗng
+            if (string.IsNullOrEmpty(fullname) || string.IsNullOrEmpty(email) ||
+                string.IsNullOrEmpty(password) || string.IsNullOrEmpty(phone))
+            {
+                ViewBag.Error = "Vui lòng điền đầy đủ thông tin.";
+                return View();
+            }
+
+            // Kiểm tra độ dài mật khẩu
+            if (password.Length < 6)
+            {
+                ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                return View();
+            }
+
+            // Kiểm tra số điện thoại hợp lệ (10 số và chỉ chứa số)
+            if (phone.Length != 10 || !phone.All(char.IsDigit))
+            {
+                ViewBag.Error = "Số điện thoại phải có đúng 10 chữ số.";
+                return View();
+            }
+
+            // Kiểm tra điều khoản
+            if (terms != "on")
+            {
+                ViewBag.Error = "Bạn cần đồng ý với Điều khoản và Chính sách.";
+                return View();
+            }
+
+            // Kiểm tra email đã tồn tại chưa
+            var existingUser = _context.Users.FirstOrDefault(u => u.Email.ToLower() == email);
+            if (existingUser != null)
+            {
+                ViewBag.Error = "Email đã được sử dụng.";
+                return View();
+            }
+
+            // Tạo user mới
+            var user = new User
+            {
+                Email = email,
+                Username = fullname,
+                Password = password,
+                Phone = phone,
+                RoleId = 3,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            HttpContext.Session.Clear();
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetInt32("RoleId", user.RoleId);
+            HttpContext.Session.SetString("RoleName", "Customer");
+
+            return RedirectToAction("Index", "Home");
+        }
+
 
 
         // Đăng xuất
@@ -268,6 +359,10 @@ namespace Village_Manager.Controllers
         [Route("changepassword")]
         public IActionResult ChangePassword()
         {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("Login");
+            }
             return View();
         }
 
@@ -312,6 +407,10 @@ namespace Village_Manager.Controllers
         [Route("forgot")]
         public IActionResult Forgot()
         {
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
             return View();
         }
 
@@ -370,7 +469,10 @@ namespace Village_Manager.Controllers
             {
                 return RedirectToAction("Forgot");
             }
-
+            else if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            {
+                return View("404");
+            }
             ViewBag.Email = email;
             return View();
         }

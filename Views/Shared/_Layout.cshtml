@@ -162,7 +162,7 @@
                                 </span>
                             </button>
                             <a href="/" class="web-logo nav-logo">
-                                <img src="~/images/logo/1.png" class="img-fluid blur-up lazyload" alt="">
+                                <img src="~/images/logo/logo.png" class="img-fluid blur-up lazyload" alt="">
                             </a>
 
                             <div class="middle-box">
@@ -203,11 +203,6 @@
                                                 <h6>Hỗ trợ 24/7</h6>
                                                 <h5>+84 345444416</h5>
                                             </div>
-                                        </a>
-                                    </li>
-                                    <li class="right-side">
-                                        <a href="wishlist.html" class="btn p-0 position-relative header-wishlist">
-                                            <i data-feather="heart"></i>
                                         </a>
                                     </li>
                                     <li class="right-side">
@@ -268,16 +263,25 @@
                                                 </ul>
 
                                                 <div class="price-box">
-                                                    <h5>Tổng:</h5>
+                                                    <h5>Tổng :</h5>
                                                     <h4 class="theme-color fw-bold">₫@String.Format("{0:N0}", total)</h4>
                                                 </div>
 
-
-                                                <div class="button-group">
-                                                    <a href="/shop/cart" class="btn btn-sm cart-button">Xem giỏ hàng</a>
-                                                    <a href="/shop/checkout" class="btn btn-sm cart-button theme-bg-color
-                                                    text-white">Thanh toán</a>
-                                                </div>
+                                                @if (Context.Session.GetInt32("UserId") != null)
+                                                {
+                                                    <div class="button-group">
+                                                        <a href="/shop/cart" class="btn btn-sm cart-button">Xem giỏ hàng</a>
+                                                        <a href="/shop/checkout" class="btn btn-sm cart-button theme-bg-color
+                                                        text-white">Thanh toán</a>
+                                                    </div>
+                                                } else
+                                                {
+                                                    <div class="button-group">
+                                                        <a href="/shop/cart" class="btn btn-sm cart-button">Xem giỏ hàng</a>
+                                                        <a href="/login" class="btn btn-sm cart-button theme-bg-color
+                                                            text-white">Đăng nhập</a>
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                     </li>
@@ -294,9 +298,9 @@
                                                 <i data-feather="user"></i>
                                             </div>
                                             <div class="delivery-detail">
-                                                <h6>Hello,</h6>
+                                                <h6>Xin chào,</h6>
                                                 <h5>
-                                                    @(string.IsNullOrEmpty(username) ? "My Account" : username)
+                                                    @(string.IsNullOrEmpty(username) ? "Đăng nhập / Đăng ký" : username)
                                                 </h5>
                                             </div>
                                         </div>
@@ -322,18 +326,18 @@
                                                     @if (roleId == 1)
                                                     {
                                                         <li class="product-box-contain">
-                                                            <a href="/adminwarehouse">Quản lý kho (Admin)</a>
+                                                            <a href="/adminwarehouse">Quản lý của Admin</a>
                                                         </li>
                                                     }
                                                     @if (roleId == 2)
                                                     {
                                                         <li class="product-box-contain">
-                                                            <a href="/adminretail">Quản lý bán lẻ (Staff)</a>
+                                                            <a href="/adminretail">Quản lý của nhân viên</a>
                                                         </li>
                                                     }
                                                     @* rold nao cung co *@
                                                     <li class="product-box-contain">
-                                                        <a href="/dashboard">Trang cá nhân</a>
+                                                        <a href="/customer">Thông tin tài khoản</a>
                                                     </li>
                                                     <li class="product-box-contain">
                                                         <a href="/logout">Đăng xuất</a>
@@ -371,10 +375,32 @@
                                     </button>
                                 </div>
 
-                                <ul class="category-list">
-                                    <li class="onhover-category-list">
-                                        @await Component.InvokeAsync("CategoryMenu")
+                                <ul class="navbar-nav">
+                                    @* ai cũng có *@
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link-new" href="/shop/search">Tất cả sản phẩm</a>
                                     </li>
+                                    @if (Context.Session.GetInt32("RoleId") == 3)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link-new" href="/becomefamer">Đăng ký Famer</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link-new" href="/shipperbecome">Đăng ký Shipper</a>
+                                        </li>
+                                    }
+                                    else if (Context.Session.GetInt32("RoleId") == 5)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link-new" href="/dashboardfamer">Famer Dashboard</a>
+                                        </li>
+                                    }
+                                    else if (Context.Session.GetInt32("RoleId") == 4)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link-new" href="/dashboardshipper">Shipper Dashboard</a>
+                                        </li>
+                                    }
                                 </ul>
                             </div>
                         </div>
@@ -388,29 +414,7 @@
                                                 data-bs-dismiss="offcanvas"></button>
                                     </div>
                                     <div class="offcanvas-body">
-                                        <ul class="navbar-nav">
-                                            <li class="nav-item dropdown">
-                                                <a class="nav-link-new" href="/shop/search">Tất cả Sản phẩm</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="/becomefamer">Đăng ký Farmer</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="/dashboardfamer">Farmer Dashboard</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="/shipperbecome">Đăng ký Shipper</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="/dashboardshipper">Shipper Dashboard</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="seller-grid.html">Đăng ký Staff</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link-new" href="seller-grid-2.html">Staff Dashboard</a>
-                                            </li>
-                                        </ul>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -427,7 +431,7 @@
                             </button>
 
                             <ul class="dropdown-menu dropdown-menu-end p-3 shadow-lg" style="width: 320px; max-height: 400px; overflow-y: auto;" id="notif-dropdown">
-                                <li class="text-center text-muted">Đang tải...</li>
+                                <li class="text-center text-muted">Không có thông báo</li>
                             </ul>
                         </div>
                     </div>
@@ -504,7 +508,7 @@
                                 </div>
 
                                 <div class="service-detail">
-                                    <h5>Every Fresh Products</h5>
+                                    <h5>Sản phảm tươi</h5>
                                 </div>
                             </div>
 
@@ -514,7 +518,7 @@
                                 </div>
 
                                 <div class="service-detail">
-                                    <h5>Free Delivery For Order Over $50</h5>
+                                    <h5>Giao hàng miễn phí</h5>
                                 </div>
                             </div>
 
@@ -524,7 +528,7 @@
                                 </div>
 
                                 <div class="service-detail">
-                                    <h5>Daily Mega Discounts</h5>
+                                    <h5>Giảm giá mỗi ngày</h5>
                                 </div>
                             </div>
 
@@ -534,7 +538,7 @@
                                 </div>
 
                                 <div class="service-detail">
-                                    <h5>Best Price On The Market</h5>
+                                    <h5>Giá tốt nhất trên thị trường</h5>
                                 </div>
                             </div>
                         </div>
@@ -548,7 +552,7 @@
                         <div class="footer-logo">
                             <div class="theme-logo">
                                 <a href="index.html">
-                                    <img src="~/images/logo/1.png" class="blur-up lazyload" alt="">
+                                    <img src="~/images/logo/logo.png" class="blur-up lazyload" alt="">
                                 </a>
                             </div>
 
@@ -621,7 +625,7 @@
                                     <a href="blog-list.html" class="text-content">Blog</a>
                                 </li>
                                 <li>
-                                    <a href="contact-us.html" class="text-content">Contact Us</a>
+                                    <a href="contact-us.html" class="text-content">Liên hệ</a>
                                 </li>
                             </ul>
                         </div>
@@ -658,7 +662,7 @@
 
                     <div class="col-xl-3 col-lg-4 col-sm-6">
                         <div class="footer-title">
-                            <h4>Contact Us</h4>
+                            <h4>Liên hệ</h4>
                         </div>
 
                         <div class="footer-contact">
@@ -837,7 +841,7 @@
                     .catch(error => {
                         console.error("Lỗi khi tải thông báo:", error);
                         document.getElementById("notif-dropdown").innerHTML += `
-                            <li><p class="text-center text-danger">Không thể tải thông báo.</p></li>`;
+                            <li><p class="text-center text-danger"></p></li>`;
                     });
             }
 
