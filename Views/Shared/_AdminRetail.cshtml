@@ -332,11 +332,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/products">Products</a>
+                                            <a href="/productsretail">Sản Phẩm</a>
                                         </li>
 
                                         <li>
-                                            <a href="/addproduct">Add New Products</a>
+                                            <a asp-controller="AdminRetail" asp-action="HiddenProducts">Ngưng bán</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -398,36 +398,20 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-archive-line"></i>
-                                        <span>Orders</span>
+                                        <span>Đơn Hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="order-list.html">Order List</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListRetail">Danh sách cần duyệt</a>
                                         </li>
                                         <li>
-                                            <a href="order-detail.html">Order Detail</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListProcessed">Danh sách đã suyệt</a>
                                         </li>
-                                        <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
-                                        </li>
+                                        
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-focus-3-line"></i>
-                                        <span>Localization</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="translation.html">Translation</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="currency-rates.html">Currency Rates</a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                
 
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
@@ -445,70 +429,8 @@
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="taxes.html">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Tax</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
-                                        <i class="ri-star-line"></i>
-                                        <span>Product Review</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Hỗ trợ</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="support">Yêu cầu hỗ trợ</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="create-coupon.html">Tiket</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="/profilesetting">Profile Setting</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
-                                        <i class="ri-file-chart-line"></i>
-                                        <span>Reports</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
-                                        <i class="ri-list-check"></i>
-                                        <span>List Page</span>
-                                    </a>
-                                </li>
-
-
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="/logs">
-                                        <i class="ri-history-line"></i>
-                                        <span>Lịch sử hoạt động</span>
-                                    </a>
-                                </li>
+             
+                                
                             </ul>
                         </div>
 
