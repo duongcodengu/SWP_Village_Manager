@@ -1,6 +1,6 @@
 ﻿@model List<Village_Manager.Models.CartItem>
 @{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
@@ -44,6 +44,29 @@
 </head>
 
 <body>
+    <!-- Breadcrumb Section Start -->
+    <section class="breadcrumb-section pt-0">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-contain">
+                        <h2>Thanh toán</h2>
+                        <nav>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="/">
+                                        <i class="fa-solid fa-house"></i>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active">Thanh toán</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
     <!-- Checkout section Start -->
     <section class="checkout-section-2 section-b-space">
         <div class="container-fluid-lg">
@@ -152,7 +175,7 @@
                                                          class="accordion-collapse collapse show"
                                                          data-bs-parent="#accordionFlushExample">
                                                         <div class="accordion-body">
-                                                            <p class="cod-review"> 
+                                                            <p class="cod-review">
                                                                 Vui lòng đảm bảo bạn đã chuẩn bị sẵn số tiền chính xác khi nhận hàng.
                                                             </p>
                                                         </div>
@@ -243,7 +266,7 @@
                                                                 <label class="form-check-label" for="banking">
                                                                     <input class="form-check-input mt-0" type="radio"
                                                                            name="flexRadioDefault" id="banking">
-                                                                           Ngân hàng
+                                                                    Ngân hàng
                                                                 </label>
                                                             </div>
                                                         </div>
@@ -342,22 +365,20 @@
                             @* tổng tiền *@
                             <ul class="summery-contain">
                                 <li>
-                                    <h4>Tạm tính: </h4>
+                                    <h4>Tổng cộng: </h4>
                                     <h4 class="price">₫@String.Format("{0:N0}", total)</h4>
                                 </li>
 
-                                @if (discount > 0)
-                                {
-                                    <li>
-                                        <h4>Giảm giá:  (@discount)</h4>
-                                        <h4 class="price text-danger">- ₫@String.Format("{0:N0}", discount)</h4>
-                                    </li>
-                                }
-
-                                <li class="list-total">
-                                    <h4>Tổng cộng: </h4>
-                                    <h4 class="price theme-color">₫@String.Format("{0:N0}", finalTotal)</h4>
+                                <li>
+                                    <h4>Phí vận chuyển:</h4>
+                                    <h4 class="price">₫@String.Format("{0:N0}", shipping)</h4>
                                 </li>
+                            </ul>
+
+                            <ul class="summery-total">
+                                <li class="list-total border-top-0">
+                                    <h4>Tổng thanh toán:</h4>
+                                    <h4 class="price theme-color">₫<span id="finalTotal">@String.Format("{0:N0}", finalTotal)</span></h4>
                             </ul>
 
                         </div>
@@ -384,6 +405,15 @@
         </div>
     </section>
     <!-- Checkout section End -->
+    <!-- Tap to top button start -->
+    <div class="theme-option">
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top button end -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->

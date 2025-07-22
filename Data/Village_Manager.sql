@@ -309,10 +309,12 @@ CREATE TABLE ReturnOrder (
     order_id INT, -- bắt buộc phải kiểm tra trong code order_type 
     user_id INT,
     quantity INT,
-    reason NVARCHAR(MAX),
+    reason NVarchar(MAX),
     created_at DATETIME,
+	image_url NVARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+
 ------------------------------------ADD Table--------------------------------------------------------------
 
 CREATE TABLE SupplyRequest (

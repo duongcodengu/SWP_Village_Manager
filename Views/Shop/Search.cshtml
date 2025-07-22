@@ -1,6 +1,6 @@
 ﻿@model List<Village_Manager.Models.Product>
 @{
-    ViewData["Title"] = "Shop";
+    ViewData["Title"] = "Tìm kiếm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
@@ -42,6 +42,29 @@
     </style>
 </head>
 <body>
+    <!-- Breadcrumb Section Start -->
+    <section class="breadcrumb-section pt-0">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-contain">
+                        <h2>Danh sách sản phẩm</h2>
+                        <nav>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="/">
+                                        <i class="fa-solid fa-house"></i>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active">Sản phẩm</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
     <!-- Shop Section Start -->
     <section class="section-b-space shop-section">
         <div class="container-fluid-lg">
@@ -73,7 +96,7 @@
                                     </form>
                                     <button id="clearAllBtn" type="button"
                                             class="text-success fw-semibold border-0 bg-transparent p-0 align-self-end mt-2">
-										Xóa tất cả tìm kiếm
+                                        Xóa tất cả tìm kiếm
                                     </button>
                                     <ul id="searchHistoryList" class="d-flex flex-wrap"></ul>
                                 </div>
@@ -253,6 +276,15 @@
         </div>
     </section>
     <!-- Shop Section End -->
+    <!-- Tap to top button start -->
+    <div class="theme-option">
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top button end -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->

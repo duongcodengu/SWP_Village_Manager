@@ -66,8 +66,8 @@
                 <div class="header-logo-wrapper p-0">
                     <div class="logo-wrapper">
                         <a href="index.html">
-                            <img class="img-fluid main-logo" src="~/back-end/images/logo/1.png" alt="logo">
-                            <img class="img-fluid white-logo" src="~/back-end/images/logo/1-white.png" alt="logo">
+                            <img class="img-fluid main-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
+                            <img class="img-fluid white-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
                         </a>
                     </div>
                     <div class="toggle-sidebar">
@@ -293,7 +293,7 @@
                 <div>
                     <div class="logo-wrapper logo-wrapper-center">
                         <a href='/home' data-bs-original-title="" title="">
-                            <img class="img-fluid for-white" src="~/back-end/images/logo/full-white.png" alt="logo">
+                            <img class="img-fluid for-white" src="~/back-end/images/logo/logo1.png" alt="logo">
                         </a>
                         <div class="back-btn">
                             <i class="fa fa-angle-left"></i>
@@ -332,11 +332,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/products">Products</a>
+                                            <a href="/productsretail">Sản Phẩm</a>
                                         </li>
 
                                         <li>
-                                            <a href="/addproduct">Add New Products</a>
+                                            <a asp-controller="AdminRetail" asp-action="HiddenProducts">Ngưng bán</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -361,14 +361,14 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
-                                        <span>Users</span>
+                                        <span>Khách hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/AllCustomers">All Customer</a>
+                                            <a href="/AllCustomers">Danh sách khách hàng</a>
                                         </li>
                                         <li>
-                                            <a href="/AddCustomer">Add New Customer</a>
+                                            <a href="/AddCustomer">Thêm khách hàng</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -398,117 +398,39 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-archive-line"></i>
-                                        <span>Orders</span>
+                                        <span>Đơn Hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="order-list.html">Order List</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListRetail">Danh sách cần duyệt</a>
                                         </li>
                                         <li>
-                                            <a href="order-detail.html">Order Detail</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListProcessed">Danh sách đã suyệt</a>
                                         </li>
-                                        <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
-                                        </li>
+                                        
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-focus-3-line"></i>
-                                        <span>Localization</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="translation.html">Translation</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="currency-rates.html">Currency Rates</a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                
 
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-price-tag-3-line"></i>
-                                        <span>Coupons</span>
+                                        <span>Mã Giảm giá</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/DiscountCodes">Coupon List</a>
+                                            <a href="/DiscountCodes">Danh sách mã giảm giá</a>
                                         </li>
 
                                         <li>
-                                            <a href="/CreateDiscountCode">Create Coupon</a>
+                                            <a href="/CreateDiscountCode">Tạo mã giảm giá</a>
                                         </li>
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="taxes.html">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Tax</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
-                                        <i class="ri-star-line"></i>
-                                        <span>Product Review</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Hỗ trợ</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="support">Yêu cầu hỗ trợ</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="create-coupon.html">Tiket</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="/profilesetting">Profile Setting</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
-                                        <i class="ri-file-chart-line"></i>
-                                        <span>Reports</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
-                                        <i class="ri-list-check"></i>
-                                        <span>List Page</span>
-                                    </a>
-                                </li>
-
-
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="/logs">
-                                        <i class="ri-history-line"></i>
-                                        <span>Lịch sử hoạt động</span>
-                                    </a>
-                                </li>
+             
+                                
                             </ul>
                         </div>
 

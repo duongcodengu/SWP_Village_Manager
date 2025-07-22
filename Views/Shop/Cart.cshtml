@@ -1,7 +1,7 @@
 ﻿@model List<Village_Manager.Models.CartItem>
 @using System.Globalization
 @{
-    ViewData["Title"] = "Cart";
+    ViewData["Title"] = "Giỏ hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
@@ -42,6 +42,29 @@
 </head>
 
 <body>
+    <!-- Breadcrumb Section Start -->
+    <section class="breadcrumb-section pt-0">
+        <div class="container-fluid-lg">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-contain">
+                        <h2>Chi tiết giỏ hàng</h2>
+                        <nav>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="/">
+                                        <i class="fa-solid fa-house"></i>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item active">Giỏ hàng</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
     <!-- Cart Section Start -->
     <section class="cart-section section-b-space">
         <div class="container-fluid-lg">
@@ -74,7 +97,7 @@
                                                             <ul>
                                                                 <li class="name">
                                                                     <a href="/shop/detail/@item.ProductId" class="theme-color">@item.Product?.Name</a>
-                                                                </li> 
+                                                                </li>
                                                             </ul>
                                                         </div>
                                                     </div>
@@ -98,7 +121,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="subtotal">
-                                                    <h4 class="table-title text-content">Số tiền</h4>
+                                                    <h4 class="table-title text-content">Thành tiền</h4>
                                                     <h5>₫@String.Format("{0:N0}", (item.Product?.Price ?? 0) * item.Quantity)</h5>
                                                 </td>
                                                 <td class="save-remove">
@@ -127,13 +150,13 @@
                                 <h6 class="text-content mb-2">Mã giảm giá</h6>
                                 <div class="mb-3 coupon-box input-group">
                                     <input type="text" id="couponCode" class="form-control" placeholder="Nhập mã ..." />
-                                    <button type="button" class="btn-apply" id="applyCouponBtn">Sử dụng</button>
+                                    <button type="button" class="btn-apply" id="applyCouponBtn">Áp dụng</button>
                                 </div>
                             </div>
 
                             <ul>
                                 <li>
-                                    <h4>Tổng số tiền: </h4>
+                                    <h4>Tổng tiền hàng: </h4>
                                     <h4 class="price">₫<span id="subtotalAmount">@String.Format("{0:N0}", total)</span></h4>
                                 </li>
                                 <li>
@@ -145,7 +168,7 @@
 
                         <ul class="summery-total">
                             <li class="list-total border-top-0">
-                                <h4>Tổng: </h4>
+                                <h4>Tổng cộng: </h4>
                                 <h4 class="price theme-color">₫<span id="finalAmount">@String.Format("{0:N0}", total)</span></h4>
                             </li>
                         </ul>
@@ -203,6 +226,15 @@
             }
         });
     </script>
+    <!-- Tap to top button start -->
+    <div class="theme-option">
+        <div class="back-to-top">
+            <a id="back-to-top" href="#">
+                <i class="fas fa-chevron-up"></i>
+            </a>
+        </div>
+    </div>
+    <!-- Tap to top button end -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->
