@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+  <Folder Include="Views\NewFolder\" />
   <Folder Include="wwwroot\uploads\" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

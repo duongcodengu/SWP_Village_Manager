@@ -35,12 +35,65 @@ namespace Village_Manager.Controllers
                 c.Id,
                 c.Name,
                 c.ImageUrl
-
-            })
-                .ToList();
+            }).ToList();
             ViewBag.ProductCategories = categories;
-            return View();
+
+            // Load tất cả banner theo Position
            
+        var bannerImages = _context.HomepageImages
+        .Where(h => h.Section == "banner" && h.IsActive)
+        .OrderBy(h => h.DisplayOrder)
+        .ToList();
+            ViewBag.BannerTopLeft = bannerImages.Where(b => b.Position == "Bannertopleft").FirstOrDefault()?.Banner;
+            ViewBag.BannerTopRight1 = bannerImages.Where(b => b.Position == "Bannertopright1").FirstOrDefault()?.Banner;
+            ViewBag.BannerTopRight2 = bannerImages.Where(b => b.Position == "Bannertopright2").FirstOrDefault()?.Banner;
+            ViewBag.BannerSide1 = bannerImages.Where(b => b.Position == "BannerSide1").FirstOrDefault()?.Banner;
+            ViewBag.BannerSide2 = bannerImages.Where(b => b.Position == "BannerSide2").FirstOrDefault()?.Banner;
+            ViewBag.BottomBanner = bannerImages.Where(b => b.Position == "BottomBanner").FirstOrDefault()?.Banner;
+
+
+            // Load các section khác
+            var topSaveImages = _context.HomepageImages.Include(h => h.ProductImage)
+                .ThenInclude(p => p.Product)
+                .Where(h => h.Section == "topsave" && h.IsActive)
+                .OrderBy(h => h.DisplayOrder)
+                .Take(12)
+                .ToList();
+
+            var foodCupboardImages = _context.HomepageImages
+                .Include(h => h.ProductImage)
+             .ThenInclude(p => p.Product)
+            .Where(h => h.Section == "FoodCupboard" && h.IsActive)
+            .OrderBy(h => h.DisplayOrder)
+              .ToList();
+
+            ViewBag.FoodCupboardImages = foodCupboardImages;
+
+            var bestSellerImages = _context.HomepageImages.Include(h => h.ProductImage)
+                .ThenInclude(p => p.Product)
+                .Where(h => h.Section == "bestseller" && h.IsActive)
+                .OrderBy(h => h.DisplayOrder)
+                .Take(12)
+                .ToList();
+
+            // Tạo cấu trúc slides cho TopSave
+            var topSaveSlides = new List<List<HomepageImage>>();
+            if (topSaveImages.Any())
+            {
+               
+                for (int i = 0; i < topSaveImages.Count; i += 2)
+                {
+                    var slide = topSaveImages.Skip(i).Take(2).ToList();
+                    topSaveSlides.Add(slide);
+                }
+            }
+
+            ViewBag.TopSaveImages = topSaveImages;
+            ViewBag.TopSaveSlides = topSaveSlides; 
+           
+            ViewBag.BestSellerImages = bestSellerImages;
+
+            return View();
         }
 
         //login

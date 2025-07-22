@@ -1,0 +1,663 @@
+﻿@model List<Village_Manager.Models.HomepageImage>
+@{
+    ViewData["Title"] = "Media";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Library</title>
+
+    <!-- CSS Links giữ nguyên như cũ -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+</head>
+
+<body>
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <div class="page-body-wrapper">
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="title-header option-title justify-content-start">
+                                    <h5>Media Library</h5>
+                                    <div class="selected-options"></div>
+                                </div>
+
+                                <!-- Banner Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5>🎯 Banner</h5>
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bannerUploadModal">
+                                            Thêm Banner
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row" id="bannerContainer">
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="row" id="bannerContainer">
+                                        @foreach (var image in Model.Where(m => m.Section == "banner" && m.IsActive))
+                                        {
+                                            <div class="col-md-3 mb-3">
+                                                <div class="library-box">
+                                                    <img src="@Url.Content(image.Banner)" class="img-fluid" alt="Banner" style="max-height: 200px; object-fit: cover;" />
+                                                    <div class="dropdown mt-2">
+                                                        <a href="#" role="button" data-bs-toggle="dropdown">
+                                                            <i class="ri-more-fill"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li>
+                                                                <select class="form-select position-select" data-homepage-id="@image.Id" data-current-position="@image.Position">
+                                                                    <option value="Bannertopleft">Banner top left</option>
+                                                                    <option value="Bannertopright1">Banner top right 1</option>
+                                                                    <option value="Bannertopright2">Banner top right 2</option>
+                                                                    <option value="BannerSide1">Banner Side 1</option>
+                                                                    <option value="BannerSide2">Banner Side 2</option>
+                                                                    <option value="BottomBanner">Bottom Banner</option>
+                                                                </select>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id">
+                                                                    <i class="ri-delete-bin-line me-2"></i>Xóa
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <!-- Top Sale Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5> Top Save Today</h5>
+                                        <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="topsave">
+                                            Add Media
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row row-cols-xl-6 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_square" data-section-container="topsave">
+                                            @foreach (var image in Model.Where(m => m.Section == "topsave" && m.IsActive))
+                                            {
+                                                <div class="col">
+                                                    <div class="library-box">
+                                                        <input type="checkbox" id="checkbox_@image.Id" value="@image.ProductImage.Id" data-img-url="@image.ProductImage.ImageUrl" />
+                                                        <label for="checkbox_@image.Id">
+                                                            <div>
+                                                                <img src="@Url.Content(image.ProductImage.ImageUrl)" class="img-fluid bg-img bg_size_content" alt="" style="width: 100%; height: 150px; object-fit: cover;" />
+                                                            </div>
+                                                            <div class="dropdown">
+                                                                <a href="#" role="button" data-bs-toggle="dropdown">
+                                                                    <i class="ri-more-fill"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Food CUPPLE Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5>Food Cupboard</h5>
+                                        <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="FoodCupboard">
+                                            Add Media
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row row-cols-xl-6 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_square" data-section-container="FoodCupboard">
+                                            @foreach (var image in Model.Where(m => m.Section == "FoodCupboard" && m.IsActive))
+                                            {
+                                                <div class="col">
+                                                    <div class="library-box">
+                                                        <input type="checkbox" id="checkbox_@image.Id" value="@image.ProductImage.Id" data-img-url="@image.ProductImage.ImageUrl" />
+                                                        <label for="checkbox_@image.Id">
+                                                            <div>
+                                                                <img src="@Url.Content(image.ProductImage.ImageUrl)" class="img-fluid bg-img bg_size_content" alt="" style="width: 100%; height: 150px; object-fit: cover;" />
+                                                            </div>
+                                                            <div class="dropdown">
+                                                                <a href="#" role="button" data-bs-toggle="dropdown">
+                                                                    <i class="ri-more-fill"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Best Seller  Section -->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5>Our best Seller</h5>
+                                        <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="bestseller">
+                                            Add Media
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row row-cols-xl-6 row-cols-md-5 row-cols-sm-3 row-cols-2 g-sm-3 g-2 media-library-sec ratio_square" data-section-container="bestseller">
+                                            @foreach (var image in Model.Where(m => m.Section == "bestseller" && m.IsActive))
+                                            {
+                                                <div class="col">
+                                                    <div class="library-box">
+                                                        <input type="checkbox" id="checkbox_@image.Id" value="@image.ProductImage.Id" data-img-url="@image.ProductImage.ImageUrl" />
+                                                        <label for="checkbox_@image.Id">
+                                                            <div>
+                                                                <img src="@Url.Content(image.ProductImage.ImageUrl)" class="img-fluid bg-img bg_size_content" alt="" style="width: 100%; height: 150px; object-fit: cover;" />
+                                                            </div>
+                                                            <div class="dropdown">
+                                                                <a href="#" role="button" data-bs-toggle="dropdown">
+                                                                    <i class="ri-more-fill"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Upload Banner -->
+    <div class="modal fade" id="bannerUploadModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Banner Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thêm dropdown Position -->
+                    <div class="mb-3">
+                        <label for="bannerPosition" class="form-label">Chọn vị trí banner</label>
+                        <select class="form-select" id="bannerPosition" required>
+                            <option value="">-- Chọn vị trí --</option>
+                            <option value="Bannertopleft">Banner top left</option>
+                            <option value="Bannertopright1">Banner top right 1</option>
+                            <option value="Bannertopright2">Banner top right 2</option>
+                            <option value="BannerSide1">Banner Side 1</option>
+                            <option value="BannerSide2">Banner Side 2</option>
+                                 <option value="BottomBanner">Bottom Banner</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bannerFile" class="form-label">Chọn file ảnh banner</label>
+                        <input type="file" class="form-control" id="bannerFile" accept="image/*">
+                    </div>
+
+                    <div id="bannerUploadPreview" class="mb-3"></div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button class="btn btn-primary" id="uploadBannerBtn">
+                            <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                            Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Insert Media Modal -->
+    <div class="modal fade" id="mediaModel" tabindex="-1" aria-labelledby="mediaModelLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="mediaModelLabel">Chọn Ảnh Sản Phẩm</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="categoryDropdown" class="form-label">Chọn danh mục sản phẩm:</label>
+                            <select class="form-select" id="categoryDropdown">
+                                <option value="">-- Chọn danh mục --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="file-detail mt-4">
+                                <h6>0 File Selected</h6>
+                                <a href="#" class="font-red">Clear Selection</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="imageList" class="row">
+                        <div class="col-12 text-center text-muted py-5">
+                            <i class="ri-image-line" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button class="btn btn-primary" id="insertMediaBtn">
+                        <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                        Thêm vào Section
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = "";
+
+        // Khởi tạo khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Media page loaded');
+        });
+
+        // Xử lý khi click nút "Add Media"
+        document.querySelectorAll(".open-media-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                currentSection = this.getAttribute("data-section-container");
+                console.log('Opening media modal for section:', currentSection);
+
+                // Reset modal
+                document.getElementById("categoryDropdown").value = "";
+                document.getElementById("imageList").innerHTML = `
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="ri-image-line" style="font-size: 3rem;"></i>
+                        <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
+                    </div>
+                `;
+                document.querySelector('.file-detail h6').textContent = '0 File Selected';
+
+                // Load categories
+                loadCategories();
+            });
+        });
+
+        // Load danh mục
+        function loadCategories() {
+            fetch("/Media/GetCategories")
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    const dropdown = document.getElementById("categoryDropdown");
+                    dropdown.innerHTML = '<option value="">-- Chọn danh mục --</option>';
+
+                    if (Array.isArray(data)) {
+                        data.forEach(category => {
+                            const option = document.createElement("option");
+                            option.value = category.id;
+                            option.textContent = category.name;
+                            dropdown.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading categories:', error);
+                    showAlert('Lỗi khi tải danh mục: ' + error.message, 'danger');
+                });
+        }
+
+        // Load ảnh khi chọn category
+        document.getElementById("categoryDropdown").addEventListener("change", function () {
+            const categoryId = this.value;
+            const imageList = document.getElementById("imageList");
+
+            if (!categoryId) {
+                imageList.innerHTML = `
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="ri-image-line" style="font-size: 3rem;"></i>
+                        <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Hiển thị loading
+            imageList.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Đang tải ảnh...</p>
+                </div>
+            `;
+
+            fetch(`/Media/GetImagesByCategory?categoryId=${categoryId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(images => {
+                    console.log('Loaded images:', images);
+
+                    if (!Array.isArray(images) || images.length === 0) {
+                        imageList.innerHTML = `
+                            <div class="col-12 text-center text-muted py-5">
+                                <i class="ri-image-off-line" style="font-size: 3rem;"></i>
+                                <p class="mt-2">Không có ảnh nào trong danh mục này</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    imageList.innerHTML = "";
+                    images.forEach(img => {
+                        const col = document.createElement("div");
+                        col.className = "col-md-3 col-sm-4 col-6 mb-3";
+                        col.innerHTML = `
+                            <div class="library-box">
+                                <input type="checkbox" value="${img.id}" class="select-image-checkbox" id="img_${img.id}" />
+                                <label for="img_${img.id}" class="d-block">
+                                    <img src="${img.imageUrl}" class="img-fluid" alt="${img.productName}"
+                                         style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px;" />
+                                    <div class="small text-center mt-2 text-truncate" title="${img.productName}">
+                                        ${img.productName}
+                                    </div>
+                                </label>
+                            </div>
+                        `;
+                        imageList.appendChild(col);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading images:', error);
+                    imageList.innerHTML = `
+                        <div class="col-12 text-center text-danger py-5">
+                            <i class="ri-error-warning-line" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Lỗi khi tải ảnh: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        });
+
+        // Xử lý khi click "Thêm vào Section"
+               document.getElementById("uploadBannerBtn").addEventListener("click", function () {
+            const fileInput = document.getElementById("bannerFile");
+            const file = fileInput.files[0];
+            const position = document.getElementById("bannerPosition").value;
+
+            if (!file) {
+                showAlert("Vui lòng chọn file ảnh!", 'warning');
+                return;
+            }
+            if (!position) {
+                showAlert("Vui lòng chọn vị trí banner!", 'warning');
+                return;
+            }
+
+            const btn = this;
+            const spinner = btn.querySelector('.spinner-border');
+
+            // Hiển thị preview
+            const preview = document.getElementById("bannerUploadPreview");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" class="img-fluid" style="max-height: 200px;" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("section", "banner");
+            formData.append("position", position);
+
+            // Hiển thị loading
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            fetch('/Media/UploadBanner', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Thêm banner mới vào giao diện
+                    const bannerContainer = document.getElementById('bannerContainer');
+                    const newBannerHTML = `
+                        <div class="col-md-3 mb-3">
+                            <div class="library-box">
+                                <img src="${data.imageUrl}" class="img-fluid" alt="Banner" style="max-height: 200px; object-fit: cover;" />
+                                <div class="dropdown mt-2">
+                                    <a href="#" role="button" data-bs-toggle="dropdown">
+                                        <i class="ri-more-fill"></i>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="${data.imageId}">
+                                                <i class="ri-delete-bin-line me-2"></i>Xóa
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    bannerContainer.insertAdjacentHTML('beforeend', newBannerHTML);
+
+                    // Đóng modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('bannerUploadModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+
+                    // Reset form
+                    fileInput.value = '';
+                    document.getElementById("bannerPosition").value = '';
+                    preview.innerHTML = '';
+
+                    showAlert(data.message || "Upload banner thành công!", 'success');
+                } else {
+                    showAlert(data.message || "Có lỗi xảy ra!", 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert("Lỗi upload: " + error.message, 'danger');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            });
+        });
+
+        // Update file count khi chọn ảnh
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('select-image-checkbox') && e.target.closest('#imageList')) {
+                const checkedCount = document.querySelectorAll('#imageList .select-image-checkbox:checked').length;
+                document.querySelector('.file-detail h6').textContent = `${checkedCount} File Selected`;
+            }
+        });
+
+                 // Xóa duplicate event listener và sửa lỗi syntax
+       
+        // Delete image
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-image') || e.target.closest('.delete-image')) {
+                e.preventDefault();
+                const deleteBtn = e.target.classList.contains('delete-image') ? e.target : e.target.closest('.delete-image');
+                const homepageId = deleteBtn.getAttribute('data-homepage-id');
+
+                if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                    fetch(`/Media/DeleteImage/${homepageId}`, { method: 'DELETE' })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                const imageElement = deleteBtn.closest('.col') || deleteBtn.closest('.col-md-3');
+                                if (imageElement) {
+                                    imageElement.remove();
+                                }
+                                showAlert(data.message || "Xóa ảnh thành công!", 'success');
+                            } else {
+                                showAlert(data.message || "Có lỗi khi xóa ảnh!", 'danger');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showAlert("Lỗi khi xóa: " + error.message, 'danger');
+                        });
+                }
+            }
+        });
+        // insert section 
+                document.getElementById("insertMediaBtn").addEventListener("click", function() {
+            const checkedImages = document.querySelectorAll('#imageList .select-image-checkbox:checked');
+
+            if (checkedImages.length === 0) {
+                showAlert("Vui lòng chọn ít nhất một ảnh!", 'warning');
+                return;
+            }
+
+            if (!currentSection) {
+                showAlert("Lỗi: Không xác định được section!", 'danger');
+                return;
+            }
+
+            const imageIds = Array.from(checkedImages).map(checkbox => parseInt(checkbox.value));
+
+            const btn = this;
+            const spinner = btn.querySelector('.spinner-border');
+
+            // Hiển thị loading
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+
+            fetch('/Media/InsertSelectedImages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageIds: imageIds,
+                    section: currentSection
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Thêm ảnh mới vào giao diện
+                    const sectionContainer = document.querySelector(`[data-section-container="${currentSection}"]`);
+
+                    data.images.forEach(img => {
+                        const newImageHTML = `
+                            <div class="col">
+                                <div class="library-box">
+                                    <input type="checkbox" id="checkbox_${img.id}" value="${img.id}" data-img-url="${img.imageUrl}" />
+                                    <label for="checkbox_${img.id}">
+                                        <div>
+                                            <img src="${img.imageUrl}" class="img-fluid bg-img bg_size_content" alt="" style="width: 100%; height: 150px; object-fit: cover;" />
+                                        </div>
+                                        <div class="dropdown">
+                                            <a href="#" role="button" data-bs-toggle="dropdown">
+                                                <i class="ri-more-fill"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
+                                                <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="${img.id}"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                        sectionContainer.insertAdjacentHTML('beforeend', newImageHTML);
+                    });
+
+                    // Đóng modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('mediaModel'));
+                    if (modal) {
+                        modal.hide();
+                    }
+
+                    // Reset form
+                    document.getElementById("categoryDropdown").value = "";
+                    document.getElementById("imageList").innerHTML = `
+                        <div class="col-12 text-center text-muted py-5">
+                            <i class="ri-image-line" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
+                        </div>
+                    `;
+                    document.querySelector('.file-detail h6').textContent = '0 File Selected';
+
+                    showAlert(data.message || "Thêm ảnh thành công!", 'success');
+                } else {
+                    showAlert(data.message || "Có lỗi xảy ra!", 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert("Lỗi khi thêm ảnh: " + error.message, 'danger');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+            });
+        });
+        // Hàm hiển thị thông báo
+        function showAlert(message, type = 'info') {
+            // Tạo alert element
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(alertDiv);
+
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

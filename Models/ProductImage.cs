@@ -15,6 +15,5 @@ public partial class ProductImage
     public string? Description { get; set; }
 
     public DateTime? UploadedAt { get; set; }
-
     public virtual Product? Product { get; set; }
 }
