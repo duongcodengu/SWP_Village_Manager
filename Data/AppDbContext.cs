@@ -97,9 +97,52 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<DeliveryProof> DeliveryProofs { get; set; }
 
     public virtual DbSet<ContactMessages> ContactMessages { get; set; }
-
+    public virtual DbSet<HomepageImage> HomepageImages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<HomepageImage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__HomepageImage__Id");
+
+            entity.ToTable("HomepageImage");
+
+            entity.Property(e => e.Id)
+                .HasColumnName("id");
+
+            entity.Property(e => e.ProductImageId)
+                .HasColumnName("product_image_id")
+                .IsRequired(false); // Cho phép NULL
+
+            entity.Property(e => e.Section)
+                .HasMaxLength(50)
+                .IsRequired()
+                .HasColumnName("section");
+
+            entity.Property(e => e.DisplayOrder)
+                .HasColumnName("display_order")
+                .HasDefaultValue(0);
+
+            entity.Property(e => e.IsActive)
+                .HasColumnName("is_active")
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.Banner)
+                .HasMaxLength(500)
+                .IsRequired(false)
+                .HasColumnName("Banner");
+
+            entity.Property(e => e.Position)
+                .HasMaxLength(50)
+                .IsRequired(false)
+                .HasColumnName("Position");
+
+            // Cấu hình relationship với ProductImage
+            entity.HasOne(e => e.ProductImage)
+                .WithMany()
+                .HasForeignKey(e => e.ProductImageId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
         modelBuilder.Entity<Address>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Address__3213E83F70EB8CBA");

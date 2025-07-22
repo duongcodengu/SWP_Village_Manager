@@ -1092,6 +1092,16 @@ public class AdminWarehouseController : Controller
         return RedirectToAction("Support");
     }
 
+    // API để lấy danh sách sản phẩm cho Media
+    [HttpGet]
+    [Route("GetProducts")]
+    public IActionResult GetProducts()
+    {
+        var products = _context.Products
+            .Where(p => p.ApprovalStatus == "accepted")
+            .Select(p => new { id = p.Id, name = p.Name })
+            .ToList();
+
+        return Json(products);
+    }
 }
-
-
