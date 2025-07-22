@@ -26,15 +26,22 @@ namespace Village_Manager.Controllers
         {
             public User User { get; set; }
             public Farmer Famer { get; set; }
-            public List<Product> ProductList { get; set; } // Danh sách sản phẩm gốc
-            public List<ProductWithSales> ProductWithSalesList { get; set; } // Danh sách sản phẩm kèm số lượng đã bán
+            public List<Product> ProductList { get; set; } 
+            public List<ProductWithSales> ProductWithSalesList { get; set; } 
             public List<RetailOrder> OngoingOrders { get; set; }
-
         }
 
         [HttpGet]
         [Route("becomefamer")]
-        public IActionResult FamerBecome() => View();
+        public IActionResult FamerBecome() {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            return View();
+        }
 
         [HttpPost]
         [Route("becomefamer")]
@@ -54,6 +61,13 @@ namespace Village_Manager.Controllers
             if (existing)
             {
                 TempData["Error"] = "Bạn đã gửi yêu cầu rồi. Vui lòng chờ xét duyệt.";
+                return RedirectToAction("FamerBecome");
+            }
+
+            // Kiểm tra địa chỉ
+            if (string.IsNullOrWhiteSpace(Address))
+            {
+                TempData["Error"] = $"Vui lòng nhập đầy đủ địa chỉ. Address nhận được: '{Address}'";
                 return RedirectToAction("FamerBecome");
             }
 

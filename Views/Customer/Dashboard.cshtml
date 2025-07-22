@@ -98,21 +98,11 @@
                                     <i data-feather="map-pin"></i>Address
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-deliorder-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-deliorder" type="button" role="tab">
-                                    <i data-feather="map-pin"></i>Hủy hàng
-                                </button>
-                            </li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="col-xxl-9 col-lg-8">
-                    <button class="btn left-dashboard-show btn-animation btn-md fw-bold d-block mb-4 d-lg-none">
-                        Show
-                        Menu
-                    </button>
                     <div class="dashboard-right-sidebar">
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel">
@@ -448,11 +438,12 @@
                                       border-color: #007a63;
                                  }
                             </style>
-                            <div class="tab-pane fade" id="pills-card" role="tabpanel">
-                                <div class="dashboard-card">
+
+                            @* <div class="tab-pane fade" id="pills-address" role="tab" aria-labelledby="pills-address-tab">
+                                <div class="dashboard-address">
                                     <div class="title title-flex">
                                         <div>
-                                            <h2>My Card Details</h2>
+                                            <h2>My Address Book</h2>
                                             <span class="title-leaf">
                                                 <svg class="icon-width bg-gray">
                                                     <use xlink:href="~/svg/leaf.svg#leaf"></use>
@@ -461,168 +452,77 @@
                                         </div>
 
                                         <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
-                                                data-bs-toggle="modal" data-bs-target="#editCard">
-                                            <i data-feather="plus"
-                                               class="me-2"></i> Add New Card
+                                                data-bs-toggle="modal" data-bs-target="#add-address">
+                                            <i data-feather="plus" class="me-2"></i> Add New Address
                                         </button>
                                     </div>
-
-                                    <div class="row g-4">
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
-                                            <div class="payment-card-detail">
-                                                <div class="card-details">
-                                                    <div class="card-number">
-                                                        <h4>XXXX - XXXX - XXXX - 2548</h4>
-                                                    </div>
-
-                                                    <div class="valid-detail">
-                                                        <div class="title">
-                                                            <span>valid</span>
-                                                            <span>thru</span>
+                                    <div class="row g-sm-4 g-3">
+                                    </div>
+                                    <div class="row g-sm-4 g-3">
+                                        @foreach (var userLocation in Model)
+                                        {
+                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
+                                                <div class="address-box">
+                                                    <div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack"
+                                                                   id="flexRadioDefault1">
                                                         </div>
-                                                        <div class="date">
-                                                            <h3>08/05</h3>
-                                                        </div>
-                                                        <div class="primary">
-                                                            <span class="badge bg-pill badge-light">primary</span>
-                                                        </div>
-                                                    </div>
 
-                                                    <div class="name-detail">
-                                                        <div class="name">
-                                                            <h5>Audrey Carol</h5>
+                                                        <div class="label">
+                                                            <label>@userLocation.Label</label>
                                                         </div>
-                                                        <div class="card-img">
-                                                            <img src="~/images/payment-icon/1.jpg"
-                                                                 class="img-fluid blur-up lazyloaded" alt="">
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                <div class="edit-card">
-                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                       data-bs-target="#removeProfile">
-                                                        <i class="far fa-minus-square"></i> delete
-                                                    </a>
-                                                </div>
-                                            </div>
+                                                        <div class="table-responsive address-table">
+                                                            <table class="table">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="2">@userLocation.User.Username</td>
+                                                                    </tr>
 
-                                            <div class="edit-card-mobile">
-                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                <a href="javascript:void(0)">
-                                                    <i class="far fa-minus-square"></i>
-                                                    delete
-                                                </a>
-                                            </div>
-                                        </div>
+                                                                    <tr>
+                                                                        <td>Address :</td>
+                                                                        <td>
+                                                                            <p>
+                                                                                @userLocation.Address
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
 
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
-                                            <div class="payment-card-detail">
-                                                <div class="card-details card-visa">
-                                                    <div class="card-number">
-                                                        <h4>XXXX - XXXX - XXXX - 1536</h4>
-                                                    </div>
-
-                                                    <div class="valid-detail">
-                                                        <div class="title">
-                                                            <span>valid</span>
-                                                            <span>thru</span>
-                                                        </div>
-                                                        <div class="date">
-                                                            <h3>12/23</h3>
-                                                        </div>
-                                                        <div class="primary">
-                                                            <span class="badge bg-pill badge-light">primary</span>
+                                                                    <tr>
+                                                                        <td>Phone :</td>
+                                                                        <td>@userLocation.User.Phone</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
 
-                                                    <div class="name-detail">
-                                                        <div class="name">
-                                                            <h5>Leah Heather</h5>
-                                                        </div>
-                                                        <div class="card-img">
-                                                            <img src="~/images/payment-icon/2.jpg"
-                                                                 class="img-fluid blur-up lazyloaded" alt="">
-                                                        </div>
+                                                    <div class="button-group">
+                                                        <button class="btn btn-sm add-button w-100 edit-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-label="@userLocation.Label"
+                                                                data-address="@userLocation.Address"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#edit-address">
+                                                            <i data-feather="edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm add-button w-100 remove-btn"
+                                                                data-id="@userLocation.Id"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#remove-address">
+                                                            <i data-feather="trash-2"></i>
+                                                            Remove
+                                                        </button>
+
                                                     </div>
                                                 </div>
-
-                                                <div class="edit-card">
-                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                       data-bs-target="#removeProfile">
-                                                        <i class="far fa-minus-square"></i> delete
-                                                    </a>
-                                                </div>
                                             </div>
-
-                                            <div class="edit-card-mobile">
-                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                <a href="javascript:void(0)">
-                                                    <i class="far fa-minus-square"></i>
-                                                    delete
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xxl-4 col-xl-6 col-lg-12 col-sm-6">
-                                            <div class="payment-card-detail">
-                                                <div class="card-details debit-card">
-                                                    <div class="card-number">
-                                                        <h4>XXXX - XXXX - XXXX - 1366</h4>
-                                                    </div>
-
-                                                    <div class="valid-detail">
-                                                        <div class="title">
-                                                            <span>valid</span>
-                                                            <span>thru</span>
-                                                        </div>
-                                                        <div class="date">
-                                                            <h3>05/21</h3>
-                                                        </div>
-                                                        <div class="primary">
-                                                            <span class="badge bg-pill badge-light">primary</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="name-detail">
-                                                        <div class="name">
-                                                            <h5>mark jecno</h5>
-                                                        </div>
-                                                        <div class="card-img">
-                                                            <img src="~/images/payment-icon/3.jpg"
-                                                                 class="img-fluid blur-up lazyloaded" alt="">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="edit-card">
-                                                    <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                       href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                       data-bs-target="#removeProfile">
-                                                        <i class="far fa-minus-square"></i> delete
-                                                    </a>
-                                                </div>
-                                            </div>
-
-                                            <div class="edit-card-mobile">
-                                                <a data-bs-toggle="modal" data-bs-target="#editCard"
-                                                   href="javascript:void(0)"><i class="far fa-edit"></i> edit</a>
-                                                <a href="javascript:void(0)">
-                                                    <i class="far fa-minus-square"></i>
-                                                    delete
-                                                </a>
-                                            </div>
-                                        </div>
+                                        }
                                     </div>
                                 </div>
-                            </div>
+                            </div> *@
 
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel">
                                 <div class="dashboard-profile">
@@ -732,66 +632,6 @@
     </section>
     <!-- User Dashboard Section End -->
 
-    <!-- Edit Profile Start -->
-    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-2">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-3">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Deal Box Modal End -->
     <!-- Tap to top and theme setting button start -->
     <div class="theme-option">
@@ -879,7 +719,7 @@
         </div>
     </div>
     <!-- Edit address modal box end -->
-<script>
+    <script>
     function loadOrderDetail(orderId) {
         fetch(`/customer/order-detail/${orderId}`)
             .then(res => res.text())
@@ -942,7 +782,156 @@
         });
     </script>
 
+    <!-- Edit Profile Start -->
+    <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email" onchange="checkEmailChanged()">
+                                    <label for="email1">Email address</label>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input class="form-control" type="tel" value="@ViewBag.Phone" name="mobile" id="mobile"
+                                           maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
+                                            this.value.slice(0, this.maxLength);">
+                                    <label for="mobile">Phone Number</label>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-xxl-12">
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="provinceSelect" onchange="onProvinceChange()">
+                                    <option value="">Chọn tỉnh</option>
+                                </select>
+                                <label for="provinceSelect">Tỉnh/Thành phố</label>
+                            </div>
+
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="districtSelect" onchange="onDistrictChange()">
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <label for="districtSelect">Quận/Huyện</label>
+                            </div>
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="wardSelect">
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                                <label for="wardSelect">Phường/Xã</label>
+                            </div>
+                            <div class="form-floating theme-form-floating">
+                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, đường...">
+                                <label for="detailAddress">Địa chỉ chi tiết</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-animation btn-md fw-bold"
+                                data-bs-dismiss="modal">
+                            Đóng
+                        </button>
+                        <button type="button" class="btn theme-bg-color btn-md fw-bold text-light" onclick="handleSave()">
+                            Lưu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Edit Profile End -->
+    @* api lay địa chỉ *@
+    <script>
+        async function onProvinceChange() {
+            const provinceCode = document.getElementById("provinceSelect").value;
+            const districtSelect = document.getElementById("districtSelect");
+            const wardSelect = document.getElementById("wardSelect");
+
+            // Reset district và ward
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+            if (!provinceCode) return;
+
+            const res = await fetch("https://provinces.open-api.vn/api/p/" + provinceCode + "?depth=2");
+            const data = await res.json();
+
+            data.districts.forEach(d => {
+                const option = document.createElement("option");
+                option.text = d.name;
+                option.value = d.code;
+                districtSelect.appendChild(option);
+            });
+        }
+
+        async function onDistrictChange() {
+            const districtCode = document.getElementById("districtSelect").value;
+            const wardSelect = document.getElementById("wardSelect");
+
+            // Reset ward
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+            if (!districtCode) return;
+
+            const res = await fetch("https://provinces.open-api.vn/api/d/" + districtCode + "?depth=2");
+            const data = await res.json();
+
+            data.wards.forEach(w => {
+                const option = document.createElement("option");
+                option.text = w.name;
+                option.value = w.code;
+                wardSelect.appendChild(option);
+            });
+        }
     </script>
+
+    <script>
+        const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
+        const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
+        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
+
+        async function handleSave() {
+            const email = document.getElementById("email1").value.trim();
+            const phone = document.getElementById("mobile").value.trim();
+            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
+            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
+            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
+            const detail = document.getElementById("detailAddress").value.trim();
+            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
+
+            // Kiểm tra có thay đổi gì không
+            const hasChanged =
+                email !== originalEmail ||
+                phone !== originalPhone ||
+                fullAddress !== originalAddress;
+
+            if (!hasChanged) {
+                alert("Bạn chưa thay đổi thông tin nào.");
+                return;
+            }
+
+            // Chuyển đến OTP để xác minh
+            const url = new URL('/otp', window.location.origin);
+            url.searchParams.set('email', email);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('address', fullAddress);
+            window.location.href = url.toString();
+        }
+    </script>
+
     <!-- Add address modal box start -->
     @{
         var userId = Context.Session.GetInt32("UserId") ?? 0;
@@ -980,7 +969,6 @@
         </div>
     </div>
 
-    <!-- Add address modal box end -->
 
     @* api lay địa chỉ *@
     <script>
@@ -1024,35 +1012,10 @@
                         wardSelect.appendChild(option);
                     });
                 }
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect12">
-                                        <option selected>Card Type</option>
-                                        <option value="kingdom">Visa Card</option>
-                                        <option value="states">MasterCard Card</option>
-                                        <option value="fra">RuPay Card</option>
-                                        <option value="china">Contactless Card</option>
-                                        <option value="spain">Maestro Card</option>
-                                    </select>
-                                    <label for="floatingSelect12">Card Type</label>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold"
-                            data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Card End -->
+            }
+        });
     </script>
+    
     <!-- Remove Address Modal Start -->
     <div class="modal fade" id="remove-address" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -1245,6 +1208,111 @@
         });
     </script>
 
+    <div id="geoPrompt" style="
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        width: 300px;
+    ">
+    <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <img src="https:cdn-icons-png.flaticon.com/512/535/535239.png" alt="Location icon" width="24" height="24" style="margin-right: 10px;">
+        <strong>Cho phép truy cập vị trí</strong>
+    </div>
+    <p style="margin: 0 0 16px; font-size: 14px; color: #444;">
+        Ứng dụng cần vị trí để phục vụ bạn tốt hơn.
+    </p>
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="denyLocation()" style="
+            background: transparent;
+            border: 2px solid #ccc;
+            color: #555;
+            padding: 6px 14px;
+            border-radius: 6px;
+            margin-right: 10px;
+            cursor: pointer;
+        ">
+                Từ chối
+            </button>
+            <button onclick="allowLocation()" style="
+            background-color: #0DA487;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        ">
+                Cho phép
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        const userId = @Html.Raw(Json.Serialize(ViewBag.UserId ?? 0))
+        const hasLocation = @Html.Raw(Json.Serialize(ViewBag.HasAcceptedGeo ?? false))
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (hasLocation === false && userId > 0) {
+                setTimeout(() => {
+                    document.getElementById("geoPrompt").style.display = "block";
+                }, 1000);
+            }
+        });
+
+        function allowLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition, showError);
+            } else {
+                alert("Trình duyệt không hỗ trợ định vị.");
+            }
+        }
+
+        function denyLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            console.log("Người dùng từ chối chia sẻ vị trí.");
+        }
+
+        function savePosition(position) {
+            const data = {
+                userId: userId,
+                label: "Vị trí tự động",
+                address: "",
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+
+            fetch('/api/location/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                return fetch('/api/location/accept', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userId })
+                });
+            })
+            .then(res => res.json())
+            .then(result => {
+                console.log("Vị trí đã được lưu & chấp nhận:", result);
+            });
+        }
+
+        function showError(error) {
+            alert("Không thể lấy vị trí: " + error.message);
+        }
+    </script>
 
     
 
