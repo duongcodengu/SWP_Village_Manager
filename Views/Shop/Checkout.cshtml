@@ -1,6 +1,6 @@
 ﻿@model List<Village_Manager.Models.CartItem>
 @{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
