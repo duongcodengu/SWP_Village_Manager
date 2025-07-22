@@ -15,30 +15,30 @@
                     <div class="card-body">
                         <form asp-action="CreateDiscountCode" method="post">
                             <div class="mb-3">
-                                <label>Code</label>
+                                <label>Mã code</label>
                                 <input asp-for="Code" class="form-control" required minlength="6" />
                             </div>
                             <div class="mb-3">
-                                <label>Discount Percent</label>
+                                <label>Phần trăm giảm giá</label>
                                 <input asp-for="DiscountPercent" type="number" class="form-control" min="1" max="100" required />
                             </div>
                             <div class="mb-3">
-                                <label>Usage Limit</label>
+                                <label>Giới hạn sử dụng</label>
                                 <input asp-for="UsageLimit" type="number" class="form-control" min="1" required />
                             </div>
                             <div class="mb-3">
-                                <label>Status</label>
+                                <label>Trạng thái</label>
                                 <select asp-for="Status" class="form-select">
                                     <option value="active">Active</option>
                                     <option value="disabled">Disabled</option>
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label>Expired At</label>
+                                <label>Ngày hết hạn</label>
                                 <input asp-for="ExpiredAt" type="date" class="form-control" />
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-success">Create</button>
+                                <button type="submit" class="btn btn-success">Tạo mã giảm giá</button>
                                 <a asp-action="DiscountCodes" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>

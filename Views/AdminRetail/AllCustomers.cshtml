@@ -41,7 +41,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <div class="title-header option-title">
-                                                    <h5>All Customers</h5>
+                                                    <h5>Danh sách khách hàng</h5>
                                                 </div>
                                             </div>
                                             @if (TempData["SuccessMessage"] != null)
@@ -58,13 +58,13 @@
                                                     <thead>
                                                         <tr>
                                                             <th>ID</th>
-                                                            <th>Username</th>
+                                                            <th>Tên</th>
                                                             <th>Email</th>
-                                                            <th>Role</th>
-                                                            <th> Phone </th>
+                                                            <th>Vai trò</th>
+                                                            <th>Số điện thoại </th>
                                                             <th>Created At</th>
                                                             <th>Trạng thái</th>
-                                                            <th>Option</th>
+                                                            <th>Lựa chọn</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -86,26 +86,26 @@
                                                                         <ul>
                                                                            
                                                                             <li>
-                                                                                <a href="@Url.Action("EditCustomer", "AdminRetail", new { id = user.Id })">Edit</a>
+                                                                                <a href="@Url.Action("EditCustomer", "AdminRetail", new { id = user.Id })">Chỉnh sửa</a>
                                                                             </li>
                                                                             <li>
                                                                                 @if (user.IsActive)
                                                                                 {
                                                                                     <form asp-action="BanCustomer" asp-controller="AdminRetail" asp-route-id="@user.Id" method="post" style="display:inline;">
-                                                                                        <button type="submit" style="border: none; background: none; color: orange;">Ban</button>
+                                                                                        <button type="submit" style="border: none; background: none; color: orange;">Khóa</button>
                                                                                     </form>
                                                                                 }
                                                                                 else
                                                                                 {
                                                                                     <form asp-action="UnbanCustomer" asp-controller="AdminRetail" asp-route-id="@user.Id" method="post" style="display:inline;">
-                                                                                        <button type="submit" style="border: none; background: none; color: green;">Unban</button>
+                                                                                        <button type="submit" style="border: none; background: none; color: green;">Mở khóa</button>
                                                                                     </form>
                                                                                 }
                                                                             </li>
                                                                             <li>
                                                                                 <form asp-action="DeleteCustomer" asp-controller="AdminRetail" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
                                                                                     <button type="submit" style="border: none; background: none; color: red;">
-                                                                                        Delete
+                                                                                        Xóa
                                                                                     </button>
                                                                                 </form>
                                                                             </li>
