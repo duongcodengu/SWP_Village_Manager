@@ -467,6 +467,7 @@ public class AdminWarehouseController : Controller
         {
             _logger.LogError($"Error loading users: {ex.Message}");
             TempData["ErrorMessage"] = "An error occurred while loading users.";
+            ViewBag.Roles = _context.Roles.ToList();
             return View(new List<User>());
         }
     }

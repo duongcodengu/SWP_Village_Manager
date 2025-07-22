@@ -17,6 +17,10 @@ namespace Village_Manager.Controllers
         public IActionResult DashboardShipper()
         {
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
+            var roleId = HttpContext.Session.GetInt32("RoleId");
+            if (!shipperId.HasValue || roleId != 4)
+                return RedirectToAction("Login", "Home");
+
             Console.WriteLine($"[DEBUG] Session ShipperId: {shipperId}");
             if (!shipperId.HasValue)
                 return RedirectToAction("Login", "Home");

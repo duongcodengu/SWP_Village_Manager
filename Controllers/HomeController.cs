@@ -202,10 +202,10 @@ namespace Village_Manager.Controllers
                         return RedirectToAction("Index", "Home");
 
                     case 3: // Customer
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("IndexCustomer", "Customer");
 
                     case 4: // Shipper
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("DashboardShipper", "Shipper"); // chuyển thẳng đến dashboard shipper
 
                     case 5: // Farmer
                         return RedirectToAction("Index", "Home");

@@ -28,12 +28,10 @@ namespace Village_Manager.Models
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-
-
-    public virtual User? User { get; set; }
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
+        [Column("image_url")]
         public string ImageUrl { get; set; }
-        // Navigation property
-        public virtual User Users { get; set; }
     }
 
 }
