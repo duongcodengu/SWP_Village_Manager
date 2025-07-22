@@ -135,16 +135,15 @@ public class AccountController : Controller
         switch (user.RoleId)
         {
             case 1: // Admin
+                return RedirectToAction("Index", "Home");
             case 2: // Staff
+                return RedirectToAction("Index", "Home");
             case 5: // Farmer
                 return RedirectToAction("Index", "Home"); 
-
             case 3: // Customer
                 return RedirectToAction("Index", "Home"); 
-
             case 4: // Shipper
                 return RedirectToAction("Index", "Home");
-
             default:
                 return RedirectToAction("Login", "Home");
         }
