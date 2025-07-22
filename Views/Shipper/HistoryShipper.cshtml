@@ -106,14 +106,25 @@
                             <td>@delivery.CustomerName</td>
                             <td>@delivery.CustomerAddress</td>
                             <td>
-                                @if (delivery.Status == "delivered")
-                                {
-                                    <span class="badge bg-success">Đã giao</span>
+                                @{
+                                    string statusVN = delivery.Status switch
+                                    {
+                                        "delivered" => "Đã giao",
+                                        "shipped" => "Đang giao",
+                                        "failed" => "Thất bại",
+                                        "cancelled" => "Đã huỷ",
+                                        _ => delivery.Status
+                                    };
+                                    string badgeClass = delivery.Status switch
+                                    {
+                                        "delivered" => "bg-success",
+                                        "shipped" => "bg-warning text-dark",
+                                        "failed" => "bg-danger",
+                                        "cancelled" => "bg-orange text-white",
+                                        _ => "bg-secondary"
+                                    };
                                 }
-                                else if (delivery.Status == "failed")
-                                {
-                                    <span class="badge bg-danger">Thất bại</span>
-                                }
+                                <span class="badge @badgeClass">@statusVN</span>
                             </td>
                             <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
                             <td>@delivery.EndTime?.ToString("HH:mm dd/MM/yyyy")</td>
@@ -149,6 +160,23 @@
             </tbody>
         </table>
     </div>
+    @{
+        int totalPages = (int)Math.Ceiling((double)(ViewBag.TotalItems ?? 0) / (ViewBag.PageSize ?? 10));
+        int currentPage = ViewBag.Page ?? 1;
+    }
+    @if (totalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center mt-3">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action(null, new { page = i, pageSize = ViewBag.PageSize, searchOrderId = ViewBag.SearchOrderId, searchCustomer = ViewBag.SearchCustomer, searchStatus = ViewBag.SearchStatus, searchDateRange = ViewBag.SearchDateRange })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
         <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
 </div> 
 <!-- Modal xem bằng chứng giao hàng -->

@@ -42,40 +42,22 @@
                 </div>
                 <div class="col-md-6">
                     <p><strong>Trạng thái:</strong>
-                        @if (isRetail)
-                        {
-                            if (Model.Status == "pending")
+                        @{
+                            string statusVN = Model.Status switch
                             {
-                                <span class="badge bg-warning text-dark">Chờ nhận</span>
-                            }
-                            else if (Model.Status == "confirmed")
-                            {
-                                <span class="badge bg-success">Đã xác nhận</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">@Model.Status</span>
-                            }
+                                "pending" => "Chờ nhận",
+                                "confirmed" => "Đã xác nhận",
+                                "shipped" => "Đang giao",
+                                "delivered" => "Đã giao",
+                                "cancelled" => "Đã hủy",
+                                "returned" => "Đã trả hàng",
+                                "assigned" => "Chờ giao",
+                                "in_transit" => "Đang giao",
+                                "failed" => "Thất bại",
+                                _ => Model.Status
+                            };
                         }
-                        else if (isDelivery)
-                        {
-                            if (Model.Status == "assigned")
-                            {
-                                <span class="badge bg-warning text-dark">Chờ giao</span>
-                            }
-                            else if (Model.Status == "in_transit")
-                            {
-                                <span class="badge bg-info text-dark">Đang giao</span>
-                            }
-                            else if (Model.Status == "delivered")
-                            {
-                                <span class="badge bg-success">Đã giao</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">@Model.Status</span>
-                            }
-                        }
+                        <span class="badge bg-secondary">@statusVN</span>
                     </p>
                     <p><strong>Ngày xác nhận:</strong> @(isRetail ? (Model.ConfirmedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-") : (Model.EndTime?.ToString("dd/MM/yyyy HH:mm") ?? "-"))</p>
                 </div>

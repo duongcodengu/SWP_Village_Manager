@@ -376,33 +376,45 @@ public class AdminWarehouseController : Controller
     }
     [HttpGet]
     [Route("alluser")]
-    public async Task<IActionResult> AllUser(string searchUser, int page = 1)
+    public async Task<IActionResult> AllUser(string searchUser, int page = 1, int roleId = 0, string sortOrder = "asc")
     {
         try
         {
             _logger.LogInformation("Starting to load all users...");
             // Lấy thông tin session
             var username = HttpContext.Session.GetString("Username");
-            var roleId = HttpContext.Session.GetInt32("RoleId");
+            var sessionRoleId = HttpContext.Session.GetInt32("RoleId");
             // Kiểm tra quyền admin
-            if (string.IsNullOrEmpty(username) || roleId != 1)
+            if (string.IsNullOrEmpty(username) || sessionRoleId != 1)
             {
-                _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {roleId}");
+                _logger.LogWarning($"Unauthorized access attempt. Username: {username}, RoleId: {sessionRoleId}");
                 Response.StatusCode = 404;
                 return View("404");
             }
-            // Phân trang và tìm kiếm
+            // Phân trang, tìm kiếm, lọc role
             int pageSize = 10;
             var usersQuery = _context.Users.Include(u => u.Role).AsQueryable();
             if (!string.IsNullOrEmpty(searchUser))
             {
                 usersQuery = usersQuery.Where(u => u.Username.Contains(searchUser));
             }
+            if (roleId > 0)
+            {
+                usersQuery = usersQuery.Where(u => u.RoleId == roleId);
+            }
+            // Sắp xếp theo tên
+            if (sortOrder == "desc")
+                usersQuery = usersQuery.OrderByDescending(u => u.Username);
+            else
+                usersQuery = usersQuery.OrderBy(u => u.Username);
             int totalUsers = await usersQuery.CountAsync();
-            var users = await usersQuery.OrderByDescending(u => u.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            var users = await usersQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
             ViewBag.SearchUser = searchUser;
+            ViewBag.RoleId = roleId;
+            ViewBag.Roles = await _context.Roles.ToListAsync(); // Để hiển thị dropdown lọc role
+            ViewBag.SortOrder = sortOrder;
             return View(users);
         }
         catch (Exception ex)
@@ -512,11 +524,14 @@ public class AdminWarehouseController : Controller
                 ModelState.AddModelError("Email", "Email already exists");
                 return View(user);
             }
-            // Kiểm tra định dạng số điện thoại (10 chữ số)
-            if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+            // Kiểm tra định dạng số điện thoại (10 chữ số, bắt đầu bằng 0)
+            if (!string.IsNullOrEmpty(user.Phone))
             {
-                ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
-                return View(user);
+                if (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit) || user.Phone[0] != '0')
+                {
+                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits and start with 0");
+                    return View(user);
+                }
             }
             // Tạo user mới
             var newUser = new User
@@ -642,11 +657,14 @@ public class AdminWarehouseController : Controller
                 ModelState.AddModelError("", "Please fill in all required fields");
                 return View(user);
             }
-            // Kiểm tra định dạng số điện thoại (10 chữ số)
-            if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+            // Kiểm tra định dạng số điện thoại (10 chữ số, bắt đầu bằng 0)
+            if (!string.IsNullOrEmpty(user.Phone))
             {
-                ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits");
-                return View(user);
+                if (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit) || user.Phone[0] != '0')
+                {
+                    ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits and start with 0");
+                    return View(user);
+                }
             }
             // Lấy user hiện tại
             var existingUser = await _context.Users.FindAsync(id);

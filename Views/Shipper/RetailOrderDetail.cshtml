@@ -32,6 +32,14 @@
 <body>
     <div class="container py-4">
         <div class="card shadow rounded-4 p-4">
+            <div class="d-flex gap-2 justify-content-end mb-3">
+                <a href="/Shipper/OrdersShipper" class="btn btn-outline-secondary">
+                    <i class="fa fa-list me-1"></i> Đơn chờ nhận
+                </a>
+                <a href="/Shipper/DeliveriesShipper?searchStatus=assigned" class="btn btn-outline-primary">
+                    <i class="fa fa-clock me-1"></i> Đơn chờ giao
+                </a>
+            </div>
             <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-info-circle me-2"></i>Chi tiết đơn hàng #@Model.Id</h3>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -41,25 +49,7 @@
                     <p><strong>Ngày đặt:</strong> @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Trạng thái:</strong>
-                        @if (Model.Status == "pending")
-                        {
-                            <span class="badge bg-warning text-dark">Chờ nhận</span>
-                        }
-                        else if (Model.Status == "confirmed")
-                        {
-                            <span class="badge bg-success">Đã xác nhận</span>
-                        }
-                        else if (Model.Status == "delivered")
-                        {
-                            <span class="badge bg-success">Đã giao</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">@Model.Status</span>
-                        }
-                    </p>
-                    <p><strong>Ngày xác nhận:</strong> @(Model.ConfirmedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
+                    @* Đã xóa hoàn toàn phần trạng thái *@
                 </div>
             </div>
             <hr />
