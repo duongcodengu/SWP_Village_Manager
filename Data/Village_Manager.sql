@@ -465,19 +465,19 @@ INSERT INTO Roles (name) VALUES
 ('farmer');
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789)
-        (N'customer', N'customer123', N'customer123@example.com', 3, 0, 0123456789);
+VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789),
+       (N'customer', N'customer123', N'customer123@example.com', 3, 0, 0123456789);
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'Staff', N'123', N'admin@gmail.com', 2, 0, 0123456788);
 
 INSERT INTO ProductCategory (name, imageUrl) VALUES
-(N'Vegetables & Fruit', N'back-end/svg/vegetable.svg'),
-(N'Beverages', N'back-end/svg/cup.svg'),
-(N'Meats & Seafood', N'back-end/svg/meats.svg'),
-(N'Breakfast', N'back-end/svg/breakfast.svg'),
-(N'Frozen Foods', N'back-end/svg/frozen.svg'),
-(N'Milk & Dairies', N'back-end/svg/milk.svg'),
-(N'Pet Food', N'back-end/svg/pet.svg');
+(N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg'),
+(N'Đồ uống', N'back-end/svg/cup.svg'),
+(N'Thịt & Hải sản', N'back-end/svg/meats.svg'),
+(N'Bữa sáng', N'back-end/svg/breakfast.svg'),
+(N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg'),
+(N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg'),
+(N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg');
 
 
