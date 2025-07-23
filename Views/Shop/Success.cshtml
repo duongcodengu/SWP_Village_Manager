@@ -9,7 +9,7 @@
     var paymentMethod = ViewBag.PaymentMethod?.ToString() ?? "N/A";
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
     var discount = ViewBag.DiscountAmount != null ? (int)ViewBag.DiscountAmount : 0;
-    var shipping = 20000;
+    var shipping = 15000;
     var finalTotal = total - discount + shipping;
     var itemCount = Model.Sum(i => i.Quantity);
 
@@ -110,8 +110,8 @@
                                         <i class="fa-solid fa-house me-2"></i>
                                         Về trang chủ
                                     </button>
-                                    <button onclick="location.href='/shop/tracking'" class="btn btn-md fw-bold text-white theme-bg-color">
-                                        Theo dõi đơn
+                                    <button onclick="location.href='/customer?tab=order'" class="btn btn-md fw-bold text-white theme-bg-color">
+                                        Danh sách đơn
                                     </button>
                                 </div>
                             </div>

@@ -205,7 +205,7 @@ public class ShopController : Controller
 
         ViewBag.Address = address;
         ViewBag.OrderId = order.Id;
-        ViewBag.PaymentMethod = "Cash on Delivery";
+        ViewBag.PaymentMethod = "Tiền mặt";
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
 
         // Chuẩn bị model: danh sách CartItem tương ứng chi tiết đơn hàng
