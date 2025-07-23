@@ -1,19 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Famer";
+@{
+    ViewData["Title"] = "Quản lý nông dân";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin - Hệ thống quản lý nông dân hiện đại, linh hoạt, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="quản lý nông dân, FamViệt admin, dashboard, quản trị viên, hệ thống quản lý">
+    <meta name="author" content="FamViệt Team">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
     <!-- Google font-->
@@ -63,10 +63,10 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>All Famer</h5>
+                                        <h5>Danh sách nông dân</h5>
                                         <form class="d-inline-flex">
                                             <a href="add-new-category.html" class="align-items-center btn btn-theme d-flex">
-                                                <i data-feather="plus-square"></i>Add New
+                                                <i data-feather="plus-square"></i>Thêm mới
                                             </a>
                                         </form>
                                     </div>
@@ -217,7 +217,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -225,16 +225,15 @@
                 <div class="modal-body">
                     <div class="remove-box">
                         <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
+                            Quyền sử dụng cho nhóm/người dùng sẽ được kế thừa từ đối tượng gốc. Đối tượng này sẽ tạo quyền mới riêng biệt.
                         </p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">Không</button>
                     <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-target="#exampleModalToggle2"
                             data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
+                        Có
                     </button>
                 </div>
             </div>
@@ -245,7 +244,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Hoàn tất!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -258,11 +257,11 @@
                                 <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                             </svg>
                         </div>
-                        <h4 class="text-content">It's Removed.</h4>
+                        <h4 class="text-content">Đã xóa thành công.</h4>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>

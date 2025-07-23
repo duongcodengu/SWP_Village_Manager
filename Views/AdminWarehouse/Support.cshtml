@@ -1,23 +1,23 @@
-﻿@model List<Village_Manager.Models.ContactMessages>
+@model List<Village_Manager.Models.ContactMessages>
 @{
-    ViewData["Title"] = "Support";
+    ViewData["Title"] = "Hỗ trợ";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt - Hệ thống hỗ trợ khách hàng hiện đại, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="hỗ trợ khách hàng, FamViệt admin, quản lý yêu cầu, giao diện quản trị">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Support Ticket</title>
+    <title>FamViệt - Hỗ trợ khách hàng</title>
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -66,7 +66,7 @@
                                 <!-- Table Start -->
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>Support</h5>
+                                        <h5>Hỗ trợ khách hàng</h5>
                                     </div>
                                     <div class="mb-3">
                                         <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên, email hoặc số điện thoại...">
@@ -76,12 +76,12 @@
                                             <table class="table ticket-table all-package theme-table" id="ticketTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
+                                                        <th>Mã số</th>
                                                         <th>Họ tên</th>
                                                         <th>Email</th>
-                                                        <th>SĐT</th>
+                                                        <th>Số điện thoại</th>
                                                         <th>Ngày tạo</th>
-                                                        <th>Hành động</th>
+                                                        <th>Thao tác</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -101,14 +101,14 @@
                                                                             data-id="@ticket.Id"
                                                                             data-name="@ticket.FirstName @ticket.LastName"
                                                                             data-message="@ticket.Message">
-                                                                        Xem
+                                                                        Xem chi tiết
                                                                     </button>
                                                                     <button class="btn btn-sm btn-success flex-fill btn-reply"
                                                                             data-bs-toggle="modal"
                                                                             data-bs-target="#replyModal"
                                                                             data-id="@ticket.Id"
                                                                             data-email="@ticket.Email">
-                                                                        Phản hồi
+                                                                        Trả lời
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -202,7 +202,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Gửi phản hồi</button>
+                        <button type="submit" class="btn btn-success">Gửi trả lời</button>
                     </div>
                 </div>
             </form>

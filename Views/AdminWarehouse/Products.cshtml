@@ -1,23 +1,23 @@
 @model List<Village_Manager.Models.Product>
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Quản lý sản phẩm";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin - Hệ thống quản lý sản phẩm, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="quản lý sản phẩm, FamViệt admin, dashboard, quản trị viên, hệ thống quản lý">
+    <meta name="author" content="FamViệt Team">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Product</title>
+    <title>FamViệt - Quản lý sản phẩm</title>
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -70,23 +70,22 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Products List</h5>
+                                        <h5>Danh sách sản phẩm</h5>
 
                                         <form action="/searchProduct" method="get" class="mb-3 d-flex justify-content-end">
-
-                                            <input type="text" name="search" class="form-control w-25" placeholder="Search product..." value="@Context.Request.Query["search"]" />
-                                            <button type="submit" class="btn btn-primary ms-2">Search</button>
+                                            <input type="text" name="search" class="form-control w-25" placeholder="Tìm kiếm sản phẩm..." value="@Context.Request.Query["search"]" />
+                                            <button type="submit" class="btn btn-primary ms-2">Tìm kiếm</button>
                                         </form>
                                         <div class="right-options">
                                             <ul>
                                                 <li>
-                                                    <a href="javascript:void(0)">import</a>
+                                                    <a href="javascript:void(0)">Nhập</a>
                                                 </li>
                                                 <li>
-                                                    <a href="javascript:void(0)">Export</a>
+                                                    <a href="javascript:void(0)">Xuất</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-solid" href="@Url.Action("AddProduct", "AdminWarehouse")">Add Product</a>
+                                                    <a class="btn btn-solid" href="@Url.Action("AddProduct", "AdminWarehouse")">Thêm sản phẩm</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -96,12 +95,12 @@
                                             <table class="table all-package theme-table table-product" id="table_id">
                                                 <thead>
                                                     <tr>
-                                                        <th>Product Image</th>
-                                                        <th>Product Name</th>
-                                                        <th>Category</th>
-                                                        <th>Price</th>
-                                                        <th>ProductType</th>
-                                                        <th>Option</th>
+                                                        <th>Hình ảnh</th>
+                                                        <th>Tên sản phẩm</th>
+                                                        <th>Danh mục</th>
+                                                        <th>Giá</th>
+                                                        <th>Loại sản phẩm</th>
+                                                        <th>Tùy chọn</th>
                                                     </tr>
                                                 </thead>
 
@@ -117,7 +116,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                                    <span>No image</span>
+                                                                    <span>Không có hình ảnh</span>
                                                                 }
                                                             </td>
                                                             <td>@product.Name</td>
@@ -190,14 +189,14 @@
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Đăng xuất</h5>
+                    <p>Bạn có chắc chắn muốn đăng xuất?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">Không</button>
                         <button type="button" onclick="location.href = 'login.html';"
                                 class="btn  btn--yes btn-primary">
-                            Yes
+                            Có
                         </button>
                     </div>
                 </div>

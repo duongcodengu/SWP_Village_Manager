@@ -99,6 +99,30 @@ namespace Village_Manager.Controllers.api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Kiểm tra lat, l có hợp lệ không
+            if (model.Latitude < -90 || model.Latitude > 90 || model.Longitude < -180 || model.Longitude > 180)
+            {
+                return BadRequest(new { message = "Tọa độ không hợp lệ." });
+            }
+
+            // Kiểm tra nếu tọa độ là 0,0 (có thể là lỗi hoặc vị trí không hợp lệ)
+            if (model.Latitude == 0 && model.Longitude == 0)
+            {
+                return BadRequest(new { message = "Không thể xác định vị trí hợp lệ từ địa chỉ." });
+            }
+
+            // Kiểm tra trùng địa chỉ cho user:
+            bool exists = _context.UserLocations.Any(u =>
+                u.UserId == model.UserId &&
+                Math.Abs(u.Latitude - model.Latitude) < 0.0001 &&
+                Math.Abs(u.Longitude - model.Longitude) < 0.0001);
+
+            if (exists)
+            {
+                return BadRequest(new { message = "Vị trí này đã tồn tại trong hệ thống." });
+            }
+
+            // Tạo mới nếu hợp lệ
             var location = new UserLocation
             {
                 UserId = model.UserId,
@@ -115,12 +139,13 @@ namespace Village_Manager.Controllers.api
             return Ok(new { message = "Đã thêm thành công." });
         }
 
+
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromBody] UserLocationViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); // ➕ Trả về lỗi rõ ràng
+                return BadRequest(ModelState); // Trả về lỗi rõ ràng
             }
             var location = await _context.UserLocations.FindAsync(model.Id);
             if (location == null)

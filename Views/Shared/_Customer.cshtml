@@ -1,4 +1,4 @@
-﻿
+
 
 @{
     var roleName = Context.Session.GetString("RoleName");
@@ -12,18 +12,18 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Village_Manager.styles.css" asp-append-version="true" />
-    <title>@ViewData["Title"] - Fastkart</title>
+    <title>@ViewData["Title"] - FamViệt</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
+          content="admin template, FamViệt admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Customer Information</title>
+    <title>FamViệt - Customer Information</title>
 
     <!-- Google font-->
     <link rel="stylesheet"
@@ -88,10 +88,10 @@
                         <div class="Typeahead Typeahead--twitterUsers">
                             <div class="u-posRelative">
                                 <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                       placeholder="Search Fastkart .." name="q" title="" autofocus>
+                                       placeholder="Search FamViệt .." name="q" title="" autofocus>
                                 <i class="close-search" data-feather="x"></i>
                                 <div class="spinner-border Typeahead-spinner" role="status">
-                                    <span class="sr-only">Loading...</span>
+                                    <span class="sr-only">Đang tải...</span>
                                 </div>
                             </div>
                             <div class="Typeahead-menu"></div>
@@ -113,30 +113,30 @@
                             <ul class="notification-dropdown onhover-show-div">
                                 <li>
                                     <i class="ri-notification-line"></i>
-                                    <h6 class="f-18 mb-0">Notitications</h6>
+                                    <h6 class="f-18 mb-0">Thông báo</h6>
                                 </li>
                                 <li>
                                     <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span class="pull-right">10 min.</span>
+                                        <i class="fa fa-circle me-2 font-primary"></i>Đang giao hàng <span class="pull-right">10 phút trước</span>
                                     </p>
                                 </li>
                                 <li>
                                     <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span class="pull-right">1 hr</span>
+                                        <i class="fa fa-circle me-2 font-success"></i>Đơn hàng hoàn thành<span class="pull-right">1 giờ trước</span>
                                     </p>
                                 </li>
                                 <li>
                                     <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span class="pull-right">3 hr</span>
+                                        <i class="fa fa-circle me-2 font-info"></i>Đơn hàng tạo<span class="pull-right">3 giờ trước</span>
                                     </p>
                                 </li>
                                 <li>
                                     <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span class="pull-right">6 hr</span>
+                                        <i class="fa fa-circle me-2 font-danger"></i>Đơn hàng hoàn thành<span class="pull-right">6 giờ trước</span>
                                     </p>
                                 </li>
                                 <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
+                                    <a class="btn btn-primary" href="javascript:void(0)">Check all thông báo</a>
                                 </li>
                             </ul>
                         </li>
@@ -162,31 +162,31 @@
                                 <li>
                                     <a href="/customerinfo">
                                         <i data-feather="users"></i>
-                                        <span>Customer Information</span>
+                                        <span>Thông tin khách hàng</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="order-list.html">
                                         <i data-feather="archive"></i>
-                                        <span>Orders</span>
+                                        <span>Đơn hàng</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="support-ticket.html">
                                         <i data-feather="phone"></i>
-                                        <span>Supports Tickets</span>
+                                        <span>Hỗ trợ</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="profile-setting.html">
                                         <i data-feather="settings"></i>
-                                        <span>Settings</span>
+                                        <span>Cài đặt</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="">
                                         <i data-feather="log-out"></i>
-                                        <span>Log out</span>
+                                        <span>Đăng xuất</span>
                                     </a>
                                 </li>
                             </ul>
@@ -231,45 +231,29 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="/customerinfo">
                                         <i class="ri-home-line"></i>
-                                        <span>Account</span>
+                                        <span>Thông tin khách hàng</span>
                                     </a>
                                 </li>
 
-  
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-user-3-line"></i>
-                                        <span>Roles</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="role.html">All roles</a>
-                                        </li>
-                                        <li>
-                                            <a href="create-role.html">Create Role</a>
-                                        </li>
-                                    </ul>
-                                </li>
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="media.html">
                                         <i class="ri-price-tag-3-line"></i>
-                                        <span>Media</span>
+                                        <span>Giỏ hàng</span>
                                     </a>
                                 </li>
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-archive-line"></i>
-                                        <span>Orders</span>
+                                        <span>Đơn hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/order">Order List</a>
+                                            <a href="/order">Danh sách đơn hàng</a>
                                         </li>
                                         <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
+                                            <a href="order-tracking.html">Theo dõi đơn hàng</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -277,7 +261,7 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-focus-3-line"></i>
-                                        <span>Localization</span>
+                                        <span>Khuyến mãi</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
@@ -369,7 +353,7 @@
             <footer class="footer">
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                        <p class="mb-0">Copyright 2022 © FamViệt theme by pixelstrap</p>
                     </div>
                 </div>
             </footer>

@@ -31,6 +31,8 @@ namespace Village_Manager.Controllers
 
         public IActionResult Index()
         {
+            var userId = HttpContext.Session.GetInt32("UserId") ?? 0;
+            var hasAcceptedGeo = HttpContext.Session.GetString("HasAcceptedGeo") == "True";
             var categories = _context.ProductCategories.Select(c => new
             {
                 c.Id,
@@ -94,6 +96,8 @@ namespace Village_Manager.Controllers
            
             ViewBag.BestSellerImages = bestSellerImages;
 
+            ViewBag.UserId = userId;
+            ViewBag.HasAcceptedGeo = hasAcceptedGeo;
             return View();
         }
 
@@ -166,9 +170,10 @@ namespace Village_Manager.Controllers
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetInt32("RoleId", user.RoleId);
             HttpContext.Session.SetString("RoleName", roleName ?? "");
+            HttpContext.Session.SetString("HasAcceptedGeo", user.HasAcceptedGeolocation.ToString());
 
-              
-          
+
+
             // Set thêm FarmerId nếu là farmer
             if (user.RoleId == 5)
             {

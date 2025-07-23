@@ -4,6 +4,7 @@ using Microsoft.Identity.Client;
 using System.Linq;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.ViewModel;
 
 namespace Village_Manager.Controllers
 {
@@ -14,27 +15,19 @@ namespace Village_Manager.Controllers
         {
             _context = context;
         }
-        // class custom model  để lưu trữ thông tin sản phẩm và số lượng sản phẩm đã bán
-        public class ProductWithSales
-        {
-            public Product Product { get; set; }
-            public int SoldQuantity { get; set; }
-        }
-
-            
-        public class FamerDashboardView
-        {
-            public User User { get; set; }
-            public Farmer Famer { get; set; }
-            public List<Product> ProductList { get; set; } // Danh sách sản phẩm gốc
-            public List<ProductWithSales> ProductWithSalesList { get; set; } // Danh sách sản phẩm kèm số lượng đã bán
-            public List<RetailOrder> OngoingOrders { get; set; }
-
-        }
-
+ 
         [HttpGet]
         [Route("becomefamer")]
-        public IActionResult FamerBecome() => View();
+        public IActionResult FamerBecome()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+            return View();
+        }
 
         [HttpPost]
         [Route("becomefamer")]
@@ -54,6 +47,12 @@ namespace Village_Manager.Controllers
             if (existing)
             {
                 TempData["Error"] = "Bạn đã gửi yêu cầu rồi. Vui lòng chờ xét duyệt.";
+                return RedirectToAction("FamerBecome");
+            }
+            // Kiểm tra địa chỉ
+            if (string.IsNullOrWhiteSpace(Address))
+            {
+                TempData["Error"] = $"Vui lòng nhập đầy đủ địa chỉ. Address nhận được: '{Address}'";
                 return RedirectToAction("FamerBecome");
             }
 
@@ -123,7 +122,7 @@ namespace Village_Manager.Controllers
                 .Where(p => p.FarmerId == farmer.Id)
                 .ToList();
 
-            var productWithSalesList = productList.Select(p => new ProductWithSales
+            var productWithSalesList = productList.Select(p => new ProductWithSalesViewModel
             {
                 Product = p,
                 SoldQuantity = _context.RetailOrderItems
@@ -141,7 +140,7 @@ namespace Village_Manager.Controllers
                         && ongoingStatuses.Contains(o.Status))
                 .ToList();
 
-            var model = new FamerDashboardView
+            var model = new FamerDashboardViewModel
             {
                 User = user,
                 Famer = farmer,

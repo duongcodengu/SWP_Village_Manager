@@ -4,20 +4,18 @@
     var roleName = Context.Session.GetString("RoleName");
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
-    <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+    <meta name="description" content="FamViệt Admin là hệ thống quản trị hiện đại, linh hoạt, mạnh mẽ, giao diện sạch sẽ, hỗ trợ quản lý bán lẻ hiệu quả.">
+    <meta name="keywords" content="FamViệt, quản trị, admin, dashboard, quản lý bán lẻ, web app">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - All User</title>
+    <title>FamViệt - Tất cả người dùng</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
           rel="stylesheet">
@@ -66,8 +64,8 @@
                 <div class="header-logo-wrapper p-0">
                     <div class="logo-wrapper">
                         <a href="index.html">
-                            <img class="img-fluid main-logo" src="~/back-end/images/logo/1.png" alt="logo">
-                            <img class="img-fluid white-logo" src="~/back-end/images/logo/1-white.png" alt="logo">
+                            <img class="img-fluid main-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
+                            <img class="img-fluid white-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
                         </a>
                     </div>
                     <div class="toggle-sidebar">
@@ -293,7 +291,7 @@
                 <div>
                     <div class="logo-wrapper logo-wrapper-center">
                         <a href='/home' data-bs-original-title="" title="">
-                            <img class="img-fluid for-white" src="~/back-end/images/logo/full-white.png" alt="logo">
+                            <img class="img-fluid for-white" src="~/back-end/images/logo/logo1.png" alt="logo">
                         </a>
                         <div class="back-btn">
                             <i class="fa fa-angle-left"></i>
@@ -332,11 +330,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/products">Products</a>
+                                            <a href="/productsretail">Sản Phẩm</a>
                                         </li>
 
                                         <li>
-                                            <a href="/addproduct">Add New Products</a>
+                                            <a asp-controller="AdminRetail" asp-action="HiddenProducts">Ngưng bán</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -376,7 +374,7 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
-                                        <span>Roles</span>
+                                        <span>Vai trò</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
@@ -398,111 +396,39 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-archive-line"></i>
-                                        <span>Orders</span>
+                                        <span>Đơn hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="order-list.html">Order List</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListRetail">Đơn chờ duyệt</a>
                                         </li>
                                         <li>
-                                            <a href="order-detail.html">Order Detail</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListProcessed">Đơn đã duyệt</a>
                                         </li>
-                                        <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
-                                        </li>
+                                        
                                     </ul>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-focus-3-line"></i>
-                                        <span>Localization</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="translation.html">Translation</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="currency-rates.html">Currency Rates</a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                
 
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-price-tag-3-line"></i>
-                                        <span>Mã Giảm giá</span>
+                                        <span>Mã giảm giá</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/DiscountCodes">Danh sách mã giảm giá</a>
+                                            <a href="/DiscountCodes">Tất cả mã giảm giá</a>
                                         </li>
 
                                         <li>
-                                            <a href="/CreateDiscountCode">Tạo mã giảm giá</a>
+                                            <a href="/CreateDiscountCode">Tạo mới mã giảm giá</a>
                                         </li>
                                     </ul>
                                 </li>
 
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
-                                        <i class="ri-star-line"></i>
-                                        <span>Product Review</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Hỗ trợ</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="support">Yêu cầu hỗ trợ</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="create-coupon.html">Tiket</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="/profilesetting">Profile Setting</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
-                                        <i class="ri-file-chart-line"></i>
-                                        <span>Reports</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
-                                        <i class="ri-list-check"></i>
-                                        <span>List Page</span>
-                                    </a>
-                                </li>
-
-
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="/logs">
-                                        <i class="ri-history-line"></i>
-                                        <span>Lịch sử hoạt động</span>
-                                    </a>
-                                </li>
+             
+                                
                             </ul>
                         </div>
 
@@ -522,7 +448,7 @@
             <footer class="footer">
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                        <p class="mb-0">Copyright 2022 © FamViệt theme by pixelstrap</p>
                     </div>
                 </div>
             </footer>

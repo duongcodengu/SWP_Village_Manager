@@ -1,7 +1,7 @@
-﻿@model Village_Manager.Models.User
+@model Village_Manager.Models.User
 @{
-    ViewData["Title"] = "Edit Customer";
-    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+    ViewData["Title"] = "Chỉnh sửa khách hàng";
+    Layout = "~/Views/Shared/_AdminFamViet.cshtml";
 }
 
 <div class="page-body">
@@ -13,7 +13,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="title-header option-title">
-                                    <h5>Edit Customer</h5>
+                                    <h5>Chỉnh sửa thông tin khách hàng</h5>
                                 </div>
                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
@@ -26,7 +26,7 @@
 
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
-                                        <form class="theme-form theme-form-2 mega-form" asp-action="EditCustomer" asp-controller="AdminRetail" asp-route-id="@Model.Id" method="post">
+                                        <form class="theme-form theme-form-2 mega-form" asp-action="ChinhSuaKhachHang" asp-controller="AdminFamViet" asp-route-id="@Model.Id" method="post">
                                             @Html.AntiForgeryToken()
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -71,7 +71,7 @@
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <select asp-for="RoleId" class="form-control" required>
-                                                            <option value="">-- Select Role --</option>
+                                                            <option value="">-- Chọn vai trò --</option>
                                                             @foreach (var role in ViewBag.Roles)
                                                             {
                                                                 <option value="@role.Id">@role.Name</option>
@@ -83,7 +83,7 @@
                                             </div>
 
                                             <div class="card-submit-button">
-                                                <button class="btn btn-animation ms-auto" type="submit">Cập nhập</button>
+                                                <button class="btn btn-animation ms-auto" type="submit">Cập nhật</button>
                                             </div>
                                         </form>
                                     </div>

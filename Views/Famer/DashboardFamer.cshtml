@@ -1,22 +1,22 @@
-﻿@using Village_Manager.Models;
+@using Village_Manager.Models;
 @{
-    ViewData["Title"] = "Dashboard Famer";
+    ViewData["Title"] = "Bảng điều khiển nông dân";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var categories = ViewBag.Categories as List<ProductCategory>;
 }
-@model Village_Manager.Controllers.FamerController.FamerDashboardView
+@model Village_Manager.ViewModel.FamerDashboardViewModel;
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>Bảng điều khiển nông dân - FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -74,21 +74,21 @@
                                 <a href="#pills-tabContent" class="nav-link active" id="pills-dashboard-tab"
                                    data-bs-toggle="pill" data-bs-target="#pills-dashboard" role="tab">
                                     <i data-feather="home"></i>
-                                    DashBoard
+                                    Bảng điều khiển
                                 </a>
                             </li>
 
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-product-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-product" type="button" role="tab">
-                                    <i data-feather="shopping-bag"></i>Products
+                                    <i data-feather="shopping-bag"></i>Sản phẩm
                                 </button>
                             </li>
 
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-order-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-order" type="button" role="tab">
-                                    <i data-feather="shopping-bag"></i>Order
+                                    <i data-feather="shopping-bag"></i>Đơn hàng
                                 </button>
                             </li>
 
@@ -96,7 +96,7 @@
                                 <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-profile" type="button" role="tab">
                                     <i data-feather="user"></i>
-                                    Profile
+                                    Hồ sơ
                                 </button>
                             </li>
 
@@ -104,7 +104,7 @@
                                 <button class="nav-link" id="pills-security-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-security" type="button" role="tab">
                                     <i data-feather="settings"></i>
-                                    Setting
+                                    Cài đặt
                                 </button>
                             </li>
 
@@ -112,7 +112,7 @@
                                 <button class="nav-link" id="pills-out-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-out" type="button" role="tab">
                                     <i data-feather="log-out"></i>
-                                    Log Out
+                                    Đăng xuất
                                 </button>
                             </li>
                         </ul>
@@ -129,15 +129,13 @@
                             <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel">
                                 <div class="dashboard-home">
                                     <div class="title">
-                                        <h2>My Dashboard</h2>
+                                        <h2>Bảng điều khiển</h2>
                                     </div>
 
                                     <div class="dashboard-user-name">
-                                        <h6 class="text-content">Hello, <b class="text-title">@Model.Famer.FullName</b></h6>
+                                        <h6 class="text-content">Xin chào, <b class="text-title">@Model.Famer.FullName</b></h6>
                                         <p class="text-content">
-                                            From your My Account Dashboard you have the ability to
-                                            view a snapshot of your recent account activity and update your account
-                                            information. Select a link below to view or edit information.
+                                            Từ bảng điều khiển của bạn, bạn có thể xem tổng hợp các hoạt động gần đây và cập nhật thông tin tài khoản của mình. Chọn một liên kết dưới đây để xem hoặc chỉnh sửa thông tin.
                                         </p>
                                     </div>
 
@@ -151,7 +149,7 @@
                                                          alt="">
                                                     <div class="total-detail">
                                                         <h5>Số lượng sản phẩm</h5>
-                                                        <h3>@ViewBag.TotalProductTypes</h3>>
+                                                        <h3>@ViewBag.TotalProductTypes</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -200,16 +198,16 @@
                                         <div class="col-xxl-6">
                                             <div class="table-responsive dashboard-bg-box">
                                                 <div class="dashboard-title mb-4">
-                                                    <h3>Products</h3>
+                                                    <h3>Sản phẩm</h3>
                                                 </div>
 
                                                 <table class="table product-table">
                                                     <thead>
                                                         <tr>
-                                                            <th scope="col">Images</th>
-                                                            <th scope="col">Product Name</th>
-                                                            <th scope="col">Price</th>
-                                                            <th scope="col">Sale</th>
+                                                            <th scope="col">Hình ảnh</th>
+                                                            <th scope="col">Tên sản phẩm</th>
+                                                            <th scope="col">Giá</th>
+                                                            <th scope="col">Khuyến mãi</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -251,16 +249,16 @@
                                         <div class="col-xxl-6">
                                             <div class="order-tab dashboard-bg-box">
                                                 <div class="dashboard-title mb-4">
-                                                    <h3>Recent Order</h3>
+                                                    <h3>Đơn hàng gần đây</h3>
                                                 </div>
 
                                                 <div class="table-responsive">
                                                     <table class="table order-table">
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col">Order ID</th>
-                                                                <th scope="col">Product Name</th>
-                                                                <th scope="col">Status</th>
+                                                                <th scope="col">Mã đơn hàng</th>
+                                                                <th scope="col">Tên sản phẩm</th>
+                                                                <th scope="col">Trạng thái</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -289,7 +287,6 @@
                                                                     </td>
                                                                     <td>@oder.Status</td>
                                                                 </tr>
-                                                                }
                                                             }
                                                         </tbody>
                                                     </table>
@@ -357,10 +354,10 @@
                                             <table class="table order-table">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Order ID</th>
-                                                        <th scope="col">Product Name</th>
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Price</th>
+                                                        <th scope="col">Mã đơn hàng</th>
+                                                        <th scope="col">Tên sản phẩm</th>
+                                                        <th scope="col">Trạng thái</th>
+                                                        <th scope="col">Giá</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -438,7 +435,7 @@
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel">
                                 <div class="dashboard-profile">
                                     <div class="title">
-                                        <h2>My Profile</h2>
+                                        <h2>Thông tin cá nhân</h2>
                                         <span class="title-leaf">
                                             <svg class="icon-width bg-gray">
                                                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
@@ -448,10 +445,10 @@
 
                                     <div class="profile-tab dashboard-bg-box">
                                         <div class="dashboard-title dashboard-flex">
-                                            <h3>Profile Name</h3>
+                                            <h3>Thông tin cá nhân</h3>
                                             <button class="btn btn-sm theme-bg-color text-white" data-bs-toggle="modal"
                                                     data-bs-target="#edit-profile">
-                                                Edit Profile
+                                                Sửa thông tin
                                             </button>
                                         </div>
 
@@ -459,25 +456,21 @@
                                             
                                             </li>
                                             <li>
-                                                <h5>Email Address :</h5>
+                                                <h5>Email :</h5>
                                                 <h5>@Model.User.Email</h5>
                                             </li>
                                             <li>
-                                                <h5>Country / Region :</h5>
+                                                <h5>Quốc gia :</h5>
                                                 <h5>Viet Nam</h5>
                                             </li>
 
                                             <li>
-                                                <h5>Year of joining :</h5>
+                                                <h5>Ngày tham gia :</h5>
                                                 <h5>@Model.User.CreatedAt</h5>
                                             </li>
 
-                                          
-
-                                    
-
                                             <li>
-                                                <h5>State :</h5>
+                                                <h5>Địa chỉ :</h5>
                                                 <h5>@Model.User.Addresses</h5>
                                             </li>
 
@@ -490,7 +483,7 @@
                             <div class="tab-pane fade" id="pills-security" role="tabpanel">
                                 <div class="dashboard-privacy">
                                     <div class="title">
-                                        <h2>My Setting</h2>
+                                        <h2>Cài đặt</h2>
                                         <span class="title-leaf">
                                             <svg class="icon-width bg-gray">
                                                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
@@ -500,7 +493,7 @@
 
                                     <div class="dashboard-bg-box">
                                         <div class="dashboard-title mb-4">
-                                            <h3>Notifications</h3>
+                                            <h3>Thông báo</h3>
                                         </div>
 
                                         <div class="privacy-box">
@@ -508,8 +501,7 @@
                                                 <input class="form-check-input" type="radio" id="desktop" name="desktop"
                                                        checked>
                                                 <label class="form-check-label ms-2" for="desktop">
-                                                    Show
-                                                    Desktop Notifications
+                                                    Hiển thị thông báo trên desktop      
                                                 </label>
                                             </div>
                                         </div>
@@ -518,8 +510,7 @@
                                             <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
                                                 <input class="form-check-input" type="radio" id="enable" name="desktop">
                                                 <label class="form-check-label ms-2" for="enable">
-                                                    Enable
-                                                    Notifications
+                                                    Bật thông báo
                                                 </label>
                                             </div>
                                         </div>
@@ -529,8 +520,7 @@
                                                 <input class="form-check-input" type="radio" id="activity"
                                                        name="desktop">
                                                 <label class="form-check-label ms-2" for="activity">
-                                                    Get
-                                                    notification for my own activity
+                                                    Nhận thông báo cho hoạt động của tôi
                                                 </label>
                                             </div>
                                         </div>
@@ -543,8 +533,7 @@
                                         </div>
 
                                         <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
-                                            Save
-                                            Changes
+                                            Lưu thay đổi
                                         </button>
                                     </div>
 
@@ -557,8 +546,7 @@
                                                 <input class="form-check-input" type="radio" id="concern"
                                                        name="concern">
                                                 <label class="form-check-label ms-2" for="concern">
-                                                    I have a privacy
-                                                    concern
+                                                    Tôi có vấn đề về quyền riêng tư
                                                 </label>
                                             </div>
                                         </div>
@@ -567,8 +555,7 @@
                                                 <input class="form-check-input" type="radio" id="temporary"
                                                        name="concern">
                                                 <label class="form-check-label ms-2" for="temporary">
-                                                    This is
-                                                    temporary
+                                                    Đây là vấn đề tạm thời
                                                 </label>
                                             </div>
                                         </div>
@@ -580,8 +567,7 @@
                                         </div>
 
                                         <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
-                                            Deactivate
-                                            Account
+                                            Deactivate Account 
                                         </button>
                                     </div>
 
@@ -593,8 +579,7 @@
                                             <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
                                                 <input class="form-check-input" type="radio" id="usable" name="usable">
                                                 <label class="form-check-label ms-2" for="usable">
-                                                    No longer
-                                                    usable
+                                                    Không còn sử dụng
                                                 </label>
                                             </div>
                                         </div>
@@ -602,22 +587,19 @@
                                             <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
                                                 <input class="form-check-input" type="radio" id="account" name="usable">
                                                 <label class="form-check-label ms-2" for="account">
-                                                    Want to switch on
-                                                    other
-                                                    account
+                                                    Tôi muốn chuyển sang tài khoản khác
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="privacy-box">
                                             <div class="form-check custom-form-check custom-form-check-2 d-flex align-items-center">
                                                 <input class="form-check-input" type="radio" id="other-2" name="usable">
-                                                <label class="form-check-label ms-2" for="other-2">Other</label>
+                                                <label class="form-check-label ms-2" for="other-2">Khác</label>
                                             </div>
                                         </div>
 
                                         <button class="btn theme-bg-color btn-md fw-bold mt-4 text-white">
-                                            Delete My
-                                            Account
+                                            Xóa tài khoản
                                         </button>
                                     </div>
                                 </div>

@@ -1,4 +1,4 @@
-﻿@model Village_Manager.Models.Product
+@model Village_Manager.Models.Product
 
 @{
     Layout = "~/Views/Shared/_AdminRetail.cshtml";
@@ -15,7 +15,7 @@
                     @foreach (var image in Model.ProductImages)
                     {
                         <div class="mb-3">
-                            <img src="@image.ImageUrl" alt="Product Image"
+                            <img src="@image.ImageUrl" alt="Hình ảnh sản phẩm"
                                  class="img-thumbnail border"
                                  style="max-width: 250px; height: auto;" />
                             @* <p class="text-muted mt-1">@image.Description</p> *@

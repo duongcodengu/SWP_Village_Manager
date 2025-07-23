@@ -465,7 +465,8 @@ INSERT INTO Roles (name) VALUES
 ('farmer');
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789);
+VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789)
+        (N'customer', N'customer123', N'customer123@example.com', 3, 0, 0123456789);
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'Staff', N'123', N'admin@gmail.com', 2, 0, 0123456788);

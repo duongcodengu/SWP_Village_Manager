@@ -227,7 +227,7 @@ public class AdminWarehouseController : Controller
             int? userId = HttpContext.Session.GetInt32("UserId");
             Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Thêm sản phẩm: {product.Name}");
 
-            return Redirect("/products");
+            return Redirect("/product");
         }
         catch (Exception ex)
         {

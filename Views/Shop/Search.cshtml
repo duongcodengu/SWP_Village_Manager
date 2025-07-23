@@ -1,19 +1,19 @@
-﻿@model List<Village_Manager.Models.Product>
+@model List<Village_Manager.Models.Product>
 @{
     ViewData["Title"] = "Tìm kiếm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>Tìm kiếm sản phẩm</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -96,7 +96,7 @@
                                     </form>
                                     <button id="clearAllBtn" type="button"
                                             class="text-success fw-semibold border-0 bg-transparent p-0 align-self-end mt-2">
-                                        Xóa tất cả tìm kiếm
+                                        Xóa lịch sử tìm kiếm
                                     </button>
                                     <ul id="searchHistoryList" class="d-flex flex-wrap"></ul>
                                 </div>
@@ -332,8 +332,170 @@
 
     <script>
         $(document).ready(function () {
+            // 1. Lấy giá trị search từ query string trên URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchParam = urlParams.get("search") || "";
 
-            // ===== 1. Gọi API tìm kiếm sản phẩm =====
+            // 2. Set giá trị này vào ô tìm kiếm trong filter
+            $("#searchBox").val(searchParam);
+
+            // 3. Khởi tạo thanh price range slider
+            let from = parseInt('@Context.Request.Query["minPrice"]' || "0");
+            let to = parseInt('@Context.Request.Query["maxPrice"]' || "1000000");
+
+            if (to - from <= 0) {
+                to = from + 1;
+                if (to > 1000000) {
+                    to = 1000000;
+                    from = to - 1;
+                }
+            }
+
+            $("#price-range").ionRangeSlider({
+                type: "double",
+                min: 0,
+                max: 1000000,
+                from: from,
+                to: to,
+                prefix: "₫ ",
+                prettify_separator: ".",
+                decorate_both: true,
+                values_separator: " - ",
+                drag_interval: true,
+                min_interval: 1,
+
+                onStart: function () {
+                    setTimeout(adjustSliderPosition, 100);
+                },
+
+                onChange: function (data) {
+                    adjustSliderPosition();
+                },
+
+                onFinish: function (data) {
+                    let minPrice = Math.min(data.from, 999999);
+                    let maxPrice = Math.max(data.to, minPrice + 1);
+
+                    $("#minPrice").val(minPrice);
+                    $("#maxPrice").val(maxPrice);
+
+                    $("#manualMin").val(formatNumber(minPrice));
+                    $("#manualMax").val(formatNumber(maxPrice));
+
+                    if (data.from !== minPrice || data.to !== maxPrice) {
+                        priceSlider.update({
+                            from: minPrice,
+                            to: maxPrice
+                        });
+                    }
+
+                    adjustSliderPosition();
+                }
+            });
+
+            const priceSlider = $("#price-range").data("ionRangeSlider");
+
+            function formatNumber(num) {
+                return Number(num).toLocaleString("vi-VN");
+            }
+
+            function parseFormatted(val) {
+                return parseInt((val || "").toString().replaceAll(".", "")) || 0;
+            }
+
+            $("#manualMin, #manualMax").on("input", function () {
+                let minVal = parseFormatted($("#manualMin").val());
+                let maxVal = parseFormatted($("#manualMax").val());
+
+                const maxLimit = 1000000;
+
+                minVal = Math.min(minVal, maxLimit - 1);
+                maxVal = Math.min(maxVal, maxLimit);
+
+                if (minVal >= maxVal) {
+                    if ($(this).attr("id") === "manualMin") {
+                        minVal = Math.max(0, maxVal - 1);
+                    } else {
+                        maxVal = minVal + 1;
+                    }
+                }
+
+                priceSlider.update({
+                    from: minVal,
+                    to: maxVal
+                });
+
+                $("#minPrice").val(minVal);
+                $("#maxPrice").val(maxVal);
+            });
+
+            $("#manualMin, #manualMax").on("blur", function () {
+                let minVal = parseFormatted($("#manualMin").val());
+                let maxVal = parseFormatted($("#manualMax").val());
+
+                const maxLimit = 1000000;
+
+                minVal = Math.max(0, Math.min(minVal, maxLimit - 1));
+                maxVal = Math.max(0, Math.min(maxVal, maxLimit));
+
+                if (minVal >= maxVal) {
+                    if ($(this).attr("id") === "manualMin") {
+                        minVal = Math.max(0, maxVal - 1);
+                    } else {
+                        maxVal = minVal + 1;
+                    }
+                }
+
+                $("#manualMin").val(formatNumber(minVal));
+                $("#manualMax").val(formatNumber(maxVal));
+
+                priceSlider.update({
+                    from: minVal,
+                    to: maxVal
+                });
+
+                $("#minPrice").val(minVal);
+                $("#maxPrice").val(maxVal);
+            });
+
+            function adjustSliderPosition() {
+                const sliderWidth = $(".irs").width();
+                const maxPosition = $(".irs-to").position().left + $(".irs-to").outerWidth();
+                const minPosition = $(".irs-from").position().left;
+                const irsSingle = document.querySelector(".irs-single");
+
+                if (maxPosition > sliderWidth) {
+                    const maxLeft = sliderWidth - $(".irs-to").outerWidth();
+                    $(".irs-to").css("left", maxLeft);
+                }
+
+                if (minPosition < 0) {
+                    $(".irs-from").css("left", 0);
+                }
+
+                const container = document.querySelector(".irs");
+
+                if (!irsSingle || !container) return;
+
+                const singleRect = irsSingle.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+
+                if (singleRect.left < containerRect.left) {
+                    irsSingle.style.left = "0px";
+                }
+
+                const overflowRight = singleRect.right - containerRect.right;
+                if (overflowRight > 0) {
+                    const currentLeft = parseFloat(getComputedStyle(irsSingle).left) || 0;
+                    irsSingle.style.left = (currentLeft - overflowRight) + "px";
+                }
+            }
+
+            $(window).resize(function () {
+                setTimeout(adjustSliderPosition, 100);
+            });
+
+            // 4. Hàm gọi API lấy sản phẩm theo filter/search/sort
             window.fetchProducts = function () {
                 const search = $("#searchBox").val()?.trim();
                 const sort = $("#sortDropdownButton").data("sort") || "";
@@ -362,7 +524,7 @@
                 });
             };
 
-            // ===== 2. Hiển thị danh sách sản phẩm =====
+            // 5. Hiển thị danh sách sản phẩm lên trang
             window.renderProducts = function (products) {
                 const container = $("#product-list");
                 container.empty();
@@ -420,7 +582,7 @@
                 });
             };
 
-            // ===== 3. Lưu từ khóa tìm kiếm vào lịch sử =====
+            // 6. Lưu lịch sử từ khóa tìm kiếm
             window.saveSearchHistory = function (keyword) {
                 let history = JSON.parse(sessionStorage.getItem("SearchHistory") || "[]");
                 if (!history.includes(keyword)) {
@@ -430,7 +592,7 @@
                 window.renderSearchHistory();
             };
 
-            // ===== 4. Hiển thị lịch sử tìm kiếm =====
+            // 7. Hiển thị lịch sử tìm kiếm
             window.renderSearchHistory = function () {
                 const container = $("#searchHistoryList");
                 container.empty();
@@ -457,177 +619,7 @@
                 });
             };
 
-            // ===== 5. Khởi tạo thanh kéo giá =====
-             $(document).ready(function () {
-            let from = parseInt('@Context.Request.Query["minPrice"]' || "0");
-            let to = parseInt('@Context.Request.Query["maxPrice"]' || "1000000");
-
-            // Đảm bảo from < to ít nhất 1 đơn vị
-            if (to - from <= 0) {
-                to = from + 1;
-                if (to > 1000000) {
-                    to = 1000000;
-                    from = to - 1;
-                }
-            }
-
-            // Khởi tạo slider
-            $("#price-range").ionRangeSlider({
-                type: "double",
-                min: 0,
-                max: 1000000,
-                from: from,
-                to: to,
-                prefix: "₫ ",
-                prettify_separator: ".",
-                decorate_both: true,
-                values_separator: " - ",
-                drag_interval: true,
-                min_interval: 1,
-
-                onStart: function () {
-                    setTimeout(adjustSliderPosition, 100);
-                },
-
-                onChange: function (data) {
-                    adjustSliderPosition();
-                },
-
-                onFinish: function (data) {
-                    let minPrice = Math.min(data.from, 999999);
-                    let maxPrice = Math.max(data.to, minPrice + 1);
-
-                    // Cập nhật input ẩn
-                    $("#minPrice").val(minPrice);
-                    $("#maxPrice").val(maxPrice);
-
-                    // Cập nhật input tay
-                    $("#manualMin").val(formatNumber(minPrice));
-                    $("#manualMax").val(formatNumber(maxPrice));
-
-                    // Nếu kéo sai, cập nhật lại slider
-                    if (data.from !== minPrice || data.to !== maxPrice) {
-                        priceSlider.update({
-                            from: minPrice,
-                            to: maxPrice
-                        });
-                    }
-
-                    adjustSliderPosition();
-                }
-            });
-
-            const priceSlider = $("#price-range").data("ionRangeSlider");
-
-            function formatNumber(num) {
-                return Number(num).toLocaleString("vi-VN");
-            }
-
-            function parseFormatted(val) {
-                return parseInt((val || "").toString().replaceAll(".", "")) || 0;
-            }
-
-            // Cập nhật slider khi nhập tay
-            $("#manualMin, #manualMax").on("input", function () {
-                let minVal = parseFormatted($("#manualMin").val());
-                let maxVal = parseFormatted($("#manualMax").val());
-
-                const maxLimit = 1000000;
-
-                minVal = Math.min(minVal, maxLimit - 1);
-                maxVal = Math.min(maxVal, maxLimit);
-
-                if (minVal >= maxVal) {
-                    if ($(this).attr("id") === "manualMin") {
-                        minVal = Math.max(0, maxVal - 1);
-                    } else {
-                        maxVal = minVal + 1;
-                    }
-                }
-
-                priceSlider.update({
-                    from: minVal,
-                    to: maxVal
-                });
-
-                $("#minPrice").val(minVal);
-                $("#maxPrice").val(maxVal);
-            });
-
-            // Khi blur, format lại và đảm bảo logic
-            $("#manualMin, #manualMax").on("blur", function () {
-                let minVal = parseFormatted($("#manualMin").val());
-                let maxVal = parseFormatted($("#manualMax").val());
-
-                const maxLimit = 1000000;
-
-                minVal = Math.min(minVal, maxLimit - 1);
-                maxVal = Math.min(maxVal, maxLimit);
-
-                if (minVal >= maxVal) {
-                    if ($(this).attr("id") === "manualMin") {
-                        minVal = Math.max(0, maxVal - 1);
-                    } else {
-                        maxVal = minVal + 1;
-                    }
-                }
-
-                $("#manualMin").val(formatNumber(minVal));
-                $("#manualMax").val(formatNumber(maxVal));
-
-                priceSlider.update({
-                    from: minVal,
-                    to: maxVal
-                });
-
-                $("#minPrice").val(minVal);
-                $("#maxPrice").val(maxVal);
-            });
-
-            // Căn chỉnh lại vị trí thanh slider
-            function adjustSliderPosition() {
-                const sliderWidth = $(".irs").width();
-                const maxPosition = $(".irs-to").position().left + $(".irs-to").outerWidth();
-                const minPosition = $(".irs-from").position().left;
-                const irsSingle = document.querySelector(".irs-single");
-
-                // Nếu giá trị max vượt quá chiều rộng của slider, dừng lại
-                if (maxPosition > sliderWidth) {
-                    const maxLeft = sliderWidth - $(".irs-to").outerWidth();
-                    $(".irs-to").css("left", maxLeft);
-                }
-
-                // Nếu giá trị min vượt quá viền trái, dừng lại
-                if (minPosition < 0) {
-                    $(".irs-from").css("left", 0);
-                }
-
-                const container = document.querySelector(".irs");
-
-                if (!irsSingle || !container) return;
-
-                const singleRect = irsSingle.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-
-                if (singleRect.left < containerRect.left) {
-                    irsSingle.style.left = "0px";
-                }
-
-                const overflowRight = singleRect.right - containerRect.right;
-                if (overflowRight > 0) {
-                    const currentLeft = parseFloat(getComputedStyle(irsSingle).left) || 0;
-                    irsSingle.style.left = (currentLeft - overflowRight) + "px";
-                }
-            }
-
-            // Điều chỉnh lại slider khi thay đổi kích thước cửa sổ
-            $(window).resize(function () {
-                setTimeout(adjustSliderPosition, 100);
-            });
-        });
-
-
-            // ===== 6. Các xử lý sự kiện UI =====
+            // 8. Sự kiện submit form tìm kiếm trong filter
             $("#searchForm").submit(function (e) {
                 e.preventDefault();
                 const keyword = $("#searchBox").val()?.trim();
@@ -638,12 +630,14 @@
                 window.fetchProducts();
             });
 
-            $(document).on("click", ".search-keyword", function () {
+            // 9. Click vào từ khóa trong lịch sử tìm kiếm
+            $(document).on("click", ".keyword-item", function () {
                 const keyword = $(this).data("key");
                 $("#searchBox").val(keyword);
                 window.fetchProducts();
             });
 
+            // 10. Xóa một từ khóa trong lịch sử
             $(document).on("click", ".btn-remove-keyword", function () {
                 const key = $(this).data("key");
                 let history = JSON.parse(sessionStorage.getItem("SearchHistory") || "[]");
@@ -652,11 +646,13 @@
                 window.renderSearchHistory();
             });
 
+            // 11. Xóa tất cả lịch sử tìm kiếm
             $("#clearAllBtn").click(function () {
                 sessionStorage.removeItem("SearchHistory");
                 window.renderSearchHistory();
             });
 
+            // 12. Thay đổi kiểu sắp xếp
             $(".dropdown-menu .dropdown-item").click(function () {
                 const label = $(this).text();
                 const sort = $(this).data("sort");
@@ -665,16 +661,17 @@
                 window.fetchProducts();
             });
 
+            // 13. Áp dụng filter (checkbox category, price range)
             $("#applyFilterBtn").click(function () {
                 window.fetchProducts();
             });
 
-            // ===== 7. Khởi chạy ban đầu =====
+            // 14. Khởi chạy khi trang load
             window.renderSearchHistory();
             window.fetchProducts();
-
         });
     </script>
+
     <script>
         window.handleAddToCart = function(btn) {
             // Lấy id sản phẩm và số lượng
