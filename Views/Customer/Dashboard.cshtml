@@ -98,12 +98,7 @@
                                     <i data-feather="map-pin"></i>Address
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-deliorder-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-deliorder" type="button" role="tab">
-                                    <i data-feather="map-pin"></i>Hủy hàng
-                                </button>
-                            </li>
+                           
                         </ul>
                     </div>
                 </div>
@@ -210,53 +205,53 @@
                                         {
                                             @foreach (var order in orderHistory)
                                             {
+                                                var total = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
                                                 <div class="order-card">
-                                                    <div class="header-right text-end">
-                                                        <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
-                                                        <h5 class="order-total">
-                                                            @(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))
-                                                        </h5>
+                                                    <div class="order-card-header">
+                                                        <div class="header-left">
+                                                            <h5>Đơn hàng #@order.Id</h5>
+
+                                                            <p>Ngày đặt: @order.OrderDate?.ToString("dd/MM/yyyy")</p>
+                                                        </div>
+                                                        <div class="header-right">
+                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+
+                                                            <h5 class="order-total">@string.Format(culture, "{0:C0}", total)</h5>
+                                                        </div>
+
+
+
+                                                    </div>
+                                                     <div class="order-card-body">
+                                                    <div class="d-flex gap-2">
+                                                        <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@order.Id"
+                                                           class="btn btn-primary"
+                                                           onclick="loadOrderDetail(@order.Id); return false;">
+                                                            Xem chi tiết
+                                                        </a>
 
                                                         @if (order.Status == "pending")
                                                         {
                                                             <a asp-action="CancelOrder" asp-controller="Customer"
                                                                asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-danger mt-1">Huỷ hàng</a>
+                                                               class="btn btn-sm btn-outline-danger">
+                                                                Huỷ hàng
+                                                            </a>
                                                         }
                                                         else if (order.Status == "delivered")
                                                         {
                                                             <a asp-action="ReturnOrder" asp-controller="Customer"
                                                                asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-warning mt-1">Hoàn hàng</a>
+                                                               class="btn btn-sm btn-outline-warning">
+                                                                Hoàn hàng
+                                                            </a>
                                                         }
                                                     </div>
-
-                                                    <div class="order-card-body">
-                                                        @foreach (var item in order.RetailOrderItems)
-                                                        {
-                                                            <div class="product-item">
-                                                                <div class="product-image">
-                                                                    @{
-                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
-                                                                    }
-                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
-                                                                </div>
-                                                                <div class="product-info">
-                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
-                                                                        <h6>@item.Product?.Name</h6>
-                                                                    </a>
-                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
-                                                                </div>
-                                                                <div class="product-quantity">
-                                                                    <span>x @item.Quantity</span>
-                                                                </div>
-                                                                <div class="product-total">
-                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                    </div>
+l                                                </div>
+                                                    
                                                 </div>
+
+
                                             }
                                         }
                                     </div>
