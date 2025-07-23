@@ -85,8 +85,7 @@
                                     </div>
 
                                     @{
-                                        var addresses = ViewBag.Addresses as List<Village_Manager.Models.Address> ?? new List<Village_Manager.Models.Address>();
-                                        int index = 0;
+                                        var locations = ViewBag.Location as List<Village_Manager.Models.UserLocation> ?? new List<Village_Manager.Models.UserLocation>(); int index = 0;
                                     }
                                     <div class="checkout-box">
                                         <div class="checkout-title">
@@ -95,11 +94,11 @@
 
                                         <div class="checkout-detail">
                                             <div class="row g-4">
-                                                @if (addresses.Any())
+                                                @if (locations.Any())
                                                 {
-                                                    foreach (var addr in addresses)
+                                                    foreach (var loc in locations)
                                                     {
-                                                        var radioId = "addr_" + addr.Id;
+                                                        var radioId = "loc_" + loc.Id;
                                                         <div class="col-xxl-6 col-lg-12 col-md-6">
                                                             <div class="delivery-address-box">
                                                                 <div>
@@ -108,7 +107,7 @@
                                                                                type="radio"
                                                                                name="SelectedAddress"
                                                                                id="@radioId"
-                                                                               value="@addr.Id"
+                                                                               value="@loc.Id"
                                                                                @(index == 0 ? "checked" : "") />
                                                                     </div>
 
@@ -118,14 +117,15 @@
 
                                                                     <ul class="delivery-address-detail">
                                                                         <li>
-                                                                            <h4 class="fw-500">@(addr.AddressLine)</h4>
+                                                                            <h4 class="fw-500">@loc.Address</h4>
                                                                         </li>
-                                                                        <li>
+                                                                        <!-- Nếu không có City/Province riêng, chỉ để địa chỉ đầy đủ hoặc label -->
+                                                                        <!--<li>
                                                                             <p class="text-content">
                                                                                 <span class="text-title">Địa chỉ:</span>
-                                                                                @(addr.City), @(addr.Province)
+                                                                                @loc.Address
                                                                             </p>
-                                                                        </li>
+                                                                        </li>-->
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -366,7 +366,7 @@
                             <ul class="summery-contain">
                                 <li>
                                     <h4>Tổng cộng: </h4>
-                                    <h4 class="price">₫@String.Format("{0:N0}", total)</h4>
+                                    <h4 class="price">₫@String.Format("{0:N0}", subTotal)</h4>
                                 </li>
 
                                 <li>
