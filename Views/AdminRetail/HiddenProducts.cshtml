@@ -1,8 +1,8 @@
-﻿@model List<Village_Manager.Models.Product>
+@model List<Village_Manager.Models.Product>
 
 @{
-    ViewData["Title"] = "Hidden Products";
-    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+    ViewData["Title"] = "Sản phẩm đã ẩn";
+    Layout = "~/Views/Shared/_AdminFamViet.cshtml";
 }
 
 <div class="page-wrapper compact-wrapper" id="pageWrapper">
@@ -14,7 +14,7 @@
                         <div class="card card-table">
                             <div class="card-body">
                                 <div class="title-header option-title d-sm-flex d-block">
-                                    <h5>Hidden Products List</h5>
+                                    <h5>Danh sách sản phẩm đã ẩn</h5>
                                     <div class="right-options d-flex" style="gap: 15px;">
                                         <a asp-action="Products" asp-controller="AdminRetail" class="btn btn-outline-primary">← Quay về danh sách bán</a>
                                     </div>
@@ -39,7 +39,7 @@
                                                 <tr>
                                                     <td><img src="@imageUrl" width="60" height="60" /></td>
                                                     <td>@product.Name</td>
-                                                    <td>@product.ProductType</td>
+                                                    <td>@(product.ProductType == "raw" ? "Nguyên liệu thô" : "Đã qua chế biến")</td>
                                                     <td>@product.Quantity</td>
                                                     <td>@product.Price.ToString("N0") VND</td>
                                                     <td>
@@ -57,7 +57,7 @@
                                                             <li>
                                                                 <form asp-action="RestoreProduct" asp-controller="AdminRetail" method="post" class="d-inline">
                                                                     <input type="hidden" name="productId" value="@product.Id" />
-                                                                    <button type="submit" class="btn btn-sm btn-success">Hiện lại</button>
+                                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bạn có chắc chắn muốn hiển thị lại sản phẩm này?')">Hiện lại</button>
                                                                 </form>
                                                             </li>
                                                         </ul>

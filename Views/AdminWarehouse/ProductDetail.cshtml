@@ -1,6 +1,6 @@
-﻿@model Village_Manager.Models.Product
+@model Village_Manager.Models.Product
 @{
-    ViewData["Title"] = "Product Details";
+    ViewData["Title"] = "Chi tiết sản phẩm";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <style>
@@ -25,64 +25,64 @@
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <div>
-    <h1>Product Information</h1>
+    <h1>Thông tin sản phẩm</h1>
 </div>
 
 <div class="container" style="margin-left: 260px;">
     <div class="container mt-5">
         <div class="card shadow rounded-4 border-0">
             <div class="card-header bg-success text-white rounded-top-4">
-                <h3 class="mb-0">Product Details</h3>
+                <h3 class="mb-0">Chi tiết sản phẩm</h3>
             </div>
 
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h5>Name:</h5>
+                        <h5>Tên sản phẩm:</h5>
                         <p>@Model.Name</p>
                     </div>
                     <div class="col-md-6">
-                        <h5>Category ID:</h5>
+                        <h5>Mã danh mục:</h5>
                         <p>@Model.CategoryId</p>
                     </div>
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h5>Price:</h5>
+                        <h5>Giá:</h5>
                         <p>@Model.Price.ToString("C")</p>
                     </div>
                     <div class="col-md-6">
-                        <h5>Quantity:</h5>
+                        <h5>Số lượng:</h5>
                         <p>@Model.Quantity</p>
                     </div>
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h5>Product Type:</h5>
+                        <h5>Loại sản phẩm:</h5>
                         <p>@Model.ProductType</p>
                     </div>
                     <div class="col-md-6">
-                        <h5>Farmer:</h5>
-                        <p>@(Model.Farmer != null ? Model.Farmer.FullName : "N/A")</p>
+                        <h5>Nông dân:</h5>
+                        <p>@(Model.Farmer != null ? Model.Farmer.FullName : "Không có")</p>
                     </div>
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h5>Expiration Date:</h5>
-                        <p>@(Model.ExpirationDate?.ToString("dd/MM/yyyy") ?? "N/A")</p>
+                        <h5>Ngày hết hạn:</h5>
+                        <p>@(Model.ExpirationDate?.ToString("dd/MM/yyyy") ?? "Không có")</p>
                     </div>
                     <div class="col-md-6">
-                        <h5>Processing Time:</h5>
-                        <p>@(Model.ProcessingTime?.ToString("dd/MM/yyyy") ?? "N/A")</p>
+                        <h5>Thời gian sản xuất:</h5>
+                        <p>@(Model.ProcessingTime?.ToString("dd/MM/yyyy") ?? "Không có")</p>
                     </div>
                 </div>
 
                 <hr />
 
-                <h4 class="mb-3">Product Images</h4>
+                <h4 class="mb-3">Hình ảnh sản phẩm</h4>
                 @if (Model.ProductImages != null && Model.ProductImages.Any())
                 {
                     <div id="productImagesCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -115,11 +115,11 @@
                 }
                 else
                 {
-                    <p class="text-muted">No images available.</p>
+                    <p class="text-muted">Không có hình ảnh nào.</p>
                 }
 
                 <div class="mt-4">
-                    <a href="/products" class="btn btn-secondary">Back to List</a>
+                    <a href="/products" class="btn btn-secondary">Quay lại danh sách</a>
                 </div>
             </div>
         </div>

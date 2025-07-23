@@ -1,7 +1,7 @@
-﻿@model List<Village_Manager.Models.Product>
+@model List<Village_Manager.Models.Product>
 
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Sản phẩm";
     Layout = "~/Views/Shared/_AdminRetail.cshtml";
 }
 
@@ -31,11 +31,11 @@
                                     <table class="table all-package theme-table table-product" id="table_id">
                                         <thead>
                                             <tr>
-                                                <th>Ảnh </th>
+                                                <th>Ảnh</th>
                                                 <th>Tên Sản Phẩm</th>
                                                 <th>Tình Trạng</th>
                                                 <th>Số Lượng</th>
-                                                <th>Gía</th>
+                                                <th>Giá</th>
                                                 <th>Lựa chọn</th>
                                             </tr>
                                         </thead>
@@ -85,19 +85,20 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header d-block text-center">
-                        <h5 class="modal-title w-100">Are You Sure?</h5>
+                        <h5 class="modal-title w-100">Bạn có chắc chắn?</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="remove-box">
-                            <p>This action will permanently delete the product.</p>
+                            <p>Hành động này sẽ xóa vĩnh viễn sản phẩm khỏi hệ thống của FamViệt.</p>
+                            <p>Hành động này sẽ xóa vĩnh viễn sản phẩm khỏi hệ thống.</p>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">Không</button>
+                        <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">Có</button>
                     </div>
                 </div>
             </div>
@@ -118,7 +119,7 @@
                 const getValue = (el, index) => el.children[index].textContent.trim();
                        const parseDate = (str) => {
             const parts = str.split("/");
-            if (parts.length !== 3) return new Date(0); // fallback nếu lỗi
+            if (parts.length !== 3) return new Date(0); // dự phòng nếu có lỗi
             return new Date(+parts[2], parts[1] - 1, +parts[0]); // new Date(year, monthIndex, day)
         };
 

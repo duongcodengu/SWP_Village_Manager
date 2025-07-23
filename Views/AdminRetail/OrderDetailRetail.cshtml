@@ -1,8 +1,24 @@
-﻿@model Village_Manager.Models.RetailOrder
+@model Village_Manager.Models.RetailOrder
 
 @{
     ViewData["Title"] = "Chi tiết đơn hàng";
-    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+    Layout = "~/Views/Shared/_AdminFamViet.cshtml";
+    
+    // Function to translate order status to Vietnamese
+    string GetStatusInVietnamese(string status)
+    {
+        return status switch
+        {
+            "Pending" => "Đang chờ xử lý",
+            "Confirmed" => "Đã xác nhận",
+            "Processing" => "Đang xử lý",
+            "Shipped" => "Đang giao hàng",
+            "Delivered" => "Đã giao hàng",
+            "Cancelled" => "Đã hủy",
+            "Returned" => "Đã trả hàng",
+            _ => status
+        };
+    }
 }
 
 <div class="container-fluid mt-4 px-4">
@@ -22,10 +38,10 @@
                     <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy")</dd>
 
                     <dt class="col-sm-4">Trạng thái</dt>
-                    <dd class="col-sm-8">@Model.Status</dd>
+                    <dd class="col-sm-8">@GetStatusInVietnamese(Model.Status)</dd>
 
                     <dt class="col-sm-4">Ngày xác nhận</dt>
-                    <dd class="col-sm-8">@Model.ConfirmedAt?.ToString("dd/MM/yyyy")</dd>
+                    <dd class="col-sm-8">@(Model.ConfirmedAt?.ToString("dd/MM/yyyy") ?? "Chưa xác nhận")</dd>
                 </dl>
 
                 <h5 class="mt-4">Danh sách sản phẩm</h5>
@@ -48,9 +64,9 @@
                                             @item.Product?.Name
                                         </a>
                                     </td>
-                                    <td>@(item.UnitPrice != null ? item.UnitPrice.Value.ToString("N0") + " đ" : "N/A")</td>
+                                    <td>@(item.UnitPrice != null ? item.UnitPrice.Value.ToString("N0") + " đ" : "Liên hệ")</td>
                                     <td>@item.Quantity</td>
-                                    <td>@(item.UnitPrice* item.Quantity)đ</td>
+                                    <td>@((item.UnitPrice * item.Quantity)?.ToString("N0") + " đ")</td>
                                 </tr>
                             }
                         </tbody>
