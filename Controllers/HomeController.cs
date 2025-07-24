@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.Utils;
 //using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
@@ -501,6 +502,33 @@ namespace Village_Manager.Controllers
 
             TempData["Success"] = "Đặt lại mật khẩu thành công.";
             return RedirectToAction("Login", "Home");
+        }
+
+        // Thêm vào giỏ hàng
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            //lấy giỏ hàng từ session hoặc tạo mới
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            //kiểm tra sản phẩm đã có trong giỏ chưa
+            var item = cart.FirstOrDefault(ci => ci.ProductId == productId);
+            if (item != null)
+            {
+                item.Quantity = (item.Quantity ?? 0) + quantity;
+            }
+            else
+            {
+                cart.Add(new CartItem
+                {
+                    ProductId = productId,
+                    Quantity = quantity
+                });
+            }
+
+            HttpContext.Session.Set("Cart", cart);
+
+            return RedirectToAction("Index");
         }
 
     }

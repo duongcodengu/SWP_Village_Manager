@@ -160,7 +160,6 @@
                                         Số lượng: @Model.Quantity <br />
                                         Ngày hết hạn: @(Model.ExpirationDate?.ToString("dd/MM/yyyy") ?? "Không có") <br />
                                         Danh mục: @Model.Category?.Name <br />
-                                        Nông dân: @Model.Farmer?.FullName
                                     </p>
                                 </div>
 
@@ -198,24 +197,6 @@
                                         </button>
                                     </div>
                                 </form>
-
-                              
-
-
-                                <div class="pickup-box">
-                                   
-                                   
-
-                                    <div class="product-info">
-                                        <ul class="product-info-list product-info-list-2">
-                                            <li>Loại: <span>@Model.ProductType</span></li>
-                                            <li>ID: <span>@Model.Id</span></li>
-                                            <li>Sản xuất: <span>@(Model.ProcessingTime?.ToString("dd/MM/yyyy") ?? "Không có")</span></li>
-                                            <li>Kho: <span>@Model.Quantity sản phẩm</span></li>
-                                            <li>Tags: <span>@Model.Category?.Name</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -235,9 +216,6 @@
                                             Thông Tin Chi Tiết
                                         </button>
                                     </li>
-
-                                    
-                                   
                                 </ul>
 
                                 <div class="tab-content custom-tab" id="myTabContent">
@@ -359,7 +337,7 @@
                                     <li>
                                         <div class="address-contact">
                                             <i data-feather="map-pin"></i>
-                                            <h5>Address: <span class="text-content">Fpt universe</span></h5>
+                                            <h5>Address: <span class="text-content">FamViệt</span></h5>
                                         </div>
                                     </li>
 
