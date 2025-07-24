@@ -250,13 +250,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                         <span>MỚI</span>
                                                     </div>
                                                     <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
+                                                                <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                             <img src="@Url.Content(image.ProductImage.ImageUrl)"
                                                                  class="img-fluid blur-up lazyload" alt="@image.ProductImage.Product.Name">
                                                         </a>
                                                     </div>
                                                     <div class="product-detail">
-                                                        <a href="product-left-thumbnail.html">
+                                                                <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                             <h6 class="name">
                                                                 @image.ProductImage.Product.Name
                                                             </h6>

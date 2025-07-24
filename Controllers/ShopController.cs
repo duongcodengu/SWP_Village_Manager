@@ -238,16 +238,17 @@ public class ShopController : Controller
         var userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
-           
-            return RedirectToAction("", "login");
+            Response.StatusCode = 404;
+            return View("404");
         }
 
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         if (cart == null || !cart.Any())
         {
-            
             return RedirectToAction("search", "shop");
         }
+
+        // Kiểm tra tồn kho trước
         foreach (var item in cart)
         {
             var product = await _context.Products.FindAsync(item.ProductId);
@@ -266,9 +267,9 @@ public class ShopController : Controller
             Status = "pending"
         };
         _context.RetailOrders.Add(newOrder);
-        await _context.SaveChangesAsync(); // để lấy được OrderId
+        await _context.SaveChangesAsync(); // Lấy OrderId
 
-        // Thêm chi tiết đơn hàng
+        // Thêm chi tiết đơn hàng và cập nhật tồn kho
         foreach (var item in cart)
         {
             var product = await _context.Products.FindAsync(item.ProductId);
@@ -282,17 +283,28 @@ public class ShopController : Controller
                     UnitPrice = product.Price
                 };
                 _context.RetailOrderItems.Add(orderItem);
+
+                // Trừ tồn kho
+                product.Quantity -= (int)item.Quantity;
+
+                // Kiểm tra tránh quantity âm (nếu có lỗi đồng bộ nào đó)
+                if (product.Quantity < 0)
+                {
+                    TempData["Error"] = $"Lỗi: Sản phẩm \"{product.Name}\" bị thiếu hàng trong khi xử lý.";
+                    return RedirectToAction("cart", "shop");
+                }
             }
         }
 
         await _context.SaveChangesAsync();
 
-        // Lưu OrderId để hiển thị ở trang thành công
+        // Clear giỏ hàng
         HttpContext.Session.Remove("Cart");
         TempData["OrderId"] = newOrder.Id;
 
         return RedirectToAction("Success");
     }
+
 
     public IActionResult Tracking(string orderId)
     {
