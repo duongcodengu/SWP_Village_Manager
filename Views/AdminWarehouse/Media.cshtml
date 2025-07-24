@@ -1,16 +1,16 @@
-﻿@model List<Village_Manager.Models.HomepageImage>
+@model List<Village_Manager.Models.HomepageImage>
 @{
-    ViewData["Title"] = "Media";
+    ViewData["Title"] = "Thư viện hình ảnh";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Library</title>
+    <title>Thư viện hình ảnh FamViệt</title>
 
     <!-- CSS Links giữ nguyên như cũ -->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="title-header option-title justify-content-start">
-                                    <h5>Media Library</h5>
+                                    <h5>Thư viện hình ảnh</h5>
                                     <div class="selected-options"></div>
                                 </div>
 
@@ -49,7 +49,6 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row" id="bannerContainer">
-                                      
                                         </div>
                                     </div>
                                 </div>
@@ -91,9 +90,9 @@
                                 <!-- Top Sale Section -->
                                 <div class="card mb-4">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5> Top Save Today</h5>
+                                        <h5>Tiết kiệm nổi bật hôm nay</h5>
                                         <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="topsave">
-                                            Add Media
+                                            Thêm hình ảnh
                                         </button>
                                     </div>
                                     <div class="card-body">
@@ -112,8 +111,8 @@
                                                                     <i class="ri-more-fill"></i>
                                                                 </a>
                                                                 <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
-                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Tải xuống</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Xóa</a></li>
                                                                 </ul>
                                                             </div>
                                                         </label>
@@ -129,7 +128,7 @@
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <h5>Food Cupboard</h5>
                                         <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="FoodCupboard">
-                                            Add Media
+                                            Thêm hình ảnh
                                         </button>
                                     </div>
                                     <div class="card-body">
@@ -148,8 +147,8 @@
                                                                     <i class="ri-more-fill"></i>
                                                                 </a>
                                                                 <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
-                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Tải xuống</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Xóa</a></li>
                                                                 </ul>
                                                             </div>
                                                         </label>
@@ -162,9 +161,9 @@
                                 <!-- Best Seller  Section -->
                                 <div class="card mb-4">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h5>Our best Seller</h5>
+                                        <h5>Sản phẩm bán chạy nhất</h5>
                                         <button class="btn btn-solid open-media-btn" data-bs-toggle="modal" data-bs-target="#mediaModel" data-section-container="bestseller">
-                                            Add Media
+                                            Thêm hình ảnh
                                         </button>
                                     </div>
                                     <div class="card-body">
@@ -183,8 +182,8 @@
                                                                     <i class="ri-more-fill"></i>
                                                                 </a>
                                                                 <ul class="dropdown-menu dropdown-menu-end">
-                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
-                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Tải xuống</a></li>
+                                                                    <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="@image.Id"><i class="ri-delete-bin-line me-2"></i>Xóa</a></li>
                                                                 </ul>
                                                             </div>
                                                         </label>
@@ -226,7 +225,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="bannerFile" class="form-label">Chọn file ảnh banner</label>
+                        <label for="bannerFile" class="form-label">Chọn tệp ảnh banner</label>
                         <input type="file" class="form-control" id="bannerFile" accept="image/*">
                     </div>
 
@@ -236,7 +235,7 @@
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
                         <button class="btn btn-primary" id="uploadBannerBtn">
                             <span class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
-                            Upload
+                            Tải lên
                         </button>
                     </div>
                 </div>
@@ -263,8 +262,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="file-detail mt-4">
-                                <h6>0 File Selected</h6>
-                                <a href="#" class="font-red">Clear Selection</a>
+                                <h6>0 tệp chưa được chọn</h6>
+                                <a href="#" class="font-red">Xóa chọn</a>
                             </div>
                         </div>
                     </div>
@@ -309,7 +308,7 @@
                         <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
                     </div>
                 `;
-                document.querySelector('.file-detail h6').textContent = '0 File Selected';
+                document.querySelector('.file-detail h6').textContent = '0 tệp chưa được chọn';
 
                 // Load categories
                 loadCategories();
@@ -422,7 +421,7 @@
             const position = document.getElementById("bannerPosition").value;
 
             if (!file) {
-                showAlert("Vui lòng chọn file ảnh!", 'warning');
+                showAlert("Vui lòng chọn tệp ảnh!", 'warning');
                 return;
             }
             if (!position) {
@@ -491,7 +490,7 @@
                     document.getElementById("bannerPosition").value = '';
                     preview.innerHTML = '';
 
-                    showAlert(data.message || "Upload banner thành công!", 'success');
+                    showAlert(data.message || "Tải lên banner thành công!", 'success');
                 } else {
                     showAlert(data.message || "Có lỗi xảy ra!", 'danger');
                 }
@@ -510,13 +509,13 @@
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('select-image-checkbox') && e.target.closest('#imageList')) {
                 const checkedCount = document.querySelectorAll('#imageList .select-image-checkbox:checked').length;
-                document.querySelector('.file-detail h6').textContent = `${checkedCount} File Selected`;
+                document.querySelector('.file-detail h6').textContent = `${checkedCount} tệp đã chọn`;
             }
         });
 
                  // Xóa duplicate event listener và sửa lỗi syntax
        
-        // Delete image
+        // Xóa image
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('delete-image') || e.target.closest('.delete-image')) {
                 e.preventDefault();
@@ -597,8 +596,8 @@
                                                 <i class="ri-more-fill"></i>
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Download</a></li>
-                                                <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="${img.id}"><i class="ri-delete-bin-line me-2"></i>Delete</a></li>
+                                                <li><a class="dropdown-item d-flex align-items-center" href="#"><i class="ri-download-2-line me-2"></i>Tải xuống</a></li>
+                                                <li><a class="dropdown-item d-flex align-items-center delete-image" href="#" data-homepage-id="${img.id}"><i class="ri-delete-bin-line me-2"></i>Xóa</a></li>
                                             </ul>
                                         </div>
                                     </label>
@@ -622,7 +621,7 @@
                             <p class="mt-2">Vui lòng chọn danh mục để xem ảnh sản phẩm</p>
                         </div>
                     `;
-                    document.querySelector('.file-detail h6').textContent = '0 File Selected';
+                    document.querySelector('.file-detail h6').textContent = '0 tệp đã chọn';
 
                     showAlert(data.message || "Thêm ảnh thành công!", 'success');
                 } else {

@@ -8,103 +8,154 @@
     var discountAmount = (decimal)ViewBag.DiscountAmount;
     var finalAmount = (decimal)ViewBag.FinalAmount;
 }
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
 
-<div class="container my-5 order-container">
-    <h2 class="mb-4">Chi tiết đơn hàng #@Model.Id</h2>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="FamViệt - Quản lý đơn hàng, giao diện quản trị hiện đại, linh hoạt, tối ưu cho người Việt.">
+    <meta name="keywords"
+          content="FamViệt, quản lý đơn hàng, giao diện quản trị, dashboard, web app">
+    <meta name="author" content="FamViệt">
+    <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <title>FamViệt - Tất cả người dùng</title>
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5>Thông tin người nhận</h5>
-            <p><strong>Khách hàng:</strong> @Model.User?.Username</p>
-            <p><strong>Ngày đặt:</strong> @Model.OrderDate?.ToString("dd/MM/yyyy")</p>
-            <p><strong>Trạng thái:</strong> @Model.Status</p>
-            <p><strong>Địa chỉ giao hàng:</strong> @Model.User?.Addresses?.FirstOrDefault()?.AddressLine</p>
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+
+    <!-- Data Table css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
+
+    <!-- Themify icon css-->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
+
+    <!-- Feather icon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+</head>
+
+<body>
+    <div class="container my-5 order-container">
+        <h2 class="mb-4">Chi tiết đơn hàng #@Model.Id</h2>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5>Thông tin người nhận</h5>
+                <p><strong>Khách hàng:</strong> @Model.User?.Username</p>
+                <p><strong>Ngày đặt:</strong> @Model.OrderDate?.ToString("dd/MM/yyyy")</p>
+                <p><strong>Trạng thái:</strong> @Model.Status</p>
+                <p><strong>Địa chỉ giao hàng:</strong> @Model.User?.Addresses?.FirstOrDefault()?.AddressLine</p>
+            </div>
         </div>
-    </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5>Danh sách sản phẩm</h5>
-            <table class="table table-bordered mt-3">
-                <thead class="table-light">
-                    <tr>
-                        <th></th>
-                        <th>Tên sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Thành tiền</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.RetailOrderItems)
-                    {
-                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5>Danh sách sản phẩm</h5>
+                <table class="table table-bordered mt-3">
+                    <thead class="table-light">
                         <tr>
-                            <td>
-                                <img src="@imageUrl" alt="@item.Product?.Name" width="60" height="60" style="object-fit: cover; border-radius: 5px;" />
-                            </td>
-                            <td>@item.Product?.Name</td>
-                            <td>@item.Quantity</td>
-                            <td>@(item.UnitPrice?.ToString("C0", culture))</td>
-                            <td>@(((decimal)(item.Quantity * (item.UnitPrice ?? 0))).ToString("C0", culture))</td>
+                            <th></th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RetailOrderItems)
+                        {
+                            var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                            <tr>
+                                <td>
+                                    <img src="@imageUrl" alt="@item.Product?.Name" width="60" height="60" style="object-fit: cover; border-radius: 5px;" />
+                                </td>
+                                <td>@item.Product?.Name</td>
+                                <td>@item.Quantity</td>
+                                <td>@(item.UnitPrice?.ToString("C0", culture))</td>
+                                <td>@(((decimal)(item.Quantity * (item.UnitPrice ?? 0))).ToString("C0", culture))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5>Tổng kết đơn hàng</h5>
-            <p><strong>Tổng tiền hàng:</strong> @total.ToString("C0", culture)</p>
-            @if (!string.IsNullOrEmpty(discountCode))
-            {
-                <p><strong>Mã giảm giá:</strong> @discountCode</p>
-                <p><strong>Số tiền giảm:</strong> @discountAmount.ToString("C0", culture)</p>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5>Tổng kết đơn hàng</h5>
+                <p><strong>Tổng tiền hàng:</strong> @total.ToString("C0", culture)</p>
+                @if (!string.IsNullOrEmpty(discountCode))
+                {
+                    <p><strong>Mã giảm giá:</strong> @discountCode</p>
+                    <p><strong>Số tiền giảm:</strong> @discountAmount.ToString("C0", culture)</p>
+                }
+                <h5 class="text-primary"><strong>Thành tiền:</strong> @finalAmount.ToString("C0", culture)</h5>
+            </div>
+        </div>
+
+        <a href="/customer;" onclick="backToOrderHistory()" class="btn btn-secondary">← Quay lại</a>
+
+        <style>
+            .order-container h2,
+            .order-container h5,
+            .order-container .text-primary {
+                color: #009879;
             }
-            <h5 class="text-primary"><strong>Thành tiền:</strong> @finalAmount.ToString("C0", culture)</h5>
-        </div>
-    </div>
 
-    <a href="javascript:void(0);" onclick="backToOrderHistory()" class="btn btn-secondary">← Quay lại</a>
-
-    <style>
-        .order-container h2,
-        .order-container h5,
-        .order-container .text-primary {
-            color: #009879;
-        }
-
-        .order-container .btn-secondary {
-            width: 25%;
-            background-color: #009879;
-            border-color: #007a63;
-            font-size: 0.875rem; /* nhỏ hơn bình thường */
-            padding: 6px 14px;
-            border-radius: 30px; /* bo tròn */
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .order-container .btn-secondary:hover {
+            .order-container .btn-secondary {
+                width: 25%;
                 background-color: #009879;
                 border-color: #007a63;
-        }
+                font-size: 0.875rem; /* nhỏ hơn bình thường */
+                padding: 6px 14px;
+                border-radius: 30px; /* bo tròn */
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
 
-        .order-container .card {
-            border: 1px solid #c3e6cb;
-            border-radius: 10px;
-        }
+                .order-container .btn-secondary:hover {
+                    background-color: #009879;
+                    border-color: #007a63;
+                }
 
-        .order-container .table th {
-            background-color: #d4edda;
-            color: #155724;
-        }
+            .order-container .card {
+                border: 1px solid #c3e6cb;
+                border-radius: 10px;
+            }
 
-        .order-container .table td {
-            vertical-align: middle;
-        }
-    </style>
+            .order-container .table th {
+                background-color: #d4edda;
+                color: #155724;
+            }
 
-</div>
+            .order-container .table td {
+                vertical-align: middle;
+            }
+        </style>
+
+    </div>
+</body>
+
+</html>

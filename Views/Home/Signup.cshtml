@@ -1,20 +1,20 @@
-﻿@{
+@{
     ViewData["Title"] = "Đăng ký";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>Đăng ký - FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -58,28 +58,33 @@
                             <form class="row g-4" method="post" asp-controller="Home" asp-action="signup">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="fullname" placeholder="Họ và tên" name="fullname">
+                                        <input type="text" class="form-control" id="fullname" placeholder="Họ và tên" name="fullname" required>
                                         <label for="fullname">Họ và tên</label>
                                     </div>
                                 </div>
+
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="email" class="form-control" id="email" placeholder="Địa chỉ email" name="email">
+                                        <input type="email" class="form-control" id="email" placeholder="Địa chỉ email" name="email" required>
                                         <label for="email">Địa chỉ email</label>
+                                        <div id="email-error" class="text-danger mt-1" style="font-size: 0.875rem;"></div>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
-                                    <div class="form-floating theme-form-floating">
+                                    <div class="form-floating theme-form-floating position-relative">
                                         <input type="password" class="form-control" id="password"
-                                               placeholder="Mật khẩu" name="password">
+                                               placeholder="Mật khẩu" name="password" required minlength="6">
                                         <label for="password">Mật khẩu</label>
+                                        <span class="toggle-password" style="position:absolute; top:50%; right:15px; transform:translateY(-50%); cursor:pointer;">
+                                            <i class="fa fa-eye-slash" id="togglePassword"></i>
+                                        </span>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating">
-                                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Số điện thoại">
+                                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Số điện thoại" maxlength="10" required>
                                         <label for="phone">Số điện thoại</label>
                                     </div>
                                 </div>
@@ -88,7 +93,7 @@
                                     <div class="forgot-box">
                                         <div class="form-check ps-0 m-0 remember-box">
                                             <input class="checkbox_animated check-box" type="checkbox"
-                                                   id="flexCheckDefault" name="terms">
+                                                   id="flexCheckDefault" name="terms" required>
                                             <label class="form-check-label" for="flexCheckDefault" >
                                                 Tôi đồng ý với
                                                 <span>Điều khoản</span> và <span>Quyền riêng tư</span>
@@ -133,19 +138,84 @@
             </div>
         </div>
     </section>
-    <!-- log in section end -->
-    <!-- Tap to top button start -->
-    <div class="theme-option">
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top button end -->
-    <!-- Bg overlay Start -->
-    <div class="bg-overlay"></div>
-    <!-- Bg overlay End -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fullnameInput = document.getElementById('fullname');
+
+            if (fullnameInput) {
+                fullnameInput.addEventListener('input', function () {
+                    const value = fullnameInput.value.trim();
+
+                    // Regex: chỉ cho chữ cái + dấu tiếng Việt + khoảng trắng
+                    const regex = /^[a-zA-ZÀ-Ỹà-ỹ\s]+$/u;
+
+                    if (!regex.test(value)) {
+                        fullnameInput.setCustomValidity("Họ và tên không được chứa số hoặc ký tự đặc biệt.");
+                    } else {
+                        fullnameInput.setCustomValidity("");
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('togglePassword');
+
+            let show = false;
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function () {
+                    show = !show;
+                    passwordInput.type = show ? 'text' : 'password';
+                    togglePassword.classList.toggle('fa-eye', show);
+                    togglePassword.classList.toggle('fa-eye-slash', !show);
+                });
+
+                passwordInput.addEventListener('input', function () {
+                    if (passwordInput.value.length < 6) {
+                        passwordInput.setCustomValidity("Mật khẩu phải có ít nhất 6 ký tự.");
+                    } else {
+                        passwordInput.setCustomValidity("");
+                    }
+                });
+            }
+
+            // Chặn khoảng trắng khi nhập email & password
+            ["email", "password"].forEach(function (id) {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener("input", function () {
+                        this.value = this.value.replace(/\s/g, '');
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const phoneInput = document.getElementById('phone');
+
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function () {
+                    // Chỉ giữ lại các số (nếu có dán lẫn ký tự)
+                    this.value = this.value.replace(/\D/g, '');
+
+                    const value = this.value;
+                    const regex = /^0\d{9}$/; // bắt đầu bằng 0, đủ 10 số
+
+                    if (!regex.test(value)) {
+                        phoneInput.setCustomValidity("Số điện thoại phải gồm 10 chữ số và bắt đầu bằng số 0.");
+                    } else {
+                        phoneInput.setCustomValidity("");
+                    }
+                });
+            }
+        });
+    </script>
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
 

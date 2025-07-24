@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "List Category";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
@@ -10,13 +10,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViet admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
+          content="admin template, FamViet admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Product</title>
+    <title>FamViet - Danh mục</title>
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -69,18 +69,18 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Category List</h5>
+                                        <h5>Danh sách danh mục</h5>
                                         <div class="right-options">
                                             <ul>
                                                 <li>
-                                                    <a href="javascript:void(1)">import</a>
+                                                    <a href="javascript:void(1)">Nhập</a>
                                                 </li>
                                                 <li>
-                                                    <a href="javascript:void(0)">Export</a>
+                                                    <a href="javascript:void(0)">Xuất</a>
                                                 </li>
                                                 <li>
                                                      @* trả về controller tên CategoryController  *@
-                                                    <a class="btn btn-solid" asp-action="addCategory" asp-controller="Category">Add Category</a>
+                                                    <a class="btn btn-solid" asp-action="addCategory" asp-controller="Category">Thêm danh mục</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -90,10 +90,10 @@
                                             <table class="table theme-table table-striped">
                                                 <thead>
                                                     <tr>
-                                                        <th>Category ID</th>
-                                                        <th>Category Name</th>
-                                                        <th>Image</th>
-                                                        <th>Options</th>
+                                                        <th>Mã danh mục</th>
+                                                        <th>Tên danh mục</th>
+                                                        <th>Hình ảnh</th>
+                                                        <th>Tùy chọn</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -137,7 +137,7 @@
                                                     else
                                                     {
                                                         <tr>
-                                                            <td colspan="4"> Not found</td>
+                                                            <td colspan="4">Không tìm thấy dữ liệu</td>
                                                         </tr>
                                                     }
                                                   
@@ -164,11 +164,11 @@
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="staticBackdropLabel">Đăng xuất</h5>
+                    <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">Không</button>
                         <button type="button" onclick="location.href = 'login.html';"
                                 class="btn  btn--yes btn-primary">
                             Yes
@@ -184,7 +184,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -193,15 +193,14 @@
                     <div class="remove-box">
                        
                         <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
+                            Quyền sử dụng cho nhóm/người dùng sẽ được kế thừa từ đối tượng gốc. Đối tượng này sẽ tạo quyền mới riêng biệt.
                         </p>
                     </div>
                     <input type="hidden" id="categoryToDeleteId" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-animation btn-md fw-bold" onclick="deleteConfirmed()">Yes</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">Không</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" onclick="deleteConfirmed()">Có</button>
 
                 </div>
             </div>
@@ -212,7 +211,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Hoàn tất!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -225,11 +224,11 @@
                                 <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                             </svg>
                         </div>
-                        <h4 class="text-content">It's Removed.</h4>
+                        <h4 class="text-content">Đã xóa thành công.</h4>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>

@@ -1,19 +1,19 @@
-﻿@{
+@{
     ViewData["Title"] = "Liên hệ";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>Liên hệ - FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -76,7 +76,7 @@
                                                     <h4>Email</h4>
                                                 </div>
                                                 <div class="contact-detail-contain">
-                                                    <p>contact@gmail.com</p>
+                                                    <p>famviet@sonlam1204.com</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -112,7 +112,7 @@
                                     <div class="mb-md-4 mb-3 custom-form">
                                         <label for="firstName" class="form-label">Họ</label>
                                         <div class="custom-input">
-                                            <input type="text" class="form-control" id="firstName" name="FirstName" placeholder="Nhập họ">
+                                            <input type="text" id="lastName" name="LastName" placeholder="Nhập họ" class="form-control">
                                             <i class="fa-solid fa-user"></i>
                                         </div>
                                     </div>
@@ -122,7 +122,7 @@
                                     <div class="mb-md-4 mb-3 custom-form">
                                         <label for="lastName" class="form-label">Tên</label>
                                         <div class="custom-input">
-                                            <input type="text" class="form-control" id="lastName" name="LastName" placeholder="Nhập tên">
+                                            <input type="text" id="firstName" name="FirstName" placeholder="Nhập tên" class="form-control">
                                             <i class="fa-solid fa-user"></i>
                                         </div>
                                     </div>
@@ -132,7 +132,7 @@
                                     <div class="mb-md-4 mb-3 custom-form">
                                         <label for="email" class="form-label">Email</label>
                                         <div class="custom-input">
-                                            <input type="email" class="form-control" id="email" name="Email" placeholder="Nhập địa chỉ email">
+                                            <input type="email" id="email" name="Email" placeholder="Nhập địa chỉ email" class="form-control">
                                             <i class="fa-solid fa-envelope"></i>
                                         </div>
                                     </div>
@@ -142,7 +142,7 @@
                                     <div class="mb-md-4 mb-3 custom-form">
                                         <label for="phone" class="form-label">Số điện thoại</label>
                                         <div class="custom-input">
-                                            <input type="tel" class="form-control" id="phone" name="PhoneNumber" placeholder="Nhập số điện thoại" maxlength="10">
+                                            <input type="tel" id="phone" name="PhoneNumber" placeholder="Nhập số điện thoại" class="form-control" maxlength="10">
                                             <i class="fa-solid fa-mobile-screen-button"></i>
                                         </div>
                                     </div>
@@ -152,7 +152,7 @@
                                     <div class="mb-md-4 mb-3 custom-form">
                                         <label for="message" class="form-label">Lời nhắn</label>
                                         <div class="custom-textarea">
-                                            <textarea class="form-control" id="message" name="Message" placeholder="Nhập lời nhắn của bạn" rows="6"></textarea>
+                                            <textarea class="form-control" id="message" name="Message" placeholder="Nhập lời nhắn của bạn" rows="6" required></textarea>
                                             <i class="fa-solid fa-message"></i>
                                         </div>
                                     </div>
@@ -175,7 +175,64 @@
             </div>
         </div>
     </section>
+    @section Scripts {
+    @Html.Raw(@"<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const email = document.getElementById('email');
+            const phone = document.getElementById('phone');
+
+            function isValidName(val) {
+                return /^[a-zA-ZÀ-ỹ\s]+$/u.test(val.trim());
+            }
+
+            function isValidEmail(val) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+            }
+
+            function isValidPhone(val) {
+                return /^0\d{9}$/.test(val.trim());
+            }
+
+            function showError(input, message) {
+                let errorDiv = input.parentElement.querySelector('.error-msg');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-msg';
+                    errorDiv.style.color = 'red';
+                    errorDiv.style.fontSize = '0.9em';
+                    input.parentElement.appendChild(errorDiv);
+                }
+                errorDiv.textContent = message;
+                input.classList.add('is-invalid');
+            }
+
+            function clearError(input) {
+                const errorDiv = input.parentElement.querySelector('.error-msg');
+                if (errorDiv) errorDiv.remove();
+                input.classList.remove('is-invalid');
+            }
+
+            function validateInput(input, isValidFunc, message) {
+                input.addEventListener('blur', function () {
+                    if (!isValidFunc(input.value)) {
+                        showError(input, message);
+                    } else {
+                        clearError(input);
+                    }
+                });
+            }
+
+            validateInput(firstName, isValidName, 'Tên chỉ được chứa chữ cái và khoảng trắng.');
+            validateInput(lastName, isValidName, 'Họ chỉ được chứa chữ cái và khoảng trắng.');
+            validateInput(email, isValidEmail, 'Email không hợp lệ.');
+            validateInput(phone, isValidPhone, 'Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0.');
+        });
+    </script>")
+    }
     <!-- Contact Box Section End -->
+
     <!-- Map Section Start -->
     <section class="map-section mt-4">
         <div class="container-fluid p-0">

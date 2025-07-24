@@ -1,23 +1,23 @@
-﻿@model List<Village_Manager.Models.ContactMessages>
+@model List<Village_Manager.Models.ContactMessages>
 @{
-    ViewData["Title"] = "Support";
+    ViewData["Title"] = "Hỗ trợ";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt - Hệ thống hỗ trợ khách hàng hiện đại, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="hỗ trợ khách hàng, FamViệt admin, quản lý yêu cầu, giao diện quản trị">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Support Ticket</title>
+    <title>FamViệt - Hỗ trợ khách hàng</title>
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -50,6 +50,39 @@
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+            .pagination .page-item {
+                margin: 0 3px;
+            }
+
+            .pagination .page-link {
+                border-radius: 6px;
+                color: #007bff;
+                border: 1px solid #dee2e6;
+                padding: 6px 12px;
+                transition: 0.3s;
+            }
+
+                .pagination .page-link:hover {
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                }
+
+            .pagination .active .page-link {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+    </style>
+
 </head>
 
 <body>
@@ -66,7 +99,7 @@
                                 <!-- Table Start -->
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>Support</h5>
+                                        <h5>Hỗ trợ khách hàng</h5>
                                     </div>
                                     <div class="mb-3">
                                         <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên, email hoặc số điện thoại...">
@@ -76,12 +109,12 @@
                                             <table class="table ticket-table all-package theme-table" id="ticketTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
+                                                        <th>Mã số</th>
                                                         <th>Họ tên</th>
                                                         <th>Email</th>
-                                                        <th>SĐT</th>
+                                                        <th>Số điện thoại</th>
                                                         <th>Ngày tạo</th>
-                                                        <th>Hành động</th>
+                                                        <th>Thao tác</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -101,14 +134,14 @@
                                                                             data-id="@ticket.Id"
                                                                             data-name="@ticket.FirstName @ticket.LastName"
                                                                             data-message="@ticket.Message">
-                                                                        Xem
+                                                                        Xem chi tiết
                                                                     </button>
                                                                     <button class="btn btn-sm btn-success flex-fill btn-reply"
                                                                             data-bs-toggle="modal"
                                                                             data-bs-target="#replyModal"
                                                                             data-id="@ticket.Id"
                                                                             data-email="@ticket.Email">
-                                                                        Phản hồi
+                                                                        Trả lời
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -116,6 +149,95 @@
                                                     }
                                                 </tbody>
                                             </table>
+
+                                            <nav aria-label="Page navigation">
+                                                <div id="pagination"></div>
+                                            </nav>
+                                            @* phân trang *@
+                                            <script>
+                                                const rowsPerPage = 10;
+                                                const table = document.getElementById("ticketTable");
+                                                const tbody = table.querySelector("tbody");
+                                                const rows = Array.from(tbody.querySelectorAll("tr"));
+                                                const pagination = document.getElementById("pagination");
+
+                                                function showPage(page) {
+                                                    const start = (page - 1) * rowsPerPage;
+                                                    const end = start + rowsPerPage;
+
+                                                    rows.forEach((row, index) => {
+                                                        row.style.display = index >= start && index < end ? "" : "none";
+                                                    });
+
+                                                    highlightActivePage(page);
+                                                }
+
+                                                function highlightActivePage(currentPage) {
+                                                    const items = pagination.querySelectorAll("li");
+                                                    items.forEach(li => li.classList.remove("active"));
+
+                                                    if (currentPage >= 1 && currentPage <= items.length - 2) {
+                                                        items[currentPage].classList.add("active");
+                                                    }
+                                                }
+
+                                                function setupPagination() {
+                                                    const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage)); // 👈 đảm bảo luôn có ít nhất 1 trang
+                                                    pagination.innerHTML = "";
+
+                                                    const ul = document.createElement("ul");
+                                                    ul.classList.add("pagination", "justify-content-center");
+
+                                                    // Previous
+                                                    const prev = document.createElement("li");
+                                                    prev.classList.add("page-item");
+                                                    prev.innerHTML = `<a class="page-link" href="#">&lt;</a>`;
+                                                    prev.addEventListener("click", (e) => {
+                                                        e.preventDefault();
+                                                        const current = ul.querySelector("li.active");
+                                                        const index = [...ul.children].indexOf(current);
+                                                        if (index > 1) showPage(index - 1);
+                                                    });
+                                                    ul.appendChild(prev);
+
+                                                    // Pages
+                                                    for (let i = 1; i <= totalPages; i++) { // 👈 chỉ cần duyệt đến totalPages
+                                                        const li = document.createElement("li");
+                                                        li.classList.add("page-item");
+                                                        const a = document.createElement("a");
+                                                        a.classList.add("page-link");
+                                                        a.href = "#";
+                                                        a.innerText = i;
+                                                        a.addEventListener("click", (e) => {
+                                                            e.preventDefault();
+                                                            showPage(i);
+                                                        });
+                                                        li.appendChild(a);
+                                                        ul.appendChild(li);
+                                                    }
+
+                                                    // Next
+                                                    const next = document.createElement("li");
+                                                    next.classList.add("page-item");
+                                                    next.innerHTML = `<a class="page-link" href="#">&gt;</a>`;
+                                                    next.addEventListener("click", (e) => {
+                                                        e.preventDefault();
+                                                        const current = ul.querySelector("li.active");
+                                                        const index = [...ul.children].indexOf(current);
+                                                        const total = ul.children.length - 2;
+                                                        if (index < total) showPage(index + 1);
+                                                    });
+                                                    ul.appendChild(next);
+
+                                                    pagination.appendChild(ul);
+                                                }
+
+                                                document.addEventListener("DOMContentLoaded", () => {
+                                                    setupPagination();
+                                                    showPage(1);
+                                                });
+
+                                            </script>
 
                                         </div>
                                     </div>
@@ -202,7 +324,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Gửi phản hồi</button>
+                        <button type="submit" class="btn btn-success">Gửi trả lời</button>
                     </div>
                 </div>
             </form>

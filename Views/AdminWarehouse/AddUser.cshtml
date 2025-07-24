@@ -1,6 +1,6 @@
-﻿@model Village_Manager.Models.User
+@model Village_Manager.Models.User
 @{
-    ViewData["Title"] = "Add New User";
+    ViewData["Title"] = "Thêm người dùng mới";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 
@@ -13,12 +13,12 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="title-header option-title">
-                                    <h5>Add New User</h5>
+                                    <h5>Thêm người dùng mới</h5>
                                 </div>
                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button">
-                                            Account
+                                            Tài khoản
                                         </button>
                                     </li>
                                    
@@ -31,12 +31,12 @@
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">
-                                                <h5>User Information</h5>
+                                                <h5>Thông tin người dùng</h5>
                                             </div>
 
                                             <div class="row">
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Username</label>
+                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Tên đăng nhập</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Username" class="form-control" type="text" required>
                                                         <span asp-validation-for="Username" class="text-danger"></span>
@@ -44,7 +44,7 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email Address</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Địa chỉ Email</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Email" class="form-control" type="email" required>
                                                         <span asp-validation-for="Email" class="text-danger"></span>
@@ -52,7 +52,7 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Phone Number </label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Số điện thoại </label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Phone" class="form-control" type="phone" required>
                                                         <span asp-validation-for="Phone" class="text-danger"></span>
@@ -60,7 +60,7 @@
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Password</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Mật khẩu</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input asp-for="Password" class="form-control" type="password" required>
                                                         <span asp-validation-for="Password" class="text-danger"></span>
@@ -68,17 +68,17 @@
                                                 </div>
 
                                                 <div class="row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Confirm Password</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Xác nhận mật khẩu</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input name="confirmPassword" class="form-control" type="password" required>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Role</label>
+                                                    <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <select asp-for="RoleId" class="form-control" required>
-                                                            <option value="">-- Select Role --</option>
+                                                            <option value="">-- Chọn vai trò --</option>
                                                             @foreach (var role in ViewBag.Roles)
                                                             {
                                                                 <option value="@role.Id">@role.Name</option>
@@ -90,7 +90,7 @@
                                             </div>
 
                                             <div class="card-submit-button">
-                                                <button class="btn btn-animation ms-auto" type="submit">Submit</button>
+                                                <button class="btn btn-animation ms-auto" type="submit">Thêm</button>
                                             </div>
                                         </form>
                                     </div>
@@ -116,13 +116,13 @@
                 
                 if (password !== confirmPassword) {
                     e.preventDefault();
-                    alert("Passwords do not match!");
+                    alert("Mật khẩu không khớp!");
                     return false;
                 }
                 
                 if (password.length < 6) {
                     e.preventDefault();
-                    alert("Password must be at least 6 characters long!");
+                    alert("Mật khẩu phải có ít nhất 6 ký tự!");
                     return false;
                 }
             });

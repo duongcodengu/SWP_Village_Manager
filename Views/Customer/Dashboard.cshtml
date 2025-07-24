@@ -1,24 +1,20 @@
-
 @{
     ViewData["Title"] = "My Profile";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var orderHistory = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
-    var culture = new System.Globalization.CultureInfo("vi-VN");
-    var orders = ViewBag.OrderHistory as List<Village_Manager.Models.RetailOrder>;
+    var location = ViewBag.Location as List<Village_Manager.Models.UserLocation>;
 }
-
-@model List<Village_Manager.Models.UserLocation>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -76,44 +72,36 @@
                                 <button class="nav-link active" id="pills-dashboard-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-dashboard" type="button">
                                     <i data-feather="home"></i>
-                                    DashBoard
+                                    Trang chủ
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-order-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-order" type="button">
-                                    <i data-feather="shopping-bag"></i>Order
+                                    <i data-feather="shopping-bag"></i>Đơn hàng
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-profile" type="button" role="tab">
                                     <i data-feather="user"></i>
-                                    Profile
+                                    Tài khoản
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-address-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-address" type="button" role="tab">
-                                    <i data-feather="map-pin"></i>Address
-                                </button>
-                            </li>
-                            
                         </ul>
                     </div>
                 </div>
 
                 <div class="col-xxl-9 col-lg-8">
                     <button class="btn left-dashboard-show btn-animation btn-md fw-bold d-block mb-4 d-lg-none">
-                        Show
                         Menu
                     </button>
                     <div class="dashboard-right-sidebar">
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel">
+                            <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel" aria-labelledby="pills-dashboard-tab">
                                 <div class="dashboard-home">
                                     <div class="title">
-                                        <h2>My Dashboard</h2>
+                                        <h2>Trang chủ</h2>
                                         <span class="title-leaf">
                                             <svg class="icon-width bg-gray">
                                                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
@@ -161,7 +149,7 @@
                                     </div>
 
                                     <div class="dashboard-title">
-                                        <h3>Account Information</h3>
+                                        <h3>Thông tin tài khoản</h3>
                                     </div>
 
                                     <div class="row g-4">
@@ -169,7 +157,7 @@
                                             <div class="dashboard-content-title">
                                                 <h4>
                                                     Thông tin khách hàng <a href="javascript:void(0)"
-                                                                           data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
+                                                                            data-bs-toggle="modal" data-bs-target="#editProfile">Edit</a>
                                                 </h4>
                                             </div>
                                             <div class="dashboard-detail">
@@ -183,7 +171,7 @@
                             </div>
 
                             <div class="tab-pane fade" id="pills-order" role="tabpanel" aria-labelledby="pills-order-tab">
-                                <div id="orderHistoryContainer" class="dashboard-order">
+                                <div class="dashboard-order">
                                     <div class="title">
                                         <h2>Lịch sử Đơn hàng</h2>
                                         <span class="title-leaf title-leaf-gray">
@@ -205,58 +193,50 @@
                                         {
                                             @foreach (var order in orderHistory)
                                             {
+                                                var total = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
                                                 <div class="order-card">
-                                                    <div class="header-right text-end">
-                                                        <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
-                                                        <h5 class="order-total">
-                                                            @(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))
-                                                        </h5>
-
-                                                        @if (order.Status == "pending")
-                                                        {
-                                                            <a asp-action="CancelOrder" asp-controller="Customer"
-                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-danger mt-1">Huỷ hàng</a>
-                                                        }
-                                                        else if (order.Status == "delivered")
-                                                        {
-                                                            <a asp-action="ReturnOrder" asp-controller="Customer"
-                                                               asp-route-orderId="@order.Id" asp-route-type="retail"
-                                                               class="btn btn-sm btn-outline-warning mt-1">Hoàn hàng</a>
-                                                        }
+                                                    <div class="order-card-header">
+                                                        <div class="header-left">
+                                                            <h5>Đơn hàng #@order.Id</h5>
+                                                            <p>Ngày đặt: @(order.OrderDate?.ToString("dd/MM/yyyy"))</p>
+                                                        </div>
+                                                        <div class="header-right">
+                                                            <span class="status-badge status-@order.Status?.ToLower()">@order.Status</span>
+                                                            <h5 class="order-total">@(order.RetailOrderItems.Sum(i => i.Quantity * i.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h5>
+                                                        </div>
                                                     </div>
 
                                                     <div class="order-card-body">
-                                                        @foreach (var item in order.RetailOrderItems)
-                                                        {
-                                                            <div class="product-item">
-                                                                <div class="product-image">
-                                                                    @{
-                                                                        var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
-                                                                    }
-                                                                    <img src="@imageUrl" alt="@item.Product?.Name">
-                                                                </div>
-                                                                <div class="product-info">
-                                                                    <a asp-action="ProductDetail" asp-controller="Product" asp-route-id="@item.ProductId">
-                                                                        <h6>@item.Product?.Name</h6>
-                                                                    </a>
-                                                                    <p>Đơn giá: @(item.UnitPrice?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</p>
-                                                                </div>
-                                                                <div class="product-quantity">
-                                                                    <span>x @item.Quantity</span>
-                                                                </div>
-                                                                <div class="product-total">
-                                                                    <h6>@((item.Quantity * item.UnitPrice)?.ToString("C0", new System.Globalization.CultureInfo("vi-VN")))</h6>
-                                                                </div>
-                                                            </div>
-                                                        }
+                                                        <div class="d-flex gap-2">
+                                                            <a asp-action="OrderDetail" asp-controller="Customer" asp-route-id="@order.Id"
+                                                               class="btn btn-primary"
+                                                               onclick="loadOrderDetail(@order.Id); return false;">
+                                                                Xem chi tiết
+                                                            </a>
+
+                                                            @if (order.Status == "pending")
+                                                            {
+                                                                <a asp-action="CancelOrder" asp-controller="Customer"
+                                                                   asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                                   class="btn btn-sm btn-outline-danger">
+                                                                    Huỷ hàng
+                                                                </a>
+                                                            }
+                                                            else if (order.Status == "delivered")
+                                                            {
+                                                                <a asp-action="ReturnOrder" asp-controller="Customer"
+                                                                   asp-route-orderId="@order.Id" asp-route-type="retail"
+                                                                   class="btn btn-sm btn-outline-warning">
+                                                                    Hoàn hàng
+                                                                </a>
+                                                            }
+                                                        </div>
                                                     </div>
                                                 </div>
                                             }
                                         }
                                     </div>
                                 </div>
-                                <div id="orderDetailContainer" style="display:none;"></div>
                             </div>
                             <style>
                                 .order-history-container {
@@ -274,10 +254,10 @@
                                     transition: all 0.3s ease;
                                 }
 
-                                .order-card:hover {
-                                    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-                                    transform: translateY(-2px);
-                                }
+                                    .order-card:hover {
+                                        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+                                        transform: translateY(-2px);
+                                    }
 
                                 .order-card-header {
                                     display: flex;
@@ -288,24 +268,24 @@
                                     border-bottom: 1px solid #e0e0e0;
                                 }
 
-                                .order-card-header .header-left h5 {
-                                    margin: 0;
-                                    font-size: 1.1rem;
-                                    font-weight: 600;
-                                }
+                                    .order-card-header .header-left h5 {
+                                        margin: 0;
+                                        font-size: 1.1rem;
+                                        font-weight: 600;
+                                    }
 
-                                .order-card-header .header-left p {
-                                    margin: 0;
-                                    font-size: 0.85rem;
-                                    color: #6c757d;
-                                }
+                                    .order-card-header .header-left p {
+                                        margin: 0;
+                                        font-size: 0.85rem;
+                                        color: #6c757d;
+                                    }
 
-                                .order-card-header .header-right {
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 1.5rem;
-                                    text-align: right;
-                                }
+                                    .order-card-header .header-right {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 1.5rem;
+                                        text-align: right;
+                                    }
 
                                 .order-total {
                                     font-size: 1.2rem;
@@ -361,46 +341,46 @@
                                     border-bottom: 1px solid #f1f1f1;
                                 }
 
-                                .product-item:last-child {
-                                    border-bottom: none;
-                                    padding-bottom: 0;
-                                }
+                                    .product-item:last-child {
+                                        border-bottom: none;
+                                        padding-bottom: 0;
+                                    }
 
-                                .product-item .product-image img {
-                                    width: 60px;
-                                    height: 60px;
-                                    object-fit: cover;
-                                    border-radius: 6px;
-                                }
+                                    .product-item .product-image img {
+                                        width: 60px;
+                                        height: 60px;
+                                        object-fit: cover;
+                                        border-radius: 6px;
+                                    }
 
-                                .product-item .product-info {
-                                    flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
-                                }
+                                    .product-item .product-info {
+                                        flex-grow: 1; /* Cho phép phần info chiếm nhiều không gian nhất */
+                                    }
 
-                                .product-item .product-info h6 {
-                                    margin-bottom: 0.25rem;
-                                }
+                                        .product-item .product-info h6 {
+                                            margin-bottom: 0.25rem;
+                                        }
 
-                                .product-item .product-info a:hover h6 {
-                                    color: var(--theme-color);
-                                }
+                                        .product-item .product-info a:hover h6 {
+                                            color: var(--theme-color);
+                                        }
 
-                                .product-item .product-info p {
-                                    margin: 0;
-                                    font-size: 0.9rem;
-                                    color: #6c757d;
-                                }
+                                        .product-item .product-info p {
+                                            margin: 0;
+                                            font-size: 0.9rem;
+                                            color: #6c757d;
+                                        }
 
-                                .product-item .product-quantity {
-                                    color: #6c757d;
-                                }
+                                    .product-item .product-quantity {
+                                        color: #6c757d;
+                                    }
 
-                                .product-item .product-total h6 {
-                                    margin: 0;
-                                    font-weight: 600;
-                                    min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
-                                    text-align: right;
-                                }
+                                    .product-item .product-total h6 {
+                                        margin: 0;
+                                        font-weight: 600;
+                                        min-width: 80px; /* Đảm bảo các giá tiền thẳng hàng */
+                                        text-align: right;
+                                    }
 
                                 /* CSS cho trường hợp không có đơn hàng */
                                 .empty-order-history {
@@ -411,37 +391,21 @@
                                     background-color: #f8f9fa;
                                 }
 
-                                .empty-order-history i {
-                                    width: 60px;
-                                    height: 60px;
-                                    color: var(--theme-color);
-                                    margin-bottom: 1rem;
-                                }
+                                    .empty-order-history i {
+                                        width: 60px;
+                                        height: 60px;
+                                        color: var(--theme-color);
+                                        margin-bottom: 1rem;
+                                    }
 
-                                .empty-order-history h4 {
-                                    font-weight: 600;
-                                }
+                                    .empty-order-history h4 {
+                                        font-weight: 600;
+                                    }
 
-                                .empty-order-history p {
-                                    color: #6c757d;
-                                    margin-bottom: 1.5rem;
-                                }
-
-                                 .order-card-body .btn {
-                                     width: 25%;
-                                     font-size: 0.875rem; 
-                                     padding: 6px 14px; /* padding vừa đủ */
-                                     border-radius: 30px; /* bo tròn */
-                                     font-weight: 500;
-                                     background-color: #009879;
-                                     border: 1px solid #007a63;
-                                     transition: all 0.3s ease;
-                                 }
-
-                                 .order-card-body .btn:hover {
-                                      background-color: #009879;
-                                      border-color: #007a63;
-                                 }
+                                    .empty-order-history p {
+                                        color: #6c757d;
+                                        margin-bottom: 1.5rem;
+                                    }
                             </style>
                             <div class="tab-pane fade" id="pills-card" role="tabpanel">
                                 <div class="dashboard-card">
@@ -619,10 +583,10 @@
                                 </div>
                             </div>
 
-                            <div class="tab-pane fade" id="pills-profile" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                 <div class="dashboard-profile">
                                     <div class="title">
-                                        <h2>My Profile</h2>
+                                        <h2>Thông tin cá nhân</h2>
                                         <span class="title-leaf">
                                             <svg class="icon-width bg-gray">
                                                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
@@ -644,21 +608,13 @@
                                                 </li>
                                             </ul>
                                         </div>
-
-                                        <div class="profile-description">
-                                            <p>
-                                                Residences can be classified by and how they are connected to
-                                                neighbouring residences and land. Different types of housing tenure can
-                                                be used for the same physical type.
-                                            </p>
-                                        </div>
                                     </div>
 
                                     <div class="profile-about dashboard-bg-box">
                                         <div class="row">
                                             <div class="col-xxl-7">
                                                 <div class="dashboard-title mb-3">
-                                                    <h3>Profile About</h3>
+                                                    <h3>Thông tin cá nhân</h3>
                                                 </div>
 
                                                 <div class="table-responsive">
@@ -681,7 +637,7 @@
                                                 </div>
 
                                                 <div class="dashboard-title mb-3">
-                                                    <h3>Login Details</h3>
+                                                    <h3>Thông tin đăng nhập</h3>
                                                 </div>
 
                                                 <div class="table-responsive">
@@ -726,122 +682,156 @@
         </div>
     </section>
     <!-- User Dashboard Section End -->
-
     <!-- Edit Profile Start -->
     <div class="modal fade theme-modal" id="editProfile" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Edit Profile</h5>
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
+                    <h5 class="modal-title" id="exampleModalLabel2">Sửa thông tin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input type="email" class="form-control" id="email1" value="@ViewBag.Email" onchange="checkEmailChanged()">
+                                    <label for="email1">Email</label>
                                 </div>
-                            </li>
+                            </form>
+                        </div>
 
-                            <li class="list-2">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
+                        <div class="col-xxl-6">
+                            <form>
+                                <div class="form-floating theme-form-floating">
+                                    <input class="form-control" type="tel" value="@ViewBag.Phone" name="mobile" id="mobile"
+                                           maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value =
+                                            this.value.slice(0, this.maxLength);">
+                                    <label for="mobile">Số điện thoại</label>
                                 </div>
-                            </li>
+                            </form>
+                        </div>
+                        <div class="col-xxl-12">
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="provinceSelect" onchange="onProvinceChange()">
+                                    <option value="">Chọn tỉnh</option>
+                                </select>
+                                <label for="provinceSelect">Tỉnh/Thành phố</label>
+                            </div>
 
-                            <li class="list-3">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="districtSelect" onchange="onDistrictChange()">
+                                    <option value="">Chọn quận/huyện</option>
+                                </select>
+                                <label for="districtSelect">Quận/Huyện</label>
+                            </div>
+                            <div class="form-floating theme-form-floating mb-3">
+                                <select class="form-select" id="wardSelect">
+                                    <option value="">Chọn phường/xã</option>
+                                </select>
+                                <label for="wardSelect">Phường/Xã</label>
+                            </div>
+                            <div class="form-floating theme-form-floating">
+                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, đường...">
+                                <label for="detailAddress">Địa chỉ chi tiết</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-animation btn-md fw-bold"
+                                data-bs-dismiss="modal">
+                            Đóng
+                        </button>
+                        <button type="button" class="btn theme-bg-color btn-md fw-bold text-light" onclick="handleSave()">
+                            Lưu
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Deal Box Modal End -->
-    <!-- Tap to top and theme setting button start -->
-    <div class="theme-option">
-        <div class="setting-box">
-            <button class="btn setting-button">
-                <i class="fa-solid fa-gear"></i>
-            </button>
+    <!-- Edit Profile End -->
+    @* api lay địa chỉ *@
+    <script>
+        async function onProvinceChange() {
+            const provinceCode = document.getElementById("provinceSelect").value;
+            const districtSelect = document.getElementById("districtSelect");
+            const wardSelect = document.getElementById("wardSelect");
 
-            <div class="theme-setting-2">
-                <div class="theme-box">
-                    <ul>
-                        <li>
-                            <div class="setting-name">
-                                <h4>Color</h4>
-                            </div>
-                            <div class="theme-setting-button color-picker">
-                                <form class="form-control">
-                                    <label for="colorPick" class="form-label mb-0">Theme Color</label>
-                                    <input type="color" class="form-control form-control-color" id="colorPick"
-                                           value="#0da487" title="Choose your color">
-                                </form>
-                            </div>
-                        </li>
+            // Reset district và ward
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
 
-                        <li>
-                            <div class="setting-name">
-                                <h4>Dark</h4>
-                            </div>
-                            <div class="theme-setting-button">
-                                <button class="btn btn-2 outline" id="darkButton">Dark</button>
-                                <button class="btn btn-2 unline" id="lightButton">Light</button>
-                            </div>
-                        </li>
+            if (!provinceCode) return;
 
-                        <li>
-                            <div class="setting-name">
-                                <h4>RTL</h4>
-                            </div>
-                            <div class="theme-setting-button rtl">
-                                <button class="btn btn-2 rtl-unline">LTR</button>
-                                <button class="btn btn-2 rtl-outline">RTL</button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+            const res = await fetch("https://provinces.open-api.vn/api/p/" + provinceCode + "?depth=2");
+            const data = await res.json();
 
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top and theme setting button end -->
+            data.districts.forEach(d => {
+                const option = document.createElement("option");
+                option.text = d.name;
+                option.value = d.code;
+                districtSelect.appendChild(option);
+            });
+        }
+
+        async function onDistrictChange() {
+            const districtCode = document.getElementById("districtSelect").value;
+            const wardSelect = document.getElementById("wardSelect");
+
+            // Reset ward
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+            if (!districtCode) return;
+
+            const res = await fetch("https://provinces.open-api.vn/api/d/" + districtCode + "?depth=2");
+            const data = await res.json();
+
+            data.wards.forEach(w => {
+                const option = document.createElement("option");
+                option.text = w.name;
+                option.value = w.code;
+                wardSelect.appendChild(option);
+            });
+        }
+    </script>
+
+    <script>
+        const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
+        const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
+        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
+
+        async function handleSave() {
+            const email = document.getElementById("email1").value.trim();
+            const phone = document.getElementById("mobile").value.trim();
+            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
+            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
+            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
+            const detail = document.getElementById("detailAddress").value.trim();
+            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
+
+            // Kiểm tra có thay đổi gì không
+            const hasChanged =
+                email !== originalEmail ||
+                phone !== originalPhone ||
+                fullAddress !== originalAddress;
+
+            if (!hasChanged) {
+                alert("Bạn chưa thay đổi thông tin nào.");
+                return;
+            }
+
+            // Chuyển đến OTP để xác minh
+            const url = new URL('/otp', window.location.origin);
+            url.searchParams.set('email', email);
+            url.searchParams.set('phone', phone);
+            url.searchParams.set('address', fullAddress);
+            window.location.href = url.toString();
+        }
+    </script>
+
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->
@@ -851,45 +841,29 @@
             <div class="modal-content">
                 <form id="edit-address-form">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Address</h5>
+                        <h5 class="modal-title">Sửa địa chỉ</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id="edit-id">
                         <div class="mb-3">
-                            <label>Name</label>
+                            <label>Tên</label>
                             <input type="text" class="form-control" id="edit-label">
                         </div>
                         <div class="mb-3">
-                            <label>Address</label>
+                            <label>Địa chỉ</label>
                             <textarea class="form-control" id="edit-address-text" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save changes</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <!-- Edit address modal box end -->
-<script>
-    function loadOrderDetail(orderId) {
-        fetch(`/customer/order-detail/${orderId}`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('orderDetailContainer').innerHTML = html;
-                document.getElementById('orderHistoryContainer').style.display = 'none';
-                document.getElementById('orderDetailContainer').style.display = 'block';
-            });
-    }
-
-    function backToOrderHistory() {
-        document.getElementById('orderDetailContainer').style.display = 'none';
-        document.getElementById('orderHistoryContainer').style.display = 'block';
-    }
-</script>
     <script>
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -937,7 +911,6 @@
         });
     </script>
 
-    </script>
     <!-- Add address modal box start -->
     @{
         var userId = Context.Session.GetInt32("UserId") ?? 0;
@@ -946,8 +919,8 @@
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add a new address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Thêm địa chỉ mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
                     <form id="address-form">
@@ -956,13 +929,13 @@
                         <input type="hidden" id="longitude" />
 
                         <div class="form-floating mb-4 theme-form-floating">
-                            <input type="text" class="form-control" id="fname" placeholder="Enter Name">
-                            <label for="fname">Name</label>
+                            <input type="text" class="form-control" id="fname" placeholder="Nhập họ tên">
+                            <label for="fname">Họ tên</label>
                         </div>
 
                         <div class="form-floating mb-4 theme-form-floating">
-                            <textarea class="form-control" placeholder="Enter Address" id="address" style="height: 100px"></textarea>
-                            <label for="address">Enter Address</label>
+                            <textarea class="form-control" placeholder="Nhập địa chỉ" id="address" style="height: 100px"></textarea>
+                            <label for="address">Địa chỉ</label>
                         </div>
 
                         <div class="modal-footer">
@@ -976,7 +949,6 @@
     </div>
 
     <!-- Add address modal box end -->
-
     @* api lay địa chỉ *@
     <script>
         document.addEventListener("DOMContentLoaded", async function () {
@@ -991,6 +963,7 @@
             const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
             const data = await res.json();
 
+            // Đổ danh sách tỉnh
             data.forEach(p => {
                 const option = document.createElement("option");
                 option.text = p.name;
@@ -999,8 +972,10 @@
                 provinceSelect.appendChild(option);
             });
 
+            // Tìm tỉnh đã chọn
             const province = data.find(p => p.name === selectedProvince);
             if (province) {
+                // Đổ danh sách huyện thuộc tỉnh
                 province.districts.forEach(d => {
                     const option = document.createElement("option");
                     option.text = d.name;
@@ -1009,8 +984,10 @@
                     districtSelect.appendChild(option);
                 });
 
+                // Tìm huyện đã chọn
                 const district = province.districts.find(d => d.name === selectedDistrict);
                 if (district) {
+                    // Đổ danh sách xã thuộc huyện
                     district.wards.forEach(w => {
                         const option = document.createElement("option");
                         option.text = w.name;
@@ -1019,35 +996,10 @@
                         wardSelect.appendChild(option);
                     });
                 }
-                        <div class="col-xxl-4">
-                            <form>
-                                <div class="form-floating theme-form-floating">
-                                    <select class="form-select" id="floatingSelect12">
-                                        <option selected>Card Type</option>
-                                        <option value="kingdom">Visa Card</option>
-                                        <option value="states">MasterCard Card</option>
-                                        <option value="fra">RuPay Card</option>
-                                        <option value="china">Contactless Card</option>
-                                        <option value="spain">Maestro Card</option>
-                                    </select>
-                                    <label for="floatingSelect12">Card Type</label>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold"
-                            data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="button" class="btn theme-bg-color btn-md fw-bold text-light">Update Card</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Card End -->
+            }
+        });
     </script>
+
     <!-- Remove Address Modal Start -->
     <div class="modal fade" id="remove-address" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -1169,17 +1121,28 @@
     <script src="~/js/theme-setting.js"></script>
     <script>
         const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
-        // 🔍 Hàm lấy tọa độ từ địa chỉ (dùng Nominatim - OpenStreetMap)
-        async function getCoordinatesFromAddress(address) {
+            async function getCoordinatesFromAddress(address) {
             const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
 
+                    const firstResult = data[0];
+
+        if (
+            !firstResult ||
+            !firstResult.display_name ||
+            !firstResult.display_name.toLowerCase().includes("việt nam") ||
+            firstResult.lat === undefined ||
+            firstResult.lon === undefined
+        ) {
+            throw new Error("Địa chỉ không đủ rõ ràng. Vui lòng nhập địa chỉ cụ thể hơn.");
+        }
+
             return {
-                latitude: parseFloat(data[0].lat),
-                longitude: parseFloat(data[0].lon)
+                latitude: parseFloat(firstResult.lat),
+                longitude: parseFloat(firstResult.lon)
             };
         }
 
@@ -1240,8 +1203,18 @@
         });
     </script>
 
-
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('tab') === 'order') {
+                // Kích hoạt tab Đơn hàng
+                let orderTabBtn = document.getElementById('pills-order-tab');
+                if (orderTabBtn) {
+                    orderTabBtn.click();
+                }
+            }
+        });
+    </script>
 
 </body>
 

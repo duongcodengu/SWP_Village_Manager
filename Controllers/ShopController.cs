@@ -40,7 +40,7 @@ public class ShopController : Controller
 
         // Base query
         var query = _context.Products
-            .Include(p => p.Category)          // liên kết với ProductCategory
+            .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .AsQueryable();
 
@@ -92,10 +92,10 @@ public class ShopController : Controller
     [HttpPost]
     public IActionResult AddToCart(int productId, int quantity)
     {
-        // B1: lấy giỏ hàng từ session hoặc tạo mới
+        //lấy giỏ hàng từ session hoặc tạo mới
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
 
-        // B2: kiểm tra sản phẩm đã có trong giỏ chưa
+        //kiểm tra sản phẩm đã có trong giỏ chưa
         var item = cart.FirstOrDefault(ci => ci.ProductId == productId);
         if (item != null)
         {
@@ -110,7 +110,6 @@ public class ShopController : Controller
             });
         }
 
-        // B3: lưu lại danh sách đơn giản (không navigation)
         HttpContext.Session.Set("Cart", cart);
 
         return RedirectToAction("Search");
@@ -122,7 +121,7 @@ public class ShopController : Controller
     {
         var cartItems = CartHelper.GetCartWithProducts(HttpContext, _context);
         DefaultImage.Ensure(cartItems, _env);
-        return View(cartItems); // model là List<CartItem>
+        return View(cartItems);
     }
 
     [HttpGet("shop/removefromcart/{productId}")]
@@ -145,58 +144,91 @@ public class ShopController : Controller
 
     public IActionResult Checkout()
     {
+        // Lưu thông tin mã giảm giá từ session vào TempData (nếu cần thiết)
         TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode");
         TempData["DiscountAmount"] = HttpContext.Session.GetString("DiscountAmount");
-        // Lấy giỏ hàng từ Session
+
+        // Lấy giỏ hàng từ session
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         foreach (var item in cartItems)
         {
             item.Product = _context.Products
-            .Include(p => p.ProductImages)
-            .FirstOrDefault(p => p.Id == item.ProductId);
+                .Include(p => p.ProductImages)
+                .FirstOrDefault(p => p.Id == item.ProductId);
+
+            // Đảm bảo hình ảnh chính
             DefaultImage.EnsureSingle(item.Product, _env);
         }
-        // Lấy địa chỉ của user từ Session (giả sử đã lưu userId 1)
-        int userId = 1;
 
-        var addresses = _context.Addresses
-            .Where(a => a.UserId == userId)
-            .ToList();
-        ViewBag.Addresses = addresses;
+        // Lấy địa chỉ từ bảng Address (chỉ 1 bản ghi duy nhất)
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
 
+        // Lấy duy nhất 1 địa chỉ của user
+        var address = _context.Addresses
+            .FirstOrDefault(a => a.UserId == userId.Value);
+
+        ViewBag.Address = address;
+
+        // Gán mã giảm giá vào ViewBag
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
+        ViewBag.DiscountCode = HttpContext.Session.GetString("DiscountCode");
 
+        // Trả về view với danh sách sản phẩm trong giỏ hàng
         return View(cartItems);
     }
 
-    //public IActionResult PlaceOrder()
-    //{
-    //    // Xoá giỏ hàng:
-    //    HttpContext.Session.Remove("Cart");
-    //    // Điều hướng đến trang thành công
-    //    return RedirectToAction("Success");
-    //}
+
     [HttpGet]
     [Route("shop/success")]
     public IActionResult Success()
     {
-        // Hiển thị trang thành công
-        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        foreach (var item in cart)
+        // Lấy OrderId từ TempData
+        int orderId = TempData["OrderId"] != null ? (int)TempData["OrderId"] : 0;
+        if (orderId == 0)
         {
-            item.Product = _context.Products
-            .Include(p => p.ProductImages)
-            .FirstOrDefault(p => p.Id == item.ProductId);
-
-            DefaultImage.EnsureSingle(item.Product, _env);
+            return RedirectToAction("Search", "Shop");
         }
-        ViewBag.Address = _context.Addresses.FirstOrDefault(a => a.UserId == 1);
-        ViewBag.OrderId = TempData["OrderId"] ?? 0;
-        ViewBag.PaymentMethod = "Cash on Delivery";
 
+        // Lấy đơn hàng cùng chi tiết sản phẩm từ DB
+        var order = _context.RetailOrders
+            .Include(o => o.RetailOrderItems)
+                .ThenInclude(oi => oi.Product)
+                .ThenInclude(p => p.ProductImages)
+            .FirstOrDefault(o => o.Id == orderId);
+
+        if (order == null)
+        {
+            return RedirectToAction("Search", "Shop");
+        }
+
+        HttpContext.Session.Remove("Cart");
+
+        int userId = order.UserId.Value;
+        var address = _context.UserLocations
+            .Include(u => u.User)
+            .Where(a => a.UserId == userId)
+            .FirstOrDefault();
+
+        ViewBag.Address = address;
+        ViewBag.OrderId = order.Id;
+        ViewBag.PaymentMethod = "Tiền mặt";
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
 
-        return View(cart);
+        // Chuẩn bị model: danh sách CartItem tương ứng chi tiết đơn hàng
+        var cartItems = order.RetailOrderItems.Select(oi => new CartItem
+        {
+            ProductId = oi.ProductId,
+            Quantity = oi.Quantity,
+            Product = oi.Product
+        }).ToList();
+
+        DefaultImage.Ensure(cartItems, _env);
+
+        return View(cartItems);
     }
 
     //place order
@@ -294,7 +326,8 @@ public class ShopController : Controller
     {
         var result = await _context.RetailOrderItems
             .GroupBy(i => i.ProductId)
-            .Select(g => new {
+            .Select(g => new
+            {
                 ProductId = g.Key,
                 ProductName = g.First().Product.Name,
                 ImageUrl = g.First().Product.ProductImages.FirstOrDefault().ImageUrl,

@@ -1,19 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Famer";
+@{
+    ViewData["Title"] = "Quản lý nông dân";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin - Hệ thống quản lý nông dân hiện đại, linh hoạt, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="quản lý nông dân, FamViệt admin, dashboard, quản trị viên, hệ thống quản lý">
+    <meta name="author" content="FamViệt Team">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
     <!-- Google font-->
@@ -47,6 +47,38 @@
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+            .pagination .page-item {
+                margin: 0 3px;
+            }
+
+            .pagination .page-link {
+                border-radius: 6px;
+                color: #007bff;
+                border: 1px solid #dee2e6;
+                padding: 6px 12px;
+                transition: 0.3s;
+            }
+
+                .pagination .page-link:hover {
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                }
+
+            .pagination .active .page-link {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+    </style>
 </head>
 
 <body>
@@ -63,10 +95,10 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>All Famer</h5>
+                                        <h5>Danh sách nông dân</h5>
                                         <form class="d-inline-flex">
-                                            <a href="add-new-category.html" class="align-items-center btn btn-theme d-flex">
-                                                <i data-feather="plus-square"></i>Add New
+                                            <a href="/adduser" class="align-items-center btn btn-theme d-flex">
+                                                <i data-feather="plus-square"></i>Thêm mới
                                             </a>
                                         </form>
                                     </div>
@@ -75,14 +107,14 @@
                                         <table class="table all-package theme-table" id="table_id">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>Họ tên</th>
-                                                    <th>Điện thoại</th>
-                                                    <th>Địa chỉ</th>
-                                                    <th>Tài khoản</th>
-                                                    <th>Email</th>
-                                                    <th>Ngày tạo</th>
-                                                    <th>Tùy chọn</th>
+                                                    <th class="text-center" >ID</th>
+                                                    <th class="text-center" >Họ tên</th>
+                                                    <th class="text-center" >Điện thoại</th>
+                                                    <th class="text-center" >Địa chỉ</th>
+                                                    <th class="text-center" >Tài khoản</th>
+                                                    <th class="text-center" >Email</th>
+                                                    <th class="text-center" >Ngày tạo</th>
+                                                    <th class="text-center" >Tùy chọn</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -133,6 +165,95 @@
                                                 }
                                             </tbody>
                                         </table>
+                                        <nav aria-label="Page navigation">
+                                            <div id="pagination"></div>
+                                        </nav>
+                                        @* phân trang *@
+                                        <script>
+                                            const rowsPerPage = 5;
+                                            const table = document.getElementById("table_id");
+                                            const tbody = table.querySelector("tbody");
+                                            const rows = Array.from(tbody.querySelectorAll("tr"));
+                                            const pagination = document.getElementById("pagination");
+
+                                            function showPage(page) {
+                                                const start = (page - 1) * rowsPerPage;
+                                                const end = start + rowsPerPage;
+
+                                                rows.forEach((row, index) => {
+                                                    row.style.display = index >= start && index < end ? "" : "none";
+                                                });
+
+                                                highlightActivePage(page);
+                                            }
+
+                                            function highlightActivePage(currentPage) {
+                                                const items = pagination.querySelectorAll("li");
+                                                items.forEach(li => li.classList.remove("active"));
+
+                                                if (currentPage >= 1 && currentPage <= items.length - 2) {
+                                                    items[currentPage].classList.add("active");
+                                                }
+                                            }
+
+                                            function setupPagination() {
+                                                const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage)); // 👈 đảm bảo luôn có ít nhất 1 trang
+                                                pagination.innerHTML = "";
+
+                                                const ul = document.createElement("ul");
+                                                ul.classList.add("pagination", "justify-content-center");
+
+                                                // Previous
+                                                const prev = document.createElement("li");
+                                                prev.classList.add("page-item");
+                                                prev.innerHTML = `<a class="page-link" href="#">&lt;</a>`;
+                                                prev.addEventListener("click", (e) => {
+                                                    e.preventDefault();
+                                                    const current = ul.querySelector("li.active");
+                                                    const index = [...ul.children].indexOf(current);
+                                                    if (index > 1) showPage(index - 1);
+                                                });
+                                                ul.appendChild(prev);
+
+                                                // Pages
+                                                for (let i = 1; i <= totalPages; i++) { // 👈 chỉ cần duyệt đến totalPages
+                                                    const li = document.createElement("li");
+                                                    li.classList.add("page-item");
+                                                    const a = document.createElement("a");
+                                                    a.classList.add("page-link");
+                                                    a.href = "#";
+                                                    a.innerText = i;
+                                                    a.addEventListener("click", (e) => {
+                                                        e.preventDefault();
+                                                        showPage(i);
+                                                    });
+                                                    li.appendChild(a);
+                                                    ul.appendChild(li);
+                                                }
+
+                                                // Next
+                                                const next = document.createElement("li");
+                                                next.classList.add("page-item");
+                                                next.innerHTML = `<a class="page-link" href="#">&gt;</a>`;
+                                                next.addEventListener("click", (e) => {
+                                                    e.preventDefault();
+                                                    const current = ul.querySelector("li.active");
+                                                    const index = [...ul.children].indexOf(current);
+                                                    const total = ul.children.length - 2;
+                                                    if (index < total) showPage(index + 1);
+                                                });
+                                                ul.appendChild(next);
+
+                                                pagination.appendChild(ul);
+                                            }
+
+                                            document.addEventListener("DOMContentLoaded", () => {
+                                                setupPagination();
+                                                showPage(1);
+                                            });
+
+                                        </script>
+
                                         @* update  *@
                                         <script>
                                             document.addEventListener('DOMContentLoaded', function () {
@@ -141,9 +262,6 @@
                                                 editModal.addEventListener('show.bs.modal', function (event) {
                                                     const button = event.relatedTarget;
                                                     if (!button) return;
-
-                                                    // Ghi log để debug
-                                                    console.log('Button clicked:', button);
 
                                                     document.getElementById('editFarmerId').value = button.getAttribute('data-id') || '';
                                                     document.getElementById('editFarmerName').value = button.getAttribute('data-name') || '';
@@ -154,6 +272,7 @@
                                                 });
                                             });
                                         </script>
+
                                         @* delete *@
                                         <script>
                                             document.addEventListener('DOMContentLoaded', function () {
@@ -166,14 +285,12 @@
                                                     const userId = button.getAttribute('data-userid');
                                                     const username = button.getAttribute('data-username');
 
-                                                    console.log("userId:", userId);
-                                                    console.log("username:", username);
-
                                                     document.getElementById('changeRoleUserId').value = userId;
                                                     document.getElementById('modalUsername').textContent = username;
                                                 });
                                             });
                                         </script>
+
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +334,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -225,16 +342,15 @@
                 <div class="modal-body">
                     <div class="remove-box">
                         <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
+                            Quyền sử dụng cho nhóm/người dùng sẽ được kế thừa từ đối tượng gốc. Đối tượng này sẽ tạo quyền mới riêng biệt.
                         </p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-dismiss="modal">Không</button>
                     <button type="button" class="btn btn-animation btn-sm fw-bold" data-bs-target="#exampleModalToggle2"
                             data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
+                        Có
                     </button>
                 </div>
             </div>
@@ -245,7 +361,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Hoàn tất!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -258,11 +374,11 @@
                                 <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                             </svg>
                         </div>
-                        <h4 class="text-content">It's Removed.</h4>
+                        <h4 class="text-content">Đã xóa thành công.</h4>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
@@ -282,16 +398,24 @@
                         <input type="hidden" name="FarmerId" id="editFarmerId" />
                         <div class="mb-3">
                             <label for="editFarmerName" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" name="FarmerName" id="editFarmerName" />
+                            <input type="text" class="form-control" name="FarmerName" id="editFarmerName"
+                                   required minlength="2" maxlength="100"
+                                   pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                   title="Họ tên chỉ được chứa chữ cái và khoảng trắng" />
                         </div>
+                        
                         <div class="mb-3">
                             <label for="editFarmerPhone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" name="FarmerPhone" id="editFarmerPhone" />
+                            <input type="text" class="form-control" name="FarmerPhone" id="editFarmerPhone"
+                                   required pattern="^0[0-9]{9}$"
+                                   title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0" />
                         </div>
-                        <div class="mb-3">
-                            <label for="editFarmerAddress" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" name="FarmerAddress" id="editFarmerAddress" />
-                        </div>
+
+                        <input type="text" class="form-control" name="FarmerAddress" id="editFarmerAddress"
+                               required
+                               pattern="^.+,\s*(Xã|Phường)\s+.+,\s*(Huyện|Quận)\s+.+,\s*(Tỉnh|Thành phố)\s+.+$"
+                               title="Địa chỉ phải có dạng: Số nhà, Xã/Phường ..., Huyện/Quận ..., Tỉnh/Thành phố ..." />
+
                         <div class="mb-3">
                             <label for="editUsername" class="form-label">Tài khoản</label>
                             <input type="text" class="form-control" name="Username" id="editUsername" disabled />
@@ -300,6 +424,25 @@
                             <label for="editEmail" class="form-label">Email</label>
                             <input type="email" class="form-control" name="Email" id="editEmail" disabled />
                         </div>
+
+                        <script>
+                            document.getElementById("editFarmerName").addEventListener("input", function (e) {
+                                this.value = this.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                            });
+                            document.getElementById("editFarmerPhone").addEventListener("input", function () {
+                                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                            });
+                            document.querySelector("form").addEventListener("submit", function (e) {
+                                const address = document.getElementById("editFarmerAddress").value.trim();
+
+                                const regex = /^.+,\s*(Xã|Phường)\s+.+,\s*(Huyện|Quận)\s+.+,\s*(Tỉnh|Thành phố)\s+.+$/;
+
+                                if (!regex.test(address)) {
+                                    e.preventDefault();
+                                    alert("Địa chỉ phải theo định dạng: Số nhà, Xã/Phường ..., Huyện/Quận ..., Tỉnh/Thành phố ...");
+                                }
+                            });
+                        </script>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>

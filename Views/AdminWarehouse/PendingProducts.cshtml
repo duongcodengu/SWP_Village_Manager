@@ -1,10 +1,10 @@
 @model List<Village_Manager.Models.Product>
 @{
-    ViewData["Title"] = "Pending Products";
+    ViewData["Title"] = "Sản phẩm chờ duyệt";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <!-- meta data -->
@@ -12,13 +12,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin - Hệ thống quản lý sản phẩm chờ duyệt, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="quản lý sản phẩm, FamViệt admin, dashboard, quản trị viên, hệ thống quản lý">
+    <meta name="author" content="FamViệt Team">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Edit Attributes</title>
+    <title>FamViệt - Sản phẩm chờ duyệt</title>
 
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -86,7 +86,7 @@
                                             else
                                             {
                                                 <div class="table-responsive">
-                                                    <table class="table table-bordered table-striped">
+                                                    <table class="table table-bordered table-striped" id="table_id">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>#</th>
@@ -111,17 +111,17 @@
                                                                         }
                                                                         else
                                                                         {
-                                                                            <span>N/A</span>
+                                                                            <span>Không có</span>
                                                                         }
                                                                     </td>
-                                                                    <td>@product.Name</td>
-                                                                    <td>@(product.Farmer != null ? product.Farmer.FullName : "N/A")</td>
-                                                                    <td>@product.Category?.Name</td>
-                                                                    <td>@product.Price.ToString("N0")</td>
+                                                                    <td>@product.Name</td> <!-- Tên sản phẩm -->
+                                                                    <td>@(product.Farmer != null ? product.Farmer.FullName : "Không có")</td> <!-- Tên nông dân -->
+                                                                    <td>@product.Category?.Name</td> <!-- Danh mục -->
+                                                                    <td>@product.Price.ToString("N0")</td> <!-- Giá -->
                                                                     <td>
                                                                         <form method="post" asp-action="ApproveProduct" asp-controller="AdminWarehouse" class="d-inline">
                                                                             <input type="hidden" name="id" value="@product.Id" />
-                                                                            <button class="btn btn-success btn-sm" type="submit" name="action" value="accept">Chấp nhận</button>
+                                                                            <button class="btn btn-success btn-sm" type="submit" name="action" value="accept">Duyệt</button>
                                                                         </form>
                                                                         <form method="post" asp-action="ApproveProduct" asp-controller="AdminWarehouse" class="d-inline ms-2">
                                                                             <input type="hidden" name="id" value="@product.Id" />
@@ -132,6 +132,94 @@
                                                             }
                                                         </tbody>
                                                     </table>
+                                                    <nav aria-label="Page navigation">
+                                                        <div id="pagination"></div>
+                                                    </nav>
+                                                    @* phân trang *@
+                                                    <script>
+                                                        const rowsPerPage = 5;
+                                                        const table = document.getElementById("table_id");
+                                                        const tbody = table.querySelector("tbody");
+                                                        const rows = Array.from(tbody.querySelectorAll("tr"));
+                                                        const pagination = document.getElementById("pagination");
+
+                                                        function showPage(page) {
+                                                            const start = (page - 1) * rowsPerPage;
+                                                            const end = start + rowsPerPage;
+
+                                                            rows.forEach((row, index) => {
+                                                                row.style.display = index >= start && index < end ? "" : "none";
+                                                            });
+
+                                                            highlightActivePage(page);
+                                                        }
+
+                                                        function highlightActivePage(currentPage) {
+                                                            const items = pagination.querySelectorAll("li");
+                                                            items.forEach(li => li.classList.remove("active"));
+
+                                                            if (currentPage >= 1 && currentPage <= items.length - 2) {
+                                                                items[currentPage].classList.add("active");
+                                                            }
+                                                        }
+
+                                                        function setupPagination() {
+                                                            const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage)); // 👈 đảm bảo luôn có ít nhất 1 trang
+                                                            pagination.innerHTML = "";
+
+                                                            const ul = document.createElement("ul");
+                                                            ul.classList.add("pagination", "justify-content-center");
+
+                                                            // Previous
+                                                            const prev = document.createElement("li");
+                                                            prev.classList.add("page-item");
+                                                            prev.innerHTML = `<a class="page-link" href="#">&lt;</a>`;
+                                                            prev.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                if (index > 1) showPage(index - 1);
+                                                            });
+                                                            ul.appendChild(prev);
+
+                                                            // Pages
+                                                            for (let i = 1; i <= totalPages; i++) { // 👈 chỉ cần duyệt đến totalPages
+                                                                const li = document.createElement("li");
+                                                                li.classList.add("page-item");
+                                                                const a = document.createElement("a");
+                                                                a.classList.add("page-link");
+                                                                a.href = "#";
+                                                                a.innerText = i;
+                                                                a.addEventListener("click", (e) => {
+                                                                    e.preventDefault();
+                                                                    showPage(i);
+                                                                });
+                                                                li.appendChild(a);
+                                                                ul.appendChild(li);
+                                                            }
+
+                                                            // Next
+                                                            const next = document.createElement("li");
+                                                            next.classList.add("page-item");
+                                                            next.innerHTML = `<a class="page-link" href="#">&gt;</a>`;
+                                                            next.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                const total = ul.children.length - 2;
+                                                                if (index < total) showPage(index + 1);
+                                                            });
+                                                            ul.appendChild(next);
+
+                                                            pagination.appendChild(ul);
+                                                        }
+
+                                                        document.addEventListener("DOMContentLoaded", () => {
+                                                            setupPagination();
+                                                            showPage(1);
+                                                        });
+
+                                                    </script>
                                                 </div>
                                             }
                                         </div>
@@ -151,14 +239,14 @@
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="staticBackdropLabel">Đăng xuất</h5>
+                    <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                     <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">Không</button>
                         <button type="button" onclick="location.href = 'login.html';"
                                 class="btn  btn--yes btn-primary">
-                            Yes
+                            Có
                         </button>
                     </div>
                 </div>

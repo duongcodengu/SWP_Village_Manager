@@ -79,6 +79,10 @@ namespace Village_Manager.Controllers
                                     .OrderByDescending(o => o.OrderDate)
                                     .ToListAsync();
                 ViewBag.OrderHistory = orderHistory;
+                var location = await _context.UserLocations
+                                    .Where(ul => ul.UserId == userId)
+                                    .ToListAsync();
+                ViewBag.Location = location;
             }
             else
             {

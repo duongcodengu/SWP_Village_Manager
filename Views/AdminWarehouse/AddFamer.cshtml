@@ -1,11 +1,11 @@
-﻿@{
-    ViewData["Title"] = "Add Famer";
+@{
+    ViewData["Title"] = "Thêm nông dân";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 @model List<Village_Manager.Models.FarmerRegistrationRequest>
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <!-- meta data -->
@@ -13,13 +13,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="admin template, FamViệt admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Edit Attributes</title>
+    <title>FamViệt - Edit Attributes</title>
 
     <!-- Google font -->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -60,6 +60,37 @@
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+            .pagination .page-item {
+                margin: 0 3px;
+            }
+
+            .pagination .page-link {
+                border-radius: 6px;
+                color: #007bff;
+                border: 1px solid #dee2e6;
+                padding: 6px 12px;
+                transition: 0.3s;
+            }
+
+                .pagination .page-link:hover {
+                    background-color: #007bff;
+                    color: white;
+                    text-decoration: none;
+                }
+
+            .pagination .active .page-link {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+    </style>
 </head>
 
 <body>
@@ -78,7 +109,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="card-header-2 mb-3">
-                                                <h5>Yêu cầu đăng ký làm Shipper</h5>
+                                                <h5>Yêu cầu đăng ký làm Famer</h5>
                                             </div>
 
                                             @if (Model == null || !Model.Any())
@@ -88,14 +119,13 @@
                                             else
                                             {
                                                 <div class="table-responsive">
-                                                    <table class="table table-bordered table-striped">
+                                                    <table id="myTable" class="table table-bordered table-striped">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>#</th>
                                                                 <th>Họ tên</th>
                                                                 <th>SĐT</th>
                                                                 <th>Địa chỉ</th>
-                                                                <th>Phương tiện</th>
                                                                 <th>Thời gian gửi</th>
                                                                 <th>Hành động</th>
                                                             </tr>
@@ -124,6 +154,94 @@
                                                             }
                                                         </tbody>
                                                     </table>
+                                                    <nav aria-label="Page navigation">
+                                                        <div id="pagination"></div>
+                                                    </nav>
+                                                    @* phân trang *@
+                                                    <script>
+                                                                                                                const rowsPerPage = 5;
+                                                        const table = document.getElementById("myTable");  // Đảm bảo ID này khớp với table
+                                                        const tbody = table.querySelector("tbody");
+                                                        const rows = Array.from(tbody.querySelectorAll("tr"));
+                                                        const pagination = document.getElementById("pagination");
+
+                                                        function showPage(page) {
+                                                            const start = (page - 1) * rowsPerPage;
+                                                            const end = start + rowsPerPage;
+
+                                                            rows.forEach((row, index) => {
+                                                                row.style.display = index >= start && index < end ? "" : "none";
+                                                            });
+
+                                                            highlightActivePage(page);
+                                                        }
+
+                                                        function highlightActivePage(currentPage) {
+                                                            const items = pagination.querySelectorAll("li");
+                                                            items.forEach(li => li.classList.remove("active"));
+
+                                                            if (currentPage >= 1 && currentPage <= items.length - 2) {
+                                                                items[currentPage].classList.add("active");
+                                                            }
+                                                        }
+
+                                                        function setupPagination() {
+                                                            const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage)); // 👈 đảm bảo luôn có ít nhất 1 trang
+                                                            pagination.innerHTML = "";
+
+                                                            const ul = document.createElement("ul");
+                                                            ul.classList.add("pagination", "justify-content-center");
+
+                                                            // Previous
+                                                            const prev = document.createElement("li");
+                                                            prev.classList.add("page-item");
+                                                            prev.innerHTML = `<a class="page-link" href="#">&lt;</a>`;
+                                                            prev.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                if (index > 1) showPage(index - 1);
+                                                            });
+                                                            ul.appendChild(prev);
+
+                                                            // Pages
+                                                            for (let i = 1; i <= totalPages; i++) { // 👈 chỉ cần duyệt đến totalPages
+                                                                const li = document.createElement("li");
+                                                                li.classList.add("page-item");
+                                                                const a = document.createElement("a");
+                                                                a.classList.add("page-link");
+                                                                a.href = "#";
+                                                                a.innerText = i;
+                                                                a.addEventListener("click", (e) => {
+                                                                    e.preventDefault();
+                                                                    showPage(i);
+                                                                });
+                                                                li.appendChild(a);
+                                                                ul.appendChild(li);
+                                                            }
+
+                                                            // Next
+                                                            const next = document.createElement("li");
+                                                            next.classList.add("page-item");
+                                                            next.innerHTML = `<a class="page-link" href="#">&gt;</a>`;
+                                                            next.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                const total = ul.children.length - 2;
+                                                                if (index < total) showPage(index + 1);
+                                                            });
+                                                            ul.appendChild(next);
+
+                                                            pagination.appendChild(ul);
+                                                        }
+
+                                                        document.addEventListener("DOMContentLoaded", () => {
+                                                            setupPagination();
+                                                            showPage(1);
+                                                        });
+
+                                                    </script>
                                                 </div>
                                             }
                                         </div>
@@ -140,26 +258,6 @@
         <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
-    <!-- Modal Start -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog  modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                        <button type="button" onclick="location.href = 'login.html';"
-                                class="btn  btn--yes btn-primary">
-                            Yes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal End -->
 
 </body>
 

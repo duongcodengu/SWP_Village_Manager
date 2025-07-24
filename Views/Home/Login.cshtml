@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Đăng nhập";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -7,18 +7,17 @@
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
-    <title>@ViewData["Home"] Login </title>
+    <title>Đăng nhập - FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -65,14 +64,14 @@
                             <form class="row g-4" asp-action="Login" method="post">
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form">
-                                        <input type="email" name="email" class="form-control" id="email" placeholder="Địa chỉ email">
+                                        <input type="email" name="email" class="form-control" id="email" required >
                                         <label for="email">Địa chỉ email</label>
                                     </div>
                                 </div>
 
                                 <div class="col-12">
                                     <div class="form-floating theme-form-floating log-in-form position-relative">
-                                        <input type="password" name="password" class="form-control" id="password" placeholder="Mật khẩu">
+                                        <input type="password" name="password" class="form-control" id="password" placeholder="Mật khẩu" required minlength="6">
                                         <label for="password">Mật khẩu</label>
                                         <span class="toggle-password" style="position:absolute; top:50%; right:15px; transform:translateY(-50%); cursor:pointer;">
                                             <i class="fa fa-eye-slash" id="togglePassword"></i>
@@ -179,15 +178,37 @@
         document.addEventListener('DOMContentLoaded', function () {
             const passwordInput = document.getElementById('password');
             const togglePassword = document.getElementById('togglePassword');
+
             let show = false;
-            togglePassword.addEventListener('click', function () {
-                show = !show;
-                passwordInput.type = show ? 'text' : 'password';
-                togglePassword.classList.toggle('fa-eye', show);
-                togglePassword.classList.toggle('fa-eye-slash', !show);
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function () {
+                    show = !show;
+                    passwordInput.type = show ? 'text' : 'password';
+                    togglePassword.classList.toggle('fa-eye', show);
+                    togglePassword.classList.toggle('fa-eye-slash', !show);
+                });
+
+                passwordInput.addEventListener('input', function () {
+                    if (passwordInput.value.length < 6) {
+                        passwordInput.setCustomValidity("Mật khẩu phải có ít nhất 6 ký tự.");
+                    } else {
+                        passwordInput.setCustomValidity("");
+                    }
+                });
+            }
+
+            // Chặn khoảng trắng khi nhập email & password
+            ["email", "password"].forEach(function (id) {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener("input", function () {
+                        this.value = this.value.replace(/\s/g, '');
+                    });
+                }
             });
         });
     </script>
+
 </body>
 
 </html>

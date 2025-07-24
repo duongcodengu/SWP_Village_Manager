@@ -1,26 +1,26 @@
-﻿@model List<Village_Manager.Models.CartItem>
+@model List<Village_Manager.Models.CartItem>
 @{
     ViewData["Title"] = "Thanh toán";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
-    var shipping = 20000;
+    var shipping = 15000;
     var discount = ViewBag.DiscountAmount;
     var subTotal = total - discount;
     var finalTotal = total - discount + shipping;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
+    <title>Thanh toán đơn hàng</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -85,9 +85,9 @@
                                     </div>
 
                                     @{
-                                        var addresses = ViewBag.Addresses as List<Village_Manager.Models.Address> ?? new List<Village_Manager.Models.Address>();
-                                        int index = 0;
+                                        var address = ViewBag.Address as Village_Manager.Models.Address;
                                     }
+
                                     <div class="checkout-box">
                                         <div class="checkout-title">
                                             <h4>Địa chỉ nhận hàng</h4>
@@ -95,53 +95,32 @@
 
                                         <div class="checkout-detail">
                                             <div class="row g-4">
-                                                @if (addresses.Any())
+                                                @if (address != null)
                                                 {
-                                                    foreach (var addr in addresses)
-                                                    {
-                                                        var radioId = "addr_" + addr.Id;
-                                                        <div class="col-xxl-6 col-lg-12 col-md-6">
-                                                            <div class="delivery-address-box">
-                                                                <div>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input"
-                                                                               type="radio"
-                                                                               name="SelectedAddress"
-                                                                               id="@radioId"
-                                                                               value="@addr.Id"
-                                                                               @(index == 0 ? "checked" : "") />
-                                                                    </div>
-
-                                                                    <div class="label">
-                                                                        <label for="@radioId">@($"Address {index + 1}")</label>
-                                                                    </div>
-
-                                                                    <ul class="delivery-address-detail">
-                                                                        <li>
-                                                                            <h4 class="fw-500">@(addr.AddressLine)</h4>
-                                                                        </li>
-                                                                        <li>
-                                                                            <p class="text-content">
-                                                                                <span class="text-title">Địa chỉ:</span>
-                                                                                @(addr.City), @(addr.Province)
-                                                                            </p>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
+                                                    <div class="col-12">
+                                                        <div class="delivery-address-box">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input"
+                                                                       type="radio"
+                                                                       name="SelectedAddress"
+                                                                       id="mainAddress"
+                                                                       value="@address.Id"
+                                                                       checked />
+                                                                <label for="mainAddress" class="fw-500">@address.AddressLine</label>
                                                             </div>
                                                         </div>
-                                                        index++;
-                                                    }
+                                                    </div>
                                                 }
                                                 else
                                                 {
                                                     <div class="col-12">
-                                                        <div class="alert alert-warning">Bạn không có địa chỉ nào được lưu.</div>
+                                                        <div class="alert alert-warning">Bạn chưa có địa chỉ nhận hàng.</div>
                                                     </div>
                                                 }
                                             </div>
                                         </div>
                                     </div>
+
                                 </li>
                                 <li>
                                     <div class="checkout-icon">
@@ -181,8 +160,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                               
                                             </div>
                                         </div>
                                     </div>
@@ -224,7 +201,7 @@
                             <ul class="summery-contain">
                                 <li>
                                     <h4>Tổng cộng: </h4>
-                                    <h4 class="price">₫@String.Format("{0:N0}", total)</h4>
+                                    <h4 class="price">₫@String.Format("{0:N0}", subTotal)</h4>
                                 </li>
 
                                 <li>
@@ -321,29 +298,6 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            $.ajax({
-                url: "https://api.vietqr.io/v2/banks",
-                method: "GET",
-                success: function (response) {
-                    const banks = response.data;
-                    const bankSelect = $("#bankSelect");
-                    bankSelect.empty();
-
-                    bankSelect.append('<option value="">-- Select Bank --</option>');
-
-                    banks.forEach(bank => {
-                        bankSelect.append(`<option value="${bank.bin}">${bank.shortName}</option>`);
-                    });
-                },
-                error: function (xhr) {
-                    console.error("Lỗi khi tải danh sách ngân hàng:", xhr);
-                }
-            });
-        });
-    </script>
 
 </body>
 

@@ -1,4 +1,4 @@
-﻿﻿@{
+﻿@{
 ViewData["Title"] = "Trang chủ";
 Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -6,18 +6,18 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fastkart">
-    <meta name="keywords" content="Fastkart">
-    <meta name="author" content="Fastkart">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
-    <title>On-demand last-mile delivery</title>
-    <title>@ViewData["Home"] Home </title>
+    <title>Nền tảng giao hàng và nông sản FamViệt</title>
+    <title>Trang chủ - FamViệt</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -80,12 +80,12 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                }
                                 <div class="home-detail p-center-left home-p-sm w-75">
                                     <div>
-                                        <h3 class="mt-0 theme-color fw-bold">Healthy Food</h3>
-                                        <h4 class="text-danger">Organic Market</h4>
-                                        <p class="organic">Start your daily shopping with some Organic food</p>
-                                        <a href="shop-left-sidebar.html" class="shop-button">
-                                            Shop Now <i class="fa-solid fa-right-long"></i>
-                                        </a>
+                                        @* <h3 class="mt-0 theme-color fw-bold">Sản phẩm</h3>
+                                        <h4 class="text-danger">Nông sản</h4>
+                                        <p class="organic">Bắt đầu mua sắm mỗi ngày với thực phẩm hữu cơ</p>
+                                        <a class="shop-button">
+                                            Mua ngay <i class="fa-solid fa-right-long"></i>
+                                        </a> *@
                                     </div>
                                 </div>
                             </div>
@@ -104,38 +104,34 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                 <div class="col-xxl-3 col-xl-4 d-none d-xl-block">
                     <div class="p-sticky">
                         <div class="category-menu">
-                            <h3>Category</h3>
+                            <h3>Danh mục</h3>
                             <ul>
-                                @if(ViewBag.ProductCategories != null)
+                                @if (ViewBag.ProductCategories != null)
                                 {
-                                    @foreach (var category in ViewBag.ProductCategories)
+                                    foreach (var category in ViewBag.ProductCategories)
                                     {
                                         <li>
-                                            
-                                                @if (!String.IsNullOrEmpty(category.ImageUrl))
-                                                {
-                                                     <div class="categories-list">
-                                                    @* <img src="@Url.Content(category.ImageUrl)" class="blur-up lazyload" alt="" /> *@
-                                                          <h5> 
-                                                              <a href="shop-left-sidebar.html" > @category.Name</a>
-                                                              </h5>
-                                                               </div>
-                                                  
-                                                }
-                                                else
-                                                {
+                                            @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                            {
+                                                <div class="categories-list">
                                                     <h5>
-                                                        <a href="shop-left-sidebar.html">NOt found category</a>
+                                                        <a href="@Url.Action("Search", "Shop", new { categoryIds = category.Id })">
+                                                            @category.Name
+                                                        </a>
                                                     </h5>
-                                                }
-                                              
-                                           
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <h5>
+                                                    <a href="@Url.Action("Search", "Shop", new { categoryIds = category.Id })">
+                                                        @category.Name
+                                                    </a>
+                                                </h5>
+                                            }
                                         </li>
                                     }
                                 }
-
-                                
-
                             </ul>
                         </div>
 
@@ -148,14 +144,14 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 }
                                 <div class="home-detail p-top-left home-p-medium">
                                     <div>
-                                        <h6 class="text-yellow home-banner">Seafood</h6>
+                                        <h6 class="text-yellow home-banner">Hải sản</h6>
                                         <h3 class="text-uppercase fw-normal">
-                                            <span class="theme-color fw-bold">Freshes</span> Products
+                                            <span class="theme-color fw-bold">Tươi mới</span> Sản phẩm
                                         </h3>
-                                        <h3 class="fw-light">every hour</h3>
+                                        <h3 class="fw-light">mỗi giờ</h3>
                                         <button onclick="location.href = 'shop-left-sidebar.html';"
                                                 class="btn btn-animation btn-md mend-auto">
-                                            Shop Now <i class="fa-solid fa-arrow-right icon"></i>
+                                            Mua ngay <i class="fa-solid fa-arrow-right icon"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -170,14 +166,14 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 }
                                 <div class="home-detail p-top-left home-p-medium">
                                     <div>
-                                        <h4 class="text-yellow text-exo home-banner">Organic</h4>
+                                        @* <h4 class="text-yellow text-exo home-banner">Organic</h4>
                                         <h2 class="text-uppercase fw-normal mb-0 text-russo theme-color">fresh</h2>
                                         <h2 class="text-uppercase fw-normal text-title">Vegetables</h2>
                                         <p class="mb-3">Super Offer to 50% Off</p>
                                         <button onclick="location.href = 'shop-left-sidebar.html';"
                                                 class="btn btn-animation btn-md mend-auto">
-                                            Shop Now <i class="fa-solid fa-arrow-right icon"></i>
-                                        </button>
+                                            Mua ngay <i class="fa-solid fa-arrow-right icon"></i>
+                                        </button> *@
                                     </div>
                                 </div>
                             </div>
@@ -190,18 +186,18 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                 <div class="col-xl-9">
                 <div class="title title-flex">
                         <div>
-                            <h2>Top Save Today</h2>
+                            <h2>Tiết kiệm hàng đầu hôm nay</h2>
                             <span class="title-leaf">
                                 <svg class="icon-width">
                                     <use xlink:href="~/svg/leaf.svg#leaf"></use>
                                 </svg>
                             </span>
-                            <p>Don't miss this opportunity at a special discount just for this week.</p>
+                            <p>Đừng bỏ lỡ cơ hội giảm giá đặc biệt chỉ trong tuần này.</p>
                         </div>
                         <div class="timing-box">
                             <div class="timing">
                                 <i data-feather="clock"></i>
-                                <h6 class="name">Expires in :</h6>
+                                <h6 class="name">Kết thúc sau :</h6>
                                 <div class="time" id="clockdiv-1" data-hours="1" data-minutes="2" data-seconds="3">
                                     <ul>
                                         <li>
@@ -253,7 +249,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                 @if (image.ProductImage?.Product != null)
                                                 {
                                                     <div class="label-tag">
-                                                        <span>NEW</span>
+                                                        <span>MỚI</span>
                                                     </div>
                                                     <div class="product-image">
                                                         <a href="product-left-thumbnail.html">
@@ -304,12 +300,12 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                                 }
                                                             </ul>
 
-                                                            <h6 class="theme-color">In Stock</h6>
+                                                            <h6 class="theme-color">Còn hàng</h6>
                                                         </div>
 
                                                         <div class="add-to-cart-box">
                                                             <button class="btn btn-add-cart addcart-button">
-                                                                Add
+                                                                Thêm
                                                                 <span class="add-icon">
                                                                     <i class="fa-solid fa-plus"></i>
                                                                 </span>
@@ -364,13 +360,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </div>
                     <div class="section-b-space">
                         <div class="title d-block">
-                            <h2>Food Cupboard</h2>
+                            <h2>Tủ thực phẩm</h2>
                             <span class="title-leaf">
                                 <svg class="icon-width">
                                     <use xlink:href="~/svg/leaf.svg#leaf"></use>
                                 </svg>
                             </span>
-                            <p>A virtual assistant collects the products from your list</p>
+                            <p>Trợ lý ảo sẽ thu thập các sản phẩm từ danh sách của bạn</p>
                         </div>
                     </div>
 
@@ -422,12 +418,12 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                                 </li>
                                                             }
                                                         </ul>
-                                                        <h6 class="theme-color">In Stock</h6>
+                                                        <h6 class="theme-color">Còn hàng</h6>
                                                     </div>
 
                                                     <div class="add-to-cart-box">
                                                         <button class="btn btn-add-cart addcart-button">
-                                                            Add
+                                                            Thêm
                                                             <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
                                                         </button>
                                                         <div class="cart_qty qty-box">
@@ -449,7 +445,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 <!-- fallback nếu không có dữ liệu -->
                                 <div>
                                     <div class="product-box">
-                                        <div class="product-image">
+                                        @* <div class="product-image">
                                             <a href="product-left-thumbnail.html">
                                                 <img src="~/images/vegetable/product/4.png"
                                                      class="img-fluid blur-up lazyload" alt="Dark Chocolate" />
@@ -457,13 +453,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                         </div>
                                         <div class="product-detail">
                                             <a href="product-left-thumbnail.html">
-                                                <h6 class="name h-100">Dark Chocolate</h6>
+                                                <h6 class="name">Dark Chocolate</h6>
                                             </a>
                                             <h5 class="sold text-content">
                                                 <span class="theme-color price">$26.69</span>
                                                 <del>28.56</del>
                                             </h5>
-                                        </div>
+                                        </div> *@
                                     </div>
                                 </div>
                             }
@@ -477,13 +473,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 
      <div class="title d-block">
          <div>
-        <h2>Our Best Seller</h2>
+        <h2>Bán chạy nhất</h2>
         <span class="title-leaf">
             <svg class="icon-width">
                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
             </svg>
         </span>
-        <p>A virtual assistant collects the products from your list</p>
+        <p>Trợ lý ảo sẽ thu thập các sản phẩm từ danh sách của bạn</p>
         </div>
 </div>
 
@@ -536,19 +532,19 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             <ul class="product-list">
                 <li>
                     <div class="offer-product">
-                        <a href="product-left-thumbnail.html" class="offer-image">
+                        @* <a href="product-left-thumbnail.html" class="offer-image">
                             <img src="~/images/vegetable/product/19.png"
                                  class="blur-up lazyload" alt="Fallback Product" />
                         </a>
                         <div class="offer-detail">
                             <div>
                                 <a href="product-left-thumbnail.html" class="text-title">
-                                    <h6 class="name">Good Life Refined Sunflower Oil</h6>
+                                    <h6 class="name">Dầu hướng dương Good Life</h6>
                                 </a>
                                 <span>1 L</span>
                                 <h6 class="price theme-color">$10.09</h6>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
                 </li>
             </ul>
@@ -570,14 +566,14 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                         <div class="row">
                             <div class="col-xxl-4 col-lg-5 col-md-7 col-sm-9 offset-xxl-2 offset-md-1">
                                 <div class="newsletter-detail">
-                                    <h2>Join our newsletter and get...</h2>
-                                    <h5>$20 discount for your first order</h5>
+                                    <h2>Đăng ký nhận bản tin và nhận...</h2>
+                                    <h5>Giảm giá 20.000đ cho đơn hàng đầu tiên</h5>
                                     <div class="input-box">
                                         <input type="email" class="form-control" id="exampleFormControlInput1"
-                                               placeholder="Enter Your Email">
+                                               placeholder="Nhập email của bạn">
                                         <i class="fa-solid fa-envelope arrow"></i>
                                         <button class="sub-btn  btn-animation">
-                                            <span class="d-sm-block d-none">Subscribe</span>
+                                            <span class="d-sm-block d-none">Đăng ký</span>
                                             <i class="fa-solid fa-arrow-right icon"></i>
                                         </button>
                                     </div>
@@ -609,7 +605,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 
                         <div class="col-lg-6">
                             <div class="right-sidebar-modal">
-                                <h4 class="title-name">Peanut Butter Bite Premium Butter Cookies 600 g</h4>
+                                <h4 class="title-name">Bánh quy bơ đậu phộng cao cấp 600g</h4>
                                 <h4 class="price">$36.99</h4>
                                 <div class="product-rating">
                                     <ul class="rating">
@@ -629,12 +625,12 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                             <i data-feather="star"></i>
                                         </li>
                                     </ul>
-                                    <span class="ms-2">8 Reviews</span>
-                                    <span class="ms-2 text-danger">6 sold in last 16 hours</span>
+                                    <span class="ms-2">8 đánh giá</span>
+                                    <span class="ms-2 text-danger">Đã bán 6 trong 16 giờ qua</span>
                                 </div>
 
                                 <div class="product-detail">
-                                    <h4>Product Details :</h4>
+                                    <h4>Chi tiết sản phẩm :</h4>
                                     <p>
                                         Candy canes sugar plum tart cotton candy chupa chups sugar plum chocolate I love.
                                         Caramels marshmallow icing dessert candy canes I love soufflé I love toffee.
@@ -646,30 +642,30 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 <ul class="brand-list">
                                     <li>
                                         <div class="brand-box">
-                                            <h5>Brand Name:</h5>
+                                            <h5>Thương hiệu:</h5>
                                             <h6>Black Forest</h6>
                                         </div>
                                     </li>
 
                                     <li>
                                         <div class="brand-box">
-                                            <h5>Product Code:</h5>
+                                            <h5>Mã sản phẩm:</h5>
                                             <h6>W0690034</h6>
                                         </div>
                                     </li>
 
                                     <li>
                                         <div class="brand-box">
-                                            <h5>Product Type:</h5>
+                                            <h5>Loại sản phẩm:</h5>
                                             <h6>White Cream Cake</h6>
                                         </div>
                                     </li>
                                 </ul>
 
                                 <div class="select-size">
-                                    <h4>Cake Size :</h4>
+                                    <h4>Kích thước bánh :</h4>
                                     <select class="form-select select-form-size">
-                                        <option selected>Select Size</option>
+                                        <option selected>Chọn kích thước</option>
                                         <option value="1.2">1/2 KG</option>
                                         <option value="0">1 KG</option>
                                         <option value="1.5">1/5 KG</option>
@@ -681,12 +677,11 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 <div class="modal-button">
                                     <button onclick="location.href = 'cart.html';"
                                             class="btn btn-md add-cart-button icon">
-                                        Add
-                                        To Cart
+                                        Thêm vào giỏ hàng
                                     </button>
                                     <button onclick="location.href = 'product-left-thumbnail.html';"
                                             class="btn theme-bg-color view-button icon text-white fw-bold btn-md">
-                                        View More Details
+                                        Xem chi tiết
                                     </button>
                                 </div>
                             </div>
@@ -696,14 +691,14 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             </div>
         </div>
     </div>
-    <!-- Quick View Modal Box End -->
+    <!-- Quick Xem Modal Box End -->
     <!-- Location Modal Start -->
     <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Choose your Delivery Location</h5>
-                    <p class="mt-1 text-content">Enter your address and we will specify the offer for your area.</p>
+                    <h5 class="modal-title" id="exampleModalLabel">Chọn vị trí giao hàng</h5>
+                    <p class="mt-1 text-content">Nhập địa chỉ để nhận ưu đãi phù hợp khu vực của bạn.</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -711,82 +706,82 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                 <div class="modal-body">
                     <div class="location-list">
                         <div class="search-input">
-                            <input type="search" class="form-control" placeholder="Search Your Area">
+                            <input type="search" class="form-control" placeholder="Tìm khu vực của bạn">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </div>
 
                         <div class="disabled-box">
-                            <h6>Select a Location</h6>
+                            <h6>Chọn vị trí</h6>
                         </div>
 
                         <ul class="location-select custom-height">
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Alabama</h6>
-                                    <span>Min: $130</span>
+                                    <span>Tối thiểu: 130</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Arizona</h6>
-                                    <span>Min: $150</span>
+                                    <span>Tối thiểu: 150</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>California</h6>
-                                    <span>Min: $110</span>
+                                    <span>Tối thiểu: 110</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Colorado</h6>
-                                    <span>Min: $140</span>
+                                    <span>Tối thiểu: 140</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Florida</h6>
-                                    <span>Min: $160</span>
+                                    <span>Tối thiểu: 160</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Georgia</h6>
-                                    <span>Min: $120</span>
+                                    <span>Tối thiểu: 120</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Kansas</h6>
-                                    <span>Min: $170</span>
+                                    <span>Tối thiểu: 170</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Minnesota</h6>
-                                    <span>Min: $120</span>
+                                    <span>Tối thiểu: 120</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>New York</h6>
-                                    <span>Min: $110</span>
+                                    <span>Tối thiểu: 110</span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="javascript:void(0)">
                                     <h6>Washington</h6>
-                                    <span>Min: $130</span>
+                                    <span>Tối thiểu: 130</span>
                                 </a>
                             </li>
                         </ul>
@@ -802,8 +797,8 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <h5 class="modal-title w-100" id="deal_today">Deal Today</h5>
-                        <p class="mt-1 text-content">Recommended deals for you.</p>
+                        <h5 class="modal-title w-100" id="deal_today">Ưu đãi hôm nay</h5>
+                        <p class="mt-1 text-content">Ưu đãi phù hợp dành cho bạn.</p>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                         <i class="fa-solid fa-xmark"></i>
@@ -820,7 +815,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
@@ -834,7 +829,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
@@ -848,7 +843,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
@@ -862,7 +857,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     </a>
 
                                     <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Buy 1 Get 1 Free</h5>
+                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
                                         <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
                                     </a>
                                 </div>
@@ -883,6 +878,112 @@ Layout = "~/Views/Shared/_Layout.cshtml";
         </div>
     </div>
     <!-- Tap to top button end -->
+    <!-- Location realtime -->
+    <div id="geoPrompt" style="
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    width: 300px;
+">
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/535/535239.png" alt="Location icon" width="24" height="24" style="margin-right: 10px;">
+            <strong>Cho phép truy cập vị trí</strong>
+        </div>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #444;">
+            Ứng dụng cần vị trí để phục vụ bạn tốt hơn.
+        </p>
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="denyLocation()" style="
+            background: transparent;
+            border: 2px solid #ccc;
+            color: #555;
+            padding: 6px 14px;
+            border-radius: 6px;
+            margin-right: 10px;
+            cursor: pointer;
+        ">
+                Từ chối
+            </button>
+            <button onclick="allowLocation()" style="
+            background-color: #0DA487;
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        ">
+                Cho phép
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const userId = @Html.Raw(Json.Serialize(ViewBag.UserId ?? 0))
+        const hasLocation = @Html.Raw(Json.Serialize(ViewBag.HasAcceptedGeo ?? false))
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (hasLocation === false && userId > 0) {
+                setTimeout(() => {
+                    document.getElementById("geoPrompt").style.display = "block";
+                }, 1000);
+            }
+        });
+
+        function allowLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition, showError);
+            } else {
+                alert("Trình duyệt không hỗ trợ định vị.");
+            }
+        }
+
+        function denyLocation() {
+            document.getElementById("geoPrompt").style.display = "none";
+            console.log("Người dùng từ chối chia sẻ vị trí.");
+        }
+
+        function savePosition(position) {
+            const data = {
+                userId: userId,
+                label: "Vị trí tự động",
+                address: "",
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+
+            fetch('/api/location/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                return fetch('/api/location/accept', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userId })
+                });
+            })
+            .then(res => res.json())
+            .then(result => {
+                console.log("Vị trí đã được lưu & chấp nhận:", result);
+            });
+        }
+
+        function showError(error) {
+            alert("Không thể lấy vị trí: " + error.message);
+        }
+    </script>
+    <!-- End location realtime -->
     <!-- Bg overlay Start -->
     <div class="bg-overlay"></div>
     <!-- Bg overlay End -->

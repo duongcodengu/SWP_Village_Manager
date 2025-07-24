@@ -4,20 +4,20 @@
     var roleName = Context.Session.GetString("RoleName");
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin là hệ thống quản trị kho hàng hiện đại, mạnh mẽ, linh hoạt với giao diện sạch sẽ, đáp ứng mọi nhu cầu quản lý kho hàng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="FamViệt, quản trị kho, admin, dashboard, quản lý kho hàng, web app">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - All User</title>
+    <title>FamViệt - Quản trị kho hàng</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
           rel="stylesheet">
@@ -248,31 +248,31 @@
                                         <li>
                                             <a href="/alluser">
                                                 <i data-feather="users"></i>
-                                                <span>Users</span>
+                                                <span>Người dùng</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="order-list.html">
+                                            <a href="/listOrder">
                                                 <i data-feather="archive"></i>
-                                                <span>Orders</span>
+                                                <span>Đơn hàng</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="support-ticket.html">
+                                            <a href="/support">
                                                 <i data-feather="phone"></i>
-                                                <span>Spports Tickets</span>
+                                                <span>Hỗ trợ</span>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="profilesetting">
                                                 <i data-feather="settings"></i>
-                                                <span>Settings</span>
+                                                <span>Cài đặt</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="">
-                                                <i data-feather="log-out" href="/logout"></i>
-                                                <span>Log out</span>
+                                            <a href="/logout">
+                                                <i data-feather="log-out"></i>
+                                                <span>Đăng xuất</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -321,22 +321,22 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="/adminwarehouse">
                                         <i class="ri-home-line"></i>
-                                        <span>Dashboard</span>
+                                        <span>Bảng điều khiển</span>
                                     </a>
                                 </li>
 
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Product</span>
+                                        <span>Sản phẩm</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/product">Products</a>
+                                            <a href="/product">Danh sách sản phẩm</a>
                                         </li>
 
                                         <li>
-                                            <a href="/addproduct">Add New Products</a>
+                                            <a href="/addproduct">Thêm sản phẩm mới</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -344,15 +344,15 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-check-2"></i>
-                                        <span>Category</span>
+                                        <span>Danh mục</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/Category/listcate">Category List</a>
+                                            <a href="/Category/listcate">Danh sách danh mục</a>
                                         </li>
 
                                         <li>
-                                            <a asp-action="addCategory" asp-controller="Category">Add new Category</a>
+                                            <a asp-action="addCategory" asp-controller="Category">Thêm danh mục mới</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -368,11 +368,11 @@
                                         </li>
 
                                         <li>
-                                            <a href="/addfamer">Add Famer</a>
+                                            <a href="/addfamer">Thêm farmer</a>
                                         </li>
 
                                          <li>
-                                            <a href="/pendingproducts">Pending Products</a>
+                                            <a href="/pendingproducts">Sản phẩm chờ duyệt</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -387,36 +387,36 @@
                                         </li>
 
                                         <li>
-                                            <a href="/admin/shipper-requests">Add Shipper</a>
+                                            <a href="/admin/shipper-requests">Thêm shipper</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-settings-line"></i>
-                                        <span>List Order</span>
+                                        <span>Danh sách đơn hàng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/listOrder">List Order</a>
+                                            <a href="/listOrder">Danh sách đơn hàng</a>
                                         </li>
 
                                         <li>
-                                            <a href="/addOrder">Add Order</a>
+                                            <a href="/addOrder">Thêm đơn hàng</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
-                                        <span>Users</span>
+                                        <span>Người dùng</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/alluser">All users</a>
+                                            <a href="/alluser">Tất cả người dùng</a>
                                         </li>
                                         <li>
-                                            <a href="/adduser">Add New User</a>
+                                            <a href="/adduser">Thêm người dùng mới</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -424,11 +424,11 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
-                                        <span>Roles</span>
+                                        <span>Vai trò</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/role">All roles</a>
+                                            <a href="/role">Tất cả vai trò</a>
                                         </li>
                                        
                                     </ul>
@@ -437,57 +437,23 @@
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="/Media">
                                         <i class="ri-price-tag-3-line"></i>
-                                        <span>Media-428s</span>
+                                        <span>Phương tiện</span>
                                         
                                     </a>
                                 </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-archive-line"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="order-list.html">Order List</a>
-                                        </li>
-                                        <li>
-                                            <a href="order-detail.html">Order Detail</a>
-                                        </li>
-                                        <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-focus-3-line"></i>
-                                        <span>Localization</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="translation.html">Translation</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="currency-rates.html">Currency Rates</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
+                                
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-price-tag-3-line"></i>
-                                        <span>Coupons</span>
+                                        <span>Giá giảm</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/DiscountCodes">Coupon List</a>
+                                            <a href="/DiscountCodes">Danh sách mã giảm giá</a>
                                         </li>
 
                                         <li>
-                                            <a href="/CreateDiscountCode">Create Coupon</a>
+                                            <a href="/CreateDiscountCode">Thêm mã giảm giá</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -507,11 +473,11 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
+                                        <span>Cài đặt</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="/profilesetting">Profile Setting</a>
+                                            <a href="/profilesetting">Cài đặt</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -541,7 +507,7 @@
             <footer class="footer">
                 <div class="row">
                     <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                        <p class="mb-0">Copyright 2022 © FamViệt theme by pixelstrap</p>
                     </div>
                 </div>
             </footer>

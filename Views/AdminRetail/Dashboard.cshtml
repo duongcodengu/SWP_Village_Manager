@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_AdminRetail.cshtml";
 
@@ -11,20 +11,20 @@
 
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt Admin - Hệ thống quản trị bán lẻ thông minh, hiện đại, mạnh mẽ với giao diện trực quan dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="FamViệt, quản trị, admin, bán lẻ, quản lý cửa hàng, web app">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - Dashboard</title>
+    <title>FamViệt - Bảng điều khiển</title>
     <!-- Google font-->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
@@ -197,9 +197,9 @@
                                 <div class="custome-1-bg b-r-4 card-body">
                                     <div class="media align-items-center static-top-widget">
                                         <div class="media-body p-0">
-                                            <span class="m-0">Total Revenue</span>
+                                            <span class="m-0">Tổng doanh thu</span>
                                             <h4 class="mb-0 counter">
-                                                <span id="totalRevenue">Loading...</span>
+                                                <h5 class="mb-0 counter" id="totalRevenue">0</h5><span>VND</span>Loading...</span>
                                             </h4>
                                         </div>
                                         <div class="align-self-center text-center">
@@ -215,7 +215,7 @@
                                 <div class="custome-2-bg b-r-4 card-body">
                                     <div class="media static-top-widget">
                                         <div class="media-body p-0">
-                                            <span class="m-0">Total Orders</span>
+                                            <span class="m-0">Tổng đơn hàng</span>
                                             <h4 class="mb-0 counter">
                                                 <span id="totalOrders">Loading...</span>
                                             </h4>
@@ -233,7 +233,7 @@
                                 <div class="custome-3-bg b-r-4 card-body">
                                     <div class="media static-top-widget">
                                         <div class="media-body p-0">
-                                            <span class="m-0">Total Products</span>
+                                            <span class="m-0">Tổng sản phẩm</span>
                                             <h4 class="mb-0 counter">
                                                 <span id="totalProducts">Loading...</span>
                                                 <a href="add-new-product.html" class="badge badge-light-secondary grow">
@@ -254,7 +254,7 @@
                                 <div class="custome-4-bg b-r-4 card-body">
                                     <div class="media static-top-widget">
                                         <div class="media-body p-0">
-                                            <span class="m-0">Total Users</span>
+                                            <span class="m-0">Tổng khách hàng</span>
                                             <h4 class="mb-0 counter">
                                                 <span id="totalCustomers">Loading...</span>
                                             </h4>
@@ -267,7 +267,7 @@
                             </div>
                         </div>
 
-                        @* category *@
+                        @* category *
 
 
                         <div class="card-body p-0">
@@ -341,7 +341,7 @@
                         <!-- Best Selling Product End -->
                         <!-- Recent orders start-->
                         <div class="card mt-4">
-                            <div class="card-header"><h4>Recent Orders</h4></div>
+                            <div class="card-header"><h5>Đơn hàng gần đây</h5></div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered">

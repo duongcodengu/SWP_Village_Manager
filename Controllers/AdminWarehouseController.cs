@@ -53,9 +53,9 @@ public class AdminWarehouseController : Controller
         int totalProducts = _context.Products.Count(p => p.ApprovalStatus == "accepted");
         ViewBag.TotalProducts = totalProducts;
         // Lấy tổng số đơn hàng
-        int totalRetailOrders = _context.RetailOrders.Count();
-        int totalOrders = totalRetailOrders;
-        ViewBag.TotalOrders = totalOrders;
+        int totalDeliveredOrders = _context.RetailOrders
+            .Count(o => o.Status == "delivered");
+        ViewBag.TotalOrders = totalDeliveredOrders;
         // Lấy danh sách category
         var categories = _context.ProductCategories
             .Select(c => new { Name = c.Name, ImageUrl = c.ImageUrl })
@@ -227,7 +227,7 @@ public class AdminWarehouseController : Controller
             int? userId = HttpContext.Session.GetInt32("UserId");
             Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Thêm sản phẩm: {product.Name}");
 
-            return Redirect("/products");
+            return Redirect("/product");
         }
         catch (Exception ex)
         {
@@ -927,6 +927,10 @@ public class AdminWarehouseController : Controller
         if (user != null)
         {
             user.RoleId = newRoleId;
+            // Xoá tất cả bản ghi Farmer liên quan đến user_id
+            var farmers = _context.Farmers.Where(f => f.UserId == UserId);
+            _context.Farmers.RemoveRange(farmers);
+            // đổi role
             _context.SaveChanges();
         }
 

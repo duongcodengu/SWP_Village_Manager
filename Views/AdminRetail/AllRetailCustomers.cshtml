@@ -1,74 +1,73 @@
-﻿
 @{
-    ViewData["Title"] = "All Retail Customers";
+    ViewData["Title"] = "Tất cả khách hàng bán lẻ";
     Layout = "~/Views/Shared/_AdminRetail.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="vi" dir="ltr">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="FamViệt - Hệ thống quản lý khách hàng bán lẻ, giao diện tiếng Việt, dễ sử dụng.">
     <meta name="keywords"
-          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+          content="quản lý khách hàng, FamViệt admin, khách hàng bán lẻ, giao diện quản trị">
+    <meta name="author" content="FamViệt">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>Fastkart - All User</title>
-    <!-- Google font-->
+    <title>FamViệt - Quản lý khách hàng</title>
+    <!-- Phông chữ Google -->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
           rel="stylesheet">
 
-    <!-- Fontawesome css -->
+    <!-- CSS Fontawesome -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
 
-    <!-- Linear Icon css -->
+    <!-- CSS Linear Icon -->
     <link rel="stylesheet" href="~/back-end/css/linearicon.css">
 
-    <!-- remixicon css -->
+    <!-- CSS Remixicon -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
 
-    <!-- Data Table css -->
+    <!-- CSS Bảng dữ liệu -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
 
-    <!-- Themify icon css-->
+    <!-- CSS Biểu tượng Themify -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
 
-    <!-- Feather icon css -->
+    <!-- CSS Biểu tượng Feather -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
 
-    <!-- Plugins css -->
+    <!-- CSS Plugins -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
 
-    <!-- Bootstrap css -->
+    <!-- CSS Bootstrap -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
 
-    <!-- App css -->
+    <!-- CSS Ứng dụng -->
     <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
 </head>
 
 <body>
-    <!-- page-wrapper Start-->
+    <!-- Bắt đầu page-wrapper -->
     <div class="page-wrapper compact-wrapper" id="pageWrapper">
-        <!-- Page Body Start -->
+        <!-- Bắt đầu Page Body -->
         <div class="page-body-wrapper">
-            <!-- Container-fluid starts-->
+            <!-- Bắt đầu Container-fluid -->
             <div class="page-body">
-                <!-- All Retail Customers Table Start -->
+                <!-- Bắt đầu Bảng khách hàng bán lẻ -->
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>All Retail Customers</h5>
+                                        <h5>Tất cả khách hàng bán lẻ</h5>
                                         <form class="d-inline-flex">
                                             <a href="add-new-user.html" class="align-items-center btn btn-theme d-flex">
-                                                <i data-feather="plus"></i>Add New
+                                                <i data-feather="plus"></i>Thêm mới
                                             </a>
                                         </form>
                                     </div>
@@ -77,11 +76,11 @@
                                         <table class="table all-package theme-table" id="table_id">
                                             <thead>
                                                 <tr>
-                                                    <th>User</th>
-                                                    <th>Name</th>
-                                                    <th>Phone</th>
+                                                    <th>Người dùng</th>
+                                                    <th>Tên</th>
+                                                    <th>Số điện thoại</th>
                                                     <th>Email</th>
-                                                    <th>Option</th>
+                                                    <th>Tùy chọn</th>
                                                 </tr>
                                             </thead>
                                             @foreach (var customer in Model)
@@ -96,7 +95,7 @@
                                                     <td>
                                                         <div class="user-name">
                                                             <span>@customer.FullName</span>
-                                                            
+
                                                         </div>
                                                     </td>
 
@@ -112,7 +111,7 @@
                                                     </td>
                                                 </tr>
                                             }
-                                            
+
                                         </table>
                                     </div>
                                 </div>
@@ -120,56 +119,55 @@
                         </div>
                     </div>
                 </div>
-                <!-- All Retail Customers Table Ends-->
+                <!-- Kết thúc Bảng khách hàng bán lẻ -->
 
                 <div class="container-fluid">
                 </div>
             </div>
-            <!-- Container-fluid end -->
+            <!-- Kết thúc Container-fluid -->
         </div>
-        <!-- Page Body End -->
-        <!-- Modal Start -->
+        <!-- Kết thúc Page Body -->
+        <!-- Modal Xác nhận đăng xuất -->
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-            <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                        <p>Are you sure you want to log out?</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="staticBackdropLabel">Đăng xuất</h5>
+                        <p>Bạn có chắc chắn muốn đăng xuất không?</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                         <div class="button-box">
-                            <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                            <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                            <button type="button" class="btn btn--no" data-bs-dismiss="modal">Không</button>
+                            <button type="button" class="btn btn--yes btn-primary">Có</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal End -->
+        <!-- Kết thúc Modal -->
     </div>
 
-    <!-- Delete Modal Box Start -->
+    <!-- Bắt đầu Hộp thoại xác nhận xóa -->
     <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="remove-box">
                         <p>
-                            The permission for the use/group, preview is inherited from the object, object will create a
-                            new permission for this object
+                            Quyền cho nhóm/người dùng này sẽ bị xóa. Hành động này không thể hoàn tác.
                         </p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">Không</button>
                     <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
                             data-bs-toggle="modal" data-bs-dismiss="modal">
-                        Yes
+                        Có
                     </button>
                 </div>
             </div>
@@ -180,8 +178,8 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Hoàn thành!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -193,16 +191,16 @@
                                 <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                             </svg>
                         </div>
-                        <h4 class="text-content">It's Removed.</h4>
+                        <h4 class="text-content">Đã xóa thành công.</h4>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Delete Modal Box End -->
+    <!-- Kết thúc Hộp thoại xác nhận xóa -->
 </body>
 
 </html>
