@@ -16,25 +16,37 @@ namespace Village_Manager.Controllers.api
         }
 
         [HttpGet("pending-orders")]
-        public async Task<IActionResult> GetPendingOrders()
+        public IActionResult GetPendingOrders(int page = 1, int pageSize = 5)
         {
-            var orders = await _context.RetailOrders
+            var query = _context.RetailOrders
                 .Where(o => o.Status == "pending")
-                .OrderByDescending(o => o.OrderDate)
-                .Select(o => new
-                {
+                .OrderByDescending(o => o.OrderDate);
+
+            var totalOrders = query.Count();
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+
+            var orders = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new {
                     o.Id,
                     o.OrderDate,
                     o.Status,
-                    CustomerEmail = o.User.Email,
                     TotalAmount = _context.RetailOrderItems
                         .Where(i => i.OrderId == o.Id)
-                        .Sum(i => i.Quantity * i.UnitPrice)
-                })
-                .ToListAsync();
+                        .Sum(i => i.Quantity * i.UnitPrice),
+                    CustomerEmail = o.User.Email
+                }).ToList();
 
-            return Ok(orders);
+            return Ok(new
+            {
+                orders,
+                currentPage = page,
+                totalPages
+            });
         }
+
+        
 
         [HttpPost("accept/{id}")]
         public async Task<IActionResult> AcceptOrder(int id)
@@ -59,12 +71,26 @@ namespace Village_Manager.Controllers.api
             return Ok(new { success = true });
         }
         [HttpGet("processed-orders")]
-        public async Task<IActionResult> GetProcessedOrders()
+        public async Task<IActionResult> GetProcessedOrders(int page = 1, int pageSize = 10, string searchTerm = "")
         {
-            var orders = await _context.RetailOrders
+            var query = _context.RetailOrders
                 .Include(o => o.User)
-                .Where(o => o.Status != "pending")
+                .Where(o => o.Status != "pending");
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(o =>
+                    o.User.Email.Contains(searchTerm) ||
+                    o.Status.Contains(searchTerm) ||
+                    o.Id.ToString().Contains(searchTerm));
+            }
+
+            var totalRecords = await query.CountAsync();
+
+            var orders = await query
                 .OrderByDescending(o => o.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(o => new
                 {
                     o.Id,
@@ -77,7 +103,13 @@ namespace Village_Manager.Controllers.api
                 })
                 .ToListAsync();
 
-            return Ok(orders);
+            return Ok(new
+            {
+                TotalRecords = totalRecords,
+                Page = page,
+                PageSize = pageSize,
+                Orders = orders
+            });
         }
 
         // search

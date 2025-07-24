@@ -188,6 +188,7 @@
                                         <h5>Danh Sách Mua Hàng</h5>
                                         
                                     </div>
+                                    <input type="text" id="searchInput" placeholder="Tìm theo email, mã đơn, trạng thái..." class="form-control mb-2" />
                                     <div>
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-hover">
@@ -205,6 +206,11 @@
                                                     <!-- Data will be inserted here -->
                                                 </tbody>
                                             </table>
+                                            <div class="d-flex justify-content-center mt-3">
+                                                <nav>
+                                                    <ul class="pagination" id="pagination"></ul>
+                                                </nav>
+                                            </div>
                                         </div>
                                    
 
@@ -229,40 +235,67 @@
    
     
 </body>
-@section Scripts {
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+<script>
+    let currentPage = 1;
+    const pageSize = 10;
 
-    <script>
-        async function fetchProcessedOrders() {
-            const res = await fetch('/api/OrderRetailApi/processed-orders');
-            const orders = await res.json();
-            const tableBody = document.getElementById('processedOrdersTable');
-            tableBody.innerHTML = "";
+    document.getElementById("searchInput").addEventListener("input", () => {
+        currentPage = 1; // Reset về trang 1 khi search mới
+        fetchProcessedOrders();
+    });
 
-            orders.forEach(order => {
-                const tr = document.createElement('tr');
+    async function fetchProcessedOrders() {
+        const searchTerm = document.getElementById("searchInput").value.trim();
 
-                tr.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                    <td>${order.status}</td>
-                    <td>${order.customerEmail}</td>
-                    <td>${order.totalAmount.toLocaleString('vi-VN')}₫</td>
-                    <td>
-                                <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
-            <i class="fas fa-eye"></i>
-        </a>
-                    </td>
-                `;
+        const res = await fetch(`/api/OrderRetailApi/processed-orders?page=${currentPage}&pageSize=${pageSize}&searchTerm=${encodeURIComponent(searchTerm)}`);
+        const data = await res.json();
+        const orders = data.orders;
 
-                tableBody.appendChild(tr);
+        const tableBody = document.getElementById("processedOrdersTable");
+        tableBody.innerHTML = "";
+
+        orders.forEach(order => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${order.id}</td>
+                <td>${new Date(order.date).toLocaleDateString()}</td>
+                <td>${order.status}</td>
+                <td>${order.customerEmail}</td>
+                <td>${order.totalAmount.toLocaleString('vi-VN')}₫</td>
+                <td>
+                    <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+
+        renderPagination(data.totalRecords, data.pageSize, data.page);
+    }
+
+    function renderPagination(totalRecords, pageSize, current) {
+        const totalPages = Math.ceil(totalRecords / pageSize);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.innerText = i;
+            btn.className = `btn btn-sm ${i === current ? 'btn-primary' : 'btn-outline-primary'} me-1`;
+            btn.addEventListener("click", () => {
+                currentPage = i; // cập nhật đúng currentPage
+                fetchProcessedOrders(); // gọi lại đúng page
             });
+            pagination.appendChild(btn);
         }
+    }
 
-        // Load every 2 seconds
-        setInterval(fetchProcessedOrders, 2000);
-        window.onload = fetchProcessedOrders;
-    </script>
-}
+    fetchProcessedOrders();
+    setInterval(fetchProcessedOrders, 2000);
+</script>
+
+
 
 </html>

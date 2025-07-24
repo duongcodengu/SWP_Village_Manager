@@ -206,15 +206,24 @@ public class ShopController : Controller
         var userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
-            TempData["Error"] = "Bạn chưa đăng nhập.";
+           
             return RedirectToAction("", "login");
         }
 
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         if (cart == null || !cart.Any())
         {
-            TempData["Error"] = "Bạn chưa có hàng trong giỏ hàng.";
+            
             return RedirectToAction("search", "shop");
+        }
+        foreach (var item in cart)
+        {
+            var product = await _context.Products.FindAsync(item.ProductId);
+            if (product == null || product.Quantity < item.Quantity)
+            {
+                TempData["Error"] = $"Sản phẩm \"{product?.Name ?? "Không xác định"}\" không đủ hàng trong kho.";
+                return RedirectToAction("cart", "shop");
+            }
         }
 
         // Tạo đơn hàng
@@ -247,6 +256,7 @@ public class ShopController : Controller
         await _context.SaveChangesAsync();
 
         // Lưu OrderId để hiển thị ở trang thành công
+        HttpContext.Session.Remove("Cart");
         TempData["OrderId"] = newOrder.Id;
 
         return RedirectToAction("Success");

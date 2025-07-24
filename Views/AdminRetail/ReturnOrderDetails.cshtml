@@ -1,0 +1,40 @@
+﻿@model Village_Manager.Models.ReturnOrder
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hoàn hàng";
+    Layout = "~/Views/Shared/_AdminRetail.cshtml";
+}
+<div class="page-wrapper compact-wrapper" id="pageWrapper">
+    <div class="page-body-wrapper">
+        <div class="page-body">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow p-4">
+                            <h2 class="text-center mb-4">Chi tiết đơn hoàn hàng</h2>
+
+                            <!-- Ảnh hoàn hàng -->
+                            <div class="text-center mb-4">
+                                <img src="@Model.ImageUrl" alt="Ảnh hoàn hàng" class="img-fluid rounded" style="max-width: 300px;" />
+                            </div>
+
+                            <!-- Thông tin đơn -->
+                            <div class="mb-3"><strong>Mã hoàn hàng:</strong> @Model.Id</div>
+                            <div class="mb-3"><strong>Loại đơn:</strong> @Model.OrderType</div>
+                            <div class="mb-3"><strong>Mã đơn hàng:</strong> @Model.OrderId</div>
+                            <div class="mb-3"><strong>Email khách hàng:</strong> @Model.User?.Email</div>
+                            <div class="mb-3"><strong>Lý do hoàn hàng:</strong> @Model.Reason</div>
+                            <div class="mb-3"><strong>Số lượng hoàn:</strong> @Model.Quantity</div>
+                            <div class="mb-3"><strong>Thời gian tạo:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                            <div class="mb-3"><strong>Trạng thái đơn hàng:</strong> @Model.Order?.Status</div>
+
+                            <div class="text-center mt-4">
+                                <a asp-action="ReturnOrderManage" class="btn btn-secondary">Quay lại</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

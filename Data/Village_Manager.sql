@@ -126,7 +126,7 @@ CREATE TABLE RetailOrder (
     id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
     order_date DATETIME,
-    status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned')),
+    status NVarchar(50) CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned','inprocess')),
     confirmed_at DATETIME, -- xác nhận đơn hàng
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );

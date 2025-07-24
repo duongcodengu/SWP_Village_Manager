@@ -1,4 +1,5 @@
 @inject Village_Manager.Data.AppDbContext _context
+
 @{
 
     var roleName = Context.Session.GetString("RoleName");
@@ -66,8 +67,8 @@
                 <div class="header-logo-wrapper p-0">
                     <div class="logo-wrapper">
                         <a href="index.html">
-                            <img class="img-fluid main-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
-                            <img class="img-fluid white-logo" src="~/back-end/images/logo/logo1.png" alt="logo">
+                            <img class="img-fluid main-logo" src="~/back-end/images/logo/1.png" alt="logo">
+                            <img class="img-fluid white-logo" src="~/back-end/images/logo/1-white.png" alt="logo">
                         </a>
                     </div>
                     <div class="toggle-sidebar">
@@ -405,7 +406,10 @@
                                             <a asp-controller="AdminRetail" asp-action="OrderListRetail">Danh sách cần duyệt</a>
                                         </li>
                                         <li>
-                                            <a asp-controller="AdminRetail" asp-action="OrderListProcessed">Danh sách đã suyệt</a>
+                                            <a asp-controller="AdminRetail" asp-action="OrderListProcessed">Danh sách đã duyệt</a>
+                                        </li>
+                                        <li>
+                                            <a asp-controller="AdminRetail" asp-action="ReturnOrderManage">Đơn hoàn hàng</a>
                                         </li>
                                         
                                     </ul>
@@ -447,13 +451,7 @@
                 @RenderBody()
                 </div>
             <!-- footer start-->
-            <footer class="footer">
-                <div class="row">
-                    <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
-                    </div>
-                </div>
-            </footer>
+           
         <!-- footer end-->
         </div>
     </div>

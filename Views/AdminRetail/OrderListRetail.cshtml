@@ -133,6 +133,11 @@
                                                 </thead>
                                                 <tbody></tbody>
                                             </table>
+                                            <div class="d-flex justify-content-center mt-3">
+                                                <nav>
+                                                    <ul class="pagination" id="paginationContainer"></ul>
+                                                </nav>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -191,35 +196,38 @@
 
     <!-- Theme js -->
     <script src="assets/js/script.js"></script>
-</body>
-@section Scripts {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+</body>
+<script>
 
-    <script>
-        let searching = false;
+    let searching = false;
+    let currentPage = 1;
+    const pageSize = 5;
 
-        async function loadOrders() {
-            if (searching) return; // nếu đang search thì không cập nhật tự động
+    async function loadOrders(page = 1) {
+        if (searching) return;
+        currentPage = page;
 
-            const res = await fetch("/api/OrderRetailApi/pending-orders");
-            const orders = await res.json();
-            renderOrders(orders);
-        }
+        const res = await fetch(`/api/OrderRetailApi/pending-orders?page=${page}&pageSize=${pageSize}`);
+        const data = await res.json();
+        renderOrders(data.orders);
+        renderPagination(data.currentPage, data.totalPages);
+    }
 
-        function renderOrders(orders) {
-            const tbody = document.querySelector("#orderTable tbody");
-            tbody.innerHTML = "";
+    function renderOrders(orders) {
+        const tbody = document.querySelector("#orderTable tbody");
+        tbody.innerHTML = "";
 
-            orders.forEach(order => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${order.id}</td>
-                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-                    <td><a href="/AdminCustomer/Details/${order.customerEmail}">${order.customerEmail}</a></td>
-                    <td>${order.totalAmount.toLocaleString()} đ</td>
-                    <td>${order.status}</td>
-                    <td class="text-nowrap">
-                        <a href="#" class="text-success me-2 p-0 border-0 bg-transparent" title="Accept" onclick="confirmAccept(${order.id})">
+        orders.forEach(order => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${order.id}</td>
+                <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                <td><a href="/AdminCustomer/Details/${order.customerEmail}">${order.customerEmail}</a></td>
+                <td>${order.totalAmount.toLocaleString()} đ</td>
+                <td>${order.status}</td>
+                <td class="text-nowrap">
+                    <a href="#" class="text-success me-2 p-0 border-0 bg-transparent" title="Accept" onclick="confirmAccept(${order.id})">
                             <i class="fa fa-circle-check"></i>
                         </a>
                         <a href="#" class="text-danger me-2 p-0 border-0 bg-transparent" title="Cancel" onclick="confirmCancel(${order.id})">
@@ -228,44 +236,69 @@
                         <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
                             <i class="fas fa-eye"></i>
                         </a>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        async function confirmAccept(id) {
-            if (confirm("Bạn có chắc muốn xác nhận đơn hàng này không?")) {
-                await fetch(`/api/OrderRetailApi/accept/${id}`, { method: 'POST' });
-                loadOrders();
-            }
-        }
-
-        async function confirmCancel(id) {
-            if (confirm("Bạn có chắc muốn hủy đơn hàng này không?")) {
-                await fetch(`/api/OrderRetailApi/cancel/${id}`, { method: 'POST' });
-                loadOrders();
-            }
-        }
-
-        // Search động
-        document.getElementById("searchInput").addEventListener("input", async function () {
-            const keyword = this.value.trim();
-            searching = keyword.length > 0;
-
-            if (!searching) {
-                loadOrders(); // nếu xóa input -> load lại bình thường
-                return;
-            }
-
-            const response = await fetch(`/api/OrderRetailApi/searchbynamestatuspending?keyword=${encodeURIComponent(keyword)}`);
-            const orders = await response.json();
-            renderOrders(orders);
+                </td>
+            `;
+            tbody.appendChild(row);
         });
+    }
 
-        setInterval(loadOrders, 2000); // auto update nếu không search
-        window.onload = loadOrders;
-    </script>
-}
+    function renderPagination(current, total) {
+        const container = document.getElementById("paginationContainer");
+        container.innerHTML = "";
+
+        for (let i = 1; i <= total; i++) {
+            const li = document.createElement("li");
+            li.className = `page-item ${i === current ? "active" : ""}`;
+
+            const btn = document.createElement("button");
+            btn.className = "page-link";
+            btn.textContent = i;
+            btn.onclick = () => loadOrders(i);
+
+            li.appendChild(btn);
+            container.appendChild(li);
+        }
+    }
+
+    async function confirmAccept(id) {
+        if (confirm("Bạn có chắc muốn xác nhận đơn hàng này không?")) {
+            await fetch(`/api/OrderRetailApi/accept/${id}`, { method: 'POST' });
+            loadOrders(currentPage);
+        }
+    }
+
+    async function confirmCancel(id) {
+        if (confirm("Bạn có chắc muốn hủy đơn hàng này không?")) {
+            await fetch(`/api/OrderRetailApi/cancel/${id}`, { method: 'POST' });
+            loadOrders(currentPage);
+        }
+    }
+
+    document.getElementById("searchInput").addEventListener("input", async function () {
+        const keyword = this.value.trim();
+        searching = keyword.length > 0;
+
+        if (!searching) {
+            loadOrders();
+            return;
+        }
+
+        const response = await fetch(`/api/OrderRetailApi/searchbynamestatuspending?keyword=${encodeURIComponent(keyword)}`);
+        const orders = await response.json();
+        renderOrders(orders);
+
+        // Ẩn phân trang khi search
+        document.getElementById("paginationContainer").innerHTML = "";
+    });
+
+    setInterval(() => {
+        if (!searching) {
+            loadOrders(currentPage);
+        }
+    }, 2000);
+
+    window.onload = () => loadOrders(currentPage);
+</script>
+
 
 </html>

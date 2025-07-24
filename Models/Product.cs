@@ -8,17 +8,17 @@ namespace Village_Manager.Models;
 public partial class Product
 {
     public int Id { get; set; }
-
+    [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
     public string Name { get; set; } = null!;
-
+    [Required(ErrorMessage = "Loại sản phẩm là bắt buộc")]
     public int CategoryId { get; set; }
-
+    [Range(0, double.MaxValue, ErrorMessage = "Giá không được âm")]
     public decimal Price { get; set; }
 
     public DateTime? ExpirationDate { get; set; }
-
+    [Required(ErrorMessage = "Danh mục sản phẩm là bắt buộc")]
     public string? ProductType { get; set; }
-
+    [Range(0, int.MaxValue, ErrorMessage = "Số lượng không được âm")]
     public int Quantity { get; set; }
 
     public DateTime? ProcessingTime { get; set; }

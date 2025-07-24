@@ -67,7 +67,7 @@ namespace Village_Manager.Controllers
 
         [HttpGet]
         [Route("productsretail")]
-        public async Task<IActionResult> Products(string sortOrder, string keyword, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Products(string sortOrder, string keyword, int page = 1, int pageSize = 5)
         {
             var query = _context.Products
                 .Include(p => p.ProductImages)
@@ -81,6 +81,8 @@ namespace Village_Manager.Controllers
 
             switch (sortOrder)
             {
+                case "expSoon":
+                    query = query.OrderBy(p => p.ExpirationDate); break;
                 case "name_desc": query = query.OrderByDescending(p => p.Name); break;
                 case "price_asc": query = query.OrderBy(p => p.Price); break;
                 case "price_desc": query = query.OrderByDescending(p => p.Price); break;
@@ -120,8 +122,13 @@ namespace Village_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(Product model)
         {
-
-
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = await _context.ProductCategory
+                    .Select(c => new { c.Id, c.Name })
+                    .ToListAsync();
+                return View(model);
+            }
 
             var product = await _context.Products
                 .Include(p => p.ProductImages)
@@ -132,13 +139,11 @@ namespace Village_Manager.Controllers
                 return NotFound();
             }
 
-
             product.Name = model.Name;
             product.ProductType = model.ProductType;
             product.Quantity = model.Quantity;
             product.Price = model.Price;
-
-
+            product.CategoryId = model.CategoryId;
 
             try
             {
@@ -148,7 +153,12 @@ namespace Village_Manager.Controllers
             catch (DbUpdateException ex)
             {
                 ModelState.AddModelError("", "Lỗi khi cập nhật: " + ex.Message);
-                return RedirectToAction("Products");
+
+                ViewBag.Categories = await _context.ProductCategory
+                    .Select(c => new { c.Id, c.Name })
+                    .ToListAsync();
+
+                return View(model);
             }
         }
 
@@ -209,18 +219,30 @@ namespace Village_Manager.Controllers
             return RedirectToAction("Products");
         }
         //hiển thị sản phẩm hạn chế
-        public async Task<IActionResult> HiddenProducts()
+        public async Task<IActionResult> HiddenProducts(int page = 1, int pageSize = 5)
         {
-            // Lấy danh sách sản phẩm có trong bảng HiddenProduct
+            // Lấy danh sách ID sản phẩm đã bị ẩn
             var hiddenProductIds = await _context.HiddenProduct
                 .Select(h => h.ProductId)
                 .ToListAsync();
 
-            // Lấy thông tin chi tiết sản phẩm tương ứng
+            // Tổng số sản phẩm bị ẩn
+            var totalItems = await _context.Products
+                .Where(p => hiddenProductIds.Contains(p.Id))
+                .CountAsync();
+
+            // Lấy danh sách sản phẩm đã bị ẩn theo trang
             var products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Where(p => hiddenProductIds.Contains(p.Id))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
             return View(products);
         }
@@ -545,7 +567,7 @@ namespace Village_Manager.Controllers
         [HttpGet]
         public IActionResult OrderListRetail()
         {
-            return View(); // Tự động tìm OrderListRetail.cshtml trong thư mục /Views/AdminRetail/
+            return View(); 
         }
         public IActionResult OrderListProcessed()
         {
@@ -563,6 +585,93 @@ namespace Village_Manager.Controllers
 
             return View(order); // gắn vào OrderDetailRetail.cshtml
         }
+
+
+        // xử lý hoàn hàng
+        public async Task<IActionResult> ReturnOrderManage(string searchTerm, int page = 1, int pageSize = 10)
+        {
+            var query = _context.ReturnOrders
+                .Include(r => r.User)
+                .Include(r => r.Order)
+                .Where(r => r.Order.Status == "inprocess");
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(r =>
+                    r.User.Email.Contains(searchTerm) ||
+                    r.Id.ToString().Contains(searchTerm));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var returnOrders = await query
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.SearchTerm = searchTerm;
+
+            return View(returnOrders);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            var returnOrder = await _context.ReturnOrders
+                .Include(r => r.Order) // bao gồm đơn hàng
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (returnOrder == null || returnOrder.Order == null)
+                return NotFound();
+
+           
+            returnOrder.Order.Status = "returned"; // cập nhật đơn hàng
+
+            await _context.SaveChangesAsync();
+
+            
+            return RedirectToAction(nameof(ReturnOrderManage));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var returnOrder = await _context.ReturnOrders
+                .Include(r => r.Order)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (returnOrder == null || returnOrder.Order == null)
+                return NotFound();
+
+            
+            returnOrder.Order.Status = "delivered"; // từ chối → giữ trạng thái giao hàng
+
+            await _context.SaveChangesAsync();
+
+           
+            return RedirectToAction(nameof(ReturnOrderManage));
+        }
+
+        public async Task<IActionResult> ReturnOrderDetails(int id)
+        {
+            var returnOrder = await _context.ReturnOrders
+                .Include(r => r.User)
+                .Include(r => r.Order)
+                .ThenInclude(o => o.RetailOrderItems) // nếu cần
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (returnOrder == null)
+            {
+                return NotFound();
+            }
+
+            return View(returnOrder);
+        }
+
     }
 }
 

@@ -18,8 +18,8 @@
                                     <div class="form-group mb-2 mb-sm-0">
                                         <select id="sortOption" class="form-select">
                                             <option value=""> Sắp xếp theo </option>
-                                            <option value="expSoon">Hạn sử dụng:thấp - cao</option>
-                                            <option value="expLate">Hạn sử dụng:cao - thấp</option>
+                                            <option value="expiry_asc">Hạn sử dụng: Thấp → Cao</option>
+                                            <option value="expiry_desc">Hạn sử dụng: Cao → Thấp</option>
                                             <option value="qtyAsc">Số lượng: Ít → Nhiều</option>
                                             <option value="qtyDesc">Số lượng: Nhiều → Ít</option>
                                         </select>
@@ -62,8 +62,12 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle"><i class="ri-delete-bin-line"></i></a>
+                                                                <form asp-action="SoftDeleteProduct" asp-controller="AdminRetail" method="post" style="display:inline;">
+                                                                    <input type="hidden" name="productId" value="@product.Id" />
+                                                                    <button type="submit" class="btn btn-link p-0" title="Ẩn sản phẩm" onclick="return confirm('Bạn có chắc chắn muốn ẩn sản phẩm này?');">
+                                                                        <i class="ri-delete-bin-line text-danger"></i>
+                                                                    </button>
+                                                                </form>
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -72,6 +76,30 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                <nav aria-label="Page navigation" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        @if (ViewBag.CurrentPage > 1)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-sortOrder="@ViewBag.CurrentSort">Trước</a>
+                                            </li>
+                                        }
+
+                                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                        {
+                                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                                <a class="page-link" asp-route-page="@i" asp-route-sortOrder="@ViewBag.CurrentSort">@i</a>
+                                            </li>
+                                        }
+
+                                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-sortOrder="@ViewBag.CurrentSort">Tiếp</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
 
                             </div>
                         </div>

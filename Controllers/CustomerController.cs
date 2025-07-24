@@ -273,7 +273,7 @@ namespace Village_Manager.Controllers
             var order = await _context.RetailOrders.FindAsync(orderId);
             if (order != null && order.Status == "delivered")
             {
-                order.Status = "returned";
+                order.Status = "inprocess";
 
                 _context.ReturnOrders.Add(new ReturnOrder
                 {

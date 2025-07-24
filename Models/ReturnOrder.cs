@@ -33,7 +33,7 @@ namespace Village_Manager.Models
     public virtual User? User { get; set; }
         public string ImageUrl { get; set; }
         // Navigation property
-        public virtual User Users { get; set; }
+        public virtual RetailOrder Order { get; set; }
     }
 
 }
