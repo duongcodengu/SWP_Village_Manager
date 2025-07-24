@@ -64,15 +64,16 @@ public class AdminWarehouseController : Controller
         decimal currentYear = DateTime.Now.Year;
 
         // Bán lẻ (Retail)
-        var retailRevenue = _context.RetailOrders
-            .Where(ro => ro.Status == "confirmed"
-                && ro.ConfirmedAt.HasValue
-                && ro.ConfirmedAt.Value.Year == currentYear)
-            .Join(_context.RetailOrderItems,
-                    ro => ro.Id,
-                    ri => ri.OrderId,
-                    (ro, ri) => ri.Quantity * ri.UnitPrice)
-            .Sum();
+        var retailRevenue = _context.Payments
+            .Where(p => p.OrderType == "retail"
+                && p.PaymentType == "receive"
+                && ((DateTime)p.PaidAt).Year == currentYear)
+            .Join(_context.RetailOrders,
+                  p => p.OrderId,
+                  o => o.Id,
+                  (p, o) => new { Payment = p, Order = o })
+            .Where(x => x.Order.Status == "delivered")
+            .Sum(x => x.Payment.Amount);
 
         decimal totalRevenue = (retailRevenue ?? 0);
         ViewBag.TotalRevenue = totalRevenue;
@@ -1186,7 +1187,7 @@ public class AdminWarehouseController : Controller
 
         return Redirect("/admin/shipper-requests");
     }
-    [HttpGet("listOrder")]
+    [HttpGet("listorder")]
     public IActionResult ListRequestOrder()
     {
         // Kiểm tra quyền admin
@@ -1197,7 +1198,6 @@ public class AdminWarehouseController : Controller
         }
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
-            .Where(o => o.Status == "shipped")
             .ToList();
 
         var viewModel = shippedOrders.Select(o => new RetailOrderViewModel
@@ -1212,7 +1212,6 @@ public class AdminWarehouseController : Controller
         }).ToList();
 
         return View(viewModel);
-
     }
 
     // Trang: Hiển thị đơn hàng chờ duyệt
@@ -1260,7 +1259,7 @@ public class AdminWarehouseController : Controller
             return NotFound();
         }
 
-        order.Status = "shipped";
+        order.Status = "confirmed";
         _context.SaveChanges();
 
         return RedirectToAction("ListRequestOrder");

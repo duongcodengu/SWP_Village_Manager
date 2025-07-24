@@ -239,9 +239,16 @@ namespace Village_Manager.Controllers
         {
             int shipperId = HttpContext.Session.GetInt32("ShipperId") ?? 0;
             var order = _context.RetailOrders.Include(o => o.User)
+                .Include(o => o.User)
+                .Include(o => o.RetailOrderItems)
                 .FirstOrDefault(o => o.Id == retailOrderId && o.Status == "confirmed");
             if (order != null && shipperId > 0)
             {
+                // Tính tổng tiền
+                decimal? totalAmount = _context.RetailOrderItems
+                    .Where(i => i.OrderId == order.Id)
+                    .Sum(i => i.Quantity * i.UnitPrice);
+
                 // Tạo bản ghi giao hàng
                 var delivery = new Delivery
                 {
@@ -254,8 +261,21 @@ namespace Village_Manager.Controllers
                 };
                 _context.Deliveries.Add(delivery);
 
+                // Tạo bản ghi thanh toán
+                var payment = new Payment
+                {
+                    UserId = order.User.Id,
+                    OrderId = order.Id,
+                    OrderType = "retail",
+                    Amount = totalAmount,
+                    PaidAt = DateTime.Now,
+                    Method = "cash",
+                    PaymentType = "receive"
+                };
+                _context.Payments.Add(payment);
+
                 // Cập nhật trạng thái đơn hàng
-                order.Status = "shipped"; // Đúng với CHECK constraint
+                order.Status = "delivered"; // Đúng với CHECK constraint
                 _context.SaveChanges();
                 TempData["Success"] = "Nhận đơn thành công!";
             }

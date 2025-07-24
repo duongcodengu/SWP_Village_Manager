@@ -326,6 +326,17 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
+            if (_context.Users.Any(u => u.Phone == phone))
+            {
+                ViewBag.Error = "Số điện thoại đã được sử dụng.";
+                return View();
+            }
+            if (_context.Users.Any(u => u.Username == fullname))
+            {
+                ViewBag.Error = "Username đã được sử dụng.";
+                return View();
+            }
+
             // Tạo user mới
             var user = new User
             {
@@ -349,8 +360,6 @@ namespace Village_Manager.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-
 
         // Đăng xuất
         [Route("logout")]

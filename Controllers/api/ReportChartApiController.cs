@@ -18,18 +18,20 @@ namespace Village_Manager.Controllers.api
         [HttpGet("total-revenue-by-month")]
         public IActionResult TotalRevenueByMonth([FromQuery] int year = 2024)
         {
-            // BÁN LẺ: Lấy doanh thu theo tháng
-            var retailQuery = from order in _context.RetailOrders
-                              where order.ConfirmedAt.HasValue && order.ConfirmedAt.Value.Year == year
-                              join item in _context.RetailOrderItems on order.Id equals item.OrderId
-                              group new { order, item } by order.ConfirmedAt.Value.Month into g
+            // BÁN LẺ: Lấy doanh thu theo tháng từ bảng Payment
+            var retailQuery = from payment in _context.Payments
+                              where payment.OrderType == "retail"
+                                    && payment.PaymentType == "receive"
+                                    && payment.PaidAt.HasValue
+                                    && payment.PaidAt.Value.Year == year
+                              group payment by payment.PaidAt.Value.Month into g
                               select new
                               {
                                   Month = g.Key,
-                                  TotalRevenue = g.Sum(x => x.item.Quantity * x.item.UnitPrice)
+                                  TotalRevenue = g.Sum(x => x.Amount)
                               };
 
-            // Tạo danh sách 12 tháng, nếu tháng nào không có sẽ gán doanh thu = 0
+            // Tạo danh sách 12 tháng, nếu tháng nào không có thì gán doanh thu = 0
             var months = Enumerable.Range(1, 12).ToList();
 
             var chartData = months.Select(m =>
@@ -45,6 +47,5 @@ namespace Village_Manager.Controllers.api
         }
             });
         }
-
     }
 }

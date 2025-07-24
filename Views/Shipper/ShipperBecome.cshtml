@@ -306,13 +306,16 @@
                     products.
                 </p>
             </div>
-            <form asp-controller="Shipper" asp-action="ShipperBecome" method="post">
+            <form id="shipperForm" asp-controller="Shipper" asp-action="ShipperBecome" method="post">
                 <div class="row g-3">
 
                     <!-- Họ tên -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="fullName" name="FullName" placeholder="Họ tên" required />
+                            <input type="text" class="form-control" id="fullName" name="FullName"
+                                   placeholder="Họ tên" required
+                                   pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                   title="Họ tên chỉ được chứa chữ cái và khoảng trắng." />
                             <label for="fullName">Họ và tên</label>
                         </div>
                     </div>
@@ -320,7 +323,8 @@
                     <!-- Số điện thoại -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="phone" name="Phone" placeholder="Số điện thoại" required />
+                            <input type="text" class="form-control" id="phone" name="Phone" placeholder="Số điện thoại" required pattern="^0[0-9]{9}$"
+                                   title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0" />
                             <label for="phone">Số điện thoại</label>
                         </div>
                     </div>
@@ -352,9 +356,25 @@
                         <div class="form-floating">
                             <input type="text" class="form-control" id="detailAddress" name="AddressDetail" placeholder="Số nhà, tên đường..." required />
                             <label for="detailAddress">Địa chỉ cụ thể (số nhà, đường...)</label>
-                            <input type="hidden" name="Address" id="fullAddress" />
+                            <input type="hidden" name="Address" id="fullAddress" required />
                         </div>
                     </div>
+
+                    <script>
+                        document.getElementById('fullName').addEventListener('input', function (e) {
+                            this.value = this.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                        });
+                        // chống pasted văn bản sai
+                        document.getElementById('fullName').addEventListener('paste', function (e) {
+                            e.preventDefault();
+                            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                            const cleaned = pasted.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                            this.value += cleaned;
+                        });
+                        document.getElementById("phone").addEventListener("input", function () {
+                                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                        });
+                    </script>
                     <!-- Phương tiện -->
                     <div class="col-12">
                         <div class="form-floating">
@@ -428,7 +448,7 @@
                 });
 
                 // Khi submit → ghép địa chỉ
-                document.querySelector("form").addEventListener("submit", function (e) {
+                document.getElementById("shipperForm").addEventListener("submit", function (e) {
                     const provinceText = provinceSelect.options[provinceSelect.selectedIndex]?.text;
                     const districtText = districtSelect.options[districtSelect.selectedIndex]?.text;
                     const wardText = wardSelect.options[wardSelect.selectedIndex]?.text;
@@ -444,7 +464,6 @@
                     fullAddressInput.value = `${detail}, ${wardText}, ${districtText}, ${provinceText}`;
                 });
             </script>
-
         </div>
     </section>
     <!-- Selling Section End -->
