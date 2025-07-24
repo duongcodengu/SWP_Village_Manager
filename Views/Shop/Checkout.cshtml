@@ -85,8 +85,9 @@
                                     </div>
 
                                     @{
-                                        var locations = ViewBag.Location as List<Village_Manager.Models.UserLocation> ?? new List<Village_Manager.Models.UserLocation>(); int index = 0;
+                                        var address = ViewBag.Address as Village_Manager.Models.Address;
                                     }
+
                                     <div class="checkout-box">
                                         <div class="checkout-title">
                                             <h4>Địa chỉ nhận hàng</h4>
@@ -94,54 +95,32 @@
 
                                         <div class="checkout-detail">
                                             <div class="row g-4">
-                                                @if (locations.Any())
+                                                @if (address != null)
                                                 {
-                                                    foreach (var loc in locations)
-                                                    {
-                                                        var radioId = "loc_" + loc.Id;
-                                                        <div class="col-xxl-6 col-lg-12 col-md-6">
-                                                            <div class="delivery-address-box">
-                                                                <div>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input"
-                                                                               type="radio"
-                                                                               name="SelectedAddress"
-                                                                               id="@radioId"
-                                                                               value="@loc.Id"
-                                                                               @(index == 0 ? "checked" : "") />
-                                                                    </div>
-
-                                                                    <div class="label">
-                                                                        <label for="@radioId">@($"Address {index + 1}")</label>
-                                                                    </div>
-
-                                                                    <ul class="delivery-address-detail">
-                                                                        <li>
-                                                                            <h4 class="fw-500">@loc.Address</h4>
-                                                                        </li>
-                                                                        <!-- Nếu không có City/Province riêng, chỉ để địa chỉ đầy đủ hoặc label -->
-                                                                        <!--<li>
-                                                                            <p class="text-content">
-                                                                                <span class="text-title">Địa chỉ:</span>
-                                                                                @loc.Address
-                                                                            </p>
-                                                                        </li>-->
-                                                                    </ul>
-                                                                </div>
+                                                    <div class="col-12">
+                                                        <div class="delivery-address-box">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input"
+                                                                       type="radio"
+                                                                       name="SelectedAddress"
+                                                                       id="mainAddress"
+                                                                       value="@address.Id"
+                                                                       checked />
+                                                                <label for="mainAddress" class="fw-500">@address.AddressLine</label>
                                                             </div>
                                                         </div>
-                                                        index++;
-                                                    }
+                                                    </div>
                                                 }
                                                 else
                                                 {
                                                     <div class="col-12">
-                                                        <div class="alert alert-warning">Bạn không có địa chỉ nào được lưu.</div>
+                                                        <div class="alert alert-warning">Bạn chưa có địa chỉ nhận hàng.</div>
                                                     </div>
                                                 }
                                             </div>
                                         </div>
                                     </div>
+
                                 </li>
                                 <li>
                                     <div class="checkout-icon">

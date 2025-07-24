@@ -53,7 +53,7 @@ CREATE TABLE Shipper (
     CONSTRAINT CK_Shipper_Phone_OnlyDigits CHECK (phone NOT LIKE '%[^0-9]%'),
     vehicle_info NVARCHAR(MAX), -- bắt buộc phải có
     status NVARCHAR(50) 
-        CONSTRAINT DF_status DEFAULT 'pending',
+    CONSTRAINT DF_status DEFAULT 'pending',
     CONSTRAINT CHK_status CHECK (status IN ('pending', 'approved', 'rejected', 'inactive')),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );

@@ -307,7 +307,10 @@
                     <!-- Họ tên -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="fullName" name="FullName" placeholder="Họ tên" required />
+                            <input type="text" class="form-control" id="fullName" name="FullName"
+                                   placeholder="Họ tên" required
+                                   pattern="^[a-zA-ZÀ-ỹ\s]+$"
+                                   title="Họ tên chỉ được chứa chữ cái và khoảng trắng." />                            
                             <label for="fullName">Họ và tên</label>
                         </div>
                     </div>
@@ -315,7 +318,8 @@
                     <!-- Số điện thoại -->
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="phone" name="Phone" placeholder="Số điện thoại" required />
+                            <input type="text" class="form-control" id="phone" name="Phone" placeholder="Số điện thoại" required pattern="^0[0-9]{9}$"
+                                   title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0" />
                             <label for="phone">Số điện thoại</label>
                         </div>
                     </div>
@@ -350,6 +354,22 @@
                             <input type="hidden" name="Address" id="fullAddress" required  />
                         </div>
                     </div>
+
+                    <script>
+                        document.getElementById('fullName').addEventListener('input', function (e) {
+                            this.value = this.value.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                        });
+                        // chống pasted văn bản sai
+                        document.getElementById('fullName').addEventListener('paste', function (e) {
+                            e.preventDefault();
+                            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+                            const cleaned = pasted.replace(/[^a-zA-ZÀ-ỹ\s]/g, '');
+                            this.value += cleaned;
+                        });
+                        document.getElementById("phone").addEventListener("input", function () {
+                                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                        });
+                    </script>
 
                     <!-- Nút gửi -->
                     <div class="col-12 text-end mt-3">

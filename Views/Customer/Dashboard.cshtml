@@ -88,12 +88,6 @@
                                     Tài khoản
                                 </button>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="pills-address-tab" data-bs-toggle="pill"
-                                        data-bs-target="#pills-address" type="button" role="tab">
-                                    <i data-feather="map-pin"></i>Địa chỉ
-                                </button>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -244,90 +238,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="tab-pane fade" id="pills-address" role="tab" aria-labelledby="pills-address-tab">
-                                <div class="dashboard-address">
-                                    <div class="title title-flex">
-                                        <div>
-                                            <h2>Địa chỉ</h2>
-                                            <span class="title-leaf">
-                                                <svg class="icon-width bg-gray">
-                                                    <use xlink:href="~/svg/leaf.svg#leaf"></use>
-                                                </svg>
-                                            </span>
-                                        </div>
-
-                                        <button class="btn theme-bg-color text-white btn-sm fw-bold mt-lg-0 mt-3"
-                                                data-bs-toggle="modal" data-bs-target="#add-address">
-                                            <i data-feather="plus" class="me-2"></i> Add New Address
-                                        </button>
-                                    </div>
-
-                                    <div class="row g-sm-4 g-3">
-                                        @foreach (var userLocation in location)
-                                        {
-                                            <div class="col-xxl-4 col-xl-6 col-lg-12 col-md-6">
-                                                <div class="address-box">
-                                                    <div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="jack"
-                                                                   id="flexRadioDefault1">
-                                                        </div>
-
-                                                        <div class="label">
-                                                            <label>@userLocation.Label</label>
-                                                        </div>
-
-                                                        <div class="table-responsive address-table">
-                                                            <table class="table">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="2">@userLocation.User.Username</td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td>Địa chỉ: </td>
-                                                                        <td>
-                                                                            <p>
-                                                                                @userLocation.Address
-                                                                            </p>
-                                                                        </td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td>Số điện thoại: </td>
-                                                                        <td>@userLocation.User.Phone</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="button-group">
-                                                        <button class="btn btn-sm add-button w-100 edit-btn"
-                                                                data-id="@userLocation.Id"
-                                                                data-label="@userLocation.Label"
-                                                                data-address="@userLocation.Address"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#edit-address">
-                                                            <i data-feather="edit"></i>
-                                                            Sửa
-                                                        </button>
-                                                        <button class="btn btn-sm add-button w-100 remove-btn"
-                                                                data-id="@userLocation.Id"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#remove-address">
-                                                            <i data-feather="trash-2"></i>
-                                                            Xóa
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-
                             <style>
                                 .order-history-container {
                                     display: flex;

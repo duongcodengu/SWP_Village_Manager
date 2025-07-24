@@ -472,10 +472,6 @@ namespace Village_Manager.Controllers
         {
             if (string.IsNullOrEmpty(email))
             {
-                return RedirectToAction("Forgot");
-            }
-            else if (string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
-            {
                 return View("404");
             }
             ViewBag.Email = email;

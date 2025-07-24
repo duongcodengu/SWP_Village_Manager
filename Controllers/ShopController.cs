@@ -144,33 +144,43 @@ public class ShopController : Controller
 
     public IActionResult Checkout()
     {
+        // Lưu thông tin mã giảm giá từ session vào TempData (nếu cần thiết)
         TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode");
         TempData["DiscountAmount"] = HttpContext.Session.GetString("DiscountAmount");
-        // Lấy giỏ hàng từ Session
+
+        // Lấy giỏ hàng từ session
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         foreach (var item in cartItems)
         {
             item.Product = _context.Products
-            .Include(p => p.ProductImages)
-            .FirstOrDefault(p => p.Id == item.ProductId);
+                .Include(p => p.ProductImages)
+                .FirstOrDefault(p => p.Id == item.ProductId);
+
+            // Đảm bảo hình ảnh chính
             DefaultImage.EnsureSingle(item.Product, _env);
         }
-        // Lấy địa chỉ của user từ Session
+
+        // Lấy địa chỉ từ bảng Address (chỉ 1 bản ghi duy nhất)
         int? userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
             return RedirectToAction("Login", "Account");
         }
-        var locations = _context.UserLocations
-            .Where(l => l.UserId == userId.Value)
-            .ToList();
-        ViewBag.Location = locations;
 
+        // Lấy duy nhất 1 địa chỉ của user
+        var address = _context.Addresses
+            .FirstOrDefault(a => a.UserId == userId.Value);
+
+        ViewBag.Address = address;
+
+        // Gán mã giảm giá vào ViewBag
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
         ViewBag.DiscountCode = HttpContext.Session.GetString("DiscountCode");
 
+        // Trả về view với danh sách sản phẩm trong giỏ hàng
         return View(cartItems);
     }
+
 
     [HttpGet]
     [Route("shop/success")]

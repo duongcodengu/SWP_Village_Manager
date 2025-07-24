@@ -262,7 +262,7 @@
                                     .then(res => res.ok ? res.json() : Promise.reject(res))
                                     .then(data => {
                                         if (data.length === 0) {
-                                            tbody.innerHTML = `<tr><td colspan="3" class="text-center">No data available</td></tr>`;
+                                            tbody.innerHTML = `<tr><td colspan="3" class="text-center">Không có dữ liệu</td></tr>`;
                                             return;
                                         }
 
@@ -387,7 +387,7 @@
                                                     else
                                                     {
                                                         <tr>
-                                                            <td colspan="5" class="text-center">No orders available</td>
+                                                            <td colspan="5" class="text-center">Không có dũ liệu</td>
                                                         </tr>
                                                     }
 

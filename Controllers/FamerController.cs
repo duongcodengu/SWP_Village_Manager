@@ -41,14 +41,25 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra nếu đã gửi yêu cầu rồi
-            var existing = await _context.FarmerRegistrationRequests
+            var existingRequest = await _context.FarmerRegistrationRequests
                 .AnyAsync(r => r.UserId == userId && r.Status == "pending");
 
-            if (existing)
+            if (existingRequest)
             {
                 TempData["Error"] = "Bạn đã gửi yêu cầu rồi. Vui lòng chờ xét duyệt.";
                 return RedirectToAction("FamerBecome");
             }
+
+            // Kiểm tra nếu số điện thoại đã tồn tại trong hệ thống
+            var phoneExists = await _context.FarmerRegistrationRequests
+                .AnyAsync(r => r.Phone == Phone);
+
+            if (phoneExists)
+            {
+                TempData["Error"] = "Số điện thoại này đã được sử dụng để đăng ký.";
+                return RedirectToAction("FamerBecome");
+            }
+
             // Kiểm tra địa chỉ
             if (string.IsNullOrWhiteSpace(Address))
             {
@@ -92,6 +103,7 @@ namespace Village_Manager.Controllers
             TempData["Success"] = "Yêu cầu đã được gửi. Vui lòng chờ xét duyệt.";
             return RedirectToAction("FamerBecome");
         }
+
 
         [HttpGet]
         [Route("dashboardfamer")]

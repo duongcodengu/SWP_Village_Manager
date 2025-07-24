@@ -80,12 +80,12 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                }
                                 <div class="home-detail p-center-left home-p-sm w-75">
                                     <div>
-                                        <h3 class="mt-0 theme-color fw-bold">Sản phẩm</h3>
+                                        @* <h3 class="mt-0 theme-color fw-bold">Sản phẩm</h3>
                                         <h4 class="text-danger">Nông sản</h4>
                                         <p class="organic">Bắt đầu mua sắm mỗi ngày với thực phẩm hữu cơ</p>
-                                        <a href="shop-left-sidebar.html" class="shop-button">
+                                        <a class="shop-button">
                                             Mua ngay <i class="fa-solid fa-right-long"></i>
-                                        </a>
+                                        </a> *@
                                     </div>
                                 </div>
                             </div>
@@ -106,36 +106,32 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                         <div class="category-menu">
                             <h3>Danh mục</h3>
                             <ul>
-                                @if(ViewBag.ProductCategories != null)
+                                @if (ViewBag.ProductCategories != null)
                                 {
-                                    @foreach (var category in ViewBag.ProductCategories)
+                                    foreach (var category in ViewBag.ProductCategories)
                                     {
                                         <li>
-                                            
-                                                @if (!String.IsNullOrEmpty(category.ImageUrl))
-                                                {
-                                                     <div class="categories-list">
-                                                    @* <img src="@Url.Content(category.ImageUrl)" class="blur-up lazyload" alt="" /> *@
-                                                          <h5> 
-                                                              <a href="shop-left-sidebar.html" > @category.Name</a>
-                                                              </h5>
-                                                               </div>
-                                                  
-                                                }
-                                                else
-                                                {
+                                            @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                            {
+                                                <div class="categories-list">
                                                     <h5>
-                                                        <a href="shop-left-sidebar.html">Không tìm thấy danh mục</a>
+                                                        <a href="@Url.Action("Search", "Shop", new { categoryIds = category.Id })">
+                                                            @category.Name
+                                                        </a>
                                                     </h5>
-                                                }
-                                              
-                                           
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <h5>
+                                                    <a href="@Url.Action("Search", "Shop", new { categoryIds = category.Id })">
+                                                        @category.Name
+                                                    </a>
+                                                </h5>
+                                            }
                                         </li>
                                     }
                                 }
-
-                                
-
                             </ul>
                         </div>
 
@@ -170,14 +166,14 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 }
                                 <div class="home-detail p-top-left home-p-medium">
                                     <div>
-                                        <h4 class="text-yellow text-exo home-banner">Organic</h4>
+                                        @* <h4 class="text-yellow text-exo home-banner">Organic</h4>
                                         <h2 class="text-uppercase fw-normal mb-0 text-russo theme-color">fresh</h2>
                                         <h2 class="text-uppercase fw-normal text-title">Vegetables</h2>
                                         <p class="mb-3">Super Offer to 50% Off</p>
                                         <button onclick="location.href = 'shop-left-sidebar.html';"
                                                 class="btn btn-animation btn-md mend-auto">
                                             Mua ngay <i class="fa-solid fa-arrow-right icon"></i>
-                                        </button>
+                                        </button> *@
                                     </div>
                                 </div>
                             </div>
@@ -449,7 +445,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 <!-- fallback nếu không có dữ liệu -->
                                 <div>
                                     <div class="product-box">
-                                        <div class="product-image">
+                                        @* <div class="product-image">
                                             <a href="product-left-thumbnail.html">
                                                 <img src="~/images/vegetable/product/4.png"
                                                      class="img-fluid blur-up lazyload" alt="Dark Chocolate" />
@@ -463,7 +459,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                 <span class="theme-color price">$26.69</span>
                                                 <del>28.56</del>
                                             </h5>
-                                        </div>
+                                        </div> *@
                                     </div>
                                 </div>
                             }
@@ -536,7 +532,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
             <ul class="product-list">
                 <li>
                     <div class="offer-product">
-                        <a href="product-left-thumbnail.html" class="offer-image">
+                        @* <a href="product-left-thumbnail.html" class="offer-image">
                             <img src="~/images/vegetable/product/19.png"
                                  class="blur-up lazyload" alt="Fallback Product" />
                         </a>
@@ -548,7 +544,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                 <span>1 L</span>
                                 <h6 class="price theme-color">$10.09</h6>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
                 </li>
             </ul>
