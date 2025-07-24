@@ -244,10 +244,6 @@ namespace Village_Manager.Controllers
                 .FirstOrDefault(o => o.Id == retailOrderId && o.Status == "confirmed");
             if (order != null && shipperId > 0)
             {
-                // Tính tổng tiền
-                decimal? totalAmount = _context.RetailOrderItems
-                    .Where(i => i.OrderId == order.Id)
-                    .Sum(i => i.Quantity * i.UnitPrice);
 
                 // Tạo bản ghi giao hàng
                 var delivery = new Delivery
@@ -261,21 +257,8 @@ namespace Village_Manager.Controllers
                 };
                 _context.Deliveries.Add(delivery);
 
-                // Tạo bản ghi thanh toán
-                var payment = new Payment
-                {
-                    UserId = order.User.Id,
-                    OrderId = order.Id,
-                    OrderType = "retail",
-                    Amount = totalAmount,
-                    PaidAt = DateTime.Now,
-                    Method = "cash",
-                    PaymentType = "receive"
-                };
-                _context.Payments.Add(payment);
-
                 // Cập nhật trạng thái đơn hàng
-                order.Status = "delivered"; // Đúng với CHECK constraint
+                order.Status = "shipped"; // Đúng với CHECK constraint
                 _context.SaveChanges();
                 TempData["Success"] = "Nhận đơn thành công!";
             }
@@ -466,14 +449,18 @@ namespace Village_Manager.Controllers
             return RedirectToAction("DeliveriesShipper");
         }
 
+
         [HttpPost]
         public IActionResult ConfirmDeliveryProof(int id, string note, IFormFile proofImage)
         {
             var delivery = _context.Deliveries.FirstOrDefault(d => d.Id == id);
             var shipperId = HttpContext.Session.GetInt32("ShipperId");
+
             if (delivery != null && delivery.Status == "in_transit" && shipperId.HasValue)
             {
                 string imagePath = null;
+
+                // Xử lý lưu ảnh nếu có
                 if (proofImage != null && proofImage.Length > 0)
                 {
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -486,6 +473,8 @@ namespace Village_Manager.Controllers
                     }
                     imagePath = "/uploads/" + fileName;
                 }
+
+                // Lưu thông tin DeliveryProof
                 _context.DeliveryProofs.Add(new DeliveryProof
                 {
                     DeliveryId = delivery.Id,
@@ -494,12 +483,47 @@ namespace Village_Manager.Controllers
                     Note = note,
                     CreatedAt = DateTime.Now
                 });
+
+                // Cập nhật trạng thái giao hàng
                 delivery.Status = "delivered";
                 delivery.EndTime = DateTime.Now;
+
+                // Xử lý cập nhật RetailOrder và tạo payment nếu cần
+                var order = _context.RetailOrders.FirstOrDefault(o => o.Id == delivery.OrderId);
+                if (order != null && order.Status != "delivered")
+                {
+                    order.Status = "delivered";
+                    order.ConfirmedAt = DateTime.Now;
+
+                    // Tính tổng tiền đơn hàng
+                    var totalAmount = _context.RetailOrderItems
+                        .Where(i => i.OrderId == order.Id)
+                        .Sum(i => i.Quantity * i.UnitPrice);
+
+                    // Kiểm tra đã có payment chưa
+                    bool alreadyPaid = _context.Payments.Any(p => p.OrderId == order.Id && p.OrderType == "retail");
+                    if (!alreadyPaid)
+                    {
+                        var payment = new Payment
+                        {
+                            UserId = order.UserId,
+                            OrderId = order.Id,
+                            OrderType = "retail",
+                            Amount = totalAmount,
+                            PaidAt = DateTime.Now,
+                            Method = "cash",
+                            PaymentType = "receive"
+                        };
+                        _context.Payments.Add(payment);
+                    }
+                }
+
                 _context.SaveChanges();
             }
+
             return RedirectToAction("DeliveriesShipper");
         }
+
 
         [HttpPost]
         public IActionResult ReportIssue(int id, string reason)
