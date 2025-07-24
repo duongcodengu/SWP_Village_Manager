@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Đơn hàng đã xử lý";
-    Layout = "~/Views/Shared/_AdminFamViet.cshtml";
+    Layout = "~/Views/Shared/_AdminRetail.cshtml";
     
     // Function to translate order status to Vietnamese
     string GetStatusInVietnamese(string status)
@@ -253,9 +253,10 @@
 <script>
     let currentPage = 1;
     const pageSize = 10;
+    const REFRESH_INTERVAL = 10000;
 
     document.getElementById("searchInput").addEventListener("input", () => {
-        currentPage = 1; // Reset về trang 1 khi search mới
+        currentPage = 1;
         fetchProcessedOrders();
     });
 
@@ -263,26 +264,38 @@
         const searchTerm = document.getElementById("searchInput").value.trim();
 
         const res = await fetch(`/api/OrderRetailApi/processed-orders?page=${currentPage}&pageSize=${pageSize}&searchTerm=${encodeURIComponent(searchTerm)}`);
+        if (!res.ok) {
+            console.error("Không thể tải dữ liệu");
+            return;
+        }
+
         const data = await res.json();
-        const orders = data.orders;
+        const orders = data.orders || [];
 
         const tableBody = document.getElementById("processedOrdersTable");
         tableBody.innerHTML = "";
 
+        if (orders.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Không có đơn hàng nào.</td>
+                </tr>`;
+            return;
+        }
+
         orders.forEach(order => {
-            const tr = document.createElement('tr');
+            const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${order.id}</td>
-                <td>${new Date(order.date).toLocaleDateString()}</td>
+                <td>${new Date(order.date).toLocaleDateString('vi-VN')}</td>
                 <td>${order.status}</td>
-                <td>${order.customerEmail}</td>
-                <td>${order.totalAmount.toLocaleString('vi-VN')}₫</td>
+                <td>${order.customerEmail || 'Khách vãng lai'}</td>
+                <td>${order.totalAmount ? order.totalAmount.toLocaleString('vi-VN') + '₫' : 'Liên hệ'}</td>
                 <td>
                     <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Chi tiết">
                         <i class="fas fa-eye"></i>
                     </a>
-                </td>
-            `;
+                </td>`;
             tableBody.appendChild(tr);
         });
 
@@ -299,11 +312,30 @@
             btn.innerText = i;
             btn.className = `btn btn-sm ${i === current ? 'btn-primary' : 'btn-outline-primary'} me-1`;
             btn.addEventListener("click", () => {
-                currentPage = i; // cập nhật đúng currentPage
-                fetchProcessedOrders(); // gọi lại đúng page
+                currentPage = i;
+                fetchProcessedOrders();
             });
             pagination.appendChild(btn);
-    <script>
+        }
+    }
+
+    function initialize() {
+        fetchProcessedOrders();
+        const interval = setInterval(fetchProcessedOrders, REFRESH_INTERVAL);
+
+        window.addEventListener("beforeunload", () => {
+            clearInterval(interval);
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initialize);
+    } else {
+        initialize();
+    }
+</script>
+
+<script>
         // Function to translate status to Vietnamese
         function translateStatus(status) {
             const statusMap = {
@@ -321,92 +353,5 @@
     fetchProcessedOrders();
     setInterval(fetchProcessedOrders, 2000);
 </script>
-
-
-        // Format date to dd/MM/yyyy
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN');
-        }
-
-        async function fetchProcessedOrders() {
-            try {
-                const res = await fetch('/api/OrderRetailApi/processed-orders');
-                if (!res.ok) throw new Error('Không thể tải dữ liệu đơn hàng');
-                
-                const orders = await res.json();
-                const tableBody = document.getElementById('processedOrdersTable');
-                
-                if (!tableBody) return;
-                
-                tableBody.innerHTML = "";
-
-                if (orders.length === 0) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td colspan="6" class="text-center">
-                            <div class="alert alert-info">Không có đơn hàng nào đã xử lý</div>
-                        </td>
-                    `;
-                    tableBody.appendChild(tr);
-                    return;
-                }
-
-                orders.forEach(order => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${order.id}</td>
-                        <td>${formatDate(order.date)}</td>
-                        <td>${translateStatus(order.status)}</td>
-                        <td>${order.customerEmail || 'Khách hàng'}</td>
-                        <td>${order.totalAmount ? order.totalAmount.toLocaleString('vi-VN') + '₫' : 'Liên hệ'}</td>
-                        <td>
-                            <a href="/AdminRetail/OrderDetailRetail/${order.id}" class="text-info me-2" title="Xem chi tiết">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            } catch (error) {
-                console.error('Lỗi khi tải đơn hàng:', error);
-                const tableBody = document.getElementById('processedOrdersTable');
-                if (tableBody) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="text-center text-danger">
-                                Đã xảy ra lỗi khi tải dữ liệu. Vui lòng thử lại sau.
-                            </td>
-                        </tr>
-                    `;
-                }
-            }
-        }
-
-        // Tự động cập nhật mỗi 10 giây
-        const REFRESH_INTERVAL = 10000; // 10 giây
-        
-        // Hàm khởi tạo
-        function initialize() {
-            // Tải dữ liệu ngay lập tức
-            fetchProcessedOrders();
-            
-            // Thiết lập tự động cập nhật
-            const refreshInterval = setInterval(fetchProcessedOrders, REFRESH_INTERVAL);
-            
-            // Dọn dẹp khi trang đóng
-            window.addEventListener('beforeunload', () => {
-                clearInterval(refreshInterval);
-            });
-        }
-        
-        // Chạy khi trang đã tải xong
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initialize);
-        } else {
-            initialize();
-        }
-    </script>
-}
 
 </html>
