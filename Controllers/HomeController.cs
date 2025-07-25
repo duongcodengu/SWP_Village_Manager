@@ -231,7 +231,7 @@ namespace Village_Manager.Controllers
             switch (user.RoleId)
                 {
                     case 1: // Admin
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Dahboard", "AdminWarehouse");
 
                     case 2: // Staff
                         return RedirectToAction("Index", "Home");

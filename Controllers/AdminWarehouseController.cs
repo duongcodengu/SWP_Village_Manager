@@ -958,9 +958,6 @@ public class AdminWarehouseController : Controller
         if (user != null)
         {
             user.RoleId = newRoleId;
-            // Xoá tất cả bản ghi Farmer liên quan đến user_id
-            var farmers = _context.Farmers.Where(f => f.UserId == UserId);
-            _context.Farmers.RemoveRange(farmers);
             // đổi role
             _context.SaveChanges();
         }
@@ -994,6 +991,7 @@ public class AdminWarehouseController : Controller
             Response.StatusCode = 404;
             return View("404");
         }
+
         var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
         if (request == null || request.Status != "pending")
@@ -1003,25 +1001,46 @@ public class AdminWarehouseController : Controller
         request.ReviewedAt = DateTime.Now;
         request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
-        // Tạo bản ghi mới trong bảng Farmers
-        _context.Farmers.Add(new Farmer
-        {
-            UserId = request.UserId,
-            FullName = request.FullName,
-            Phone = request.Phone,
-            Address = request.Address
-        });
+        // Kiểm tra xem Farmer đã tồn tại chưa
+        var existingFarmer = await _context.Farmers
+            .FirstOrDefaultAsync(f => f.UserId == request.UserId);
 
+        if (existingFarmer != null)
+        {
+            // Cập nhật thông tin
+            existingFarmer.FullName = request.FullName;
+            existingFarmer.Phone = request.Phone;
+            existingFarmer.Address = request.Address;
+        }
+        else
+        {
+            // Tạo mới
+            _context.Farmers.Add(new Farmer
+            {
+                UserId = request.UserId,
+                FullName = request.FullName,
+                Phone = request.Phone,
+                Address = request.Address
+            });
+        }
+
+        // Cập nhật vai trò người dùng
         var user = await _context.Users.FindAsync(request.UserId);
         if (user != null)
         {
-            user.RoleId = 5;
+            user.RoleId = 5; // Role 5 = Farmer?
         }
 
         await _context.SaveChangesAsync();
+
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
-        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Approved farmer: {request.FullName}");
+        Village_Manager.Extensions.LogHelper.SaveLog(
+            _context,
+            userId,
+            $"Approved farmer: {request.FullName}"
+        );
+
         return RedirectToAction("AddFamer");
     }
 

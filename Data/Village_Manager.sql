@@ -47,7 +47,8 @@ CREATE TABLE Shipper (
 CREATE TABLE ProductCategory (
     id INT PRIMARY KEY IDENTITY(1,1),
     name NVarchar(100) UNIQUE, -- không đc trùng danh mục
-    imageUrl NVarchar(100)
+    imageUrl NVarchar(100),
+    active BIT NOT NULL DEFAULT 1 -- mặc định là 1
 );
 
 -- 6. Product
@@ -450,20 +451,20 @@ INSERT INTO Roles (name) VALUES
 ('farmer');
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'admin', N'$2a$11$0FqV8cu.Hcztc09ha/2.Oe5m1tOVt3KUwlpbMxhEh3PINOuWmNLpi', N'admin@admin.com', 1, 0, 0123456789); -- pass admin1
+VALUES (N'admin', N'$2a$11$0FqV8cu.Hcztc09ha/2.Oe5m1tOVt3KUwlpbMxhEh3PINOuWmNLpi', N'admin@admin.com', 1, 0, '0123456789'); -- pass admin1
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'Staff', N'$2a$11$F8O3TAlKXEQpnK/KZfICTeUBjtm4DvyUIWcwEoe.IGVPLd30GpsWy', N'admin@gmail.com', 2, 0, 0123456788); -- pass staff1
+VALUES (N'Staff', N'$2a$11$F8O3TAlKXEQpnK/KZfICTeUBjtm4DvyUIWcwEoe.IGVPLd30GpsWy', N'admin@gmail.com', 2, 0, '0123456788'); -- pass staff1
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'famer', N'$2a$11$eTsIS8kd9vJAmucqAtnNxuubSEx6AiURdahWSsg2sd8h0BQKNWEda', N'famer@famer.com', 5, 0, 0123456789); -- pass famer1
+VALUES (N'famer', N'$2a$11$eTsIS8kd9vJAmucqAtnNxuubSEx6AiURdahWSsg2sd8h0BQKNWEda', N'famer@famer.com', 5, 0, '0123456787'); -- pass famer1
 
-INSERT INTO ProductCategory (name, imageUrl) VALUES
-(N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg'),
-(N'Đồ uống', N'back-end/svg/cup.svg'),
-(N'Thịt & Hải sản', N'back-end/svg/meats.svg'),
-(N'Bữa sáng', N'back-end/svg/breakfast.svg'),
-(N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg'),
-(N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg'),
-(N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg');
+INSERT INTO ProductCategory (name, imageUrl, active) VALUES
+(N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg', 1),
+(N'Đồ uống', N'back-end/svg/cup.svg', 1),
+(N'Thịt & Hải sản', N'back-end/svg/meats.svg', 1),
+(N'Bữa sáng', N'back-end/svg/breakfast.svg', 1),
+(N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg', 1),
+(N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg', 1),
+(N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg', 1);
 

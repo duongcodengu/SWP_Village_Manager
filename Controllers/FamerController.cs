@@ -21,10 +21,14 @@ namespace Village_Manager.Controllers
         public IActionResult FamerBecome()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-
+            var RoleId = HttpContext.Session.GetInt32("RoleId");
             if (userId == null)
             {
                 return RedirectToAction("Login", "Home");
+            }
+            if (RoleId == 5)
+            {
+                return RedirectToAction("DashboardFamer");
             }
             return View();
         }
