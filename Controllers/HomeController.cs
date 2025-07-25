@@ -507,6 +507,7 @@ namespace Village_Manager.Controllers
                 if (record.Otp == otp && DateTime.UtcNow <= record.Expire)
                 {
                     otpStore.Remove(normalizedEmail);
+                    HttpContext.Session.SetString($"otp_verified:{normalizedEmail}", "true");
                     return RedirectToAction("ResetPassword", new { email });
                 }
             }
@@ -518,9 +519,12 @@ namespace Village_Manager.Controllers
         public IActionResult ResetPassword(string email)
         {
             if (string.IsNullOrEmpty(email))
-            {
                 return View("404");
-            }
+
+            var verified = HttpContext.Session.GetString($"otp_verified:{email.ToLower()}");
+            if (verified != "true")
+                return View("404");
+
             ViewBag.Email = email;
             return View();
         }
@@ -536,7 +540,7 @@ namespace Village_Manager.Controllers
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _context.SaveChangesAsync();
-
+            HttpContext.Session.Remove($"otp_verified:{email.ToLower()}");
             TempData["Success"] = "Đặt lại mật khẩu thành công.";
             return RedirectToAction("Login", "Home");
         }

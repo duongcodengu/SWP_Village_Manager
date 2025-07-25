@@ -174,11 +174,6 @@
                                 e.preventDefault();
                                 return false;
                             }
-                            if (!nameRegex.test(name)) {
-                                alert('Tên sản phẩm không được chứa ký tự đặc biệt.');
-                                e.preventDefault();
-                                return false;
-                            }
 
                             // Validate loại sản phẩm (bắt buộc chọn)
                             if (!productType) {

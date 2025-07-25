@@ -1,18 +1,3 @@
--- Tạo tất cả bảng SQL cho hệ thống quản lý nông sản - SQL Server Version
-
---IF EXISTS (SELECT name FROM sys.databases WHERE name = N'vllage_manager_database')
---BEGIN
---    ALTER DATABASE [vllage_manager_database] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
---    DROP DATABASE [vllage_manager_database];
---END
---GO
-
---CREATE DATABASE [vllage_manager_database];
---GO
-
---USE [vllage_manager_database];
---GO
-
 -- 1. Roles
 CREATE TABLE Roles (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -465,11 +450,13 @@ INSERT INTO Roles (name) VALUES
 ('farmer');
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'admin', N'admin123', N'admin@example.com', 1, 0, 0123456789),
-       (N'customer', N'customer123', N'customer123@example.com', 3, 0, 0123456789);
+VALUES (N'admin', N'$2a$11$0FqV8cu.Hcztc09ha/2.Oe5m1tOVt3KUwlpbMxhEh3PINOuWmNLpi', N'admin@admin.com', 1, 0, 0123456789); -- pass admin1
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'Staff', N'123', N'admin@gmail.com', 2, 0, 0123456788);
+VALUES (N'Staff', N'$2a$11$F8O3TAlKXEQpnK/KZfICTeUBjtm4DvyUIWcwEoe.IGVPLd30GpsWy', N'admin@gmail.com', 2, 0, 0123456788); -- pass staff1
+
+INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
+VALUES (N'famer', N'$2a$11$eTsIS8kd9vJAmucqAtnNxuubSEx6AiURdahWSsg2sd8h0BQKNWEda', N'famer@famer.com', 5, 0, 0123456789); -- pass famer1
 
 INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg'),
@@ -479,5 +466,3 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg'),
 (N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg'),
 (N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg');
-
-
