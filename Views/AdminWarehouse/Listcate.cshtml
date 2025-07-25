@@ -2,6 +2,7 @@
     ViewData["Title"] = "Danh mục";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
+@model List<Village_Manager.ViewModel.CategoryStatsViewModel>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
@@ -71,15 +72,8 @@
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Danh sách danh mục</h5>
                                         <div class="right-options">
-                                            <ul>
-                                                <li>
-                                                    <a href="javascript:void(1)">Nhập</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)">Xuất</a>
-                                                </li>
-                                                <li>
-                                                     @* trả về controller tên CategoryController  *@
+                                            <ul>   
+                                                <li>    
                                                     <a class="btn btn-solid" asp-action="addCategory" asp-controller="Category">Thêm danh mục</a>
                                                 </li>
                                             </ul>
@@ -87,64 +81,136 @@
                                     </div>
                                     <div>   
                                         <div class="table-responsive">
-                                            <table class="table theme-table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Mã danh mục</th>
-                                                        <th>Tên danh mục</th>
-                                                        <th>Hình ảnh</th>
-                                                        <th>Tùy chọn</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if(ViewBag.Categories != null)
-                                                    {
-                                                        foreach(var category in ViewBag.Categories)
-                                                        {
-                                                        <tr>
-                                                            <td>@category.Id</td>
-                                                            <td>@category.Name</td>
-                                                            <td>
-                                                                    <img src="@category.ImageUrl" style="height: 80px; object-fit: cover;" alt="Category Image">
-                                                            </td>
-                                                            <td>
-                                                                <ul>
+                                           <table class="table table-hover align-middle text-center">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 25%;">Tên danh mục</th>
+            <th style="width: 20%;">Ảnh</th>
+            <th style="width: 20%;">Chi tiết</th>
+            <th style="width: 20%;">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.CategoryId</td>
+                    <td class="text-start fw-semibold">@category.CategoryName</td>
+                    <td>
+                        <img src="@(category.Products.FirstOrDefault()?.Category?.ImageUrl ?? "")"
+                             alt="Ảnh danh mục"
+                             class="rounded border shadow-sm"
+                             style="height: 60px; width: 60px; object-fit: cover;">
+                    </td>
+                    <td>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal-@category.CategoryId" class="text-decoration-none">
+                            <i data-feather="eye" class="me-1"></i>
+                            SP: <span class="badge bg-info text-dark">@category.ProductCount</span>,
+                            ĐT: <span class="badge bg-success">@category.FarmerCount</span>
+                        </a>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-action="EditCategory" asp-controller="Category" asp-route-id="@category.CategoryId" class="text-warning" title="Chỉnh sửa">
+                                <i data-feather="edit"></i>
+                            </a>
+                            <a href="javascript:void(0);" onclick="confirmDelete(@category.CategoryId)" title="Dừng hoạt động" class="text-danger" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
+                                <i data-feather="x-circle"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
 
-                                                                        <li><a asp-action="EditCategory" asp-controller="category" asp-route-id="@category.Id"><i class="ri-pencil-line"></i></a></li>
-                                                                        <li>
-                                                                            <script>
-                                                                                function confirmDelete(id) {
-                                                                                    document.getElementById("categoryToDeleteId").value = id;
-                                                                                }
+                <!-- Modal chi tiết danh mục -->
+               <!-- Modal chi tiết danh mục -->
+<div class="modal fade" id="detailModal-@category.CategoryId" tabindex="-1" aria-labelledby="detailModalLabel-@category.CategoryId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title" id="detailModalLabel-@category.CategoryId">
+                    <i data-feather="info" class="me-2"></i>Chi tiết danh mục: @category.CategoryName
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div class="row g-4">
+                    <!-- Hình ảnh danh mục -->
+                    <div class="col-md-4 text-center">
+                        <img src="@(category.Products.FirstOrDefault()?.Category?.ImageUrl ?? "")"
+                             alt="Ảnh danh mục"
+                             class="img-fluid rounded-3 border shadow-sm mb-2"
+                             style="max-height: 200px; object-fit: cover;">
+                        <p class="fw-semibold text-muted mb-0 mt-1">Ảnh đại diện</p>
+                    </div>
 
-                                                                                function deleteConfirmed() {
-                                                                                    var id = document.getElementById("categoryToDeleteId").value;
-                                                                                    window.location.href = '/category/DeleteCategory/' + id;
-                                                                                }
-                                                                            </script>
+                    <!-- Danh sách đối tác -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-2">Đối tác (Farmers)</h6>
+                        <div class="border rounded-3 p-2 bg-light" style="max-height: 220px; overflow-y: auto;">
+                            <ul class="list-unstyled mb-0">
+                                @if (category.Farmers.Any())
+                                {
+                                    foreach (var farmer in category.Farmers)
+                                    {
+                                        <li class="mb-1">
+                                           <i data-feather="user"   class="me-1 text-secondary"></i> <p style="color: black"> @farmer.FullName</p>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-muted">Không có đối tác</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
 
-                                                                            <a href="javascript:void(0);" onclick="confirmDelete(@category.Id)" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
-                                                                                <i class="ri-delete-bin-line"></i>
-                                                                                
-                                                                            </a>
-                                                                        </li>   
-                                                                </ul>
-                                                            </td>
-                                                            </tr>
-                                                        }
-                                                                                           
-                                                    }
-                                                    else
-                                                    {
-                                                        <tr>
-                                                            <td colspan="4">Không tìm thấy dữ liệu</td>
-                                                        </tr>
-                                                    }
-                                                  
-                                                </tbody>
-                                            
-                                            </table>
-                                            
+                    <!-- Danh sách sản phẩm -->
+                    <div class="col-md-4">
+                        <h6 class="text-success mb-2">Sản phẩm</h6>
+                        <div class="border rounded-3 p-2 bg-light" style="max-height: 220px; overflow-y: auto;">
+                            <ul class="list-unstyled mb-0">
+                                @if (category.Products.Any())
+                                {
+                                    foreach (var product in category.Products)
+                                    {
+                                        <li class="mb-1">
+                                            <i data-feather="package"  class="me-1 text-secondary"></i> <p style="color: black"> @product.Name</p>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-muted">Không có sản phẩm</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-feather="x-circle" class="me-1"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-muted text-center">Không tìm thấy danh mục nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
                                         </div>
                                     </div>
                                 </div>
@@ -184,7 +250,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Dừng hoạt động </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -193,7 +259,7 @@
                     <div class="remove-box">
                        
                         <p>
-                            Quyền sử dụng cho nhóm/người dùng sẽ được kế thừa từ đối tượng gốc. Đối tượng này sẽ tạo quyền mới riêng biệt.
+                            Nếu danh mục có sản phẩm đang hoạt động hoặc đang sử dụng ,bạn sẽ không thể dừng hoạt động hạng mục này.Bạn có muốn dừng hoạt động
                         </p>
                     </div>
                     <input type="hidden" id="categoryToDeleteId" />

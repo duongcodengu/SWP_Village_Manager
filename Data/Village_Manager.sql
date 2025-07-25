@@ -441,8 +441,11 @@ CREATE TABLE HomepageImage (
 );
 
 ------------------------------------INSERT--------------------------------------------------------------
-
+-- Thêm cột active vào prodcutCategory--
+ALTER TABLE [vilage_manage].[dbo].[ProductCategory]
+ADD [active] BIT NOT NULL DEFAULT 1;
 INSERT INTO Roles (name) VALUES
+
 ('admin'),
 ('staff'),
 ('customer'),
