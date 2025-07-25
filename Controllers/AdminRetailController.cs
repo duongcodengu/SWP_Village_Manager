@@ -123,13 +123,7 @@ namespace Village_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProduct(Product model)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Categories = await _context.ProductCategory
-                    .Select(c => new { c.Id, c.Name })
-                    .ToListAsync();
-                return View(model);
-            }
+            
 
             var product = await _context.Products
                 .Include(p => p.ProductImages)
