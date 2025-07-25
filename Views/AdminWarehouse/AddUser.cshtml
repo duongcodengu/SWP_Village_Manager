@@ -28,6 +28,10 @@
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
                                         <form class="theme-form theme-form-2 mega-form" action="/adduser" method="post">
                                             @Html.AntiForgeryToken()
+                                            @if (TempData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">@TempData["Error"]</div>
+                                            }
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">
@@ -119,12 +123,7 @@
                     alert("Passwords do not match!");
                     return false;
                 }
-                
-                if (password.length < 6) {
-                    e.preventDefault();
-                    alert("Password must be at least 6 characters long!");
-                    return false;
-                }
+                // Đã bỏ kiểm tra 6 ký tự
             });
         });
     </script>

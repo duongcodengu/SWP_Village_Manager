@@ -79,52 +79,59 @@
                                         <div class="card-body">
                                             <div class="card-header-2 mb-3">
                                                 <h5>All Order</h5>
-                                                <div class="col-md-4 text-center">
-                                                    @if (!string.IsNullOrEmpty(Model.ProductImageUrl))
-                                                    {
-                                                        <img src="@Model.ProductImageUrl" class="img-fluid rounded" alt="Ảnh sản phẩm" style="max-height: 450px;" width="800" />
-                                                    }
-                                                    else
-                                                    {
-                                                        <div class="text-muted">Không có ảnh sản phẩm</div>
-                                                    }
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <dl class="row">
-                                                        <dt class="col-sm-4">Order Id :</dt>
-                                                        <dd class="col-sm-8">@Model.OrderId</dd>
-                                                        <dt class="col-sm-4">Họ tên:</dt>
-                                                        <dd class="col-sm-8">@Model.UserName</dd>
-
-                                                        <dt class="col-sm-4">Số điện thoại:</dt>
-                                                        <dd class="col-sm-8">@Model.Phone</dd>
-
-                                                        <dt class="col-sm-4">Địa chỉ:</dt>
-                                                        <dd class="col-sm-8">@Model.Address</dd>
-
-                                                        <dt class="col-sm-4">Sản phẩm:</dt>
-                                                        <dd class="col-sm-8">@Model.ProductName</dd>
-                                                        <dt class="col-sm-4">Số lượng:</dt>
-                                                        <dd class="col-sm-8">@Model.Quantity</dd>
-                                                        <dt class="col-sm-4">Giá:</dt>
-                                                        <dd class="col-sm-8">@Model.UnitPrice</dd>
-                                                        <dt class="col-sm-4">Thời gian gửi:</dt>
-                                                        <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy HH:mm")</dd>
-
-                                                        <dt class="col-sm-4">Trạng thái:</dt>
-                                                        <dd class="col-sm-8"><span class="badge bg-info text-dark">@Model.Status</span></dd>
-                                                    </dl>
-                                                </div>
-                                                <div class="text-center mt-4">
-                                                    <div class="d-flex justify-content-start gap-2">
-                                                        <a href="/listOrder" class="btn btn-secondary btn-sm">← Quay lại</a>
-
-                                                        <form method="post" action="/order/delete" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');" class="d-inline">
-                                                            <input type="hidden" name="id" value="@Model.Id" />
-                                                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Xoá</button>
-                                                        </form>
+                                                @if (ViewBag.Error != null)
+                                                {
+                                                    <div class="alert alert-warning mt-4">@ViewBag.Error</div>
+                                                }
+                                                @if (Model != null)
+                                                {
+                                                    <div class="col-md-4 text-center">
+                                                        @if (!string.IsNullOrEmpty(Model.ProductImageUrl))
+                                                        {
+                                                            <img src="@Model.ProductImageUrl" class="img-fluid rounded" alt="Ảnh sản phẩm" style="max-height: 450px;" width="800" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="text-muted">Không có ảnh sản phẩm</div>
+                                                        }
                                                     </div>
-                                                </div>
+                                                    <div class="col-md-8">
+                                                        <dl class="row">
+                                                            <dt class="col-sm-4">Order Id :</dt>
+                                                            <dd class="col-sm-8">@Model.OrderId</dd>
+                                                            <dt class="col-sm-4">Họ tên:</dt>
+                                                            <dd class="col-sm-8">@Model.UserName</dd>
+
+                                                            <dt class="col-sm-4">Số điện thoại:</dt>
+                                                            <dd class="col-sm-8">@Model.Phone</dd>
+
+                                                            <dt class="col-sm-4">Địa chỉ:</dt>
+                                                            <dd class="col-sm-8">@Model.Address</dd>
+
+                                                            <dt class="col-sm-4">Sản phẩm:</dt>
+                                                            <dd class="col-sm-8">@Model.ProductName</dd>
+                                                            <dt class="col-sm-4">Số lượng:</dt>
+                                                            <dd class="col-sm-8">@Model.Quantity</dd>
+                                                            <dt class="col-sm-4">Giá:</dt>
+                                                            <dd class="col-sm-8">@Model.UnitPrice</dd>
+                                                            <dt class="col-sm-4">Thời gian gửi:</dt>
+                                                            <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                                            <dt class="col-sm-4">Trạng thái:</dt>
+                                                            <dd class="col-sm-8"><span class="badge bg-info text-dark">@Model.Status</span></dd>
+                                                        </dl>
+                                                    </div>
+                                                    <div class="text-center mt-4">
+                                                        <div class="d-flex justify-content-start gap-2">
+                                                            <a href="/listOrder" class="btn btn-secondary btn-sm">← Quay lại</a>
+
+                                                            <form method="post" action="/order/delete" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');" class="d-inline">
+                                                                <input type="hidden" name="id" value="@Model.Id" />
+                                                                <button type="submit" class="btn btn-danger btn-sm">🗑️ Xoá</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                     </div>

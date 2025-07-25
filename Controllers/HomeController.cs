@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.Utils;
 //using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
@@ -134,14 +135,11 @@ namespace Village_Manager.Controllers
                 ViewBag.Error = "Tài khoản đã bị khóa!";
                 return View();
             }
-            // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
-            if (user.RoleId != 4)
+            // Luôn kiểm tra mật khẩu cho mọi user
+            if (!PasswordHelper.VerifyPassword(password, user.Password))
             {
-                if (user.Password != inputPassword)
-                {
-                    ViewBag.Error = "Mật khẩu không đúng!";
-                    return View();
-                }
+                ViewBag.Error = "Mật khẩu không đúng!";
+                return View();
             }
 
             // lấy tên role name
@@ -293,9 +291,9 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra độ dài mật khẩu
-            if (password.Length < 6)
+            if (password.Length != 8)
             {
-                ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                ViewBag.Error = "Mật khẩu phải có đúng 8 ký tự.";
                 return View();
             }
 
@@ -326,7 +324,7 @@ namespace Village_Manager.Controllers
             {
                 Email = email,
                 Username = fullname,
-                Password = password,
+                Password = PasswordHelper.HashPassword(password),
                 Phone = phone,
                 RoleId = 3,
                 IsActive = true,
@@ -384,7 +382,7 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            if (user.Password != oldPassword)
+            if (!PasswordHelper.VerifyPassword(oldPassword, user.Password))
             {
                 ViewBag.Error = "Mật khẩu cũ không chính xác.";
                 return View();
@@ -396,7 +394,13 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            user.Password = newPassword;
+            if (newPassword.Length != 8)
+            {
+                ViewBag.Error = "Mật khẩu mới phải có đúng 8 ký tự.";
+                return View();
+            }
+
+            user.Password = PasswordHelper.HashPassword(newPassword);
             _context.SaveChanges();
 
             ViewBag.Message = "Đổi mật khẩu thành công!";
@@ -486,7 +490,7 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Forgot");
             }
 
-            user.Password = newPassword;
+            user.Password = PasswordHelper.HashPassword(newPassword);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Đặt lại mật khẩu thành công.";

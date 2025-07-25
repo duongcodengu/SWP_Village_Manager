@@ -577,7 +577,7 @@ namespace Village_Manager.Controllers
                 TempData["PasswordError"] = "Vui lòng nhập đầy đủ thông tin.";
                 return RedirectToAction("ProfileShipper");
             }
-            if (shipper.User.Password != currentPassword)
+            if (!Village_Manager.Utils.PasswordHelper.VerifyPassword(currentPassword, shipper.User.Password))
             {
                 TempData["PasswordError"] = "Mật khẩu hiện tại không đúng.";
                 return RedirectToAction("ProfileShipper");

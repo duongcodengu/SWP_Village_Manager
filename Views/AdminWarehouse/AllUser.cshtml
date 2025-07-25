@@ -117,25 +117,39 @@
                                                                                 <a href="@Url.Action("EditUser", "AdminWarehouse", new { id = user.Id })">Edit</a>
                                                                             </li>
                                                                             <li>
-                                                                                @if (user.IsActive)
+                                                                                @if (user.Id != 1)
                                                                                 {
-                                                                                    <form asp-action="BanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;">
-                                                                                        <button type="submit" style="border: none; background: none; color: orange;">Ban</button>
+                                                                                    if (user.IsActive)
+                                                                                    {
+                                                                                        <form asp-action="BanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn ban tài khoản này không?');">
+                                                                                            <button type="submit" style="border: none; background: none; color: orange;">Ban</button>
+                                                                                        </form>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <form asp-action="UnbanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn mở khóa tài khoản này không?');">
+                                                                                            <button type="submit" style="border: none; background: none; color: green;">Unban</button>
+                                                                                        </form>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-muted">Super Admin</span>
+                                                                                }
+                                                                            </li>
+                                                                            <li>
+                                                                                @if (user.Id != 1)
+                                                                                {
+                                                                                    <form asp-action="Delete" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
+                                                                                        <button type="submit" style="border: none; background: none; color: red;">
+                                                                                            Delete
+                                                                                        </button>
                                                                                     </form>
                                                                                 }
                                                                                 else
                                                                                 {
-                                                                                    <form asp-action="UnbanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;">
-                                                                                        <button type="submit" style="border: none; background: none; color: green;">Unban</button>
-                                                                                    </form>
+                                                                                    <span class="text-muted">Super Admin</span>
                                                                                 }
-                                                                            </li>
-                                                                            <li>
-                                                                                <form asp-action="Delete" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
-                                                                                    <button type="submit" style="border: none; background: none; color: red;">
-                                                                                        Delete
-                                                                                    </button>
-                                                                                </form>
                                                                             </li>
                                                                         </ul>
                                                                     </td>

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
+using Village_Manager.Utils;
 
 namespace Village_Manager.Controllers
 {
@@ -434,6 +435,12 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("AddCustomer");
             }
 
+            if (password.Length != 8)
+            {
+                TempData["Error"] = "Mật khẩu phải có đúng 8 ký tự.";
+                return RedirectToAction("AddCustomer");
+            }
+
             if (await _context.Users.AnyAsync(u => u.Username == username))
             {
                 TempData["Error"] = "Username đã tồn tại.";
@@ -450,7 +457,7 @@ namespace Village_Manager.Controllers
             {
                 Username = username.Trim(),
                 Email = email.Trim(),
-                Password = password, // Nếu cần mã hóa thì dùng HashPassword(password)
+                Password = PasswordHelper.HashPassword(password),
                 Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
                 RoleId = 3, // Customer
                 CreatedAt = DateTime.Now,
