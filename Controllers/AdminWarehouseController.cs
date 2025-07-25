@@ -555,9 +555,9 @@ public class AdminWarehouseController : Controller
                 return View(user);
             }
             // Kiểm tra độ dài mật khẩu
-            if (user.Password.Length != 8)
+            if (user.Password.Length != 6)
             {
-                ModelState.AddModelError("Password", "Password must be exactly 8 characters long");
+                ModelState.AddModelError("Password", "Password must be exactly 6 characters long");
                 return View(user);
             }
             // Kiểm tra username/email đã tồn tại chưa

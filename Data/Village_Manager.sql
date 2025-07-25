@@ -466,3 +466,4 @@ INSERT INTO ProductCategory (name, imageUrl) VALUES
 (N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg'),
 (N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg'),
 (N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg');
+
