@@ -27,6 +27,7 @@ namespace Village_Manager.Controllers.api
             string? sort)
         {
             var query = _context.Products
+                .Where(p => p.ApprovalStatus == "accepted")
                 .Include(p => p.Category)
                 .Include(p => p.ProductImages)
                 .AsQueryable();

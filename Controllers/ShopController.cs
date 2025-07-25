@@ -40,6 +40,7 @@ public class ShopController : Controller
 
         // Base query
         var query = _context.Products
+            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .AsQueryable();
@@ -92,6 +93,13 @@ public class ShopController : Controller
     [HttpPost]
     public IActionResult AddToCart(int productId, int quantity)
     {
+        // Kiểm tra sản phẩm có được phép mua không
+        var product = _context.Products.FirstOrDefault(p => p.Id == productId && p.ApprovalStatus == "accepted");
+        if (product == null)
+        {
+            TempData["Error"] = "Sản phẩm này không còn khả dụng để mua.";
+            return RedirectToAction("Search");
+        }
         //lấy giỏ hàng từ session hoặc tạo mới
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
 
@@ -150,6 +158,10 @@ public class ShopController : Controller
 
         // Lấy giỏ hàng từ session
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        // Lọc chỉ giữ lại sản phẩm còn được phép mua
+        cartItems = cartItems.Where(item =>
+            _context.Products.Any(p => p.Id == item.ProductId && p.ApprovalStatus == "accepted")
+        ).ToList();
         foreach (var item in cartItems)
         {
             item.Product = _context.Products
@@ -315,6 +327,7 @@ public class ShopController : Controller
     public async Task<IActionResult> Detail(int id)
     {
         var product = await _context.Products
+            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.Id == id);
@@ -323,10 +336,10 @@ public class ShopController : Controller
 
         // Lấy sản phẩm liên quan cùng category, loại trừ chính nó
         var relatedProducts = await _context.Products
+            .Where(p => p.ApprovalStatus == "accepted" && p.CategoryId == product.CategoryId && p.Id != id)
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
-            .Where(p => p.CategoryId == product.CategoryId && p.Id != id)
-            .Take(6) // Giới hạn 6 sản phẩm liên quan
+            .Take(6)
             .ToListAsync();
 
         ViewBag.RelatedProducts = relatedProducts;
@@ -355,6 +368,7 @@ public class ShopController : Controller
     public async Task<IActionResult> RelateProduct(int id)
     {
         var product = await _context.Products
+            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .FirstOrDefaultAsync(p => p.Id == id);
@@ -363,10 +377,10 @@ public class ShopController : Controller
 
         // Lấy sản phẩm liên quan cùng category, loại trừ chính nó
         var relatedProducts = await _context.Products
+            .Where(p => p.ApprovalStatus == "accepted" && p.CategoryId == product.CategoryId && p.Id != id)
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
-            .Where(p => p.CategoryId == product.CategoryId && p.Id != id)
-            .Take(6) // Giới hạn 6 sản phẩm liên quan
+            .Take(6)
             .ToListAsync();
 
         ViewBag.RelatedProducts = relatedProducts;

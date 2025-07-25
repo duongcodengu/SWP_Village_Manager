@@ -118,7 +118,6 @@ public class AdminWarehouseController : Controller
             return View("404");
         }
         var products = _context.Products
-            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .ToList();
@@ -254,7 +253,7 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
-        return View(product);
+        return View("/product");
     }
 
     // DeleteProduct
@@ -272,26 +271,15 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
-        var images = _context.ProductImages.Where(p => p.ProductId == id).ToList();
-
-        foreach (var image in images)
-        {
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", image.ImageUrl);
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-        }
-
-        _context.ProductImages.RemoveRange(images);
-        _context.Products.Remove(product);
+        // Đổi trạng thái thay vì xóa
+        product.ApprovalStatus = "rejected";
         await _context.SaveChangesAsync();
-
+        
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Xóa sản phẩm: {product.Name}");
 
-        return Redirect("/products");
+        return Redirect("/product");
     }
 
     //Update Product
@@ -1062,7 +1050,7 @@ public class AdminWarehouseController : Controller
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt sản phẩm: {product?.Name} - Hành động: {action}");
-        return RedirectToAction("PendingProducts");
+        return RedirectToAction("Products");
     }
     [HttpGet]
     [Route("shipper")]

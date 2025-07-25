@@ -87,7 +87,7 @@
                         <div class="mb-4 row">
                             <label class="col-sm-3">Tên sản phẩm</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="name" required>
+                                <input type="text" name="name" class="form-control" id="productName" required />
                             </div>
                         </div>
 
@@ -113,8 +113,6 @@
                                     </select>
                                 </div>
                         </div>
-
-
                         <div class="mb-4 row">
                             <label class="col-sm-3">Số lượng</label>
                             <div class="col-sm-9">
@@ -149,23 +147,100 @@
                                 <input type="hidden" name="farmer_id" id="farmer_id" />
                                 <input type="text" class="form-control" id="farmer_name" name="farmer_name"
                                        placeholder="Tìm kiếm nông dân theo tên..." autocomplete="off" style="flex: 1;" />
-                                <div class="col-sm-6">
-                                    <select name="farmer_id" class="form-control" required>
-                                        <option disabled>-- Select Category --</option>
-                                        @foreach (var farmer in ViewBag.Farmers)
-                                        {
-                                            <option value="@farmer.Id">@farmer.FullName</option>
-                                        }
-                                    </select>
-                                </div>
                             </div>
 
                             <div class="col-sm-9 offset-sm-3">
                                 <span id="farmer-error" style="color:red; display:none;">Bạn phải chọn một nông dân hợp lệ từ danh sách.</span>
                             </div>
-                            
                         </div>
                     </div>
+                    <script>
+                        document.querySelector('form').addEventListener('submit', function(e) {
+                            // Lấy các trường input
+                            const name = document.getElementById('productName').value.trim();
+                            const productType = this.querySelector('select[name="product_type"]').value;
+                            const categoryId = this.querySelector('select[name="category_id"]').value;
+                            const quantity = this.querySelector('input[name="quantity"]').value.trim();
+                            const price = this.querySelector('input[name="price"]').value.trim();
+                            const expirationDate = this.querySelector('input[name="expiration_date"]').value;
+                            const processingTime = this.querySelector('input[name="processing_time"]').value;
+
+                            // Hàm kiểm tra tên sản phẩm không chứa ký tự đặc biệt (chỉ cho phép chữ, số, khoảng trắng)
+                            const nameRegex = /^[a-zA-Z0-9\s]+$/;
+
+                            // Validate tên sản phẩm
+                            if (!name) {
+                                alert('Tên sản phẩm bắt buộc phải nhập.');
+                                e.preventDefault();
+                                return false;
+                            }
+                            if (!nameRegex.test(name)) {
+                                alert('Tên sản phẩm không được chứa ký tự đặc biệt.');
+                                e.preventDefault();
+                                return false;
+                            }
+
+                            // Validate loại sản phẩm (bắt buộc chọn)
+                            if (!productType) {
+                                alert('Bạn phải chọn loại sản phẩm.');
+                                e.preventDefault();
+                                return false;
+                            }
+
+                            // Validate danh mục (bắt buộc chọn và không được để giá trị mặc định disabled)
+                            if (!categoryId || categoryId === "" || categoryId === "-- Select Category --") {
+                                alert('Bạn phải chọn danh mục.');
+                                e.preventDefault();
+                                return false;
+                            }
+
+                            // Validate số lượng (phải là số nguyên dương)
+                            const quantityNum = Number(quantity);
+                            if (!quantity || isNaN(quantityNum) || quantityNum <= 0 || !Number.isInteger(quantityNum)) {
+                                alert('Số lượng phải là số nguyên dương.');
+                                e.preventDefault();
+                                return false;
+                            }
+
+                            // Validate giá (phải là số, không lớn hơn 1000, là bội số của 1000)
+                            const priceNum = Number(price);
+                            if (!price || isNaN(priceNum)) {
+                                alert('Giá phải là số hợp lệ.');
+                                e.preventDefault();
+                                return false;
+                            }
+                            if (priceNum <= 0) {
+                                alert('Giá phải là số dương.');
+                                e.preventDefault();
+                                return false;
+                            }
+                            if (priceNum < 1000) {
+                                alert('Giá không được nhỏ hơn 1000.');
+                                e.preventDefault();
+                                return false;
+                            }
+                            if (priceNum % 1000 !== 0) {
+                                alert('Giá phải là bội số của 1000.');
+                                e.preventDefault();
+                                return false;
+                            }
+
+                            // Validate hạn sử dụng và ngày chế biến
+                            // Nếu cả hai đều có giá trị, hạn sử dụng phải lớn hơn ngày chế biến
+                            if (expirationDate && processingTime) {
+                                const expDate = new Date(expirationDate);
+                                const procDate = new Date(processingTime);
+                                if (expDate <= procDate) {
+                                    alert('Hạn sử dụng phải lớn hơn ngày chế biến.');
+                                    e.preventDefault();
+                                    return false;
+                                }
+                            }
+
+                            // Nếu tới đây không có lỗi, form sẽ submit bình thường
+                        });
+                    </script>
+
                 </div>
 
                 <!-- Product Images -->

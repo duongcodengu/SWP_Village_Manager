@@ -71,19 +71,8 @@
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Danh sách sản phẩm</h5>
-
-                                        <form action="/searchProduct" method="get" class="mb-3 d-flex justify-content-end">
-                                            <input type="text" name="search" class="form-control w-25" placeholder="Tìm kiếm sản phẩm..." value="@Context.Request.Query["search"]" />
-                                            <button type="submit" class="btn btn-primary ms-2">Tìm kiếm</button>
-                                        </form>
                                         <div class="right-options">
                                             <ul>
-                                                <li>
-                                                    <a href="javascript:void(0)">Nhập</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)">Xuất</a>
-                                                </li>
                                                 <li>
                                                     <a class="btn btn-solid" href="@Url.Action("AddProduct", "AdminWarehouse")">Thêm sản phẩm</a>
                                                 </li>
@@ -100,7 +89,8 @@
                                                         <th>Danh mục</th>
                                                         <th>Giá</th>
                                                         <th>Loại sản phẩm</th>
-                                                        <th>Tùy chọn</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Hành động</th>
                                                     </tr>
                                                 </thead>
 
@@ -112,7 +102,6 @@
                                                                 @if(product.ProductImages != null && product.ProductImages.Any())
                                                                 {
                                                                     <img src="@product.ProductImages.FirstOrDefault()?.ImageUrl" style="max-height: 80px;" />
-
                                                                 }
                                                                 else
                                                                 {
@@ -123,6 +112,20 @@
                                                             <td>@product.Category?.Name</td>
                                                             <td>@product.Price</td>
                                                             <td>@product.ProductType</td>
+                                                            <td>
+                                                                @if(product.ApprovalStatus == "accepted")
+                                                                {
+                                                                    <span class="badge bg-success">Đã duyệt</span>
+                                                                }
+                                                                else if(product.ApprovalStatus == "pending")
+                                                                {
+                                                                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-danger">Từ chối</span>
+                                                                }
+                                                            </td>
                                                         <td>
                                                             <ul>
                                                                 <li>
@@ -162,6 +165,15 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+                                                                </li>
+                                                                <li>
+                                                                    @if (product.ApprovalStatus == "rejected")
+                                                                    {
+                                                                        <form asp-action="ApproveProduct" asp-controller="AdminWarehouse" method="post" style="display:inline;">
+                                                                            <input type="hidden" name="id" value="@product.Id" />
+                                                                            <button type="submit" name="action" value="accept" class="btn btn-success btn-sm">Duyệt lại</button>
+                                                                        </form>
+                                                                    }
                                                                 </li>
                                                             </ul>
                                                         </td>
