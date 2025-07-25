@@ -428,8 +428,6 @@ namespace Village_Manager.Controllers
             }
         }
 
-
-
         [HttpGet]
         [Route("AddCustomer")]
         public IActionResult AddCustomer()
