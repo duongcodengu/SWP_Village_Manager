@@ -1,4 +1,5 @@
-﻿using MailKit.Security;
+﻿using BCrypt.Net;
+using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -7,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
+using System.Text.Json;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.Utils;
-using BCrypt.Net;
 //using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
@@ -116,13 +117,40 @@ namespace Village_Manager.Controllers
                 return View();
             }
                 
-        } 
-        
+        }
+        // Xác thực captcha
+        private async Task<bool> VerifyCaptchaV2Async(string token)
+        {
+            var secret = "6LdlWI4rAAAAAMM_C6RqVO1HFEaJRzQzQQIg17JU"; // Key từ Google
+            var client = new HttpClient();
+
+            var values = new Dictionary<string, string>
+            {
+                { "secret", secret },
+                { "response", token }
+            };
+
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            using var jsonDoc = JsonDocument.Parse(responseString);
+            var root = jsonDoc.RootElement;
+            return root.GetProperty("success").GetBoolean();
+        }
+
         // Xử lý đăng nhập
         [HttpPost]
         [Route("login")]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
+            string captchaToken = Request.Form["g-recaptcha-response"];
+
+            if (string.IsNullOrEmpty(captchaToken) || !await VerifyCaptchaV2Async(captchaToken))
+            {
+                ViewBag.Error = "Vui lòng xác minh Captcha trước khi đăng nhập.";
+                return View();
+            }
             string inputEmail = email?.Trim().ToLower() ?? string.Empty;
             string inputPassword = password?.Trim() ?? string.Empty;
 
@@ -221,7 +249,8 @@ namespace Village_Manager.Controllers
                         return RedirectToAction("Login", "Home");
                 }
             
-            }
+        }
+        
         
         //Contact us
         [HttpGet]
@@ -284,8 +313,15 @@ namespace Village_Manager.Controllers
 
         [HttpPost]
         [Route("signup")]
-        public IActionResult SignUp(string fullname, string email, string password, string terms, string phone)
+        public async Task<IActionResult> SignUp(string fullname, string email, string password, string terms, string phone)
         {
+            string captchaToken = Request.Form["g-recaptcha-response"];
+
+            if (string.IsNullOrEmpty(captchaToken) || !await VerifyCaptchaV2Async(captchaToken))
+            {
+                ViewBag.Error = "Vui lòng xác minh Captcha trước khi đăng nhập.";
+                return View();
+            }
             fullname = fullname?.Trim();
             email = email?.Trim().ToLower();
             password = password?.Trim();
