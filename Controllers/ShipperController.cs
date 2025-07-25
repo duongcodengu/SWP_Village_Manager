@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using BCrypt.Net;
 
 namespace Village_Manager.Controllers
 {
@@ -627,7 +628,7 @@ namespace Village_Manager.Controllers
                 TempData["PasswordError"] = "Mật khẩu mới phải có ít nhất 6 ký tự.";
                 return RedirectToAction("ProfileShipper");
             }
-            shipper.User.Password = newPassword;
+            shipper.User.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             _context.SaveChanges();
             TempData["PasswordSuccess"] = "Đổi mật khẩu thành công.";
             return RedirectToAction("ProfileShipper");

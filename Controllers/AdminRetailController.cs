@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
+using BCrypt.Net;
 
 namespace Village_Manager.Controllers
 {
@@ -411,7 +412,7 @@ namespace Village_Manager.Controllers
 
                 if (!string.IsNullOrEmpty(newPassword))
                 {
-                    existingUser.Password = newPassword;
+                    existingUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
                 }
 
                 await _context.SaveChangesAsync();
@@ -472,7 +473,7 @@ namespace Village_Manager.Controllers
             {
                 Username = username.Trim(),
                 Email = email.Trim(),
-                Password = password, // Nếu cần mã hóa thì dùng HashPassword(password)
+                Password = BCrypt.Net.BCrypt.HashPassword(password),
                 Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
                 RoleId = 3, // Customer
                 CreatedAt = DateTime.Now,

@@ -10,6 +10,7 @@ using MimeKit;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.Utils;
+using BCrypt.Net;
 //using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
@@ -142,7 +143,7 @@ namespace Village_Manager.Controllers
             // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
             if (user.RoleId != 4)
             {
-                if (user.Password != inputPassword)
+                if (!BCrypt.Net.BCrypt.Verify(inputPassword, user.Password))
                 {
                     ViewBag.Error = "Mật khẩu không đúng!";
                     return View();
@@ -343,7 +344,7 @@ namespace Village_Manager.Controllers
             {
                 Email = email,
                 Username = fullname,
-                Password = password,
+                Password = BCrypt.Net.BCrypt.HashPassword(password),
                 Phone = phone,
                 RoleId = 3,
                 IsActive = true,
@@ -399,7 +400,7 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            if (user.Password != oldPassword)
+            if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.Password))
             {
                 ViewBag.Error = "Mật khẩu cũ không chính xác.";
                 return View();
@@ -411,7 +412,7 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            user.Password = newPassword;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             _context.SaveChanges();
 
             ViewBag.Message = "Đổi mật khẩu thành công!";
@@ -497,7 +498,7 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Forgot");
             }
 
-            user.Password = newPassword;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Đặt lại mật khẩu thành công.";

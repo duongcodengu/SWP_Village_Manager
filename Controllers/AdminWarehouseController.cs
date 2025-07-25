@@ -16,6 +16,7 @@ using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
 using Village_Manager.ViewModel;
+using BCrypt.Net;
 
 namespace Village_Manager.Controllers;
 public class AdminWarehouseController : Controller
@@ -558,7 +559,7 @@ public class AdminWarehouseController : Controller
             {
                 Username = user.Username.Trim(),
                 Email = user.Email.Trim(),
-                Password = user.Password, // Lưu plain text
+                Password = BCrypt.Net.BCrypt.HashPassword(user.Password),
                 RoleId = user.RoleId,
                 Phone = user.Phone?.Trim(),
                 CreatedAt = DateTime.Now
@@ -700,7 +701,7 @@ public class AdminWarehouseController : Controller
             // Nếu có nhập mật khẩu mới thì cập nhật
             if (!string.IsNullOrEmpty(newPassword))
             {
-                existingUser.Password = newPassword; // Lưu plain text
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
                 _logger.LogInformation($"Password updated for user. UserId: {id}");
             }
             // Lưu thay đổi
