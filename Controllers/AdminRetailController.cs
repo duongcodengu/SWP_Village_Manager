@@ -455,6 +455,12 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("AddCustomer");
             }
 
+            if (password.Length != 8)
+            {
+                TempData["Error"] = "Mật khẩu phải có đúng 8 ký tự.";
+                return RedirectToAction("AddCustomer");
+            }
+
             if (await _context.Users.AnyAsync(u => u.Username == username))
             {
                 TempData["Error"] = "Username đã tồn tại.";

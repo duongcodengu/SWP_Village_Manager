@@ -60,6 +60,25 @@
                                                 </form>
                                             </div>
 
+                                            <!-- Lọc theo vai trò (role) -->
+                                            <form method="get" class="mb-3 d-flex align-items-center" id="roleFilterForm">
+                                                <label for="roleId" class="me-2 mb-0">Lọc theo vai trò:</label>
+                                                <select name="roleId" id="roleId" class="form-select me-2" style="width:auto;">
+                                                    <option value="0" selected="@(ViewBag.RoleId == 0 ? "selected" : null)">Tất cả</option>
+                                                    @foreach (var role in ViewBag.Roles)
+                                                    {
+                                                        <option value="@role.Id" selected="@(ViewBag.RoleId == role.Id ? "selected" : null)">@role.Name</option>
+                                                    }
+                                                </select>
+                                                <label for="sortOrder" class="me-2 mb-0">Sắp xếp:</label>
+                                                <select name="sortOrder" id="sortOrder" class="form-select me-2" style="width:auto;">
+                                                    <option value="asc" selected="@(ViewBag.SortOrder == "asc" ? "selected" : null)">Tên A → Z</option>
+                                                    <option value="desc" selected="@(ViewBag.SortOrder == "desc" ? "selected" : null)">Tên Z → A</option>
+                                                </select>
+                                                <input type="hidden" name="searchUser" value="@ViewBag.SearchUser" />
+                                                <button type="submit" class="btn btn-primary">Lọc</button>
+                                            </form>
+
                                             <div class="table-responsive table-product">
                                                 <table class="table all-package theme-table" id="table_id">
                                                     <thead>
@@ -98,10 +117,34 @@
                                                                                 <a href="@Url.Action("EditUser", "AdminWarehouse", new { id = user.Id })">Sửa</a>
                                                                             </li>
                                                                             <li>
-                                                                                @if (user.IsActive)
+                                                                                @if (user.Id != 1)
                                                                                 {
-                                                                                    <form asp-action="BanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;">
-                                                                                        <button type="submit" style="border: none; background: none; color: orange;">Khóa</button>
+                                                                                    if (user.IsActive)
+                                                                                    {
+                                                                                        <form asp-action="BanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn ban tài khoản này không?');">
+                                                                                            <button type="submit" style="border: none; background: none; color: orange;">Ban</button>
+                                                                                        </form>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <form asp-action="UnbanUser" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn mở khóa tài khoản này không?');">
+                                                                                            <button type="submit" style="border: none; background: none; color: green;">Unban</button>
+                                                                                        </form>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <span class="text-muted">Super Admin</span>
+                                                                                }
+                                                                            </li>
+                                                                            <li>
+                                                                            @* note *@
+                                                                                @if (user.Id != 1)
+                                                                                {
+                                                                                    <form asp-action="Delete" asp-controller="AdminWarehouse" asp-route-id="@user.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?');" style="display:inline;">
+                                                                                        <button type="submit" style="border: none; background: none; color: red;">
+                                                                                            Delete
+                                                                                        </button>
                                                                                     </form>
                                                                                 }
                                                                                 else
@@ -117,6 +160,10 @@
                                                                                         Xóa
                                                                                     </button>
                                                                                 </form>
+                                                                            </li>
+                                                                            <li>
+                                                                                    <span class="text-muted">Super Admin</span>
+                                                                            
                                                                             </li>
                                                                         </ul>
                                                                     </td>

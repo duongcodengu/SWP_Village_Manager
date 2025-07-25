@@ -28,6 +28,10 @@
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
                                         <form class="theme-form theme-form-2 mega-form" asp-action="ChinhSuaKhachHang" asp-controller="AdminFamViet" asp-route-id="@Model.Id" method="post">
                                             @Html.AntiForgeryToken()
+                                            @if (TempData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">@TempData["Error"]</div>
+                                            }
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">

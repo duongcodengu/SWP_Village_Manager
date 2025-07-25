@@ -21,17 +21,16 @@
                                             Tài khoản
                                         </button>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button">
-                                            Phân quyền
-                                        </button>
-                                    </li>
                                 </ul>
 
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
                                         <form class="theme-form theme-form-2 mega-form" asp-action="EditUser" asp-controller="AdminWarehouse" asp-route-id="@Model.Id" method="post">
                                             @Html.AntiForgeryToken()
+                                            @if (TempData["Error"] != null)
+                                            {
+                                                <div class="alert alert-danger">@TempData["Error"]</div>
+                                            }
                                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                                             <div class="card-header-1">
@@ -42,8 +41,16 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-lg-2 col-md-3 mb-0">Tên đăng nhập</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input asp-for="Username" class="form-control" type="text" required>
-                                                        <span asp-validation-for="Username" class="text-danger"></span>
+                                                        @if (Model.Id == 1)
+                                                        {
+                                                            <input asp-for="Username" class="form-control" type="text" readonly />
+                                                            <span class="text-muted">Không thể đổi username của tài khoản này</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <input asp-for="Username" class="form-control" type="text" required />
+                                                            <span asp-validation-for="Username" class="text-danger"></span>
+                                                        }
                                                     </div>
                                                 </div>
 
@@ -68,20 +75,39 @@
                                                     <div class="col-md-9 col-lg-10">
                                                         <input name="newPassword" class="form-control" type="password">
                                                         <small class="text-muted">Để trống nếu không muốn đổi mật khẩu</small>
+                                                        @if (ViewData.ModelState["newPassword"] != null && ViewData.ModelState["newPassword"].Errors.Count > 0)
+                                                        {
+                                                            <span class="text-danger">@ViewData.ModelState["newPassword"].Errors[0].ErrorMessage</span>
+                                                        }
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <select asp-for="RoleId" class="form-control" required>
-                                                            <option value="">-- Chọn vai trò --</option>
-                                                            @foreach (var role in ViewBag.Roles)
-                                                            {
-                                                                <option value="@role.Id">@role.Name</option>
-                                                            }
-                                                        </select>
-                                                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                                                        @if (Model.Id == 1)
+                                                        {
+                                                            <select class="form-control" disabled>
+                                                                @foreach (var role in ViewBag.Roles)
+                                                                {
+                                                                    var selected = Model.RoleId == role.Id ? "selected=\"selected\"" : "";
+                                                                    @Html.Raw($"<option value=\"{role.Id}\" {selected}>{role.Name}</option>")
+                                                                }
+                                                            </select>
+                                                            <input type="hidden" name="RoleId" value="@Model.RoleId" />
+                                                            <span class="text-muted">Không thể đổi vai trò của tài khoản này</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <select asp-for="RoleId" class="form-control" required>
+                                                                <option value="">-- Select Role --</option>
+                                                                @foreach (var role in ViewBag.Roles)
+                                                                {
+                                                                    <option value="@role.Id">@role.Name</option>
+                                                                }
+                                                            </select>
+                                                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
