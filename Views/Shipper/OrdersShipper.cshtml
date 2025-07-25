@@ -91,14 +91,35 @@
                             </td>
                             <td class="text-center">@order.User?.Username</td>
                             <td class="text-center">
-                                @if (order.Status == "pending")
-                                {
-                                    <span class="badge bg-warning text-dark">Chờ nhận</span>
+                                @{
+                                    string statusVN = order.Status switch
+                                    {
+                                        "pending" => "Chờ nhận",
+                                        "confirmed" => "Đã xác nhận",
+                                        "shipped" => "Đang giao",
+                                        "delivered" => "Đã giao",
+                                        "cancelled" => "Đã huỷ",
+                                        "returned" => "Đã trả hàng",
+                                        "assigned" => "Chờ giao",
+                                        "in_transit" => "Đang giao",
+                                        "failed" => "Thất bại",
+                                        _ => order.Status
+                                    };
+                                    string badgeClass = order.Status switch
+                                    {
+                                        "pending" => "bg-secondary",
+                                        "confirmed" => "bg-primary",
+                                        "assigned" => "bg-info text-dark",
+                                        "shipped" => "bg-warning text-dark",
+                                        "in_transit" => "bg-warning text-dark",
+                                        "delivered" => "bg-success",
+                                        "returned" => "bg-danger",
+                                        "cancelled" => "bg-orange text-white",
+                                        "failed" => "bg-dark text-white",
+                                        _ => "bg-light text-dark"
+                                    };
                                 }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@order.Status</span>
-                                }
+                                <span class="badge @badgeClass">@statusVN</span>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex flex-column gap-2 align-items-center">
@@ -123,6 +144,23 @@
         </div>
             <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
     </div>
+    @{
+        int totalPages = (int)Math.Ceiling((double)(ViewBag.TotalItems ?? 0) / (ViewBag.PageSize ?? 10));
+        int currentPage = ViewBag.Page ?? 1;
+    }
+    @if (totalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center mt-3">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action(null, new { page = i, pageSize = ViewBag.PageSize, searchOrderId = ViewBag.SearchOrderId, searchCustomer = ViewBag.SearchCustomer, searchStatus = ViewBag.SearchStatus })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
 </div>
 <!-- latest jquery-->
 <script src="~/js/jquery-3.6.0.min.js"></script>

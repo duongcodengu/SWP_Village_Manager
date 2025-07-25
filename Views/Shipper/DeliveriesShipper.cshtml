@@ -35,6 +35,25 @@
 <body>
 <div class="card shadow rounded-4 p-4">
     <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-truck me-2"></i>Đơn hàng cần giao</h3>
+    <!-- Form lọc trạng thái -->
+    <form method="get" class="row g-3 align-items-center mb-3">
+        <div class="col-auto">
+            <label for="searchStatus" class="col-form-label">Lọc theo trạng thái:</label>
+        </div>
+        <div class="col-auto">
+            <select name="searchStatus" id="searchStatus" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="assigned" selected="@(ViewBag.SearchStatus == "assigned" ? "selected" : null)">Chờ giao</option>
+                <option value="in_transit" selected="@(ViewBag.SearchStatus == "in_transit" ? "selected" : null)">Đang giao</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </div>
+        <input type="hidden" name="searchOrderId" value="@ViewBag.SearchOrderId" />
+        <input type="hidden" name="searchCustomer" value="@ViewBag.SearchCustomer" />
+        <input type="hidden" name="searchDateRange" value="@ViewBag.SearchDateRange" />
+    </form>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
@@ -57,19 +76,34 @@
                             <td>@delivery.CustomerName</td>
                             <td>@delivery.CustomerAddress</td>
                             <td>
-                                @if (delivery.Status == "assigned")
-                                {
-                                    <span class="badge bg-warning text-dark">Chờ giao</span>
+                                @{
+                                    string statusVN = delivery.Status switch
+                                    {
+                                        "assigned" => "Chờ giao",
+                                        "shipped" => "Đang giao",
+                                        "in_transit" => "Đang giao",
+                                        "delivered" => "Đã giao",
+                                        "failed" => "Thất bại",
+                                        "cancelled" => "Đã huỷ",
+                                        _ => delivery.Status
+                                    };
+                                    string badgeClass = delivery.Status switch
+                                    {
+                                        "assigned" => "bg-info text-dark",
+                                        "shipped" => "bg-warning text-dark",
+                                        "in_transit" => "bg-warning text-dark",
+                                        "delivered" => "bg-success",
+                                        "failed" => "bg-dark text-white",
+                                        "cancelled" => "bg-orange text-white",
+                                        _ => "bg-light text-dark"
+                                    };
                                 }
-                                else if (delivery.Status == "in_transit")
-                                {
-                                    <span class="badge bg-info text-dark">Đang giao</span>
-                                }
+                                <span class="badge @badgeClass">@statusVN</span>
                             </td>
                             <td>@delivery.StartTime?.ToString("HH:mm dd/MM/yyyy")</td>
                             <td class="text-center">
                                 <div class="d-flex flex-column gap-2 align-items-center">
-                                    <a asp-action="DeliveryDetail" asp-route-id="@delivery.Id" class="btn btn-info btn-sm px-3 fw-bold mb-1"><i class="fa fa-eye me-1"></i> Xem</a>
+                                    <a asp-action="RetailOrderDetail" asp-route-id="@delivery.OrderId" class="btn btn-info btn-sm px-3 fw-bold mb-1"><i class="fa fa-eye me-1"></i> Xem</a>
                                     @if (delivery.Status == "assigned")
                                     {
                                         <form method="post" action="/Shipper/StartDelivery" style="display: inline;">
@@ -96,6 +130,23 @@
             </tbody>
         </table>
     </div>
+    @{
+        int totalPages = (int)Math.Ceiling((double)(ViewBag.TotalItems ?? 0) / (ViewBag.PageSize ?? 10));
+        int currentPage = ViewBag.Page ?? 1;
+    }
+    @if (totalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center mt-3">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action(null, new { page = i, pageSize = ViewBag.PageSize, searchOrderId = ViewBag.SearchOrderId, searchCustomer = ViewBag.SearchCustomer, searchStatus = ViewBag.SearchStatus, searchDateRange = ViewBag.SearchDateRange })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
         <a href="/dashboardshipper" class="btn btn-outline-secondary mt-4"><i class="fa fa-arrow-left me-1"></i>Quay lại Dashboard</a>
 </div>
 

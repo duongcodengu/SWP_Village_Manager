@@ -168,8 +168,8 @@ namespace Village_Manager.Controllers
                 ViewBag.Error = "Tài khoản đã bị khóa!";
                 return View();
             }
-            // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
-            if (user.RoleId != 4)
+            // Luôn kiểm tra mật khẩu cho mọi user
+            if (!PasswordHelper.VerifyPassword(password, user.Password))
             {
                 if (!BCrypt.Net.BCrypt.Verify(inputPassword, user.Password))
                 {
@@ -237,10 +237,10 @@ namespace Village_Manager.Controllers
                         return RedirectToAction("Index", "Home");
 
                     case 3: // Customer
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("IndexCustomer", "Customer");
 
                     case 4: // Shipper
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("DashboardShipper", "Shipper"); // chuyển thẳng đến dashboard shipper
 
                     case 5: // Farmer
                         return RedirectToAction("Index", "Home");
@@ -336,9 +336,9 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra độ dài mật khẩu
-            if (password.Length < 6)
+            if (password.Length != 8)
             {
-                ViewBag.Error = "Mật khẩu phải có ít nhất 6 ký tự.";
+                ViewBag.Error = "Mật khẩu phải có đúng 8 ký tự.";
                 return View();
             }
 
