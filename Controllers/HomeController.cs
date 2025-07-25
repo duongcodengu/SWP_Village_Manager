@@ -1,4 +1,5 @@
-﻿using MailKit.Security;
+﻿using BCrypt.Net;
+using MailKit.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
+using System.Text.Json;
 using Village_Manager.Data;
 using Village_Manager.Models;
+using Village_Manager.Utils;
 //using Village_Manager.Extensions;
 
 namespace Village_Manager.Controllers
@@ -114,13 +117,40 @@ namespace Village_Manager.Controllers
                 return View();
             }
                 
-        } 
-        
+        }
+        // Xác thực captcha
+        private async Task<bool> VerifyCaptchaV2Async(string token)
+        {
+            var secret = "6LdlWI4rAAAAAMM_C6RqVO1HFEaJRzQzQQIg17JU"; // Key từ Google
+            var client = new HttpClient();
+
+            var values = new Dictionary<string, string>
+            {
+                { "secret", secret },
+                { "response", token }
+            };
+
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            using var jsonDoc = JsonDocument.Parse(responseString);
+            var root = jsonDoc.RootElement;
+            return root.GetProperty("success").GetBoolean();
+        }
+
         // Xử lý đăng nhập
         [HttpPost]
         [Route("login")]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
+            string captchaToken = Request.Form["g-recaptcha-response"];
+
+            if (string.IsNullOrEmpty(captchaToken) || !await VerifyCaptchaV2Async(captchaToken))
+            {
+                ViewBag.Error = "Vui lòng xác minh Captcha trước khi đăng nhập.";
+                return View();
+            }
             string inputEmail = email?.Trim().ToLower() ?? string.Empty;
             string inputPassword = password?.Trim() ?? string.Empty;
 
@@ -141,7 +171,7 @@ namespace Village_Manager.Controllers
             // Nếu là shipper thì bỏ qua kiểm tra password (chỉ để test đăng nhập)
             if (user.RoleId != 4)
             {
-                if (user.Password != inputPassword)
+                if (!BCrypt.Net.BCrypt.Verify(inputPassword, user.Password))
                 {
                     ViewBag.Error = "Mật khẩu không đúng!";
                     return View();
@@ -219,7 +249,8 @@ namespace Village_Manager.Controllers
                         return RedirectToAction("Login", "Home");
                 }
             
-            }
+        }
+        
         
         //Contact us
         [HttpGet]
@@ -282,8 +313,15 @@ namespace Village_Manager.Controllers
 
         [HttpPost]
         [Route("signup")]
-        public IActionResult SignUp(string fullname, string email, string password, string terms, string phone)
+        public async Task<IActionResult> SignUp(string fullname, string email, string password, string terms, string phone)
         {
+            string captchaToken = Request.Form["g-recaptcha-response"];
+
+            if (string.IsNullOrEmpty(captchaToken) || !await VerifyCaptchaV2Async(captchaToken))
+            {
+                ViewBag.Error = "Vui lòng xác minh Captcha trước khi đăng nhập.";
+                return View();
+            }
             fullname = fullname?.Trim();
             email = email?.Trim().ToLower();
             password = password?.Trim();
@@ -326,12 +364,23 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
+            if (_context.Users.Any(u => u.Phone == phone))
+            {
+                ViewBag.Error = "Số điện thoại đã được sử dụng.";
+                return View();
+            }
+            if (_context.Users.Any(u => u.Username == fullname))
+            {
+                ViewBag.Error = "Username đã được sử dụng.";
+                return View();
+            }
+
             // Tạo user mới
             var user = new User
             {
                 Email = email,
                 Username = fullname,
-                Password = password,
+                Password = BCrypt.Net.BCrypt.HashPassword(password),
                 Phone = phone,
                 RoleId = 3,
                 IsActive = true,
@@ -349,8 +398,6 @@ namespace Village_Manager.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-
 
         // Đăng xuất
         [Route("logout")]
@@ -389,7 +436,7 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            if (user.Password != oldPassword)
+            if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.Password))
             {
                 ViewBag.Error = "Mật khẩu cũ không chính xác.";
                 return View();
@@ -401,7 +448,7 @@ namespace Village_Manager.Controllers
                 return View();
             }
 
-            user.Password = newPassword;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             _context.SaveChanges();
 
             ViewBag.Message = "Đổi mật khẩu thành công!";
@@ -460,6 +507,7 @@ namespace Village_Manager.Controllers
                 if (record.Otp == otp && DateTime.UtcNow <= record.Expire)
                 {
                     otpStore.Remove(normalizedEmail);
+                    HttpContext.Session.SetString($"otp_verified:{normalizedEmail}", "true");
                     return RedirectToAction("ResetPassword", new { email });
                 }
             }
@@ -471,9 +519,12 @@ namespace Village_Manager.Controllers
         public IActionResult ResetPassword(string email)
         {
             if (string.IsNullOrEmpty(email))
-            {
                 return View("404");
-            }
+
+            var verified = HttpContext.Session.GetString($"otp_verified:{email.ToLower()}");
+            if (verified != "true")
+                return View("404");
+
             ViewBag.Email = email;
             return View();
         }
@@ -487,11 +538,38 @@ namespace Village_Manager.Controllers
                 return RedirectToAction("Forgot");
             }
 
-            user.Password = newPassword;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _context.SaveChangesAsync();
-
+            HttpContext.Session.Remove($"otp_verified:{email.ToLower()}");
             TempData["Success"] = "Đặt lại mật khẩu thành công.";
             return RedirectToAction("Login", "Home");
+        }
+
+        // Thêm vào giỏ hàng
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            //lấy giỏ hàng từ session hoặc tạo mới
+            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+            //kiểm tra sản phẩm đã có trong giỏ chưa
+            var item = cart.FirstOrDefault(ci => ci.ProductId == productId);
+            if (item != null)
+            {
+                item.Quantity = (item.Quantity ?? 0) + quantity;
+            }
+            else
+            {
+                cart.Add(new CartItem
+                {
+                    ProductId = productId,
+                    Quantity = quantity
+                });
+            }
+
+            HttpContext.Session.Set("Cart", cart);
+
+            return RedirectToAction("Index");
         }
 
     }

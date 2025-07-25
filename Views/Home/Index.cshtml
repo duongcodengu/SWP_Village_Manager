@@ -53,9 +53,7 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                         <div class="h-100">
                             @if (ViewBag.Bannertopleft != null)
                             {
-                                <img src="@Url.Content(ViewBag.Bannertopleft)" style="width: 100%; height: auto"
-                                         alt="">
-                                
+                                <img src="@Url.Content(ViewBag.Bannertopleft)" style="width: 100%; height: 100%; object-fit: cover;" alt="">
                             }  
                         </div>              
                     </div>
@@ -142,19 +140,6 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     <img src="@Url.Content(ViewBag.BannerSide1)" class="bg-img blur-up lazyload"
                                      alt="">
                                 }
-                                <div class="home-detail p-top-left home-p-medium">
-                                    <div>
-                                        <h6 class="text-yellow home-banner">Hải sản</h6>
-                                        <h3 class="text-uppercase fw-normal">
-                                            <span class="theme-color fw-bold">Tươi mới</span> Sản phẩm
-                                        </h3>
-                                        <h3 class="fw-light">mỗi giờ</h3>
-                                        <button onclick="location.href = 'shop-left-sidebar.html';"
-                                                class="btn btn-animation btn-md mend-auto">
-                                            Mua ngay <i class="fa-solid fa-arrow-right icon"></i>
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -252,98 +237,55 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                         <span>MỚI</span>
                                                     </div>
                                                     <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
+                                                                <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                             <img src="@Url.Content(image.ProductImage.ImageUrl)"
                                                                  class="img-fluid blur-up lazyload" alt="@image.ProductImage.Product.Name">
                                                         </a>
-                                                        <ul class="product-option">
-                                                            <li data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                title="View">
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#view">
-                                                                    <i data-feather="eye"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                title="Compare">
-                                                                <a href="compare.html">
-                                                                    <i data-feather="refresh-cw"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                title="Wishlist">
-                                                                <a href="wishlist.html" class="notifi-wishlist">
-                                                                    <i data-feather="heart"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
                                                     </div>
                                                     <div class="product-detail">
-                                                        <a href="product-left-thumbnail.html">
+                                                                <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                             <h6 class="name">
                                                                 @image.ProductImage.Product.Name
                                                             </h6>
                                                         </a>
                                                         <h5 class="sold text-content">
-                                                            <span class="theme-color price">$@image.ProductImage.Product.Price.ToString("F2")</span>
-                                                        </h5>
+                                                        @string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C0}", image.ProductImage.Product.Price)
+                                                    </h5>
 
-                                                        <div class="product-rating mt-sm-2 mt-1">
-                                                            <ul class="rating">
-                                                                @for (int i = 1; i <= 5; i++)
-                                                                {
-                                                                    <li>
-                                                                        <i data-feather="star" class="@(i <= 4 ? "fill" : "")"></i>
-                                                                    </li>
-                                                                }
-                                                            </ul>
+                                                    <div class="product-rating mt-sm-2 mt-1">
+                                                        <ul class="rating">
+                                                            @for (int i = 1; i <= 5; i++)
+                                                            {
+                                                                <li>
+                                                                    <i data-feather="star" class="@(i <= 4 ? "fill" : "")"></i>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                        <h6 class="theme-color">Còn hàng</h6>
+                                                    </div>
 
-                                                            <h6 class="theme-color">Còn hàng</h6>
-                                                        </div>
-
-                                                        <div class="add-to-cart-box">
-                                                            <button class="btn btn-add-cart addcart-button">
-                                                                Thêm
-                                                                <span class="add-icon">
-                                                                    <i class="fa-solid fa-plus"></i>
-                                                                </span>
-                                                            </button>
-                                                            <div class="cart_qty qty-box">
-                                                                <div class="input-group">
-                                                                    <button type="button" class="qty-left-minus"
-                                                                            data-type="minus" data-field="">
-                                                                        <i class="fa fa-minus"></i>
-                                                                    </button>
-                                                                    <input class="form-control input-number qty-input"
-                                                                           type="text" name="quantity" value="0">
-                                                                    <button type="button" class="qty-right-plus"
-                                                                            data-type="plus" data-field="">
-                                                                        <i class="fa fa-plus"></i>
-                                                                    </button>
-                                                                </div>
+                                                    <div class="cart_qty qty-box open mt-2">
+                                                        <form method="post" asp-controller="Home" asp-action="AddToCart" class="d-flex align-items-center">
+                                                            <input type="hidden" name="productId" value="@image.Id" />
+                                                            <div class="input-group bg-white w-auto">
+                                                                <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
+                                                                <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                                <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
                                                             </div>
-                                                        </div>
+                                                            <script>
+                                                                function adjustQty(btn, delta) {
+                                                                    const input = btn.parentElement.querySelector('.qty-input');
+                                                                    let val = parseInt(input.value) || 1;
+                                                                    val += delta;
+                                                                    if (val < 1) val = 1;
+                                                                    input.value = val;
+                                                                }
+                                                            </script>
+                                                            <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
+                                                                <i class="fa fa-shopping-cart"></i>
+                                                            </button>
+                                                        </form>
                                                     </div>
-                                                }
-                                                else
-                                                {
-                                                    <!-- Fallback khi không có sản phẩm -->
-                                                    <div class="product-image">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <img src="~/images/vegetable/product/4.png"
-                                                                 class="img-fluid blur-up lazyload" alt="">
-                                                        </a>
-                                                    </div>
-                                                    <div class="product-detail">
-                                                        <a href="product-left-thumbnail.html">
-                                                            <h6 class="name">Product Name</h6>
-                                                        </a>
-                                                        <h5 class="sold text-content">
-                                                            <span class="theme-color price">$26.69</span>
-                                                            <del>28.56</del>
-                                                        </h5>
                                                     </div>
                                                 }
                                             </div>
@@ -360,13 +302,13 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                     </div>
                     <div class="section-b-space">
                         <div class="title d-block">
-                            <h2>Tủ thực phẩm</h2>
+                            <h2>Thực phẩm</h2>
                             <span class="title-leaf">
                                 <svg class="icon-width">
                                     <use xlink:href="~/svg/leaf.svg#leaf"></use>
                                 </svg>
                             </span>
-                            <p>Trợ lý ảo sẽ thu thập các sản phẩm từ danh sách của bạn</p>
+                            <p>Thu thập các sản phẩm từ danh sách của bạn</p>
                         </div>
                     </div>
 
@@ -382,31 +324,18 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                         <div>
                                             <div class="product-box">
                                                 <div class="product-image">
-                                                    <a href="product-left-thumbnail.html">
+                                                    <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                         <img src="@Url.Content(image.ProductImage.ImageUrl)"
                                                              class="img-fluid blur-up lazyload" alt="@image.ProductImage.Product.Name" />
                                                     </a>
-                                                    <ul class="product-option">
-                                                        <li title="View">
-                                                            <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#view">
-                                                                <i data-feather="eye"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li title="Compare">
-                                                            <a href="compare.html"><i data-feather="refresh-cw"></i></a>
-                                                        </li>
-                                                        <li title="Wishlist">
-                                                            <a href="wishlist.html" class="notifi-wishlist"><i data-feather="heart"></i></a>
-                                                        </li>
-                                                    </ul>
                                                 </div>
 
                                                 <div class="product-detail">
-                                                    <a href="product-left-thumbnail.html">
+                                                    <a href="/shop/detail/@image.ProductImage.Product.Id">
                                                         <h6 class="name">@image.ProductImage.Product.Name</h6>
                                                     </a>
                                                     <h5 class="sold text-content">
-                                                        <span class="theme-color price">$@image.ProductImage.Product.Price.ToString("F2")</span>
+                                                        @string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C0}", image.ProductImage.Product.Price)
                                                     </h5>
 
                                                     <div class="product-rating mt-sm-2 mt-1">
@@ -421,18 +350,27 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                         <h6 class="theme-color">Còn hàng</h6>
                                                     </div>
 
-                                                    <div class="add-to-cart-box">
-                                                        <button class="btn btn-add-cart addcart-button">
-                                                            Thêm
-                                                            <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
-                                                        </button>
-                                                        <div class="cart_qty qty-box">
-                                                            <div class="input-group">
-                                                                <button type="button" class="qty-left-minus"><i class="fa fa-minus"></i></button>
-                                                                <input class="form-control input-number qty-input" type="text" name="quantity" value="0" />
-                                                                <button type="button" class="qty-right-plus"><i class="fa fa-plus"></i></button>
+                                                    <div class="cart_qty qty-box open mt-2">
+                                                        <form method="post" asp-controller="Home" asp-action="AddToCart" class="d-flex align-items-center">
+                                                            <input type="hidden" name="productId" value="@image.Id" />
+                                                            <div class="input-group bg-white w-auto">
+                                                                <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
+                                                                <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                                <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
                                                             </div>
-                                                        </div>
+                                                            <script>
+                                                                function adjustQty(btn, delta) {
+                                                                    const input = btn.parentElement.querySelector('.qty-input');
+                                                                    let val = parseInt(input.value) || 1;
+                                                                    val += delta;
+                                                                    if (val < 1) val = 1;
+                                                                    input.value = val;
+                                                                }
+                                                            </script>
+                                                            <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
+                                                                <i class="fa fa-shopping-cart"></i>
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -440,36 +378,8 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                     }
                                 }
                             }
-                            else
-                            {
-                                <!-- fallback nếu không có dữ liệu -->
-                                <div>
-                                    <div class="product-box">
-                                        @* <div class="product-image">
-                                            <a href="product-left-thumbnail.html">
-                                                <img src="~/images/vegetable/product/4.png"
-                                                     class="img-fluid blur-up lazyload" alt="Dark Chocolate" />
-                                            </a>
-                                        </div>
-                                        <div class="product-detail">
-                                            <a href="product-left-thumbnail.html">
-                                                <h6 class="name">Dark Chocolate</h6>
-                                            </a>
-                                            <h5 class="sold text-content">
-                                                <span class="theme-color price">$26.69</span>
-                                                <del>28.56</del>
-                                            </h5>
-                                        </div> *@
-                                    </div>
-                                </div>
-                            }
                         </div>
                     </div>
-    
-               
-
-          
-  
 
      <div class="title d-block">
          <div>
@@ -479,405 +389,58 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                 <use xlink:href="~/svg/leaf.svg#leaf"></use>
             </svg>
         </span>
-        <p>Trợ lý ảo sẽ thu thập các sản phẩm từ danh sách của bạn</p>
+        <p>Thu thập các sản phẩm từ danh sách của bạn</p>
         </div>
 </div>
 
-<div class="best-selling-slider product-wrapper wow fadeInUp">
-    @if (ViewBag.BestSellerImages != null && ((List<Village_Manager.Models.HomepageImage>)ViewBag.BestSellerImages).Any())
-    {
-                        var bestSellerList = (List<Village_Manager.Models.HomepageImage>)ViewBag.bestSellerImages;
-        int count = 0;
-        int itemsPerGroup = 4;
-
-        foreach (var group in bestSellerList.Chunk(itemsPerGroup))
-        {
-            <div>
-                <ul class="product-list">
-                    @foreach (var item in group)
-                    {
-                        if (item.ProductImage?.Product != null)
+                    <div class="best-selling-slider product-wrapper wow fadeInUp">
+                        @if (ViewBag.BestSellerImages != null && ((List<Village_Manager.Models.HomepageImage>)ViewBag.BestSellerImages).Any())
                         {
-                            <li>
-                                <div class="offer-product">
-                                    <a href="product-left-thumbnail.html" class="offer-image">
-                                        <img src="@Url.Content(item.ProductImage.ImageUrl)"
-                                             class="blur-up lazyload"
-                                             alt="@item.ProductImage.Product.Name" />
-                                    </a>
+                            var bestSellerList = (List<Village_Manager.Models.HomepageImage>)ViewBag.BestSellerImages;
+                            int itemsPerGroup = 4;
 
-                                    <div class="offer-detail">
-                                        <div>
-                                            <a href="product-left-thumbnail.html" class="text-title">
-                                                <h6 class="name">@item.ProductImage.Product.Name</h6>
-                                            </a>
-                                            <span>1 L</span> <!-- Có thể thay bằng đơn vị thực tế -->
-                                            <h6 class="price theme-color">
-                                                $@item.ProductImage.Product.Price.ToString("F2")
-                                            </h6>
-                                        </div>
-                                    </div>
+                            foreach (var group in bestSellerList.Chunk(itemsPerGroup))
+                            {
+                                <div>
+                                    <ul class="product-list">
+                                        @foreach (var item in group)
+                                        {
+                                            if (item.ProductImage?.Product != null)
+                                            {
+                                                <li>
+                                                    <div class="offer-product">
+                                                        <a href="/shop/detail/@item.ProductImage.Product.Id" class="offer-image">
+                                                            <img src="@Url.Content(item.ProductImage.ImageUrl)"
+                                                                 class="blur-up lazyload"
+                                                                 alt="@item.ProductImage.Product.Name" />
+                                                        </a>
+
+                                                        <div class="offer-detail">
+                                                            <div>
+                                                                <a href="/shop/detail/@item.ProductImage.Product.Id" class="text-title">
+                                                                    <h6 class="name">@item.ProductImage.Product.Name</h6>
+                                                                </a>
+                                                                <h6 class="price theme-color">
+                                                                    @string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:C0}", item.ProductImage.Product.Price)
+                                                                </h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
                                 </div>
-                            </li>
+                            }
                         }
-                    }
-                </ul>
-            </div>
-        }
-    }
-    else
-    {
-        <!-- Fallback nếu không có dữ liệu -->
-        <div>
-            <ul class="product-list">
-                <li>
-                    <div class="offer-product">
-                        @* <a href="product-left-thumbnail.html" class="offer-image">
-                            <img src="~/images/vegetable/product/19.png"
-                                 class="blur-up lazyload" alt="Fallback Product" />
-                        </a>
-                        <div class="offer-detail">
-                            <div>
-                                <a href="product-left-thumbnail.html" class="text-title">
-                                    <h6 class="name">Dầu hướng dương Good Life</h6>
-                                </a>
-                                <span>1 L</span>
-                                <h6 class="price theme-color">$10.09</h6>
-                            </div>
-                        </div> *@
-                    </div>
-                </li>
-            </ul>
-        </div>
-    }              
-
+                    </div>   
                 </div>
                 </div>
             </div>
         </div>
     </section>
     <!-- Product Section End -->
-    <!-- Newsletter Section Start -->
-    <section class="newsletter-section section-b-space">
-        <div class="container-fluid-lg">
-            <div class="newsletter-box newsletter-box-2">
-                <div class="newsletter-contain py-5">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-xxl-4 col-lg-5 col-md-7 col-sm-9 offset-xxl-2 offset-md-1">
-                                <div class="newsletter-detail">
-                                    <h2>Đăng ký nhận bản tin và nhận...</h2>
-                                    <h5>Giảm giá 20.000đ cho đơn hàng đầu tiên</h5>
-                                    <div class="input-box">
-                                        <input type="email" class="form-control" id="exampleFormControlInput1"
-                                               placeholder="Nhập email của bạn">
-                                        <i class="fa-solid fa-envelope arrow"></i>
-                                        <button class="sub-btn  btn-animation">
-                                            <span class="d-sm-block d-none">Đăng ký</span>
-                                            <i class="fa-solid fa-arrow-right icon"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <div class="modal fade theme-modal view-modal" id="view" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header p-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-sm-4 g-2">
-                        <div class="col-lg-6">
-                            <div class="slider-image">
-                                <img src="~/images/product/category/1.jpg" class="img-fluid blur-up lazyload"
-                                     alt="">
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="right-sidebar-modal">
-                                <h4 class="title-name">Bánh quy bơ đậu phộng cao cấp 600g</h4>
-                                <h4 class="price">$36.99</h4>
-                                <div class="product-rating">
-                                    <ul class="rating">
-                                        <li>
-                                            <i data-feather="star" class="fill"></i>
-                                        </li>
-                                        <li>
-                                            <i data-feather="star" class="fill"></i>
-                                        </li>
-                                        <li>
-                                            <i data-feather="star" class="fill"></i>
-                                        </li>
-                                        <li>
-                                            <i data-feather="star" class="fill"></i>
-                                        </li>
-                                        <li>
-                                            <i data-feather="star"></i>
-                                        </li>
-                                    </ul>
-                                    <span class="ms-2">8 đánh giá</span>
-                                    <span class="ms-2 text-danger">Đã bán 6 trong 16 giờ qua</span>
-                                </div>
-
-                                <div class="product-detail">
-                                    <h4>Chi tiết sản phẩm :</h4>
-                                    <p>
-                                        Candy canes sugar plum tart cotton candy chupa chups sugar plum chocolate I love.
-                                        Caramels marshmallow icing dessert candy canes I love soufflé I love toffee.
-                                        Marshmallow pie sweet sweet roll sesame snaps tiramisu jelly bear claw. Bonbon
-                                        muffin I love carrot cake sugar plum dessert bonbon.
-                                    </p>
-                                </div>
-
-                                <ul class="brand-list">
-                                    <li>
-                                        <div class="brand-box">
-                                            <h5>Thương hiệu:</h5>
-                                            <h6>Black Forest</h6>
-                                        </div>
-                                    </li>
-
-                                    <li>
-                                        <div class="brand-box">
-                                            <h5>Mã sản phẩm:</h5>
-                                            <h6>W0690034</h6>
-                                        </div>
-                                    </li>
-
-                                    <li>
-                                        <div class="brand-box">
-                                            <h5>Loại sản phẩm:</h5>
-                                            <h6>White Cream Cake</h6>
-                                        </div>
-                                    </li>
-                                </ul>
-
-                                <div class="select-size">
-                                    <h4>Kích thước bánh :</h4>
-                                    <select class="form-select select-form-size">
-                                        <option selected>Chọn kích thước</option>
-                                        <option value="1.2">1/2 KG</option>
-                                        <option value="0">1 KG</option>
-                                        <option value="1.5">1/5 KG</option>
-                                        <option value="red">Red Roses</option>
-                                        <option value="pink">With Pink Roses</option>
-                                    </select>
-                                </div>
-
-                                <div class="modal-button">
-                                    <button onclick="location.href = 'cart.html';"
-                                            class="btn btn-md add-cart-button icon">
-                                        Thêm vào giỏ hàng
-                                    </button>
-                                    <button onclick="location.href = 'product-left-thumbnail.html';"
-                                            class="btn theme-bg-color view-button icon text-white fw-bold btn-md">
-                                        Xem chi tiết
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Quick Xem Modal Box End -->
-    <!-- Location Modal Start -->
-    <div class="modal location-modal fade theme-modal" id="locationModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Chọn vị trí giao hàng</h5>
-                    <p class="mt-1 text-content">Nhập địa chỉ để nhận ưu đãi phù hợp khu vực của bạn.</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="location-list">
-                        <div class="search-input">
-                            <input type="search" class="form-control" placeholder="Tìm khu vực của bạn">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </div>
-
-                        <div class="disabled-box">
-                            <h6>Chọn vị trí</h6>
-                        </div>
-
-                        <ul class="location-select custom-height">
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Alabama</h6>
-                                    <span>Tối thiểu: 130</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Arizona</h6>
-                                    <span>Tối thiểu: 150</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>California</h6>
-                                    <span>Tối thiểu: 110</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Colorado</h6>
-                                    <span>Tối thiểu: 140</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Florida</h6>
-                                    <span>Tối thiểu: 160</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Georgia</h6>
-                                    <span>Tối thiểu: 120</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Kansas</h6>
-                                    <span>Tối thiểu: 170</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Minnesota</h6>
-                                    <span>Tối thiểu: 120</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>New York</h6>
-                                    <span>Tối thiểu: 110</span>
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h6>Washington</h6>
-                                    <span>Tối thiểu: 130</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Location Modal End -->
-    <!-- Deal Box Modal Start -->
-    <div class="modal fade theme-modal deal-modal" id="deal-box" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title w-100" id="deal_today">Ưu đãi hôm nay</h5>
-                        <p class="mt-1 text-content">Ưu đãi phù hợp dành cho bạn.</p>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="deal-offer-box">
-                        <ul class="deal-offer-list">
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/10.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-2">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/11.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-3">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/12.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-
-                            <li class="list-1">
-                                <div class="deal-offer-contain">
-                                    <a href="shop-left-sidebar.html" class="deal-image">
-                                        <img src="~/images/vegetable/product/13.png" class="blur-up lazyload"
-                                             alt="">
-                                    </a>
-
-                                    <a href="shop-left-sidebar.html" class="deal-contain">
-                                        <h5>Blended Instant Coffee 50 g Mua 1 tặng 1</h5>
-                                        <h6>$52.57 <del>57.62</del> <span>500 G</span></h6>
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Deal Box Modal End -->
-    <!-- Tap to top button start -->
-    <div class="theme-option">
-        <div class="back-to-top">
-            <a id="back-to-top" href="#">
-                <i class="fas fa-chevron-up"></i>
-            </a>
-        </div>
-    </div>
-    <!-- Tap to top button end -->
     <!-- Location realtime -->
     <div id="geoPrompt" style="
     display: none;

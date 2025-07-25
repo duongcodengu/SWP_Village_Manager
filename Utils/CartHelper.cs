@@ -16,7 +16,7 @@ namespace Village_Manager.Utils
             if (productIds.Any())
             {
                 var products = db.Products
-                    .Where(p => productIds.Contains(p.Id))
+                    .Where(p => productIds.Contains(p.Id) && p.ApprovalStatus == "accepted")
                     .Include(p => p.ProductImages)
                     .ToList();
 

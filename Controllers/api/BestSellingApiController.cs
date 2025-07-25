@@ -17,47 +17,39 @@ namespace Village_Manager.Controllers.api
             _context = context;
         }
 
-        [HttpGet]
-        public IActionResult GetBestSellingProducts([FromQuery] int range = 7)
+        public IActionResult GetBestSellingProducts([FromQuery] int range = 1)
         {
-            if (range <= 0)
-                return BadRequest("Range must be a positive number of days.");
+            if (range != 1 && range != 7 && range != 30)
+                return BadRequest("Invalid range. Must be 1, 7, or 30.");
 
-            DateTime fromDate = DateTime.Today.AddDays(-range);
+            var fromDate = DateTime.Today.AddDays(-range + 1); // ví dụ: 7 -> từ 7 ngày trước tới hôm nay
 
-            // Step 1: Tính tổng số lượng đã bán theo ProductId
-            var retailSales = from ro in _context.RetailOrders
-                              join roi in _context.RetailOrderItems on ro.Id equals roi.OrderId
-                              where ro.ConfirmedAt >= fromDate  
-                              group roi by roi.ProductId into g
-                              select new { ProductId = g.Key, Qty = g.Sum(x => x.Quantity) };
-
-            // Step 2: bán lẻ 
-            var totalSales = retailSales
-                .GroupBy(x => x.ProductId)
-                .Select(g => new
-                {
-                    ProductId = g.Key,
-                    Qty = g.Sum(x => x.Qty)
-                });
-
-            // Step 3: Join với Product để lấy thông tin
-            var result = (from sale in totalSales
-                          join p in _context.Products.Include(p => p.ProductImages)
-                              on sale.ProductId equals p.Id
-                          where sale.Qty > 0
-                          orderby sale.Qty descending
-                          select new
-                          {
-                              ProductName = p.Name,
-                              p.Price,
-                              ImageUrl = p.ProductImages.Select(i => i.ImageUrl).FirstOrDefault(),
-                              TotalOrders = sale.Qty
-                          })
-                         .Take(10)
-                         .ToList();
-
-            return Ok(result);
+            var bestSelling = (from order in _context.RetailOrders
+                               where order.Status == "delivered"
+                                     && order.ConfirmedAt.HasValue
+                                     && order.ConfirmedAt.Value.Date >= fromDate
+                               join item in _context.RetailOrderItems on order.Id equals item.OrderId
+                               group item by item.ProductId into g
+                               orderby g.Sum(x => x.Quantity) descending
+                               select new
+                               {
+                                   ProductId = g.Key,
+                                   TotalSold = g.Sum(x => x.Quantity)
+                               })
+                               .Take(5)
+                               .Join(_context.Products.Include(p => p.ProductImages),
+                                     sale => sale.ProductId,
+                                     p => p.Id,
+                                     (sale, p) => new
+                                     {
+                                         ProductId = p.Id,
+                                         ProductName = p.Name,
+                                         Price = p.Price,
+                                         ImageUrl = p.ProductImages.Select(i => i.ImageUrl).FirstOrDefault(),
+                                         Qty = sale.TotalSold
+                                     })
+                               .ToList();
+            return Ok(bestSelling);
         }
     }
 }

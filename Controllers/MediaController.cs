@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
+using Village_Manager.Extensions;
 using Village_Manager.Models;
 namespace Village_Manager.Controllers
 {
@@ -22,6 +23,11 @@ namespace Village_Manager.Controllers
         // 1. Truy xuất trang Media + truyền dữ liệu ảnh hiện có
         public IActionResult Index()
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
             var images = _context.HomepageImages
                 .Include(h => h.ProductImage)
                 .ThenInclude(p => p.Product)
@@ -34,6 +40,11 @@ namespace Village_Manager.Controllers
         [HttpGet]
         public IActionResult GetCategories()
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
             var categories = _context.ProductCategories
                 .Select(c => new
                 {
@@ -49,6 +60,11 @@ namespace Village_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadImage(IFormFile file, int productId)
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
             if (file == null || file.Length == 0)
                 return Json(new { success = false, message = "Không có file được chọn" });
 
@@ -294,6 +310,11 @@ namespace Village_Manager.Controllers
         [HttpDelete]
         public IActionResult DeleteImage(int id)
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
             var homepageImage = _context.HomepageImages.Find(id);
             if (homepageImage != null)
             {
@@ -306,6 +327,11 @@ namespace Village_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadBanner(IFormFile file, string section, string position)
         {
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
             if (file == null || file.Length == 0)
                 return Json(new { success = false, message = "Không có file được chọn" });
             if (string.IsNullOrEmpty(position))

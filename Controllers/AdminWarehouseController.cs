@@ -16,6 +16,7 @@ using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
 using Village_Manager.ViewModel;
+using BCrypt.Net;
 
 namespace Village_Manager.Controllers;
 public class AdminWarehouseController : Controller
@@ -64,15 +65,16 @@ public class AdminWarehouseController : Controller
         decimal currentYear = DateTime.Now.Year;
 
         // Bán lẻ (Retail)
-        var retailRevenue = _context.RetailOrders
-            .Where(ro => ro.Status == "confirmed"
-                && ro.ConfirmedAt.HasValue
-                && ro.ConfirmedAt.Value.Year == currentYear)
-            .Join(_context.RetailOrderItems,
-                    ro => ro.Id,
-                    ri => ri.OrderId,
-                    (ro, ri) => ri.Quantity * ri.UnitPrice)
-            .Sum();
+        var retailRevenue = _context.Payments
+            .Where(p => p.OrderType == "retail"
+                && p.PaymentType == "receive"
+                && ((DateTime)p.PaidAt).Year == currentYear)
+            .Join(_context.RetailOrders,
+                  p => p.OrderId,
+                  o => o.Id,
+                  (p, o) => new { Payment = p, Order = o })
+            .Where(x => x.Order.Status == "delivered")
+            .Sum(x => x.Payment.Amount);
 
         decimal totalRevenue = (retailRevenue ?? 0);
         ViewBag.TotalRevenue = totalRevenue;
@@ -117,7 +119,6 @@ public class AdminWarehouseController : Controller
             return View("404");
         }
         var products = _context.Products
-            .Where(p => p.ApprovalStatus == "accepted")
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .ToList();
@@ -253,7 +254,7 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
-        return View(product);
+        return View("/product");
     }
 
     // DeleteProduct
@@ -271,26 +272,15 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
-        var images = _context.ProductImages.Where(p => p.ProductId == id).ToList();
-
-        foreach (var image in images)
-        {
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", image.ImageUrl);
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-        }
-
-        _context.ProductImages.RemoveRange(images);
-        _context.Products.Remove(product);
+        // Đổi trạng thái thay vì xóa
+        product.ApprovalStatus = "rejected";
         await _context.SaveChangesAsync();
-
+        
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Xóa sản phẩm: {product.Name}");
 
-        return Redirect("/products");
+        return Redirect("/product");
     }
 
     //Update Product
@@ -569,7 +559,7 @@ public class AdminWarehouseController : Controller
             {
                 Username = user.Username.Trim(),
                 Email = user.Email.Trim(),
-                Password = user.Password, // Lưu plain text
+                Password = BCrypt.Net.BCrypt.HashPassword(user.Password),
                 RoleId = user.RoleId,
                 Phone = user.Phone?.Trim(),
                 CreatedAt = DateTime.Now
@@ -711,7 +701,7 @@ public class AdminWarehouseController : Controller
             // Nếu có nhập mật khẩu mới thì cập nhật
             if (!string.IsNullOrEmpty(newPassword))
             {
-                existingUser.Password = newPassword; // Lưu plain text
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
                 _logger.LogInformation($"Password updated for user. UserId: {id}");
             }
             // Lưu thay đổi
@@ -1061,7 +1051,7 @@ public class AdminWarehouseController : Controller
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt sản phẩm: {product?.Name} - Hành động: {action}");
-        return RedirectToAction("PendingProducts");
+        return RedirectToAction("Products");
     }
     [HttpGet]
     [Route("shipper")]
@@ -1186,7 +1176,7 @@ public class AdminWarehouseController : Controller
 
         return Redirect("/admin/shipper-requests");
     }
-    [HttpGet("listOrder")]
+    [HttpGet("listorder")]
     public IActionResult ListRequestOrder()
     {
         // Kiểm tra quyền admin
@@ -1197,7 +1187,6 @@ public class AdminWarehouseController : Controller
         }
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
-            .Where(o => o.Status == "shipped")
             .ToList();
 
         var viewModel = shippedOrders.Select(o => new RetailOrderViewModel
@@ -1212,7 +1201,6 @@ public class AdminWarehouseController : Controller
         }).ToList();
 
         return View(viewModel);
-
     }
 
     // Trang: Hiển thị đơn hàng chờ duyệt
@@ -1260,7 +1248,7 @@ public class AdminWarehouseController : Controller
             return NotFound();
         }
 
-        order.Status = "shipped";
+        order.Status = "confirmed";
         _context.SaveChanges();
 
         return RedirectToAction("ListRequestOrder");

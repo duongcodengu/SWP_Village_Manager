@@ -160,7 +160,6 @@
                                         Số lượng: @Model.Quantity <br />
                                         Ngày hết hạn: @(Model.ExpirationDate?.ToString("dd/MM/yyyy") ?? "Không có") <br />
                                         Danh mục: @Model.Category?.Name <br />
-                                        Nông dân: @Model.Farmer?.FullName
                                     </p>
                                 </div>
 
@@ -198,24 +197,6 @@
                                         </button>
                                     </div>
                                 </form>
-
-                              
-
-
-                                <div class="pickup-box">
-                                   
-                                   
-
-                                    <div class="product-info">
-                                        <ul class="product-info-list product-info-list-2">
-                                            <li>Loại: <span>@Model.ProductType</span></li>
-                                            <li>ID: <span>@Model.Id</span></li>
-                                            <li>Sản xuất: <span>@(Model.ProcessingTime?.ToString("dd/MM/yyyy") ?? "Không có")</span></li>
-                                            <li>Kho: <span>@Model.Quantity sản phẩm</span></li>
-                                            <li>Tags: <span>@Model.Category?.Name</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -235,9 +216,6 @@
                                             Thông Tin Chi Tiết
                                         </button>
                                     </li>
-
-                                    
-                                   
                                 </ul>
 
                                 <div class="tab-content custom-tab" id="myTabContent">
@@ -359,7 +337,7 @@
                                     <li>
                                         <div class="address-contact">
                                             <i data-feather="map-pin"></i>
-                                            <h5>Address: <span class="text-content">Fpt universe</span></h5>
+                                            <h5>Address: <span class="text-content">FamViệt</span></h5>
                                         </div>
                                     </li>
 
@@ -374,49 +352,55 @@
                         </div>
 
                         <!-- Trending Product -->
+                        <style>
+                            .product-list li {
+                                transition: transform 0.2s, box-shadow 0.2s;
+                            }
 
+                                .product-list li:hover {
+                                    transform: translateY(-2px);
+                                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                                }
+                            }
+                        </style>
 
-                        <ul id="top-selling-list" class="product-list product-right-sidebar border-0 p-0"></ul>
+                        <h5 class="mb-3 fw-bold text-uppercase">Sản Phẩm Bán Chạy</h5>
+                        <ul id="top-selling-list" class="product-list list-unstyled">
+                        </ul>
 
                         <script>
                             async function loadTopSelling() {
-                                const res = await fetch('/top4-selling');
-                                const products = await res.json();
+                                try {
+                                    const res = await fetch('/top4-selling');
+                                    const products = await res.json();
 
-                                const list = document.getElementById('top-selling-list');
-                                list.innerHTML = '';
+                                    const list = document.getElementById('top-selling-list');
+                                    list.innerHTML = '';
 
-                                products.forEach(p => {
-                                    list.innerHTML += `
-                           
-
-                                
-                                    <li>
-                                        <div class="offer-product">
-                                        <li>
-                                            <div class="offer-product">
-                                                <a href="/shop/product-detail/${p.productId}" class="offer-image">
-                                                    <img src="${p.imageUrl}" class="img-fluid blur-up lazyload" alt="${p.productName}" />
+                                    products.forEach(p => {
+                                        const item = `
+                                            <li class="mb-3 d-flex align-items-center rounded p-2 shadow-sm">
+                                                <a href="/shop/detail/${p.productId}" class="me-3">
+                                                    <img src="${p.imageUrl}" alt="${p.productName}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;" />
                                                 </a>
-                                                <div class="offer-detail">
-                                                    <div>
-                                                        <a href="/shop/product-detail/${p.productId}">
-                                                            <h6 class="name">${p.productName}</h6>
-                                                        </a>
-                                                        <h6 class="price theme-color">${p.totalSold.toLocaleString()} đ</h6>
-                                                    </div>
+                                                <div class="flex-grow-1">
+                                                    <a href="/shop/detail/${p.productId}" class="text-dark text-decoration-none">
+                                                        <h6 class="mb-1">${p.productName}</h6>
+                                                    </a>
+                                                    <small class="text-muted">Đã bán: <strong class="text-danger">${p.totalSold.toLocaleString()}</strong></small>
                                                 </div>
-                                            </div>
-                                        </li>
-                                
-                                    `;
-                                });
+                                            </li>
+                                        `;
+                                        list.innerHTML += item;
+                                    });
+                                } catch (error) {
+                                    console.error('Lỗi tải sản phẩm bán chạy:', error);
+                                    document.getElementById('top-selling-list').innerHTML = `<li>Không thể tải dữ liệu.</li>`;
+                                }
                             }
 
                             window.onload = loadTopSelling;
                         </script>
-
-
 
                         <!-- Banner Section -->
                       

@@ -88,7 +88,7 @@
                                             else
                                             {
                                                 <div class="table-responsive">
-                                                    <table class="table table-bordered table-striped">
+                                                    <table class="table table-bordered table-striped" id="table_id">
                                                         <thead class="table-light">
                                                             <tr>
                                                                 <th>#</th>
@@ -122,6 +122,94 @@
                                                             }
                                                         </tbody>
                                                     </table>
+                                                    <nav aria-label="Page navigation">
+                                                        <div id="pagination"></div>
+                                                    </nav>
+                                                    @* phân trang *@
+                                                    <script>
+                                                        const rowsPerPage = 5;
+                                                        const table = document.getElementById("table_id");
+                                                        const tbody = table.querySelector("tbody");
+                                                        const rows = Array.from(tbody.querySelectorAll("tr"));
+                                                        const pagination = document.getElementById("pagination");
+
+                                                        function showPage(page) {
+                                                            const start = (page - 1) * rowsPerPage;
+                                                            const end = start + rowsPerPage;
+
+                                                            rows.forEach((row, index) => {
+                                                                row.style.display = index >= start && index < end ? "" : "none";
+                                                            });
+
+                                                            highlightActivePage(page);
+                                                        }
+
+                                                        function highlightActivePage(currentPage) {
+                                                            const items = pagination.querySelectorAll("li");
+                                                            items.forEach(li => li.classList.remove("active"));
+
+                                                            if (currentPage >= 1 && currentPage <= items.length - 2) {
+                                                                items[currentPage].classList.add("active");
+                                                            }
+                                                        }
+
+                                                        function setupPagination() {
+                                                            const totalPages = Math.max(1, Math.ceil(rows.length / rowsPerPage)); // 👈 đảm bảo luôn có ít nhất 1 trang
+                                                            pagination.innerHTML = "";
+
+                                                            const ul = document.createElement("ul");
+                                                            ul.classList.add("pagination", "justify-content-center");
+
+                                                            // Previous
+                                                            const prev = document.createElement("li");
+                                                            prev.classList.add("page-item");
+                                                            prev.innerHTML = `<a class="page-link" href="#">&lt;</a>`;
+                                                            prev.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                if (index > 1) showPage(index - 1);
+                                                            });
+                                                            ul.appendChild(prev);
+
+                                                            // Pages
+                                                            for (let i = 1; i <= totalPages; i++) { // 👈 chỉ cần duyệt đến totalPages
+                                                                const li = document.createElement("li");
+                                                                li.classList.add("page-item");
+                                                                const a = document.createElement("a");
+                                                                a.classList.add("page-link");
+                                                                a.href = "#";
+                                                                a.innerText = i;
+                                                                a.addEventListener("click", (e) => {
+                                                                    e.preventDefault();
+                                                                    showPage(i);
+                                                                });
+                                                                li.appendChild(a);
+                                                                ul.appendChild(li);
+                                                            }
+
+                                                            // Next
+                                                            const next = document.createElement("li");
+                                                            next.classList.add("page-item");
+                                                            next.innerHTML = `<a class="page-link" href="#">&gt;</a>`;
+                                                            next.addEventListener("click", (e) => {
+                                                                e.preventDefault();
+                                                                const current = ul.querySelector("li.active");
+                                                                const index = [...ul.children].indexOf(current);
+                                                                const total = ul.children.length - 2;
+                                                                if (index < total) showPage(index + 1);
+                                                            });
+                                                            ul.appendChild(next);
+
+                                                            pagination.appendChild(ul);
+                                                        }
+
+                                                        document.addEventListener("DOMContentLoaded", () => {
+                                                            setupPagination();
+                                                            showPage(1);
+                                                        });
+
+                                                    </script>
                                                 </div>
                                             }
                                         </div>

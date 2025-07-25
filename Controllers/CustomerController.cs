@@ -224,12 +224,27 @@ namespace Village_Manager.Controllers
         {
             var userId = GetCurrentUserId(); // Tự viết logic lấy user ID
 
-            // Update trạng thái order
-            var order = await _context.RetailOrders.FindAsync(orderId);
+            // Tìm đơn hàng
+            var order = await _context.RetailOrders
+                .Include(o => o.RetailOrderItems) // Load cả danh sách item
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);
+
             if (order != null && order.Status == "pending")
             {
+                // Cập nhật trạng thái đơn hàng
                 order.Status = "cancelled";
 
+                // Cộng lại số lượng hàng vào kho
+                foreach (var item in order.RetailOrderItems)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        product.Quantity += (int)item.Quantity;
+                    }
+                }
+
+                // Ghi log hủy đơn hàng
                 _context.ReturnOrders.Add(new ReturnOrder
                 {
                     OrderId = orderId,
@@ -237,7 +252,8 @@ namespace Village_Manager.Controllers
                     UserId = userId,
                     Quantity = (int)order.RetailOrderItems.Sum(i => i.Quantity),
                     Reason = reason,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    ImageUrl = null
                 });
 
                 await _context.SaveChangesAsync();
@@ -245,6 +261,7 @@ namespace Village_Manager.Controllers
 
             return RedirectToAction("Index", "Customer");
         }
+
 
         [HttpGet]
         public IActionResult ReturnOrder(int orderId, string type)
@@ -303,17 +320,6 @@ namespace Village_Manager.Controllers
             return (int)userId;
 
             throw new Exception("Người dùng chưa đăng nhập hoặc Session đã hết hạn.");
-        }
-
-
-
-        public async Task<IActionResult> CancelOrder()
-        {
-            return View();
-        }
-        public async Task<IActionResult> ReturnOrder()
-        {
-            return View();
         }
     }
 }
