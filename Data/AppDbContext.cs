@@ -583,6 +583,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.Active) // thêm phần này
+         .HasColumnName("active")
+         .HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ProductImage>(entity =>

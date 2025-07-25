@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Village_Manager.Data;
 using Village_Manager.Models;
-
+using Village_Manager.ViewModel;
 namespace Village_Manager.Controllers
 {
     [Route("category")]
@@ -17,22 +17,55 @@ namespace Village_Manager.Controllers
         }
         // hiển thị trang list category
         // cần update hỉnh ảnh khi hiển thị ở trang darkboard và home
+
         [HttpGet]
         [Route("listcate")]
         public IActionResult Listcate()
         {
-            var categories = _context.ProductCategories
-       .Select(c => new
-       {
-           c.Id,
-           c.Name,
-           c.ImageUrl
-       })
-       .ToList();
-            ViewBag.Categories = categories;
-            return View("Views/AdminWarehouse/Listcate.cshtml");
+            // Bước 1: Lấy dữ liệu về bộ nhớ
+            var categoriesRaw = _context.ProductCategories
+                .Include(c => c.Products)
+                .ThenInclude(p => p.Farmer)
+                .ToList();
 
+            // Bước 2: Xử lý trên bộ nhớ
+            var categories = categoriesRaw
+                .Select(c => new CategoryStatsViewModel
+                {
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    Products = c.Products.ToList(),
+                    Farmers = c.Products
+                        .Where(p => p.Farmer != null)
+                        .Select(p => p.Farmer!)
+                        .GroupBy(f => f.Id)
+                        .Select(g => g.First())
+                        .ToList()
+                })
+                .ToList();
+
+            return View("Views/AdminWarehouse/Listcate.cshtml", categories);
         }
+        [HttpGet]
+[Route("category-details")]
+public IActionResult CategoryDetails()
+{
+    var categoryDetails = _context.ProductCategories
+        .Select(c => new CategoryStatsViewModel
+        {
+            CategoryId = c.Id,
+            CategoryName = c.Name,
+            Products = c.Products.ToList(),
+            Farmers = c.Products
+       .Where(p => p.Farmer != null)
+        .Select(p => p.Farmer!)
+         .Distinct()
+       .ToList()
+        })
+        .ToList();
+
+    return View("Views/AdminWarehouse/CategoryDetails.cshtml", categoryDetails);
+}
         // Hien thi danh sach category ra trang home
         [HttpGet("")]
         public IActionResult Index()
@@ -102,44 +135,93 @@ namespace Village_Manager.Controllers
             return View();
         }
 
-        // edit category
         [HttpGet("editCategory/{id}")]
-        public IActionResult EditCategory(int id)
+        public async Task<IActionResult> EditCategory(int id)
         {
-            var Category = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
-            if (Category == null) return NotFound();
-
-            return View("/Views/AdminWarehouse/EditCategory.cshtml", Category);
-        }
-        [HttpPost("editCategory/{id}")]
-        [ActionName("EditCategory")]
-        public IActionResult EditCategory(int id, ProductCategory category, IFormFile imgFile)
-        {
-            if (id != category.Id) return BadRequest();
-            var exitCate = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
-            if (exitCate == null) return NotFound();
-            if (ModelState.IsValid)
+            var category = await _context.ProductCategories.FindAsync(id);
+            if (category == null)
             {
-                exitCate.Name = category.Name;
-                if (imgFile != null && imgFile.Length > 0)
-                {
-                    var filename = Guid.NewGuid() + Path.GetExtension(imgFile.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/categories", filename);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        imgFile.CopyTo(stream);
-                    }
-                    exitCate.ImageUrl = "/images/categories/" + filename;
-
-                }
-                _context.ProductCategories.Update(exitCate);
-                _context.SaveChanges();
-                return RedirectToAction("Listcate");
+                return NotFound();
             }
-            category.ImageUrl = exitCate.ImageUrl;
-            return View("Views/AdminWarehouse/Listcate.cshtml", category);
+            return View("Views/Adminwarehouse/EditCategory.cshtml", category);
         }
+        [HttpPost("editCategory/{Id}")]
+        [ActionName("EditCategory")]
+        public async Task<IActionResult> EditCategory( ProductCategory category, IFormFile imgFile)
+        {
+            var exitCate = await _context.ProductCategories.FirstOrDefaultAsync(c => c.Id == category.Id);
+            if (exitCate == null)
+            {
+                return NotFound("Không tìm thấy danh mục");
+            }
+
+            // validate name
+            if (string.IsNullOrWhiteSpace(category.Name))
+            {
+                ModelState.AddModelError("Name", "Tên không được để trống");
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(category.Name, @"^[\p{L}0-9\s\-&]+$"))
+            {
+                ModelState.AddModelError("Name", "Tên không hợp lệ (chỉ cho phép chữ, số, khoảng trắng, -, &))");
+            }
+
+            // validate image file
+            if (imgFile != null && imgFile.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(imgFile.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("ImageUrl", "File không hợp lệ (vui lòng chọn file có định dạng .jpg, .jpeg, .png, .gif)");
+                }
+            }
+
+            // nếu có lỗi thì trả lại view với thông báo
+            if (!ModelState.IsValid)
+            {
+                category.ImageUrl = exitCate.ImageUrl;
+              
+                return View("Views/AdminWarehouse/EditCategory.cshtml", category);
+            }
+
+            // nếu có ảnh mới thì xử lý
+            if (imgFile != null && imgFile.Length > 0)
+            {
+                // xoá ảnh cũ nếu tồn tại
+                var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", exitCate.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+
+                // lưu ảnh mới
+                var filename = Guid.NewGuid().ToString() + Path.GetExtension(imgFile.FileName);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/categories", filename);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imgFile.CopyToAsync(stream);
+                }
+
+                category.ImageUrl = "/images/categories/" + filename;
+            }
+            else
+            {
+                
+                category.ImageUrl = exitCate.ImageUrl;
+                
+            }
+
+            // cập nhật dữ liệu
+            exitCate.Name = category.Name;
+            exitCate.ImageUrl = category.ImageUrl;
+
+            _context.ProductCategories.Update(exitCate);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Listcate");
+        }
+
+
         [HttpGet("DeleteCategory/{id}")]
         public IActionResult DeleteCategory(int id)
         {

@@ -16,15 +16,15 @@
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="ImageUrl" />
                         <div class="mb-4 row align-items-center">
-                            <label asp-for="Name" class="form-label-title col-sm-3 mb-0">Category Name</label>
+                            <label asp-for="Name" class="form-label-title col-sm-3 mb-0">Tên danh mục</label>
                             <div class="col-sm-9">
-                                <input asp-for="Name" class="form-control" placeholder="Category Name" />
+                                <input asp-for="Name" class="form-control" placeholder="Tên danh mục" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-4 row align-items-center">
-                            <label class="form-label-title col-sm-3 mb-0">Current Image</label>
+                            <label class="form-label-title col-sm-3 mb-0">Ảnh hiện tại</label>
                             <div class="col-sm-9">
                                  @if (!string.IsNullOrEmpty(Model.ImageUrl))
                                 {
@@ -34,7 +34,7 @@
                         </div>
 
                         <div class="mb-4 row align-items-center">
-                            <label class="form-label-title col-sm-3 mb-0">Upload New Image</label>
+                            <label class="form-label-title col-sm-3 mb-0">Ảnh mới</label>
                             <div class="col-sm-9">
                                 <input class="form-control" type="file" name="imgFile" accept="image/*" />
                                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="card-submit-button text-end">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">Lưu</button>
                             <a asp-action="Listcate" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
