@@ -254,12 +254,27 @@ namespace Village_Manager.Controllers
 
         [HttpPost]
         [Route("famer/cancelproduct")]
+        [ValidateAntiForgeryToken]
         public IActionResult CancelProduct(int productId, string reason)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            if (product == null) return NotFound();
+            int? farmerId = HttpContext.Session.GetInt32("FarmerId");
+            if (farmerId == null)
+                return RedirectToAction("Login", "Home");
 
-            product.ApprovalStatus = "rejected";
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId && p.FarmerId == farmerId.Value);
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm hoặc bạn không có quyền hủy bán sản phẩm này.";
+                return RedirectToAction("MyProducts");
+            }
+
+            if (product.ApprovalStatus != "accepted")
+            {
+                TempData["Error"] = "Chỉ có thể hủy bán sản phẩm đã được duyệt.";
+                return RedirectToAction("MyProducts");
+            }
+
+            product.ApprovalStatus = "cancelled";
             _context.SaveChanges();
 
             // Gửi thông báo cho admin
@@ -276,18 +291,31 @@ namespace Village_Manager.Controllers
             }
             _context.SaveChanges();
 
-            return Ok(new { success = true });
+            TempData["Success"] = "Đã hủy bán sản phẩm thành công!";
+            return RedirectToAction("MyProducts");
         }
 
         [HttpPost]
         [Route("famer/resellproduct")]
+        [ValidateAntiForgeryToken]
         public IActionResult ResellProduct(int productId)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            if (product == null) return NotFound();
+            int? farmerId = HttpContext.Session.GetInt32("FarmerId");
+            if (farmerId == null)
+                return RedirectToAction("Login", "Home");
 
-            if (product.ApprovalStatus != "rejected")
-                return BadRequest("Chỉ có thể bán lại sản phẩm đã bị hủy hoặc từ chối.");
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId && p.FarmerId == farmerId.Value);
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm hoặc bạn không có quyền bán lại sản phẩm này.";
+                return RedirectToAction("MyProducts");
+            }
+
+            if (product.ApprovalStatus != "rejected" && product.ApprovalStatus != "cancelled")
+            {
+                TempData["Error"] = "Chỉ có thể bán lại sản phẩm đã bị từ chối hoặc hủy bán.";
+                return RedirectToAction("MyProducts");
+            }
 
             product.ApprovalStatus = "pending";
             _context.SaveChanges();
@@ -306,7 +334,8 @@ namespace Village_Manager.Controllers
             }
             _context.SaveChanges();
 
-            return Ok(new { success = true });
+            TempData["Success"] = "Đã gửi yêu cầu bán lại sản phẩm thành công!";
+            return RedirectToAction("MyProducts");
         }
     }
 }
