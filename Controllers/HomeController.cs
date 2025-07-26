@@ -231,7 +231,7 @@ namespace Village_Manager.Controllers
             switch (user.RoleId)
                 {
                     case 1: // Admin
-                        return RedirectToAction("Dahboard", "AdminWarehouse");
+                        return RedirectToAction("Dashboard", "AdminWarehouse");
 
                     case 2: // Staff
                         return RedirectToAction("Index", "Home");
@@ -243,7 +243,7 @@ namespace Village_Manager.Controllers
                         return RedirectToAction("DashboardShipper", "Shipper"); // chuyển thẳng đến dashboard shipper
 
                     case 5: // Farmer
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("DashboardFamer", "Famer");
 
                     default:
                         return RedirectToAction("Login", "Home");
@@ -336,9 +336,9 @@ namespace Village_Manager.Controllers
             }
 
             // Kiểm tra độ dài mật khẩu
-            if (password.Length != 8)
+            if (password.Length < 6)
             {
-                ViewBag.Error = "Mật khẩu phải có đúng 8 ký tự.";
+                ViewBag.Error = "Mật khẩu phải có trên 6 ký tự.";
                 return View();
             }
 
