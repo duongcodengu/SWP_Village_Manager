@@ -1575,4 +1575,116 @@ public class AdminWarehouseController : Controller
 
         return Json(products);
     }
+
+    // Xem danh sách yêu cầu cung cấp từ farmer
+    [HttpGet]
+    [Route("supplyrequests")]
+    public IActionResult SupplyRequests()
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        var requests = _context.SupplyRequests
+            .Include(sr => sr.Farmer)
+                .ThenInclude(f => f.User)
+            .Include(sr => sr.Requester)
+            .OrderByDescending(sr => sr.RequestedAt)
+            .ToList();
+
+        // Load danh sách tất cả sản phẩm để admin có thể chọn
+        var availableProducts = _context.Products
+            .ToList()
+            .Where(p => p.ApprovalStatus != null && p.ApprovalStatus.Trim().ToLower() == "accepted")
+            .Select(p => new
+            {
+                id = p.Id,
+                name = p.Name,
+                category = p.Category != null ? p.Category.Name : "",
+                price = p.Price,
+                currentQuantity = p.Quantity,
+                expirationDate = p.ExpirationDate,
+                productType = p.ProductType,
+                processingTime = p.ProcessingTime,
+                farmerId = p.FarmerId,
+                approvalStatus = p.ApprovalStatus
+            })
+            .ToList();
+        ViewBag.ApprovedProducts = availableProducts;
+
+        return View(requests);
+    }
+
+    // Admin phản hồi yêu cầu cung cấp từ farmer
+    [HttpPost]
+    [Route("respondtosupply")]
+    [ValidateAntiForgeryToken]
+    public IActionResult RespondToSupply(int requestId, string response, string? note)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        var request = _context.SupplyRequests
+            .FirstOrDefault(sr => sr.Id == requestId && sr.RequesterType == "farmer");
+
+        if (request == null)
+        {
+            TempData["Error"] = "Không tìm thấy yêu cầu cung cấp.";
+            return RedirectToAction("SupplyRequests");
+        }
+
+        if (request.Status != "pending")
+        {
+            TempData["Error"] = "Yêu cầu này đã được xử lý.";
+            return RedirectToAction("SupplyRequests");
+        }
+
+        request.Status = response; // "accepted" hoặc "rejected"
+        request.RespondedAt = DateTime.Now;
+
+        // Nếu admin chấp nhận, cập nhật sản phẩm
+        if (response == "accepted")
+        {
+            var product = _context.Products
+                .FirstOrDefault(p => p.Name == request.ProductName && p.FarmerId == request.FarmerId);
+            
+            if (product != null)
+            {
+                // Cộng thêm số lượng
+                product.Quantity += request.Quantity;
+                
+                // Cập nhật giá nếu có giá mới
+                if (request.Price.HasValue)
+                {
+                    product.Price = request.Price.Value;
+                }
+            }
+        }
+
+        // Gửi thông báo cho farmer
+        var content = response == "accepted" 
+            ? $"Admin đã chấp nhận yêu cầu cung cấp {request.Quantity} {request.ProductName}. " +
+              (request.Price.HasValue ? $"Giá mới: {request.Price.Value:N0} VNĐ. " : "") +
+              $"Ghi chú: {note ?? "Không có"}"
+            : $"Admin đã từ chối yêu cầu cung cấp {request.ProductName}. Ghi chú: {note ?? "Không có"}";
+        
+        _context.Notifications.Add(new Notification
+        {
+            UserId = request.RequesterId,
+            Content = content,
+            CreatedAt = DateTime.Now,
+            IsRead = false
+        });
+
+        _context.SaveChanges();
+
+        TempData["Success"] = $"Đã {response} yêu cầu cung cấp thành công!";
+        return RedirectToAction("SupplyRequests");
+    }
+
 }

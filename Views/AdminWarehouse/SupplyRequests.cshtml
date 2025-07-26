@@ -1,0 +1,351 @@
+@model List<SupplyRequest>
+@using Village_Manager.Models
+@{
+    ViewData["Title"] = "Quản lý yêu cầu cung cấp";
+    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="FamViệt Admin - Hệ thống quản lý yêu cầu cung cấp, giao diện tiếng Việt, dễ sử dụng.">
+    <meta name="keywords"
+          content="quản lý yêu cầu cung cấp, FamViệt admin, dashboard, quản trị viên, hệ thống quản lý">
+    <meta name="author" content="FamViệt Team">
+    <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
+    <title>FamViệt - Quản lý yêu cầu cung cấp</title>
+
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/font-awesome.css">
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="~/back-end/css/linearicon.css">
+
+    <!-- Themify icon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/themify.css">
+
+    <!-- Feather icon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/feather-icon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/remixicon.css">
+
+    <!-- Data Table css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/datatables.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/animate.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/vendors/bootstrap.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="~/back-end/css/style.css">
+</head>
+
+<body>
+    <!-- tap on top start-->
+    <div class="tap-top">
+        <span class="lnr lnr-chevron-up"></span>
+    </div>
+    <!-- tap on tap end-->
+    <!-- page-wrapper Start-->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <!-- Page Body Start-->
+        <div class="page-body-wrapper">
+            <!-- Container-fluid starts-->
+            <div class="page-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card card-table">
+                                <div class="card-body">
+                                    <div class="title-header option-title d-sm-flex d-block">
+                                        <h5>Quản lý yêu cầu cung cấp sản phẩm</h5>
+                                    </div>
+
+                                    @if (TempData["Success"] != null)
+                                    {
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            @TempData["Success"]
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    }
+
+                                    @if (TempData["Error"] != null)
+                                    {
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            @TempData["Error"]
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    }
+
+                                    @{
+                                        var approvedProducts = ViewBag.ApprovedProducts as List<dynamic> ?? new List<dynamic>();
+                                    }
+                                    <div class="table-responsive">
+                                        <table class="table all-package theme-table" id="table_id">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Người yêu cầu</th>
+                                                    <th>Farmer</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Giá</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Ngày yêu cầu</th>
+                                                    <th>Ngày phản hồi</th>
+                                                    <th>Hành động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.Any())
+                                                {
+                                                    foreach (var request in Model)
+                                                    {
+                                                        <tr>
+                                                            <td>@request.Id</td>
+                                                            <td>
+                                                                @if (request.RequesterType == "farmer")
+                                                                {
+                                                                    <span class="badge bg-info">Farmer yêu cầu</span>
+                                                                    <br />
+                                                                    <small>@(request.Requester?.Username ?? "N/A")</small>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-warning">Admin yêu cầu</span>
+                                                                    <br />
+                                                                    <small>@(request.Requester?.Username ?? "N/A")</small>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <strong>@(request.Farmer?.FullName ?? "N/A")</strong>
+                                                                <br />
+                                                                <small>@(request.Farmer?.Phone ?? "N/A")</small>
+                                                            </td>
+                                                            <td>@request.ProductName</td>
+                                                            <td>@request.Quantity</td>
+                                                            <td>
+                                                                @if (request.Price.HasValue)
+                                                                {
+                                                                    @request.Price.Value.ToString("N0") <span>VNĐ</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted">Thỏa thuận</span>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @switch (request.Status)
+                                                                {
+                                                                    case "pending":
+                                                                        <span class="badge bg-warning">Chờ phản hồi</span>
+                                                                        break;
+                                                                    case "accepted":
+                                                                        <span class="badge bg-success">Đã chấp nhận</span>
+                                                                        break;
+                                                                    case "rejected":
+                                                                        <span class="badge bg-danger">Đã từ chối</span>
+                                                                        break;
+                                                                    default:
+                                                                        <span class="badge bg-light text-dark">@request.Status</span>
+                                                                        break;
+                                                                }
+                                                            </td>
+                                                            <td>@request.RequestedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                                            <td>@request.RespondedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                                            <td>
+                                                                @if (request.Status == "pending" && request.RequesterType == "farmer")
+                                                                {
+                                                                    <button class="btn btn-success btn-sm" onclick="showRespondModal(@request.Id, 'accepted')">
+                                                                        <i class="fa-solid fa-check"></i> Chấp nhận
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm" onclick="showRespondModal(@request.Id, 'rejected')">
+                                                                        <i class="fa-solid fa-times"></i> Từ chối
+                                                                    </button>
+                                                                }
+                                                                else if (request.Status == "pending" && request.RequesterType == "admin")
+                                                                {
+                                                                    <span class="text-muted">Đang chờ farmer phản hồi</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted">-</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="10" class="text-center">Chưa có yêu cầu cung cấp nào.</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Container-fluid Ends-->
+            </div>
+            <!-- Page Body End-->
+        </div>
+    </div>
+    <!-- page-wrapper end-->
+
+    <!-- Modal phản hồi yêu cầu cung cấp -->
+    <div class="modal fade" id="respondSupplyModal" tabindex="-1" aria-labelledby="respondSupplyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RespondToSupply", "AdminWarehouse")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="respondSupplyModalLabel">Phản hồi yêu cầu cung cấp</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="requestId" id="respondRequestId" />
+                        <input type="hidden" name="response" id="respondResponse" />
+                        <p>Bạn có chắc chắn muốn <strong id="respondAction"></strong> yêu cầu cung cấp này?</p>
+                        <div class="mb-3">
+                            <label for="respondNote" class="form-label">Ghi chú (tùy chọn)</label>
+                            <textarea class="form-control" id="respondNote" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- latest jquery-->
+    <script src="~/back-end/js/jquery-3.6.0.min.js"></script>
+
+    <!-- jquery ui-->
+    <script src="~/back-end/js/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/back-end/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/back-end/js/bootstrap/bootstrap-notify.min.js"></script>
+    <script src="~/back-end/js/bootstrap/popper.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/back-end/js/feather/feather.min.js"></script>
+    <script src="~/back-end/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/back-end/js/lazysizes.min.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/back-end/js/slick/slick.js"></script>
+    <script src="~/back-end/js/slick/custom_slick.js"></script>
+
+    <!-- Apexcharts Js -->
+    <script src="~/back-end/js/apexchart.js"></script>
+    <script src="~/back-end/js/custom-chart.js"></script>
+
+    <!-- Nav & tab upside js -->
+    <script src="~/back-end/js/nav-tab.js"></script>
+
+    <!-- script js -->
+    <script src="~/back-end/js/script.js"></script>
+
+    <!-- theme setting js -->
+    <script src="~/back-end/js/theme-setting.js"></script>
+
+    <script>
+        // Hiển thị modal phản hồi yêu cầu cung cấp
+        function showRespondModal(requestId, response) {
+            document.getElementById('respondRequestId').value = requestId;
+            document.getElementById('respondResponse').value = response;
+            
+            const actionText = response === 'accepted' ? 'chấp nhận' : 'từ chối';
+            document.getElementById('respondAction').textContent = actionText;
+            document.getElementById('respondNote').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('respondSupplyModal'));
+            modal.show();
+        }
+
+        // Hiển thị thông tin sản phẩm khi chọn
+        document.getElementById('productId').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const currentQuantity = selectedOption.getAttribute('data-current-quantity');
+            const currentPrice = selectedOption.getAttribute('data-current-price');
+            const farmerName = selectedOption.getAttribute('data-farmer');
+            const farmerPhone = selectedOption.getAttribute('data-phone');
+            const status = selectedOption.getAttribute('data-status');
+            
+            const infoDiv = document.getElementById('currentProductInfo');
+            
+            if (this.value && currentQuantity && currentPrice) {
+                document.getElementById('currentQuantity').textContent = currentQuantity;
+                document.getElementById('currentPrice').textContent = parseInt(currentPrice).toLocaleString() + ' VNĐ';
+                
+                // Thêm thông tin trạng thái
+                const statusText = status === 'accepted' ? '✓ Đã duyệt' : 
+                                 status === 'pending' ? '⏳ Chờ duyệt' : 
+                                 status === 'rejected' ? '✗ Từ chối' : status;
+                
+                // Cập nhật hoặc tạo phần tử hiển thị trạng thái
+                let statusElement = infoDiv.querySelector('.status-info');
+                if (!statusElement) {
+                    statusElement = document.createElement('div');
+                    statusElement.className = 'status-info';
+                    statusElement.innerHTML = '<strong>Trạng thái:</strong> <span id="currentStatus"></span>';
+                    infoDiv.querySelector('.alert-info').appendChild(statusElement);
+                }
+                document.getElementById('currentStatus').textContent = statusText;
+                
+                infoDiv.style.display = 'block';
+            } else {
+                infoDiv.style.display = 'none';
+            }
+            
+            console.log('Selected product - Quantity:', currentQuantity, 'Price:', currentPrice, 'Farmer:', farmerName, 'Status:', status);
+        });
+
+        // Validation cho giá mới
+        document.getElementById('price').addEventListener('input', function() {
+            const value = parseInt(this.value, 10);
+            const errorDiv = this.parentNode.querySelector('.text-danger');
+            
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            if (this.value && (isNaN(value) || value < 1000 || value % 1000 !== 0)) {
+                const error = document.createElement('div');
+                error.className = 'text-danger mt-1';
+                error.textContent = 'Giá phải lớn hơn 1000 và là bội số của 1000';
+                this.parentNode.appendChild(error);
+                this.setCustomValidity('Giá phải lớn hơn 1000 và là bội số của 1000');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+
+</html>
+
