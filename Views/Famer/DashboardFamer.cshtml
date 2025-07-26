@@ -414,6 +414,10 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <h2 class="mb-0">Yêu cầu cung cấp sản phẩm</h2>
                                         </div>
+
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestSupplyModal">
+                                            <i class="fa-solid fa-plus"></i> Yêu cầu cung cấp mới
+                                        </button>
                                     </div>
 
                                     <div class="table-responsive dashboard-bg-box">
@@ -874,6 +878,54 @@
         </div>
     </div>
     <!-- Modal xác nhận hủy bán end -->
+    
+    <!-- Modal yêu cầu cung cấp -->
+    <div class="modal fade" id="requestSupplyModal" tabindex="-1" aria-labelledby="requestSupplyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RequestSupply", "Famer")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="requestSupplyModalLabel">Yêu cầu cung cấp sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="productId" class="form-label">Chọn sản phẩm</label>
+                            <select class="form-select" id="productId" name="productId" required>
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @if (Model.ProductList != null && Model.ProductList.Any())
+                                {
+                                    foreach (var product in Model.ProductList)
+                                    {
+                                        <option value="@product.Id">@product.Name - @product.Price.ToString("N0") VNĐ</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Số lượng</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Giá (tùy chọn)</label>
+                            <input type="number" class="form-control" id="price" name="price" min="0" step="1000">
+                            <div class="form-text">Để trống nếu muốn thỏa thuận giá</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal yêu cầu cung cấp end -->
 
     <!-- Modal yêu cầu cung cấp từ nút Yêu cầu -->
     <div class="modal fade" id="requestProductModal" tabindex="-1" aria-labelledby="requestProductModalLabel" aria-hidden="true">

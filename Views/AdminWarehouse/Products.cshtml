@@ -175,6 +175,14 @@
                                                                         </form>
                                                                     }
                                                                 </li>
+                                                                <li>
+                                                                    @if (product.ApprovalStatus == "accepted" && product.FarmerId.HasValue)
+                                                                    {
+                                                                        <button class="btn btn-primary btn-sm" onclick="showSupplyRequestModal(@product.Id, '@product.Name', @product.Quantity, @product.Price, @product.FarmerId)">
+                                                                            <i class="ri-add-line"></i> Yêu cầu cung cấp
+                                                                        </button>
+                                                                    }
+                                                                </li>
                                                             </ul>
                                                         </td>
                                                     </tr>
@@ -218,6 +226,134 @@
     <!-- Modal End -->
 
     <!-- Delete Modal Box End -->
+
+    <!-- Modal yêu cầu cung cấp -->
+    <div class="modal fade" id="supplyRequestModal" tabindex="-1" aria-labelledby="supplyRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RequestSupply", "AdminWarehouse")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="supplyRequestModalLabel">Yêu cầu cung cấp sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="productId" id="supplyProductId" />
+                        <input type="hidden" name="farmerId" id="supplyFarmerId" />
+                        <div class="mb-3">
+                            <label class="form-label">Sản phẩm</label>
+                            <input type="text" class="form-control" id="supplyProductName" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Số lượng hiện tại</label>
+                                    <input type="number" class="form-control" id="supplyCurrentQuantity" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Giá hiện tại</label>
+                                    <input type="text" class="form-control" id="supplyCurrentPrice" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="supplyQuantity" class="form-label">Số lượng yêu cầu *</label>
+                                    <input type="number" class="form-control" id="supplyQuantity" name="quantity" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="supplyPrice" class="form-label">Giá mới (tùy chọn)</label>
+                                    <input type="number" class="form-control" id="supplyPrice" name="price" min="1000" step="1000">
+                                    <div class="form-text">Phải > 1000 và là bội của 1000</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplyNote" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="supplyNote" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal yêu cầu cung cấp end -->
+
+    <!-- jQuery -->
+    <script src="~/back-end/js/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="~/back-end/js/bootstrap/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables -->
+    <script src="~/back-end/js/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/back-end/js/datatables/custom-basic.js"></script>
+
+    <script>
+        // Hiển thị modal yêu cầu cung cấp
+        function showSupplyRequestModal(productId, productName, currentQuantity, currentPrice, farmerId) {
+            document.getElementById('supplyProductId').value = productId;
+            document.getElementById('supplyFarmerId').value = farmerId;
+            document.getElementById('supplyProductName').value = productName;
+            document.getElementById('supplyCurrentQuantity').value = currentQuantity;
+            document.getElementById('supplyCurrentPrice').value = currentPrice.toLocaleString() + ' VNĐ';
+            document.getElementById('supplyQuantity').value = '';
+            document.getElementById('supplyPrice').value = '';
+            document.getElementById('supplyNote').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('supplyRequestModal'));
+            modal.show();
+        }
+
+        // Validation cho giá mới
+        document.getElementById('supplyPrice').addEventListener('input', function() {
+            const value = parseInt(this.value, 10);
+            const errorDiv = this.parentNode.querySelector('.text-danger');
+            
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            if (this.value && (isNaN(value) || value < 1000 || value % 1000 !== 0)) {
+                const error = document.createElement('div');
+                error.className = 'text-danger mt-1';
+                error.textContent = 'Giá phải lớn hơn 1000 và là bội số của 1000';
+                this.parentNode.appendChild(error);
+                this.setCustomValidity('Giá phải lớn hơn 1000 và là bội số của 1000');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Validation cho số lượng
+        document.getElementById('supplyQuantity').addEventListener('input', function() {
+            const value = parseInt(this.value, 10);
+            const errorDiv = this.parentNode.querySelector('.text-danger');
+            
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            if (this.value && (isNaN(value) || value < 1)) {
+                const error = document.createElement('div');
+                error.className = 'text-danger mt-1';
+                error.textContent = 'Số lượng phải lớn hơn 0';
+                this.parentNode.appendChild(error);
+                this.setCustomValidity('Số lượng phải lớn hơn 0');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
 
 </body>
 

@@ -448,13 +448,13 @@ namespace Village_Manager.Controllers
             if (request == null)
             {
                 TempData["Error"] = "Không tìm thấy yêu cầu cung cấp.";
-                return RedirectToAction("SupplyRequests");
+                return RedirectToAction("DashboardFamer");
             }
 
             if (request.Status != "pending")
             {
                 TempData["Error"] = "Yêu cầu này đã được xử lý.";
-                return RedirectToAction("SupplyRequests");
+                return RedirectToAction("DashboardFamer");
             }
 
             request.Status = response; // "accepted" hoặc "rejected"
@@ -501,7 +501,7 @@ namespace Village_Manager.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = $"Đã {response} yêu cầu cung cấp thành công!";
-            return RedirectToAction("SupplyRequests");
+            return RedirectToAction("DashboardFamer");
         }
     }
 }

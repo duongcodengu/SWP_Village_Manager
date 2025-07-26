@@ -1687,4 +1687,95 @@ public class AdminWarehouseController : Controller
         return RedirectToAction("SupplyRequests");
     }
 
+    // Admin yêu cầu cung cấp từ farmer
+    [HttpPost]
+    [Route("RequestSupply")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestSupply(int productId, int farmerId, int quantity, decimal? price, string? note)
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        try
+        {
+            // Kiểm tra sản phẩm
+            var product = await _context.Products
+                .Include(p => p.Farmer)
+                .FirstOrDefaultAsync(p => p.Id == productId && p.FarmerId == farmerId);
+
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm.";
+                return RedirectToAction("Products");
+            }
+
+            // Kiểm tra farmer
+            var farmer = await _context.Farmers
+                .Include(f => f.User)
+                .FirstOrDefaultAsync(f => f.Id == farmerId);
+
+            if (farmer == null || farmer.User == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin farmer.";
+                return RedirectToAction("Products");
+            }
+
+            // Validation giá
+            if (price.HasValue && (price.Value < 1000 || price.Value % 1000 != 0))
+            {
+                TempData["Error"] = "Giá phải lớn hơn 1000 và là bội số của 1000.";
+                return RedirectToAction("Products");
+            }
+
+            // Tạo yêu cầu cung cấp
+            var supplyRequest = new SupplyRequest
+            {
+                RequesterType = "admin",
+                RequesterId = HttpContext.Session.GetInt32("UserId").Value,
+                ReceiverId = farmer.User.Id,
+                FarmerId = farmerId,
+                ProductName = product.Name,
+                Quantity = quantity,
+                Price = price,
+                Status = "pending",
+                RequestedAt = DateTime.Now
+            };
+
+            _context.SupplyRequests.Add(supplyRequest);
+
+            // Gửi thông báo cho farmer
+            var notification = new Notification
+            {
+                UserId = farmer.User.Id,
+                Content = $"Admin yêu cầu cung cấp {quantity} {product.Name}" +
+                         (price.HasValue ? $" với giá {price.Value:N0} VNĐ" : "") +
+                         (note != null ? $". Ghi chú: {note}" : ""),
+                CreatedAt = DateTime.Now,
+                IsRead = false
+            };
+
+            _context.Notifications.Add(notification);
+
+            await _context.SaveChangesAsync();
+
+            // Ghi log
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, 
+                $"Requested supply: {quantity} {product.Name} from farmer {farmer.FullName}");
+
+            TempData["Success"] = "Đã gửi yêu cầu cung cấp thành công!";
+            return RedirectToAction("Products");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error requesting supply: {ex.Message}");
+            TempData["Error"] = "Đã xảy ra lỗi khi gửi yêu cầu cung cấp.";
+            return RedirectToAction("Products");
+        }
+    }
+
 }
