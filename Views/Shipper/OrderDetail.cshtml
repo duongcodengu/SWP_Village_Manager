@@ -5,6 +5,8 @@
     var fullAddress = isRetail
         ? (ViewBag.DeliveryAddress ?? "Không có thông tin địa chỉ")
         : (Model.CustomerAddress ?? "-");
+    ViewData["Title"] = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
 <html lang="vi">
