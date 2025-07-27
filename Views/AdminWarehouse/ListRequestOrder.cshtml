@@ -104,10 +104,12 @@
                                                                     <td class="text-center">
                                                                         <div class="d-flex justify-content-center gap-2">
                                                                             <a href="/order/detail/@item.Id" class="btn btn-success btn-sm">Xem chi tiết</a>
-
-                                                                            <form method="post" action="/deleteOrder/@item.Id" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');">
-                                                                                <button type="submit" class="btn btn-danger btn-sm">Xoá</button>
-                                                                            </form>
+                                                                            @if (item.Status == "confirmed")
+                                                                            {
+                                                                                <form method="post" action="/deleteorder/@item.Id" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');">
+                                                                                    <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
+                                                                                </form>
+                                                                            }
                                                                         </div>
                                                                     </td>
                                                                 </tr>

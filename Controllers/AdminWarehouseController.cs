@@ -1247,7 +1247,6 @@ public class AdminWarehouseController : Controller
         }
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
-            .Where(o => o.Status == "confirmed")
             .ToList();
 
         var viewModel = shippedOrders.Select(o => new RetailOrderViewModel
@@ -1255,8 +1254,7 @@ public class AdminWarehouseController : Controller
             Id = o.Id,
             UserName = o.User?.Username,
             Phone = o.User?.Phone,
-            Address = _context.UserLocations
-                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == o.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1265,7 +1263,7 @@ public class AdminWarehouseController : Controller
     }
 
     // Trang: Hiển thị đơn hàng chờ duyệt
-    [HttpGet("addOrder")]
+    [HttpGet("addorder")]
     public IActionResult AddOrder()
     {
         // Kiểm tra quyền admin
@@ -1285,8 +1283,7 @@ public class AdminWarehouseController : Controller
             Users = o.User,
             UserName = o.User?.Username,
             Phone = o.User?.Phone,
-            Address = _context.UserLocations
-                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == o.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1294,7 +1291,7 @@ public class AdminWarehouseController : Controller
     }
 
     // POST: Admin duyệt đơn hàng
-    [HttpPost("acceptOrder")]
+    [HttpPost("acceptorder")]
     public IActionResult AcceptOrder(int id)
     {
         // Kiểm tra quyền admin
@@ -1336,30 +1333,35 @@ public class AdminWarehouseController : Controller
             return View("OrderDetail", null);
         }
 
-        var firstItem = order.RetailOrderItems.FirstOrDefault(); // lấy 1 item làm ví dụ
-
+        // Lấy thông tin sản phẩm từ item đầu tiên (để hiển thị ảnh chính)
+        var firstItem = order.RetailOrderItems.FirstOrDefault();
+        
         var viewModel = new RetailOrderItemViewModel
         {
             Id = order.Id,
             OrderId = order.Id,
             UserName = order.User?.Username,
             Phone = order.User?.Phone,
-            Address = _context.UserLocations.FirstOrDefault(l => l.UserId == order.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == order.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = order.OrderDate,
             Status = order.Status,
-
-            ProductId = firstItem?.ProductId ?? 0,
-            ProductName = firstItem?.Product?.Name,
-            ProductImageUrl = firstItem?.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default.jpg",
-            Quantity = firstItem?.Quantity ?? 0,
-            UnitPrice = firstItem?.UnitPrice ?? 0,
+            
+            // Thông tin sản phẩm (từ item đầu tiên để hiển thị ảnh chính)
+            ProductId = firstItem?.ProductId,
+            ProductName = firstItem?.Product?.Name ?? "Không có tên sản phẩm",
+            Quantity = firstItem?.Quantity,
+            UnitPrice = firstItem?.UnitPrice,
+            ProductImageUrl = firstItem?.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png",
             Product = firstItem?.Product
         };
+
+        // Truyền toàn bộ danh sách sản phẩm để hiển thị trong view
+        ViewBag.OrderItems = order.RetailOrderItems.ToList();
 
         return View(viewModel);
     }
 
-    [HttpPost("deletOrrder/{id}")]
+    [HttpPost("deleteorder/{id}")]
     public IActionResult DeleteOrder(int id)
     {
         // Kiểm tra quyền admin
@@ -1368,24 +1370,17 @@ public class AdminWarehouseController : Controller
             Response.StatusCode = 404;
             return View("404");
         }
-        var order = _context.RetailOrders
-                            .Include(o => o.RetailOrderItems) // tên navigation property
-                            .FirstOrDefault(o => o.Id == id);
+        var order = _context.RetailOrders.FirstOrDefault(o => o.Id == id);
 
-        if (order == null)
-            return NotFound();
-
-        // Xoá các bản ghi con
-        if (order.RetailOrderItems != null)
-        {
-            _context.RetailOrderItems.RemoveRange(order.RetailOrderItems);
+        if (order == null) {
+            Response.StatusCode = 404;
+            return View("404");
         }
 
-        // Xoá đơn hàng chính
-        _context.RetailOrders.Remove(order);
-        _context.SaveChanges();
+        order.Status = "cancelled";
+        _context.SaveChanges(); 
 
-        return Redirect("/listOrder"); 
+        return Redirect("/listorder"); 
     }
 
 

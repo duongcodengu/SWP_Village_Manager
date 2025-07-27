@@ -26,15 +26,6 @@ namespace Village_Manager.Controllers
             _env = env;
         }
 
-        //[HttpGet]
-        //[Route("dashboard")]
-        //public IActionResult DashBoard()
-        //{
-        //    var userLocations = _context.UserLocations
-        //                        .Include(u1 => u1.User)
-        //                        .ToList();
-        //    return View(userLocations);
-        //}
         [HttpGet]
         [Route("customer")]
         public async Task<IActionResult> DashBoard()
@@ -49,10 +40,6 @@ namespace Village_Manager.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var totalOrders = await _context.RetailOrders.CountAsync(o => o.UserId == userId);
             var pendingOrders = await _context.RetailOrders.CountAsync(o => o.UserId == userId && o.Status == "pending");
-            var address = await _context.Addresses
-                .Where(a => a.UserId == userId)
-                .Select(a => a.AddressLine)
-                .FirstOrDefaultAsync();
             if (user != null)
             {
                 ViewBag.UserId = userId;
@@ -61,14 +48,7 @@ namespace Village_Manager.Controllers
                 ViewBag.Username = user.Username;
                 ViewBag.TotalOrders = totalOrders;
                 ViewBag.PendingOrders = pendingOrders;
-                ViewBag.Address = address ?? "Chưa có địa chỉ";
                 ViewBag.Phone = user.Phone ?? "Chưa có số điện thoại";
-
-                var addressParts = address?.Split(",") ?? new string[0];
-                ViewBag.DetailAddress = addressParts.Length > 0 ? addressParts[0].Trim() : "";
-                ViewBag.Ward = addressParts.Length > 1 ? addressParts[1].Trim() : "";
-                ViewBag.District = addressParts.Length > 2 ? addressParts[2].Trim() : "";
-                ViewBag.Province = addressParts.Length > 3 ? addressParts[3].Trim() : "";
 
                 // --- THÊM PHẦN LẤY LỊCH SỬ ĐƠN HÀNG ---
                 var orderHistory = await _context.RetailOrders
@@ -105,11 +85,18 @@ namespace Village_Manager.Controllers
                     .ThenInclude(oi => oi.Product)
                     .ThenInclude(p => p.ProductImages)
                 .Include(o => o.User)
-                    .ThenInclude(u => u.Addresses)
                 .FirstOrDefaultAsync();
 
             if (order == null)
                 return NotFound();
+
+            // Lấy thông tin địa chỉ giao hàng từ bảng Delivery
+            var delivery = await _context.Deliveries
+                .FirstOrDefaultAsync(d => d.OrderId == order.Id && d.OrderType == "retail");
+            
+            ViewBag.DeliveryAddress = delivery?.CustomerAddress ?? "Không có thông tin địa chỉ";
+            ViewBag.CustomerName = delivery?.CustomerName ?? order.User?.Username ?? "Không xác định";
+            ViewBag.CustomerPhone = delivery?.CustomerPhone ?? order.User?.Phone ?? "Không xác định";
 
             // Lấy mã giảm giá từ session nếu có
             var discountCode = HttpContext.Session.GetString("DiscountCode");
@@ -128,7 +115,7 @@ namespace Village_Manager.Controllers
 
 
         [HttpGet("/otp")]
-        public async Task<IActionResult> Otp(string email, string phone, string address)
+        public async Task<IActionResult> Otp(string email, string phone)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -152,13 +139,12 @@ namespace Village_Manager.Controllers
 
             ViewBag.Email = email;
             ViewBag.Phone = phone;
-            ViewBag.Address = address;
 
             return View();
         }
 
         [HttpPost("/otp/confirm")]
-        public async Task<IActionResult> ConfirmOtp(string Email, string Phone, string Address,
+        public async Task<IActionResult> ConfirmOtp(string Email, string Phone,
             string Otp1, string Otp2, string Otp3, string Otp4, string Otp5, string Otp6)
         {
             string otp = $"{Otp1}{Otp2}{Otp3}{Otp4}{Otp5}{Otp6}";
@@ -178,20 +164,6 @@ namespace Village_Manager.Controllers
                     user.Email = Email;
                     user.Phone = Phone;
 
-                    var address = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == userId);
-                    if (address == null)
-                    {
-                        _context.Addresses.Add(new Address
-                        {
-                            UserId = userId.Value,
-                            AddressLine = Address
-                        });
-                    }
-                    else
-                    {
-                        address.AddressLine = Address;
-                    }
-
                     await _context.SaveChangesAsync();
 
                     TempData["Success"] = "Cập nhật thông tin thành công!";
@@ -203,9 +175,8 @@ namespace Village_Manager.Controllers
 
             string safeEmail = Uri.EscapeDataString(Email);
             string safePhone = Uri.EscapeDataString(Phone);
-            string safeAddress = Uri.EscapeDataString(Address);
 
-            return Redirect($"/otp?email={safeEmail}&phone={safePhone}&address={safeAddress}");
+            return Redirect($"/otp?email={safeEmail}&phone={safePhone}");
         }
                 
     
@@ -316,10 +287,106 @@ namespace Village_Manager.Controllers
         private int GetCurrentUserId()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                throw new Exception("Người dùng chưa đăng nhập hoặc Session đã hết hạn.");
+            }
+            return userId.Value;
+        }
 
-            return (int)userId;
+        // Thêm địa chỉ mới
+        [HttpPost]
+        [Route("customer/add-address")]
+        public async Task<IActionResult> AddAddress(int id, string label, string address, double latitude, double longitude)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
 
-            throw new Exception("Người dùng chưa đăng nhập hoặc Session đã hết hạn.");
+                var newAddress = new UserLocation
+                {
+                    UserId = userId,
+                    Label = label,
+                    Address = address,
+                    Latitude = latitude,
+                    Longitude = longitude
+                };
+
+                _context.UserLocations.Add(newAddress);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Thêm địa chỉ thành công!";
+                return RedirectToAction("DashBoard");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi thêm địa chỉ: " + ex.Message;
+                return RedirectToAction("DashBoard");
+            }
+        }
+
+        // Sửa địa chỉ
+        [HttpPost]
+        [Route("customer/edit-address")]
+        public async Task<IActionResult> EditAddress(int id, string label, string address)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+
+                var existingAddress = await _context.UserLocations
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+                if (existingAddress == null)
+                {
+                    TempData["Error"] = "Không tìm thấy địa chỉ.";
+                    return RedirectToAction("DashBoard");
+                }
+
+                existingAddress.Label = label;
+                existingAddress.Address = address;
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Cập nhật địa chỉ thành công!";
+                return RedirectToAction("DashBoard");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi cập nhật địa chỉ: " + ex.Message;
+                return RedirectToAction("DashBoard");
+            }
+        }
+
+        // Xóa địa chỉ
+        [HttpPost]
+        [Route("customer/delete-address")]
+        public async Task<IActionResult> DeleteAddress(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+
+                var address = await _context.UserLocations
+                    .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+                if (address == null)
+                {
+                    TempData["Error"] = "Không tìm thấy địa chỉ.";
+                    return RedirectToAction("DashBoard");
+                }
+
+                _context.UserLocations.Remove(address);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Xóa địa chỉ thành công!";
+                return RedirectToAction("DashBoard");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi xóa địa chỉ: " + ex.Message;
+                return RedirectToAction("DashBoard");
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-    var address = ViewBag.Address as Village_Manager.Models.UserLocation;
+    var shippingAddress = ViewBag.ShippingAddress?.ToString() ?? "Không có thông tin địa chỉ";
     var orderId = ViewBag.OrderId?.ToString() ?? "";
     var paymentMethod = ViewBag.PaymentMethod?.ToString() ?? "N/A";
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
@@ -216,17 +216,16 @@
                                 </div>
 
                                 <ul class="summery-contain pb-0 border-bottom-0">
-                                    @if (address != null)
+                                    @if (!string.IsNullOrEmpty(shippingAddress))
                                     {
                                         <li class="d-block">
-                                            <h4>Tên: @address.Label</h4>
-                                            <h4 class="mt-2">Địa chỉ: @address.Address</h4>
-                                            <h4 class="mt-2">SĐT: +84 @address.User?.Phone</h4>
+                                            <h4>Địa chỉ giao hàng:</h4>
+                                            <h4 class="mt-2">@shippingAddress</h4>
                                         </li>
                                     }
                                     else
                                     {
-                                        <li class="d-block">Chưa chọn địa chỉ nào.</li>
+                                        <li class="d-block">Chưa có thông tin địa chỉ giao hàng.</li>
                                     }
                                 </ul>
 

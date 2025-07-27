@@ -84,10 +84,6 @@
                                         </lord-icon>
                                     </div>
 
-                                    @{
-                                        var address = ViewBag.Address as Village_Manager.Models.Address;
-                                    }
-
                                     <div class="checkout-box">
                                         <div class="checkout-title">
                                             <h4>Địa chỉ nhận hàng</h4>
@@ -95,26 +91,35 @@
 
                                         <div class="checkout-detail">
                                             <div class="row g-4">
-                                                @if (address != null)
+                                                @if (ViewBag.Addresses != null && ((List<Village_Manager.Models.UserLocation>)ViewBag.Addresses).Any())
                                                 {
-                                                    <div class="col-12">
-                                                        <div class="delivery-address-box">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input"
-                                                                       type="radio"
-                                                                       name="SelectedAddress"
-                                                                       id="mainAddress"
-                                                                       value="@address.Id"
-                                                                       checked />
-                                                                <label for="mainAddress" class="fw-500">@address.AddressLine</label>
+                                                    @foreach (var address in (List<Village_Manager.Models.UserLocation>)ViewBag.Addresses)
+                                                    {
+                                                        <div class="col-12">
+                                                            <div class="delivery-address-box">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input"
+                                                                           type="radio"
+                                                                           name="SelectedAddress"
+                                                                           id="address_@address.Id"
+                                                                           value="@address.Id"
+                                                                           @(ViewBag.Addresses.IndexOf(address) == 0 ? "checked" : "") />
+                                                                    <label for="address_@address.Id" class="fw-500">
+                                                                        <strong>@address.Label</strong><br>
+                                                                        @address.Address
+                                                                    </label>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    }
                                                 }
                                                 else
                                                 {
                                                     <div class="col-12">
-                                                        <div class="alert alert-warning">Bạn chưa có địa chỉ nhận hàng.</div>
+                                                        <div class="alert alert-warning">
+                                                            Bạn chưa có địa chỉ nhận hàng. 
+                                                            <a href="@Url.Action("Dashboard", "Customer")" class="alert-link">Thêm địa chỉ</a>
+                                                        </div>
                                                     </div>
                                                 }
                                             </div>
@@ -220,7 +225,8 @@
                         <div class="button-group cart-button">
                             <ul>
                                 <li>
-                                    <form action="/shop/place-order" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn đặt hàng không?');">
+                                    <form action="/shop/place-order" method="post" onsubmit="return validateAndSubmit();">
+                                        <input type="hidden" id="selectedAddressInput" name="selectedAddress" value="" />
                                         <button type="submit" class="btn theme-bg-color text-white btn-md w-100 mt-4 fw-bold">
                                             Đặt hàng
                                         </button>
@@ -298,6 +304,25 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+
+    <script>
+        // Hàm validate và submit form
+        function validateAndSubmit() {
+            // Lấy địa chỉ được chọn
+            const selectedAddressRadio = document.querySelector('input[name="SelectedAddress"]:checked');
+            
+            if (!selectedAddressRadio) {
+                alert('Vui lòng chọn địa chỉ giao hàng.');
+                return false;
+            }
+            
+            // Set giá trị cho hidden input
+            document.getElementById('selectedAddressInput').value = selectedAddressRadio.value;
+            
+            // Confirm trước khi submit
+            return confirm('Bạn có chắc chắn muốn đặt hàng không?');
+        }
+    </script>
 
 </body>
 
