@@ -58,7 +58,6 @@
                             <form method="post" action="/otp/confirm">
                                 <input type="hidden" name="Email" value="@ViewBag.Email" />
                                 <input type="hidden" name="Phone" value="@ViewBag.Phone" />
-                                <input type="hidden" name="Address" value="@ViewBag.Address" />
 
                                 <div id="otp" class="inputs d-flex flex-row justify-content-center">
                                     <input class="text-center form-control rounded" type="text" name="Otp1" maxlength="1" required>
@@ -71,7 +70,7 @@
 
                                 <div class="send-box pt-4">
                                     <h5>
-                                        Bạn không nhận được mã? <a href="/otp?email=@ViewBag.Email&phone=@ViewBag.Phone&address=@ViewBag.Address"
+                                        Bạn không nhận được mã? <a href="/otp?email=@ViewBag.Email&phone=@ViewBag.Phone"
                                                                    class="theme-color fw-bold">Gửi lại</a>
                                     </h5>
                                 </div>

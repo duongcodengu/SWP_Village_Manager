@@ -3,8 +3,10 @@
     var isRetail = Model.GetType().Name == "RetailOrder";
     var isDelivery = Model.GetType().Name == "Delivery";
     var fullAddress = isRetail
-        ? (Model.User?.Addresses?.FirstOrDefault() == null ? "-" : $"{Model.User.Addresses.FirstOrDefault().AddressLine}, {Model.User.Addresses.FirstOrDefault().City}, {Model.User.Addresses.FirstOrDefault().Province}, {Model.User.Addresses.FirstOrDefault().PostalCode}".Replace(", ,", ",").Replace(", ,", ",").Trim(',',' '))
+        ? (ViewBag.DeliveryAddress ?? "Không có thông tin địa chỉ")
         : (Model.CustomerAddress ?? "-");
+    ViewData["Title"] = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -35,9 +37,9 @@
             <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-info-circle me-2"></i>Chi tiết đơn hàng #@(isRetail ? Model.Id : Model.Id)</h3>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <p><strong>Khách hàng:</strong> @(isRetail ? Model.User?.Username : Model.CustomerName)</p>
-                    <p><strong>Số điện thoại:</strong> @(isRetail ? Model.User?.Phone : Model.CustomerPhone)</p>
-                    <p><strong>Địa chỉ:</strong> @fullAddress</p>
+                    <p><strong>Khách hàng:</strong> @(isRetail ? (ViewBag.CustomerName ?? Model.User?.Username) : Model.CustomerName)</p>
+                    <p><strong>Số điện thoại:</strong> @(isRetail ? (ViewBag.CustomerPhone ?? Model.User?.Phone) : Model.CustomerPhone)</p>
+                    <p><strong>Địa chỉ giao hàng:</strong> @fullAddress</p>
                     <p><strong>Ngày đặt:</strong> @(isRetail ? (Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "-") : (Model.StartTime?.ToString("dd/MM/yyyy HH:mm") ?? "-"))</p>
                 </div>
                 <div class="col-md-6">

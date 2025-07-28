@@ -85,16 +85,6 @@
                                                 }
                                                 @if (Model != null)
                                                 {
-                                                    <div class="col-md-4 text-center">
-                                                        @if (!string.IsNullOrEmpty(Model.ProductImageUrl))
-                                                        {
-                                                            <img src="@Model.ProductImageUrl" class="img-fluid rounded" alt="Ảnh sản phẩm" style="max-height: 450px;" width="800" />
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="text-muted">Không có ảnh sản phẩm</div>
-                                                        }
-                                                    </div>
                                                     <div class="col-md-8">
                                                         <dl class="row">
                                                             <dt class="col-sm-4">Order Id :</dt>
@@ -108,27 +98,62 @@
                                                             <dt class="col-sm-4">Địa chỉ:</dt>
                                                             <dd class="col-sm-8">@Model.Address</dd>
 
-                                                            <dt class="col-sm-4">Sản phẩm:</dt>
-                                                            <dd class="col-sm-8">@Model.ProductName</dd>
-                                                            <dt class="col-sm-4">Số lượng:</dt>
-                                                            <dd class="col-sm-8">@Model.Quantity</dd>
-                                                            <dt class="col-sm-4">Giá:</dt>
-                                                            <dd class="col-sm-8">@Model.UnitPrice</dd>
                                                             <dt class="col-sm-4">Thời gian gửi:</dt>
                                                             <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy HH:mm")</dd>
 
                                                             <dt class="col-sm-4">Trạng thái:</dt>
                                                             <dd class="col-sm-8"><span class="badge bg-info text-dark">@Model.Status</span></dd>
                                                         </dl>
+                                                        
+                                                        <hr />
+                                                        <h6>Danh sách sản phẩm:</h6>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th>Ảnh</th>
+                                                                        <th>Tên sản phẩm</th>
+                                                                        <th>Số lượng</th>
+                                                                        <th>Đơn giá</th>
+                                                                        <th>Thành tiền</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if (ViewBag.OrderItems != null && ((List<Village_Manager.Models.RetailOrderItem>)ViewBag.OrderItems).Any())
+                                                                    {
+                                                                        @foreach (var item in (List<Village_Manager.Models.RetailOrderItem>)ViewBag.OrderItems)
+                                                                        {
+                                                                            var imageUrl = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png";
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <img src="@imageUrl" alt="@item.Product?.Name" width="50" height="50" style="object-fit: cover;" />
+                                                                                </td>
+                                                                                <td>@item.Product?.Name</td>
+                                                                                <td>@item.Quantity</td>
+                                                                                <td>@item.UnitPrice?.ToString("N0") VNĐ</td>
+                                                                                <td>@((item.Quantity * item.UnitPrice)?.ToString("N0")) VNĐ</td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <tr>
+                                                                            <td colspan="5" class="text-center">Không có thông tin sản phẩm</td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr class="table-info">
+                                                                        <td colspan="4" class="text-end"><strong>Tổng tiền:</strong></td>
+                                                                        <td><strong>@(((List<Village_Manager.Models.RetailOrderItem>)ViewBag.OrderItems)?.Sum(i => i.Quantity * i.UnitPrice)?.ToString("N0") ?? "0") VNĐ</strong></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                     <div class="text-center mt-4">
                                                         <div class="d-flex justify-content-start gap-2">
-                                                            <a href="/listOrder" class="btn btn-secondary btn-sm">← Quay lại</a>
-
-                                                            <form method="post" action="/order/delete" onsubmit="return confirm('Bạn có chắc chắn muốn xoá đơn hàng này?');" class="d-inline">
-                                                                <input type="hidden" name="id" value="@Model.Id" />
-                                                                <button type="submit" class="btn btn-danger btn-sm">🗑️ Xoá</button>
-                                                            </form>
+                                                            <a href="/listorder" class="btn btn-secondary btn-sm">← Quay lại</a>
                                                         </div>
                                                     </div>
                                                 }

@@ -63,10 +63,11 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5>Thông tin người nhận</h5>
-                <p><strong>Khách hàng:</strong> @Model.User?.Username</p>
+                <p><strong>Khách hàng:</strong> @ViewBag.CustomerName</p>
+                <p><strong>Số điện thoại:</strong> @ViewBag.CustomerPhone</p>
                 <p><strong>Ngày đặt:</strong> @Model.OrderDate?.ToString("dd/MM/yyyy")</p>
                 <p><strong>Trạng thái:</strong> @Model.Status</p>
-                <p><strong>Địa chỉ giao hàng:</strong> @Model.User?.Addresses?.FirstOrDefault()?.AddressLine</p>
+                <p><strong>Địa chỉ giao hàng:</strong> @ViewBag.DeliveryAddress</p>
             </div>
         </div>
 

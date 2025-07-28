@@ -61,18 +61,22 @@ public class AccountController : Controller
         if (user == null)
         {
             // 3. Nếu người dùng không tồn tại -> Tạo người dùng mới
+            // Tạo số điện thoại dựa trên số lượng user hiện tại
+            int userCount = _context.Users.Count();
+            string uniquePhone = "0" + (userCount + 1).ToString().PadLeft(9, '0');
+
             user = new User
             {
                 Username = userName ?? userEmail, // Lấy tên từ Google, nếu không có thì dùng email
                 Email = userEmail,
                 Password = Guid.NewGuid().ToString(), // Tạo một mật khẩu ngẫu nhiên, vì họ sẽ không dùng nó
                 RoleId = 3, // Mặc định là 'customer'
-                Phone = "0000000000", // Cần một giá trị mặc định hoặc trang yêu cầu cập nhật SĐT
+                Phone = uniquePhone, // Số điện thoại duy nhất dựa trên số lượng user
                 IsActive = true,
                 CreatedAt = DateTime.Now
             };
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Lưu user với số điện thoại đã tạo
         }
 
         // Kiểm tra nếu tài khoản bị khóa
@@ -135,15 +139,20 @@ public class AccountController : Controller
         switch (user.RoleId)
         {
             case 1: // Admin
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "AdminWarehouse");
+
             case 2: // Staff
                 return RedirectToAction("Index", "Home");
-            case 5: // Farmer
-                return RedirectToAction("Index", "Home"); 
+
             case 3: // Customer
-                return RedirectToAction("Index", "Home"); 
-            case 4: // Shipper
                 return RedirectToAction("Index", "Home");
+
+            case 4: // Shipper
+                return RedirectToAction("DashboardShipper", "Shipper"); 
+
+            case 5: // Farmer
+                return RedirectToAction("DashboardFamer", "Famer");
+
             default:
                 return RedirectToAction("Login", "Home");
         }

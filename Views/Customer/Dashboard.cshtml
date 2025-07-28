@@ -82,6 +82,13 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-address-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-address" type="button" role="tab">
+                                    <i data-feather="map-pin"></i>
+                                    Địa chỉ
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-profile" type="button" role="tab">
                                     <i data-feather="user"></i>
@@ -97,6 +104,22 @@
                         Menu
                     </button>
                     <div class="dashboard-right-sidebar">
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fa-solid fa-check-circle"></i>
+                                @TempData["Success"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fa-solid fa-exclamation-triangle"></i>
+                                @TempData["Error"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel" aria-labelledby="pills-dashboard-tab">
                                 <div class="dashboard-home">
@@ -163,7 +186,6 @@
                                             <div class="dashboard-detail">
                                                 <h6 class="text-content">Username: @ViewBag.Username</h6>
                                                 <h6 class="text-content">Email: @ViewBag.Email</h6>
-                                                <h6 class="text-content">Địa chỉ: @ViewBag.Address</h6>
                                             </div>
                                         </div>
                                     </div>
@@ -583,6 +605,73 @@
                                 </div>
                             </div>
 
+                            <div class="tab-pane fade" id="pills-address" role="tabpanel" aria-labelledby="pills-address-tab">
+                                <div class="dashboard-address">
+                                    <div class="title">
+                                        <h2>Quản lý địa chỉ giao hàng</h2>
+                                        <span class="title-leaf">
+                                            <svg class="icon-width bg-gray">
+                                                <use xlink:href="~/svg/leaf.svg#leaf"></use>
+                                            </svg>
+                                        </span>
+                                    </div>
+
+                                    <div class="address-management dashboard-bg-box">
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <div class="dashboard-title">
+                                                <h3>Danh sách địa chỉ</h3>
+                                            </div>
+                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
+                                                <i class="fa-solid fa-plus"></i> Thêm địa chỉ mới
+                                            </button>
+                                        </div>
+
+                                        <div class="address-list">
+                                            @if (location != null && location.Any())
+                                            {
+                                                <div class="row g-3">
+                                                    @foreach (var addr in location)
+                                                    {
+                                                        <div class="col-md-6 col-lg-4">
+                                                            <div class="address-card">
+                                                                <div class="address-card-header">
+                                                                    <h6 class="address-label">@addr.Label</h6>
+                                                                    <div class="address-actions">
+                                                                        <button class="btn btn-sm btn-outline-primary" 
+                                                                                onclick="editAddress(@addr.Id, '@addr.Label', '@addr.Address', @addr.Latitude, @addr.Longitude)">
+                                                                            <i class="fa-solid fa-edit"></i>
+                                                                        </button>
+                                                                        <button class="btn btn-sm btn-outline-danger" 
+                                                                                onclick="deleteAddress(@addr.Id)">
+                                                                            <i class="fa-solid fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="address-card-body">
+                                                                    <p class="address-text">@addr.Address</p>
+                                                                    <small class="text-muted">
+                                                                        <i class="fa-solid fa-map-marker-alt"></i>
+                                                                        Lat: @addr.Latitude, Lng: @addr.Longitude
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="empty-address">
+                                                    <i data-feather="map-pin"></i>
+                                                    <h4>Bạn chưa có địa chỉ nào.</h4>
+                                                    <p>Thêm địa chỉ để thuận tiện cho việc giao hàng!</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                 <div class="dashboard-profile">
                                     <div class="title">
@@ -627,10 +716,6 @@
                                                                         @ViewBag.Phone
                                                                     </a>
                                                                 </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>Address :</td>
-                                                                <td>@ViewBag.Address</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -713,31 +798,6 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="col-xxl-12">
-                            <div class="form-floating theme-form-floating mb-3">
-                                <select class="form-select" id="provinceSelect" onchange="onProvinceChange()">
-                                    <option value="">Chọn tỉnh</option>
-                                </select>
-                                <label for="provinceSelect">Tỉnh/Thành phố</label>
-                            </div>
-
-                            <div class="form-floating theme-form-floating mb-3">
-                                <select class="form-select" id="districtSelect" onchange="onDistrictChange()">
-                                    <option value="">Chọn quận/huyện</option>
-                                </select>
-                                <label for="districtSelect">Quận/Huyện</label>
-                            </div>
-                            <div class="form-floating theme-form-floating mb-3">
-                                <select class="form-select" id="wardSelect">
-                                    <option value="">Chọn phường/xã</option>
-                                </select>
-                                <label for="wardSelect">Phường/Xã</label>
-                            </div>
-                            <div class="form-floating theme-form-floating">
-                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, đường...">
-                                <label for="detailAddress">Địa chỉ chi tiết</label>
-                            </div>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-animation btn-md fw-bold"
@@ -755,68 +815,17 @@
     <!-- Edit Profile End -->
     @* api lay địa chỉ *@
     <script>
-        async function onProvinceChange() {
-            const provinceCode = document.getElementById("provinceSelect").value;
-            const districtSelect = document.getElementById("districtSelect");
-            const wardSelect = document.getElementById("wardSelect");
-
-            // Reset district và ward
-            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-
-            if (!provinceCode) return;
-
-            const res = await fetch("https://provinces.open-api.vn/api/p/" + provinceCode + "?depth=2");
-            const data = await res.json();
-
-            data.districts.forEach(d => {
-                const option = document.createElement("option");
-                option.text = d.name;
-                option.value = d.code;
-                districtSelect.appendChild(option);
-            });
-        }
-
-        async function onDistrictChange() {
-            const districtCode = document.getElementById("districtSelect").value;
-            const wardSelect = document.getElementById("wardSelect");
-
-            // Reset ward
-            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-
-            if (!districtCode) return;
-
-            const res = await fetch("https://provinces.open-api.vn/api/d/" + districtCode + "?depth=2");
-            const data = await res.json();
-
-            data.wards.forEach(w => {
-                const option = document.createElement("option");
-                option.text = w.name;
-                option.value = w.code;
-                wardSelect.appendChild(option);
-            });
-        }
-    </script>
-
-    <script>
         const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
         const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
-        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
 
         async function handleSave() {
             const email = document.getElementById("email1").value.trim();
             const phone = document.getElementById("mobile").value.trim();
-            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
-            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
-            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
-            const detail = document.getElementById("detailAddress").value.trim();
-            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
 
             // Kiểm tra có thay đổi gì không
             const hasChanged =
                 email !== originalEmail ||
-                phone !== originalPhone ||
-                fullAddress !== originalAddress;
+                phone !== originalPhone 
 
             if (!hasChanged) {
                 alert("Bạn chưa thay đổi thông tin nào.");
@@ -827,7 +836,6 @@
             const url = new URL('/otp', window.location.origin);
             url.searchParams.set('email', email);
             url.searchParams.set('phone', phone);
-            url.searchParams.set('address', fullAddress);
             window.location.href = url.toString();
         }
     </script>
@@ -949,56 +957,7 @@
     </div>
 
     <!-- Add address modal box end -->
-    @* api lay địa chỉ *@
-    <script>
-        document.addEventListener("DOMContentLoaded", async function () {
-            const provinceSelect = document.getElementById("provinceSelect");
-            const districtSelect = document.getElementById("districtSelect");
-            const wardSelect = document.getElementById("wardSelect");
 
-            const selectedProvince = "@ViewBag.Province";
-            const selectedDistrict = "@ViewBag.District";
-            const selectedWard = "@ViewBag.Ward";
-
-            const res = await fetch("https://provinces.open-api.vn/api/?depth=3");
-            const data = await res.json();
-
-            // Đổ danh sách tỉnh
-            data.forEach(p => {
-                const option = document.createElement("option");
-                option.text = p.name;
-                option.value = p.code;
-                if (p.name === selectedProvince) option.selected = true;
-                provinceSelect.appendChild(option);
-            });
-
-            // Tìm tỉnh đã chọn
-            const province = data.find(p => p.name === selectedProvince);
-            if (province) {
-                // Đổ danh sách huyện thuộc tỉnh
-                province.districts.forEach(d => {
-                    const option = document.createElement("option");
-                    option.text = d.name;
-                    option.value = d.code;
-                    if (d.name === selectedDistrict) option.selected = true;
-                    districtSelect.appendChild(option);
-                });
-
-                // Tìm huyện đã chọn
-                const district = province.districts.find(d => d.name === selectedDistrict);
-                if (district) {
-                    // Đổ danh sách xã thuộc huyện
-                    district.wards.forEach(w => {
-                        const option = document.createElement("option");
-                        option.text = w.name;
-                        option.value = w.code;
-                        if (w.name === selectedWard) option.selected = true;
-                        wardSelect.appendChild(option);
-                    });
-                }
-            }
-        });
-    </script>
 
     <!-- Remove Address Modal Start -->
     <div class="modal fade" id="remove-address" tabindex="-1">
@@ -1053,22 +1012,15 @@
     <script>
         const originalEmail = "@Html.Raw(ViewBag.Email?.ToString() ?? "")";
         const originalPhone = "@Html.Raw(ViewBag.Phone?.ToString() ?? "")";
-        const originalAddress = "@Html.Raw(ViewBag.Address?.ToString() ?? "")"; // Bạn cần set ViewBag.Address từ server
 
         async function handleSave() {
             const email = document.getElementById("email1").value.trim();
             const phone = document.getElementById("mobile").value.trim();
-            const province = document.querySelector("#provinceSelect option:checked")?.textContent || "";
-            const district = document.querySelector("#districtSelect option:checked")?.textContent || "";
-            const ward = document.querySelector("#wardSelect option:checked")?.textContent || "";
-            const detail = document.getElementById("detailAddress").value.trim();
-            const fullAddress = `${detail}, ${ward}, ${district}, ${province}`;
 
             // Kiểm tra có thay đổi gì không
             const hasChanged =
                 email !== originalEmail ||
-                phone !== originalPhone ||
-                fullAddress !== originalAddress;
+                phone !== originalPhone;
 
             if (!hasChanged) {
                 alert("Bạn chưa thay đổi thông tin nào.");
@@ -1079,12 +1031,107 @@
             const url = new URL('/otp', window.location.origin);
             url.searchParams.set('email', email);
             url.searchParams.set('phone', phone);
-            url.searchParams.set('address', fullAddress);
             window.location.href = url.toString();
         }
     </script>
 
     <!-- Edit Profile End -->
+    
+    <!-- Modal thêm/sửa địa chỉ -->
+    <div class="modal fade address-modal" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form id="addressForm" method="post" action="@Url.Action("AddAddress", "Customer")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addAddressModalLabel">Thêm địa chỉ mới</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="addressId" name="id" value="0" />
+                        <input type="hidden" id="addressLat" name="latitude" />
+                        <input type="hidden" id="addressLng" name="longitude" />
+                        
+                        <div class="mb-3">
+                            <label for="addressLabel" class="form-label">Tên địa chỉ *</label>
+                            <input type="text" class="form-control" id="addressLabel" name="label" required 
+                                   placeholder="VD: Nhà riêng, Công ty, Trường học...">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating mb-3">
+                                    <select class="form-select" id="addressProvinceSelect" onchange="onAddressProvinceChange()">
+                                        <option value="">Chọn tỉnh</option>
+                                    </select>
+                                    <label for="addressProvinceSelect">Tỉnh/Thành phố *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating mb-3">
+                                    <select class="form-select" id="addressDistrictSelect" onchange="onAddressDistrictChange()">
+                                        <option value="">Chọn quận/huyện</option>
+                                    </select>
+                                    <label for="addressDistrictSelect">Quận/Huyện *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating theme-form-floating mb-3">
+                                    <select class="form-select" id="addressWardSelect">
+                                        <option value="">Chọn phường/xã</option>
+                                    </select>
+                                    <label for="addressWardSelect">Phường/Xã *</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="addressDetail" class="form-label">Địa chỉ chi tiết *</label>
+                            <textarea class="form-control" id="addressDetail" name="addressDetail" rows="2" required 
+                                      placeholder="Số nhà, tên đường, tên khu vực..."></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-info-circle"></i>
+                            Hệ thống sẽ tự động tạo địa chỉ đầy đủ từ thông tin bạn chọn.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary" id="saveAddressBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                            Lưu địa chỉ
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal xác nhận xóa địa chỉ -->
+    <div class="modal fade" id="deleteAddressModal" tabindex="-1" aria-labelledby="deleteAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAddressModalLabel">Xác nhận xóa địa chỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa địa chỉ này không?</p>
+                    <p class="text-muted" id="deleteAddressText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form method="post" action="@Url.Action("DeleteAddress", "Customer")" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" id="deleteAddressId" name="id" />
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Remove Address Modal End -->
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
@@ -1119,101 +1166,250 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    <style>
+        /* CSS cho address cards */
+        .address-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .address-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .address-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .address-label {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .address-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .address-card-body {
+            padding: 1rem;
+        }
+
+        .address-text {
+            margin: 0 0 0.5rem 0;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .empty-address {
+            text-align: center;
+            padding: 3rem 1rem;
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .empty-address i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .empty-address h4 {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-address p {
+            color: #999;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Modal styles */
+        .address-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .address-modal .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .address-modal .form-control {
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .address-modal .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+
     <script>
-        const LOCATIONIQ_API_KEY = "pk.134d02303b552ffc26e2277992e7e810";
-            async function getCoordinatesFromAddress(address) {
-            const url = `https://us1.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(address)}&format=json`;
-            const response = await fetch(url);
-            const data = await response.json();
+        // Load danh sách tỉnh thành khi modal mở
+        document.getElementById('addAddressModal').addEventListener('show.bs.modal', function() {
+            loadProvincesForAddress();
+        });
 
-            if (data.length === 0) throw new Error("Không tìm thấy tọa độ từ địa chỉ.");
+        // Load dữ liệu địa chỉ giống FamerBecome
+        let provinces = [];
 
-                    const firstResult = data[0];
-
-        if (
-            !firstResult ||
-            !firstResult.display_name ||
-            !firstResult.display_name.toLowerCase().includes("việt nam") ||
-            firstResult.lat === undefined ||
-            firstResult.lon === undefined
-        ) {
-            throw new Error("Địa chỉ không đủ rõ ràng. Vui lòng nhập địa chỉ cụ thể hơn.");
-        }
-
-            return {
-                latitude: parseFloat(firstResult.lat),
-                longitude: parseFloat(firstResult.lon)
-            };
-        }
-
-        // 📦 Xử lý khi người dùng submit form
-        document.getElementById("address-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
+        // Load danh sách tỉnh thành cho modal địa chỉ
+        async function loadProvincesForAddress() {
+            const provinceSelect = document.getElementById('addressProvinceSelect');
+            if (provinceSelect.children.length > 1) return; // Đã load rồi
 
             try {
-                // Lấy dữ liệu người dùng nhập
-                const userId = parseInt(document.getElementById("userId").value);
-                const label = document.getElementById("fname").value;
-                const address = document.getElementById("address").value;
-
-                if (!label || !address) {
-                    alert("Vui lòng nhập đầy đủ tên và địa chỉ.");
-                    return;
-                }
-
-                // 🔄 Gọi API để lấy tọa độ từ địa chỉ
-                const coords = await getCoordinatesFromAddress(address);
-
-                // Cập nhật giá trị vào input ẩn
-                document.getElementById("latitude").value = coords.latitude;
-                document.getElementById("longitude").value = coords.longitude;
-
-                // Chuẩn bị dữ liệu gửi đi
-                const data = {
-                    UserId: userId,
-                    Label: label,
-                    Address: address,
-                    Latitude: coords.latitude,
-                    Longitude: coords.longitude
-                };
-
-                console.log("Gửi dữ liệu:", data);
-
-                // 📨 Gửi POST request đến API
-                const res = await fetch('/api/location/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+                const res = await fetch('/api/provinces');
+                const data = await res.json();
+                provinces = data;
+                
+                data.forEach(p => {
+                    const opt = new Option(p.name, p.code);
+                    provinceSelect.add(opt);
                 });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error("Lỗi server:", errorText);
-                    throw new Error("Lỗi khi thêm địa chỉ.");
-                }
-
-                const result = await res.json();
-                alert(result.message);
-                location.reload();
-            } catch (err) {
-                alert("Lỗi: " + err.message);
+            } catch (error) {
+                console.error('Lỗi khi load danh sách tỉnh:', error);
             }
-        });
-    </script>
+        }
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('tab') === 'order') {
-                // Kích hoạt tab Đơn hàng
-                let orderTabBtn = document.getElementById('pills-order-tab');
-                if (orderTabBtn) {
-                    orderTabBtn.click();
-                }
+        // Xử lý khi chọn tỉnh trong modal địa chỉ - GIỐNG FAMERBECOME
+        function onAddressProvinceChange() {
+            const provinceSelect = document.getElementById('addressProvinceSelect');
+            const districtSelect = document.getElementById('addressDistrictSelect');
+            const wardSelect = document.getElementById('addressWardSelect');
+
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+            wardSelect.disabled = true;
+
+            const selectedProvince = provinces.find(p => p.code == provinceSelect.value);
+            if (!selectedProvince) return;
+
+            selectedProvince.districts.forEach(d => {
+                districtSelect.add(new Option(d.name, d.code));
+            });
+            districtSelect.disabled = false;
+        }
+
+        // Xử lý khi chọn quận/huyện trong modal địa chỉ - GIỐNG FAMERBECOME
+        function onAddressDistrictChange() {
+            const provinceSelect = document.getElementById('addressProvinceSelect');
+            const districtSelect = document.getElementById('addressDistrictSelect');
+            const wardSelect = document.getElementById('addressWardSelect');
+
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+            const selectedProvince = provinces.find(p => p.code == provinceSelect.value);
+            const selectedDistrict = selectedProvince?.districts.find(d => d.code == districtSelect.value);
+            
+            if (!selectedDistrict) return;
+
+            selectedDistrict.wards.forEach(w => {
+                wardSelect.add(new Option(w.name, w.code));
+            });
+            wardSelect.disabled = false;
+        }
+
+        // Hàm sửa địa chỉ
+        function editAddress(id, label, address, latitude, longitude) {
+            document.getElementById('addressId').value = id;
+            document.getElementById('addressLabel').value = label;
+            document.getElementById('addressLat').value = latitude;
+            document.getElementById('addressLng').value = longitude;
+            
+            document.getElementById('addAddressModalLabel').textContent = 'Sửa địa chỉ';
+            document.getElementById('addressForm').action = '@Url.Action("EditAddress", "Customer")';
+            
+            const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
+            modal.show();
+        }
+
+        // Hàm xóa địa chỉ
+        function deleteAddress(id) {
+            document.getElementById('deleteAddressId').value = id;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteAddressModal'));
+            modal.show();
+        }
+
+        // Xử lý form thêm/sửa địa chỉ
+        document.getElementById('addressForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const label = document.getElementById('addressLabel').value.trim();
+            const detailAddress = document.getElementById('addressDetail').value.trim();
+            const provinceSelect = document.getElementById('addressProvinceSelect');
+            const districtSelect = document.getElementById('addressDistrictSelect');
+            const wardSelect = document.getElementById('addressWardSelect');
+            
+            // Validation
+            if (!label || !detailAddress || !provinceSelect.value || !districtSelect.value || !wardSelect.value) {
+                alert("Vui lòng nhập đầy đủ thông tin địa chỉ.");
+                return;
             }
+
+            // Tạo địa chỉ đầy đủ giống FamerBecome
+            const provinceText = provinceSelect.options[provinceSelect.selectedIndex]?.text;
+            const districtText = districtSelect.options[districtSelect.selectedIndex]?.text;
+            const wardText = wardSelect.options[wardSelect.selectedIndex]?.text;
+
+            const fullAddress = `${detailAddress}, ${wardText}, ${districtText}, ${provinceText}`;
+            
+            // Tạo input ẩn để gửi địa chỉ đầy đủ
+            let addressInput = document.getElementById('addressInput');
+            if (!addressInput) {
+                addressInput = document.createElement('input');
+                addressInput.type = 'hidden';
+                addressInput.name = 'address';
+                addressInput.id = 'addressInput';
+                this.appendChild(addressInput);
+            }
+            addressInput.value = fullAddress;
+            
+            // Submit form
+            this.submit();
         });
+
+        // Reset modal khi đóng
+        document.getElementById('addAddressModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('addressId').value = '0';
+            document.getElementById('addressLabel').value = '';
+            document.getElementById('addressDetail').value = '';
+            document.getElementById('addressLat').value = '';
+            document.getElementById('addressLng').value = '';
+            document.getElementById('addAddressModalLabel').textContent = 'Thêm địa chỉ mới';
+            document.getElementById('addressForm').action = '@Url.Action("AddAddress", "Customer")';
+            
+            // Reset các dropdown
+            document.getElementById('addressProvinceSelect').value = '';
+            document.getElementById('addressDistrictSelect').innerHTML = '<option value="">Chọn quận/huyện</option>';
+            document.getElementById('addressWardSelect').innerHTML = '<option value="">Chọn phường/xã</option>';
+            document.getElementById('addressDistrictSelect').disabled = true;
+            document.getElementById('addressWardSelect').disabled = true;
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
     </script>
 
 </body>

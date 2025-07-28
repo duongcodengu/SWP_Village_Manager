@@ -564,6 +564,10 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("product_type");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.ApprovalStatus)
+                .HasMaxLength(20)
+                .HasColumnName("approval_status")
+                .HasDefaultValue("pending");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)

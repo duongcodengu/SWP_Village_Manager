@@ -93,6 +93,13 @@
                             </li>
 
                             <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pills-supply-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-supply" type="button" role="tab">
+                                    <i data-feather="package"></i>Yêu cầu cung cấp
+                                </button>
+                            </li>
+
+                            <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
                                         data-bs-target="#pills-profile" type="button" role="tab">
                                     <i data-feather="user"></i>
@@ -278,7 +285,6 @@
                                         </button>
                                     </div>
 
-
                                     <div class="table-responsive dashboard-bg-box">
                                         <table class="table product-table">
                                             <thead>
@@ -288,23 +294,219 @@
                                                     <th scope="col">Giá</th>
                                                     <th scope="col">Mô tả</th>
                                                     <th scope="col">Trạng thái</th>
-                                                    <th scope="col"></th>
+                                                    <th scope="col">Thao tác</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="my-products-tbody">
-                                                @* table hien thi list product *@
+                                            <tbody id="productTableBody">
+                                                @if (Model.ProductList != null && Model.ProductList.Any())
+                                                {
+                                                    foreach (var product in Model.ProductList)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @if (product.ProductImages != null && product.ProductImages.Any())
+                                                                {
+                                                                    <img src="@product.ProductImages.First().ImageUrl" 
+                                                                         class="img-fluid" 
+                                                                         style="max-width:60px;max-height:60px;object-fit:cover;" 
+                                                                         alt="@product.Name">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted">N/A</span>
+                                                                }
+                                                            </td>
+                                                            <td>@product.Name</td>
+                                                            <td>@product.Price.ToString("N0") VNĐ</td>
+                                                            <td>
+                                                                @if (!string.IsNullOrEmpty(product.ProductImages?.FirstOrDefault()?.Description))
+                                                                {
+                                                                    @product.ProductImages.First().Description
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted">-</span>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @switch (product.ApprovalStatus)
+                                                                {
+                                                                    case "pending":
+                                                                        <span class="badge bg-warning">Chờ duyệt</span>
+                                                                        break;
+                                                                    case "accepted":
+                                                                        <span class="badge bg-success">Đã duyệt</span>
+                                                                        break;
+                                                                    case "rejected":
+                                                                        <span class="badge bg-danger">Từ chối</span>
+                                                                        break;
+                                                                    case "cancelled":
+                                                                        <span class="badge bg-secondary">Đã hủy</span>
+                                                                        break;
+                                                                    default:
+                                                                        <span class="badge bg-light text-dark">@product.ApprovalStatus</span>
+                                                                        break;
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @if (product.ApprovalStatus == "accepted")
+                                                                {
+                                                                    <button class="btn btn-danger btn-sm" 
+                                                                            onclick="showCancelModal(@product.Id, '@product.Name')">
+                                                                        Hủy bán
+                                                                    </button>
+                                                                    <button class="btn btn-primary btn-sm" 
+                                                                            onclick="showRequestModal(@product.Id, '@product.Name', @product.Quantity, @product.Price)">
+                                                                        Yêu cầu
+                                                                    </button>
+                                                                }
+                                                                else if (product.ApprovalStatus == "pending")
+                                                                {
+                                                                    <span class="text-muted">-</span>
+                                                                }
+                                                                else if (product.ApprovalStatus == "rejected" || product.ApprovalStatus == "cancelled")
+                                                                {
+                                                                    <form method="post" action="@Url.Action("ResellProduct", "Famer")" style="display: inline;">
+                                                                        @Html.AntiForgeryToken()
+                                                                        <input type="hidden" name="productId" value="@product.Id" />
+                                                                        <button type="submit" class="btn btn-success btn-sm" 
+                                                                                onclick="return confirm('Bạn có chắc chắn muốn bán lại sản phẩm này?')">
+                                                                            Bán lại
+                                                                        </button>
+                                                                    </form>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="6" class="text-center">Bạn chưa có sản phẩm nào.</td>
+                                                    </tr>
+                                                }
                                             </tbody>
                                         </table>
-
-                                        <nav class="custom-pagination" id="my-pagination" style="display:none">
-                                            <ul class="pagination justify-content-center"></ul>
-                                        </nav>
+                                        
+                                        @if (Model.ProductList != null && Model.ProductList.Any())
+                                        {
+                                            <nav class="custom-pagination">
+                                                <ul class="pagination justify-content-center" id="productPagination">
+                                                    <!-- Pagination sẽ được tạo bằng JavaScript -->
+                                                </ul>
+                                            </nav>
+                                            <div class="mt-3">
+                                                <p class="text-muted text-center" id="productInfo">
+                                                    Hiển thị <span id="startIndex">1</span> - <span id="endIndex">10</span> 
+                                                    trong tổng số <span id="totalProducts">@Model.ProductList.Count</span> sản phẩm
+                                                </p>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div>
                             @* tab product end *@
 
-                            
+                            @* tab supply requests *@
+                            <div class="tab-pane fade" id="pills-supply" role="tabpanel">
+                                <div class="supply-tab">
+                                    <div class="title d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <h2 class="mb-0">Yêu cầu cung cấp sản phẩm</h2>
+                                        </div>
+
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestSupplyModal">
+                                            <i class="fa-solid fa-plus"></i> Yêu cầu cung cấp mới
+                                        </button>
+                                    </div>
+
+                                    <div class="table-responsive dashboard-bg-box">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Sản phẩm</th>
+                                                    <th scope="col">Số lượng</th>
+                                                    <th scope="col">Giá</th>
+                                                    <th scope="col">Người yêu cầu</th>
+                                                    <th scope="col">Trạng thái</th>
+                                                    <th scope="col">Ngày yêu cầu</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    var supplyRequests = ViewBag.SupplyRequests as List<SupplyRequest> ?? new List<SupplyRequest>();
+                                                }
+                                                @if (supplyRequests.Any())
+                                                {
+                                                    foreach (var request in supplyRequests)
+                                                    {
+                                                        <tr>
+                                                            <td>@request.ProductName</td>
+                                                            <td>@request.Quantity</td>
+                                                            <td>@(request.Price?.ToString("N0") ?? "Thỏa thuận") VNĐ</td>
+                                                            <td>
+                                                                @if (request.RequesterType == "farmer")
+                                                                {
+                                                                    <span class="badge bg-info">Bạn yêu cầu</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="badge bg-warning">Admin yêu cầu</span>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @switch (request.Status)
+                                                                {
+                                                                    case "pending":
+                                                                        <span class="badge bg-warning">Chờ phản hồi</span>
+                                                                        break;
+                                                                    case "accepted":
+                                                                        <span class="badge bg-success">Đã chấp nhận</span>
+                                                                        break;
+                                                                    case "rejected":
+                                                                        <span class="badge bg-danger">Đã từ chối</span>
+                                                                        break;
+                                                                    default:
+                                                                        <span class="badge bg-light text-dark">@request.Status</span>
+                                                                        break;
+                                                                }
+                                                            </td>
+                                                            <td>@request.RequestedAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                                                            <td>
+                                                                @if (request.Status == "pending" && request.RequesterType != "farmer")
+                                                                {
+                                                                    <button class="btn btn-success btn-sm" onclick="showRespondModal(@request.Id, 'accepted')">
+                                                                        Chấp nhận
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm" onclick="showRespondModal(@request.Id, 'rejected')">
+                                                                        Từ chối
+                                                                    </button>
+                                                                }
+                                                                else if (request.Status == "pending" && request.RequesterType == "farmer")
+                                                                {
+                                                                    <span class="text-muted">Đang chờ admin phản hồi</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="text-muted">-</span>
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">Chưa có yêu cầu cung cấp nào.</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            @* tab supply requests end *@
 
                             <div class="tab-pane fade" id="pills-order" role="tabpanel">
                                 <div class="dashboard-order">
@@ -652,7 +854,8 @@
     <!-- Modal xác nhận hủy bán -->
     <div class="modal fade" id="cancelProductModal" tabindex="-1" aria-labelledby="cancelProductModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form id="cancelProductForm">
+            <form method="post" action="@Url.Action("CancelProduct", "Famer")">
+                @Html.AntiForgeryToken()
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="cancelProductModalLabel">Hủy bán sản phẩm</h5>
@@ -660,6 +863,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="productId" id="cancelProductId" />
+                        <p>Bạn có chắc chắn muốn hủy bán sản phẩm: <strong id="cancelProductName"></strong>?</p>
                         <div class="mb-3">
                             <label for="cancelReason" class="form-label">Lý do hủy bán</label>
                             <textarea class="form-control" name="reason" id="cancelReason" required></textarea>
@@ -674,6 +878,144 @@
         </div>
     </div>
     <!-- Modal xác nhận hủy bán end -->
+    
+    <!-- Modal yêu cầu cung cấp -->
+    <div class="modal fade" id="requestSupplyModal" tabindex="-1" aria-labelledby="requestSupplyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RequestSupply", "Famer")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="requestSupplyModalLabel">Yêu cầu cung cấp sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="productId" class="form-label">Chọn sản phẩm</label>
+                            <select class="form-select" id="productId" name="productId" required>
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @if (Model.ProductList != null && Model.ProductList.Any())
+                                {
+                                    foreach (var product in Model.ProductList)
+                                    {
+                                        <option value="@product.Id">@product.Name - @product.Price.ToString("N0") VNĐ</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Số lượng</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Giá (tùy chọn)</label>
+                            <input type="number" class="form-control" id="price" name="price" min="0" step="1000">
+                            <div class="form-text">Để trống nếu muốn thỏa thuận giá</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal yêu cầu cung cấp end -->
+
+    <!-- Modal yêu cầu cung cấp từ nút Yêu cầu -->
+    <div class="modal fade" id="requestProductModal" tabindex="-1" aria-labelledby="requestProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RequestSupply", "Famer")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="requestProductModalLabel">Yêu cầu cung cấp sản phẩm</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="productId" id="requestProductId" />
+                        <div class="mb-3">
+                            <label class="form-label">Sản phẩm</label>
+                            <input type="text" class="form-control" id="requestProductName" readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Số lượng hiện tại</label>
+                                    <input type="number" class="form-control" id="requestCurrentQuantity" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Giá hiện tại</label>
+                                    <input type="text" class="form-control" id="requestCurrentPrice" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="requestQuantity" class="form-label">Số lượng yêu cầu *</label>
+                                    <input type="number" class="form-control" id="requestQuantity" name="quantity" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="requestPrice" class="form-label">Giá mới (tùy chọn)</label>
+                                    <input type="number" class="form-control" id="requestPrice" name="price" min="1000" step="1000">
+                                    <div class="form-text">Phải > 1000 và là bội của 1000</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="requestNote" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="requestNote" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal yêu cầu cung cấp từ nút Yêu cầu end -->
+
+    <!-- Modal phản hồi yêu cầu cung cấp -->
+    <div class="modal fade" id="respondSupplyModal" tabindex="-1" aria-labelledby="respondSupplyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="@Url.Action("RespondToSupply", "Famer")">
+                @Html.AntiForgeryToken()
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="respondSupplyModalLabel">Phản hồi yêu cầu cung cấp</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="requestId" id="respondRequestId" />
+                        <input type="hidden" name="response" id="respondResponse" />
+                        <p>Bạn có chắc chắn muốn <strong id="respondAction"></strong> yêu cầu cung cấp này?</p>
+                        <div class="mb-3">
+                            <label for="respondNote" class="form-label">Ghi chú (tùy chọn)</label>
+                            <textarea class="form-control" id="respondNote" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Xác nhận</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal phản hồi yêu cầu cung cấp end -->
+    
     <!-- latest jquery-->
     <script src="~/js/jquery-3.6.0.min.js"></script>
 
@@ -708,129 +1050,202 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Số sản phẩm mỗi trang
-        const PAGE_SIZE = 10;
-        let allProducts = [];
+        // Biến toàn cục cho phân trang
         let currentPage = 1;
-
-        function renderProductsPage(page) {
-            let start = (page - 1) * PAGE_SIZE;
-            let end = start + PAGE_SIZE;
-            let products = allProducts.slice(start, end);
-
-            var html = '';
-            products.forEach(function(p) {
-                html += '<tr>';
-                html += '<td>' +
-                    (p.imageUrl ? '<img src="' + p.imageUrl + '" class="img-fluid" style="max-width:60px;max-height:60px;object-fit:cover;" alt="">' : 'N/A') +
-                    '</td>';
-                html += '<td>' + p.name + '</td>';
-                html += '<td>' + p.price + '</td>';
-                html += '<td>' + (p.imageDescription ? p.imageDescription : '-') + '</td>';
-                html += '<td>' +
-                    (p.approvalStatus === 'pending' ? '<span class="badge bg-warning">Chờ duyệt</span>' :
-                    p.approvalStatus === 'accepted' ? '<span class="badge bg-success">Đã duyệt</span>' :
-                    p.approvalStatus === 'rejected' ? '<span class="badge bg-danger">Từ chối</span>' :
-                    p.approvalStatus === 'cancelled' ? '<span class="badge bg-secondary">Đã hủy</span>' :
-                    p.approvalStatus) +
-                    '</td>';
-                html += '<td>';
-                if (p.approvalStatus === 'accepted') {
-                    html += '<button class="btn btn-danger btn-sm" onclick="showCancelModal(' + p.id + ')">Hủy bán</button>';
-                } else if (p.approvalStatus === 'pending') {
-                    html += '<span class="text-muted">-</span>';
-                } else if (p.approvalStatus === 'rejected' || p.approvalStatus === 'cancelled') {
-                    html += '<button class="btn btn-success btn-sm" onclick="resellProduct(' + p.id + ')">Bán lại</button>';
-                }
-                html += '</td>';
-                html += '</tr>';
-            });
-            $('#my-products-tbody').html(html);
-        }
-
-        function renderPagination() {
-            let totalPages = Math.ceil(allProducts.length / PAGE_SIZE);
-            let $pagination = $('#my-pagination ul.pagination');
-            if (totalPages <= 1) {
-                $('#my-pagination').hide();
-                return;
-            }
-            $('#my-pagination').show();
-            let html = '';
-            html += `<li class="page-item${currentPage === 1 ? ' disabled' : ''}">
-                        <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${currentPage - 1})">
-                            <i class="fa-solid fa-angles-left"></i>
-                        </a>
-                    </li>`;
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<li class="page-item${i === currentPage ? ' active' : ''}">
-                            <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${i})">${i}</a>
-                        </li>`;
-            }
-            html += `<li class="page-item${currentPage === totalPages ? ' disabled' : ''}">
-                        <a class="page-link" href="javascript:void(0)" onclick="gotoPage(${currentPage + 1})">
-                            <i class="fa-solid fa-angles-right"></i>
-                        </a>
-                    </li>`;
-            $pagination.html(html);
-        }
-
-        function gotoPage(page) {
-            let totalPages = Math.ceil(allProducts.length / PAGE_SIZE);
-            if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            renderProductsPage(currentPage);
-            renderPagination();
-        }
-
-        function loadMyProducts() {
-            $.get('/api/famer/products', function(products) {
-                allProducts = products;
-                currentPage = 1;
-                renderProductsPage(currentPage);
-                renderPagination();
-            });
-        }
-
-        $(document).ready(function() {
-            loadMyProducts();
-
-            // Xử lý submit hủy bán
-            $('#cancelProductForm').on('submit', function(e) {
-                e.preventDefault();
-                var productId = $('#cancelProductId').val();
-                var reason = $('#cancelReason').val();
-                // Gửi AJAX POST lên server (bạn cần tạo API hoặc action cho việc này)
-                $.post('/famer/cancelproduct', { productId: productId, reason: reason }, function(res) {
-                    $('#cancelProductModal').modal('hide');
-                    loadMyProducts();
-                    // Có thể hiện thông báo thành công ở đây
-                });
-            });
-        });
+        const pageSize = 10;
+        let allProducts = [];
 
         // Hiển thị modal xác nhận hủy bán
-        function showCancelModal(productId) {
-            $('#cancelProductId').val(productId);
-            $('#cancelReason').val('');
-            $('#cancelProductModal').modal('show');
+        function showCancelModal(productId, productName) {
+            document.getElementById('cancelProductId').value = productId;
+            document.getElementById('cancelProductName').textContent = productName;
+            document.getElementById('cancelReason').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('cancelProductModal'));
+            modal.show();
         }
 
-        // Thêm hàm bán lại sản phẩm
-        function resellProduct(productId) {
-            if (!confirm('Bạn có chắc chắn muốn bán lại sản phẩm này?')) return;
-            $.post('/famer/resellproduct', { productId: productId }, function(res) {
-                if (res.success) {
-                    loadMyProducts();
-                } else {
-                    alert('Không thể bán lại sản phẩm.');
+        // Lấy tất cả sản phẩm từ DOM
+        function getAllProducts() {
+            const tbody = document.getElementById('productTableBody');
+            if (!tbody) {
+                console.log('Không tìm thấy productTableBody');
+                return [];
+            }
+            
+            const rows = tbody.querySelectorAll('tr');
+            console.log('Tìm thấy', rows.length, 'sản phẩm');
+            const products = [];
+            
+            rows.forEach((row, index) => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 6) {
+                    products.push({
+                        element: row,
+                        id: row.querySelector('button')?.getAttribute('onclick')?.match(/\d+/)?.[0] || '',
+                        name: cells[1]?.textContent?.trim() || '',
+                        price: cells[2]?.textContent?.trim() || '',
+                        description: cells[3]?.textContent?.trim() || '',
+                        status: cells[4]?.textContent?.trim() || '',
+                        action: cells[5]?.innerHTML || ''
+                    });
                 }
-            }).fail(function(xhr) {
-                alert(xhr.responseText || 'Có lỗi xảy ra khi bán lại sản phẩm.');
             });
+            
+            console.log('Đã lấy được', products.length, 'sản phẩm');
+            return products;
         }
+
+        // Hiển thị sản phẩm theo trang
+        function showProductsPage(page) {
+            const tbody = document.getElementById('productTableBody');
+            if (!tbody) {
+                return;
+            }
+            
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            
+            // Ẩn tất cả sản phẩm
+            allProducts.forEach(product => {
+                product.element.style.display = 'none';
+            });
+            
+            // Hiển thị sản phẩm của trang hiện tại
+            for (let i = startIndex; i < endIndex && i < allProducts.length; i++) {
+                allProducts[i].element.style.display = '';
+            }
+            
+            // Cập nhật thông tin hiển thị
+            updateProductInfo(startIndex, endIndex);
+            
+            // Cập nhật phân trang
+            updatePagination(page);
+        }
+
+        // Cập nhật thông tin hiển thị
+        function updateProductInfo(startIndex, endIndex) {
+            const startSpan = document.getElementById('startIndex');
+            const endSpan = document.getElementById('endIndex');
+            const totalSpan = document.getElementById('totalProducts');
+            
+            if (startSpan) startSpan.textContent = startIndex + 1;
+            if (endSpan) endSpan.textContent = Math.min(endIndex, allProducts.length);
+            if (totalSpan) totalSpan.textContent = allProducts.length;
+        }
+
+        // Cập nhật phân trang
+        function updatePagination(currentPage) {
+            const pagination = document.getElementById('productPagination');
+            if (!pagination) return;
+            
+            const totalPages = Math.ceil(allProducts.length / pageSize);
+            let html = '';
+            
+            // Nút Previous
+            if (currentPage > 1) {
+                html += `<li class="page-item">
+                            <a class="page-link" href="javascript:void(0)" onclick="goToPage(${currentPage - 1})">
+                                <i class="fa-solid fa-angles-left"></i>
+                            </a>
+                        </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                            <a class="page-link" href="javascript:void(0)">
+                                <i class="fa-solid fa-angles-left"></i>
+                            </a>
+                        </li>`;
+            }
+            
+            // Các số trang
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" href="javascript:void(0)" onclick="goToPage(${i})">${i}</a>
+                        </li>`;
+            }
+            
+            // Nút Next
+            if (currentPage < totalPages) {
+                html += `<li class="page-item">
+                            <a class="page-link" href="javascript:void(0)" onclick="goToPage(${currentPage + 1})">
+                                <i class="fa-solid fa-angles-right"></i>
+                            </a>
+                        </li>`;
+            } else {
+                html += `<li class="page-item disabled">
+                            <a class="page-link" href="javascript:void(0)">
+                                <i class="fa-solid fa-angles-right"></i>
+                            </a>
+                        </li>`;
+            }
+            
+            pagination.innerHTML = html;
+        }
+
+        // Chuyển đến trang
+        function goToPage(page) {
+            currentPage = page;
+            showProductsPage(page);
+        }
+
+        // Khởi tạo phân trang khi trang load xong
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy tất cả sản phẩm
+            allProducts = getAllProducts();
+            
+            // Nếu có sản phẩm, khởi tạo phân trang
+            if (allProducts.length > 0) {
+                showProductsPage(1);
+            }
+        });
+
+        // Hiển thị modal phản hồi yêu cầu cung cấp
+        function showRespondModal(requestId, response) {
+            document.getElementById('respondRequestId').value = requestId;
+            document.getElementById('respondResponse').value = response;
+            
+            const actionText = response === 'accepted' ? 'chấp nhận' : 'từ chối';
+            document.getElementById('respondAction').textContent = actionText;
+            document.getElementById('respondNote').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('respondSupplyModal'));
+            modal.show();
+        }
+
+        // Hiển thị modal yêu cầu cung cấp từ nút Yêu cầu
+        function showRequestModal(productId, productName, currentQuantity, currentPrice) {
+            document.getElementById('requestProductId').value = productId;
+            document.getElementById('requestProductName').value = productName;
+            document.getElementById('requestCurrentQuantity').value = currentQuantity;
+            document.getElementById('requestCurrentPrice').value = currentPrice.toLocaleString() + ' VNĐ';
+            document.getElementById('requestQuantity').value = '';
+            document.getElementById('requestPrice').value = '';
+            document.getElementById('requestNote').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('requestProductModal'));
+            modal.show();
+        }
+
+        // Validation cho giá mới
+        document.getElementById('requestPrice').addEventListener('input', function() {
+            const value = parseInt(this.value, 10);
+            const errorDiv = this.parentNode.querySelector('.text-danger');
+            
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+            
+            if (this.value && (isNaN(value) || value < 1000 || value % 1000 !== 0)) {
+                const error = document.createElement('div');
+                error.className = 'text-danger mt-1';
+                error.textContent = 'Giá phải lớn hơn 1000 và là bội số của 1000';
+                this.parentNode.appendChild(error);
+                this.setCustomValidity('Giá phải lớn hơn 1000 và là bội số của 1000');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
     </script>
 </body>
 

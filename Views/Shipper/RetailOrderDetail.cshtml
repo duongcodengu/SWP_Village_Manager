@@ -1,8 +1,6 @@
 @model Village_Manager.Models.RetailOrder
 @{
     ViewBag.Title = $"Chi tiết đơn hàng #{Model.Id}";
-    var address = Model.User?.Addresses?.FirstOrDefault();
-    var fullAddress = address == null ? "-" : $"{address.AddressLine}, {address.City}, {address.Province}, {address.PostalCode}".Replace(", ,", ",").Replace(", ,", ",").Trim(',',' ');
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -43,9 +41,9 @@
             <h3 class="mb-4 fw-bold text-primary"><i class="fa fa-info-circle me-2"></i>Chi tiết đơn hàng #@Model.Id</h3>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <p><strong>Khách hàng:</strong> @Model.User?.Username</p>
-                    <p><strong>Số điện thoại:</strong> @Model.User?.Phone </p>
-                    <p><strong>Địa chỉ:</strong> @fullAddress</p>
+                    <p><strong>Khách hàng:</strong> @ViewBag.CustomerName</p>
+                    <p><strong>Số điện thoại:</strong> @ViewBag.CustomerPhone</p>
+                    <p><strong>Địa chỉ giao hàng:</strong> @ViewBag.DeliveryAddress</p>
                     <p><strong>Ngày đặt:</strong> @(Model.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</p>
                 </div>
                 <div class="col-md-6">

@@ -236,6 +236,15 @@ namespace Village_Manager.Controllers
                 .FirstOrDefault(o => o.Id == id);
             if (order == null)
                 return NotFound();
+
+            // Lấy thông tin địa chỉ giao hàng từ bảng Delivery
+            var delivery = _context.Deliveries
+                .FirstOrDefault(d => d.OrderId == order.Id && d.OrderType == "retail");
+            
+            ViewBag.DeliveryAddress = delivery?.CustomerAddress ?? "Không có thông tin địa chỉ";
+            ViewBag.CustomerName = delivery?.CustomerName ?? order.User?.Username ?? "Không xác định";
+            ViewBag.CustomerPhone = delivery?.CustomerPhone ?? order.User?.Phone ?? "Không xác định";
+
             return View(order);
         }
 

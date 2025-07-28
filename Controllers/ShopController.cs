@@ -176,14 +176,15 @@ public class ShopController : Controller
         int? userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Home");
         }
 
-        // Lấy duy nhất 1 địa chỉ của user
-        var address = _context.Addresses
-            .FirstOrDefault(a => a.UserId == userId.Value);
+        // Lấy tất cả địa chỉ của user từ UserLocation
+        var addresses = _context.UserLocations
+            .Where(a => a.UserId == userId.Value)
+            .ToList();
 
-        ViewBag.Address = address;
+        ViewBag.Addresses = addresses;
 
         // Gán mã giảm giá vào ViewBag
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
@@ -220,12 +221,13 @@ public class ShopController : Controller
         HttpContext.Session.Remove("Cart");
 
         int userId = order.UserId.Value;
-        var address = _context.UserLocations
-            .Include(u => u.User)
-            .Where(a => a.UserId == userId)
-            .FirstOrDefault();
-
-        ViewBag.Address = address;
+        
+        // Lấy địa chỉ giao hàng từ session
+        var shippingAddress = HttpContext.Session.GetString("ShippingAddress");
+        ViewBag.ShippingAddress = shippingAddress;
+        
+        // Xóa địa chỉ khỏi session sau khi đã sử dụng
+        HttpContext.Session.Remove("ShippingAddress");
         ViewBag.OrderId = order.Id;
         ViewBag.PaymentMethod = "Tiền mặt";
         ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
@@ -245,13 +247,23 @@ public class ShopController : Controller
 
     //place order
     [HttpPost("/shop/place-order")]
-    public async Task<IActionResult> PlaceOrder()
+    public async Task<IActionResult> PlaceOrder(int selectedAddress)
     {
         var userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null)
         {
             Response.StatusCode = 404;
             return View("404");
+        }
+
+        // Kiểm tra địa chỉ được chọn
+        var selectedUserLocation = await _context.UserLocations
+            .FirstOrDefaultAsync(ul => ul.Id == selectedAddress && ul.UserId == userId.Value);
+        
+        if (selectedUserLocation == null)
+        {
+            TempData["Error"] = "Vui lòng chọn địa chỉ giao hàng hợp lệ.";
+            return RedirectToAction("Checkout");
         }
 
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
@@ -271,12 +283,13 @@ public class ShopController : Controller
             }
         }
 
-        // Tạo đơn hàng
+        // Tạo đơn hàng với thông tin địa chỉ
         var newOrder = new RetailOrder
         {
             UserId = userId.Value,
             OrderDate = DateTime.Now,
             Status = "pending"
+            // ShippingAddress = selectedUserLocation.Address // Tạm comment cho đến khi có migration
         };
         _context.RetailOrders.Add(newOrder);
         await _context.SaveChangesAsync(); // Lấy OrderId
@@ -309,6 +322,23 @@ public class ShopController : Controller
         }
 
         await _context.SaveChangesAsync();
+
+        // Tạo record Delivery với thông tin địa chỉ giao hàng
+        var delivery = new Delivery
+        {
+            OrderType = "retail",
+            OrderId = newOrder.Id,
+            Status = "assigned", // Đã phân công cho shipper
+            CustomerName = selectedUserLocation.User?.Username ?? "Không xác định",
+            CustomerAddress = selectedUserLocation.Address,
+            CustomerPhone = selectedUserLocation.User?.Phone ?? "Không xác định",
+            ShippingFee = 0 // Phí vận chuyển cố định
+        };
+        _context.Deliveries.Add(delivery);
+        await _context.SaveChangesAsync();
+
+        // Lưu địa chỉ giao hàng vào session
+        HttpContext.Session.SetString("ShippingAddress", selectedUserLocation.Address);
 
         // Clear giỏ hàng
         HttpContext.Session.Remove("Cart");

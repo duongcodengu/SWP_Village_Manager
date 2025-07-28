@@ -958,9 +958,6 @@ public class AdminWarehouseController : Controller
         if (user != null)
         {
             user.RoleId = newRoleId;
-            // Xoá tất cả bản ghi Farmer liên quan đến user_id
-            var farmers = _context.Farmers.Where(f => f.UserId == UserId);
-            _context.Farmers.RemoveRange(farmers);
             // đổi role
             _context.SaveChanges();
         }
@@ -994,6 +991,7 @@ public class AdminWarehouseController : Controller
             Response.StatusCode = 404;
             return View("404");
         }
+
         var request = await _context.FarmerRegistrationRequests.FindAsync(id);
 
         if (request == null || request.Status != "pending")
@@ -1003,25 +1001,46 @@ public class AdminWarehouseController : Controller
         request.ReviewedAt = DateTime.Now;
         request.ReviewedBy = HttpContext.Session.GetInt32("UserId");
 
-        // Tạo bản ghi mới trong bảng Farmers
-        _context.Farmers.Add(new Farmer
-        {
-            UserId = request.UserId,
-            FullName = request.FullName,
-            Phone = request.Phone,
-            Address = request.Address
-        });
+        // Kiểm tra xem Farmer đã tồn tại chưa
+        var existingFarmer = await _context.Farmers
+            .FirstOrDefaultAsync(f => f.UserId == request.UserId);
 
+        if (existingFarmer != null)
+        {
+            // Cập nhật thông tin
+            existingFarmer.FullName = request.FullName;
+            existingFarmer.Phone = request.Phone;
+            existingFarmer.Address = request.Address;
+        }
+        else
+        {
+            // Tạo mới
+            _context.Farmers.Add(new Farmer
+            {
+                UserId = request.UserId,
+                FullName = request.FullName,
+                Phone = request.Phone,
+                Address = request.Address
+            });
+        }
+
+        // Cập nhật vai trò người dùng
         var user = await _context.Users.FindAsync(request.UserId);
         if (user != null)
         {
-            user.RoleId = 5;
+            user.RoleId = 5; // Role 5 = Farmer?
         }
 
         await _context.SaveChangesAsync();
+
         // Ghi log
         int? userId = HttpContext.Session.GetInt32("UserId");
-        Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Approved farmer: {request.FullName}");
+        Village_Manager.Extensions.LogHelper.SaveLog(
+            _context,
+            userId,
+            $"Approved farmer: {request.FullName}"
+        );
+
         return RedirectToAction("AddFamer");
     }
 
@@ -1228,7 +1247,6 @@ public class AdminWarehouseController : Controller
         }
         var shippedOrders = _context.RetailOrders
             .Include(o => o.User)
-            .Where(o => o.Status == "confirmed")
             .ToList();
 
         var viewModel = shippedOrders.Select(o => new RetailOrderViewModel
@@ -1236,8 +1254,7 @@ public class AdminWarehouseController : Controller
             Id = o.Id,
             UserName = o.User?.Username,
             Phone = o.User?.Phone,
-            Address = _context.UserLocations
-                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == o.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1246,7 +1263,7 @@ public class AdminWarehouseController : Controller
     }
 
     // Trang: Hiển thị đơn hàng chờ duyệt
-    [HttpGet("addOrder")]
+    [HttpGet("addorder")]
     public IActionResult AddOrder()
     {
         // Kiểm tra quyền admin
@@ -1266,8 +1283,7 @@ public class AdminWarehouseController : Controller
             Users = o.User,
             UserName = o.User?.Username,
             Phone = o.User?.Phone,
-            Address = _context.UserLocations
-                        .FirstOrDefault(l => l.UserId == o.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == o.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = o.OrderDate,
             Status = o.Status
         }).ToList();
@@ -1275,7 +1291,7 @@ public class AdminWarehouseController : Controller
     }
 
     // POST: Admin duyệt đơn hàng
-    [HttpPost("acceptOrder")]
+    [HttpPost("acceptorder")]
     public IActionResult AcceptOrder(int id)
     {
         // Kiểm tra quyền admin
@@ -1317,30 +1333,35 @@ public class AdminWarehouseController : Controller
             return View("OrderDetail", null);
         }
 
-        var firstItem = order.RetailOrderItems.FirstOrDefault(); // lấy 1 item làm ví dụ
-
+        // Lấy thông tin sản phẩm từ item đầu tiên (để hiển thị ảnh chính)
+        var firstItem = order.RetailOrderItems.FirstOrDefault();
+        
         var viewModel = new RetailOrderItemViewModel
         {
             Id = order.Id,
             OrderId = order.Id,
             UserName = order.User?.Username,
             Phone = order.User?.Phone,
-            Address = _context.UserLocations.FirstOrDefault(l => l.UserId == order.UserId)?.Address ?? "Không có",
+            Address = _context.Deliveries.FirstOrDefault(d => d.OrderId == order.Id && d.OrderType == "retail")?.CustomerAddress ?? "Không có",
             OrderDate = order.OrderDate,
             Status = order.Status,
-
-            ProductId = firstItem?.ProductId ?? 0,
-            ProductName = firstItem?.Product?.Name,
-            ProductImageUrl = firstItem?.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default.jpg",
-            Quantity = firstItem?.Quantity ?? 0,
-            UnitPrice = firstItem?.UnitPrice ?? 0,
+            
+            // Thông tin sản phẩm (từ item đầu tiên để hiển thị ảnh chính)
+            ProductId = firstItem?.ProductId,
+            ProductName = firstItem?.Product?.Name ?? "Không có tên sản phẩm",
+            Quantity = firstItem?.Quantity,
+            UnitPrice = firstItem?.UnitPrice,
+            ProductImageUrl = firstItem?.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/default-product.png",
             Product = firstItem?.Product
         };
+
+        // Truyền toàn bộ danh sách sản phẩm để hiển thị trong view
+        ViewBag.OrderItems = order.RetailOrderItems.ToList();
 
         return View(viewModel);
     }
 
-    [HttpPost("deletOrrder/{id}")]
+    [HttpPost("deleteorder/{id}")]
     public IActionResult DeleteOrder(int id)
     {
         // Kiểm tra quyền admin
@@ -1349,24 +1370,17 @@ public class AdminWarehouseController : Controller
             Response.StatusCode = 404;
             return View("404");
         }
-        var order = _context.RetailOrders
-                            .Include(o => o.RetailOrderItems) // tên navigation property
-                            .FirstOrDefault(o => o.Id == id);
+        var order = _context.RetailOrders.FirstOrDefault(o => o.Id == id);
 
-        if (order == null)
-            return NotFound();
-
-        // Xoá các bản ghi con
-        if (order.RetailOrderItems != null)
-        {
-            _context.RetailOrderItems.RemoveRange(order.RetailOrderItems);
+        if (order == null) {
+            Response.StatusCode = 404;
+            return View("404");
         }
 
-        // Xoá đơn hàng chính
-        _context.RetailOrders.Remove(order);
-        _context.SaveChanges();
+        order.Status = "cancelled";
+        _context.SaveChanges(); 
 
-        return Redirect("/listOrder"); 
+        return Redirect("/listorder"); 
     }
 
 
@@ -1556,4 +1570,207 @@ public class AdminWarehouseController : Controller
 
         return Json(products);
     }
+
+    // Xem danh sách yêu cầu cung cấp từ farmer
+    [HttpGet]
+    [Route("supplyrequests")]
+    public IActionResult SupplyRequests()
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        var requests = _context.SupplyRequests
+            .Include(sr => sr.Farmer)
+                .ThenInclude(f => f.User)
+            .Include(sr => sr.Requester)
+            .OrderByDescending(sr => sr.RequestedAt)
+            .ToList();
+
+        // Load danh sách tất cả sản phẩm để admin có thể chọn
+        var availableProducts = _context.Products
+            .ToList()
+            .Where(p => p.ApprovalStatus != null && p.ApprovalStatus.Trim().ToLower() == "accepted")
+            .Select(p => new
+            {
+                id = p.Id,
+                name = p.Name,
+                category = p.Category != null ? p.Category.Name : "",
+                price = p.Price,
+                currentQuantity = p.Quantity,
+                expirationDate = p.ExpirationDate,
+                productType = p.ProductType,
+                processingTime = p.ProcessingTime,
+                farmerId = p.FarmerId,
+                approvalStatus = p.ApprovalStatus
+            })
+            .ToList();
+        ViewBag.ApprovedProducts = availableProducts;
+
+        return View(requests);
+    }
+
+    // Admin phản hồi yêu cầu cung cấp từ farmer
+    [HttpPost]
+    [Route("respondtosupply")]
+    [ValidateAntiForgeryToken]
+    public IActionResult RespondToSupply(int requestId, string response, string? note)
+    {
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        var request = _context.SupplyRequests
+            .FirstOrDefault(sr => sr.Id == requestId && sr.RequesterType == "farmer");
+
+        if (request == null)
+        {
+            TempData["Error"] = "Không tìm thấy yêu cầu cung cấp.";
+            return RedirectToAction("SupplyRequests");
+        }
+
+        if (request.Status != "pending")
+        {
+            TempData["Error"] = "Yêu cầu này đã được xử lý.";
+            return RedirectToAction("SupplyRequests");
+        }
+
+        request.Status = response; // "accepted" hoặc "rejected"
+        request.RespondedAt = DateTime.Now;
+
+        // Nếu admin chấp nhận, cập nhật sản phẩm
+        if (response == "accepted")
+        {
+            var product = _context.Products
+                .FirstOrDefault(p => p.Name == request.ProductName && p.FarmerId == request.FarmerId);
+            
+            if (product != null)
+            {
+                // Cộng thêm số lượng
+                product.Quantity += request.Quantity;
+                
+                // Cập nhật giá nếu có giá mới
+                if (request.Price.HasValue)
+                {
+                    product.Price = request.Price.Value;
+                }
+            }
+        }
+
+        // Gửi thông báo cho farmer
+        var content = response == "accepted" 
+            ? $"Admin đã chấp nhận yêu cầu cung cấp {request.Quantity} {request.ProductName}. " +
+              (request.Price.HasValue ? $"Giá mới: {request.Price.Value:N0} VNĐ. " : "") +
+              $"Ghi chú: {note ?? "Không có"}"
+            : $"Admin đã từ chối yêu cầu cung cấp {request.ProductName}. Ghi chú: {note ?? "Không có"}";
+        
+        _context.Notifications.Add(new Notification
+        {
+            UserId = request.RequesterId,
+            Content = content,
+            CreatedAt = DateTime.Now,
+            IsRead = false
+        });
+
+        _context.SaveChanges();
+
+        TempData["Success"] = $"Đã {response} yêu cầu cung cấp thành công!";
+        return RedirectToAction("SupplyRequests");
+    }
+
+    // Admin yêu cầu cung cấp từ farmer
+    [HttpPost]
+    [Route("RequestSupply")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestSupply(int productId, int farmerId, int quantity, decimal? price, string? note)
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        try
+        {
+            // Kiểm tra sản phẩm
+            var product = await _context.Products
+                .Include(p => p.Farmer)
+                .FirstOrDefaultAsync(p => p.Id == productId && p.FarmerId == farmerId);
+
+            if (product == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm.";
+                return RedirectToAction("Products");
+            }
+
+            // Kiểm tra farmer
+            var farmer = await _context.Farmers
+                .Include(f => f.User)
+                .FirstOrDefaultAsync(f => f.Id == farmerId);
+
+            if (farmer == null || farmer.User == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin farmer.";
+                return RedirectToAction("Products");
+            }
+
+            // Validation giá
+            if (price.HasValue && (price.Value < 1000 || price.Value % 1000 != 0))
+            {
+                TempData["Error"] = "Giá phải lớn hơn 1000 và là bội số của 1000.";
+                return RedirectToAction("Products");
+            }
+
+            // Tạo yêu cầu cung cấp
+            var supplyRequest = new SupplyRequest
+            {
+                RequesterType = "admin",
+                RequesterId = HttpContext.Session.GetInt32("UserId").Value,
+                ReceiverId = farmer.User.Id,
+                FarmerId = farmerId,
+                ProductName = product.Name,
+                Quantity = quantity,
+                Price = price,
+                Status = "pending",
+                RequestedAt = DateTime.Now
+            };
+
+            _context.SupplyRequests.Add(supplyRequest);
+
+            // Gửi thông báo cho farmer
+            var notification = new Notification
+            {
+                UserId = farmer.User.Id,
+                Content = $"Admin yêu cầu cung cấp {quantity} {product.Name}" +
+                         (price.HasValue ? $" với giá {price.Value:N0} VNĐ" : "") +
+                         (note != null ? $". Ghi chú: {note}" : ""),
+                CreatedAt = DateTime.Now,
+                IsRead = false
+            };
+
+            _context.Notifications.Add(notification);
+
+            await _context.SaveChangesAsync();
+
+            // Ghi log
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, 
+                $"Requested supply: {quantity} {product.Name} from farmer {farmer.FullName}");
+
+            TempData["Success"] = "Đã gửi yêu cầu cung cấp thành công!";
+            return RedirectToAction("Products");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error requesting supply: {ex.Message}");
+            TempData["Error"] = "Đã xảy ra lỗi khi gửi yêu cầu cung cấp.";
+            return RedirectToAction("Products");
+        }
+    }
+
 }
