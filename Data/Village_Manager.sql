@@ -439,7 +439,16 @@ CREATE TABLE HomepageImage (
         REFERENCES ProductImage(id)
         ON DELETE SET NULL
 );
-
+CREATE TABLE ChatMessages (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message NVARCHAR(MAX) NOT NULL,
+    sent_at DATETIME DEFAULT GETDATE(),
+    is_read BIT DEFAULT 0, -- để đánh dấu đã đọc hay chưa
+    FOREIGN KEY (sender_id) REFERENCES Users(id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(id)
+);
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES

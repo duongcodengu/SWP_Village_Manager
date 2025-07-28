@@ -15,6 +15,8 @@ public partial class AppDbContext : DbContext
         : base(options)
     {
     }
+   
+
 
     public virtual DbSet<Address> Addresses { get; set; }
 
@@ -95,6 +97,8 @@ public partial class AppDbContext : DbContext
 
     public DbSet<HiddenProduct> HiddenProduct { get; set; }
     public virtual DbSet<HomepageImage> HomepageImages { get; set; }
+
+    public DbSet<ChatMessages> ChatMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 

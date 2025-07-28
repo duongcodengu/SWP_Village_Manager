@@ -62,7 +62,10 @@
                         </div> *@
 
                         <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary me-2">Lưu thay đổi</button>
+                            <button type="submit" class="btn btn-primary me-2"
+                                    onclick="return confirm('Bạn có chắc muốn lưu thay đổi không?')">
+                                Lưu thay đổi
+                            </button>
                             <a asp-action="Products" asp-controller="AdminRetail" class="btn btn-secondary">Hủy bỏ</a>
                         </div>
                     </form>
