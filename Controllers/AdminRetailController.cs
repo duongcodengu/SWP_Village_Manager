@@ -284,16 +284,42 @@ namespace Village_Manager.Controllers
         [Route("CreateDiscountCode")]
         public IActionResult CreateDiscountCode(DiscountCodes model)
         {
+            // Kiểm tra độ dài mã giảm giá
+            if (string.IsNullOrEmpty(model.Code) || model.Code.Length < 6)
+            {
+                ModelState.AddModelError("Code", "Mã giảm giá phải có ít nhất 6 ký tự.");
+            }
+
+            // Kiểm tra % giảm giá
+            if (model.DiscountPercent < 1 || model.DiscountPercent > 100)
+            {
+                ModelState.AddModelError("DiscountPercent", "Phần trăm giảm giá phải từ 1% đến 100%.");
+            }
+
+            // Kiểm tra giới hạn sử dụng
+            if (model.UsageLimit <= 1)
+            {
+                ModelState.AddModelError("UsageLimit", "Giới hạn sử dụng phải lớn hơn 1.");
+            }
+
+            // Kiểm tra ngày hết hạn
+            if (model.ExpiredAt <= DateTime.Now)
+            {
+                ModelState.AddModelError("ExpiredAt", "Ngày hết hạn phải sau thời điểm hiện tại.");
+            }
+
+            // Nếu có lỗi => trả về lại View
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Dữ liệu không hợp lệ.";
-                return View(model); // Trả về lại form
+                return View(model);
             }
 
+            // Kiểm tra trùng mã
             var exist = _context.DiscountCodes.Any(c => c.Code == model.Code);
             if (exist)
             {
-                TempData["Error"] = "Mã giảm giá đã tồn tại.";
+                ModelState.AddModelError("Code", "Mã giảm giá đã tồn tại.");
                 return View(model);
             }
 
