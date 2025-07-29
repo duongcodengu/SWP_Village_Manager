@@ -1,9 +1,11 @@
+using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Text.RegularExpressions;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
-using BCrypt.Net;
 
 namespace Village_Manager.Controllers
 {
@@ -401,10 +403,29 @@ namespace Village_Manager.Controllers
                     return View(user);
                 }
 
-                if (!string.IsNullOrEmpty(user.Phone) && (user.Phone.Length != 10 || !user.Phone.All(char.IsDigit)))
+                // --- Kiểm tra EMAIL ---
+                if (string.IsNullOrWhiteSpace(user.Email))
                 {
-                    ModelState.AddModelError("Phone", "Số điện thoại phải đúng 10 chữ số.");
-                    return View(user);
+                    ModelState.AddModelError("email", "Vui lòng nhập email.");
+                }
+                else
+                {
+                    // Regex kiểm tra định dạng email chuẩn (tên@tênmiền)
+                    var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$");
+                    if (!emailRegex.IsMatch(user.Email))
+                    {
+                        ModelState.AddModelError("email", "Email không hợp lệ. Vui lòng nhập đúng định dạng: ten@tenmien.com.");
+                    }
+                    else if (await _context.Users.AnyAsync(u => u.Email == user.Email))
+                    {
+                        ModelState.AddModelError("email", "Email đã được sử dụng.");
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.Phone))
+                {
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(user.Phone, @"^0\d{9}$"))
+                        ModelState.AddModelError("phone", "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.");
                 }
 
                 var existingUser = await _context.Users.FindAsync(id);
@@ -468,31 +489,45 @@ namespace Village_Manager.Controllers
             var roleId = HttpContext.Session.GetInt32("RoleId");
             if (roleId != 2) return View("404");
 
-            // Validate
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(username))
+                ModelState.AddModelError("username", "Vui lòng nhập username.");
+
+            if (string.IsNullOrWhiteSpace(email))
             {
-                TempData["Error"] = "Vui lòng điền đầy đủ thông tin bắt buộc.";
-                return RedirectToAction("AddCustomer");
+                ModelState.AddModelError("email", "Vui lòng nhập email.");
+            }
+            else
+            {
+                // Regex kiểm tra định dạng email chuẩn (tên@tênmiền)
+                var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$");
+                if (!emailRegex.IsMatch(email))
+                {
+                    ModelState.AddModelError("email", "Email không hợp lệ. Vui lòng nhập đúng định dạng: ten@tenmien.com.");
+                }
+                else if (await _context.Users.AnyAsync(u => u.Email == email))
+                {
+                    ModelState.AddModelError("email", "Email đã được sử dụng.");
+                }
             }
 
-            if (password.Length != 8)
+            if (string.IsNullOrWhiteSpace(password))
+                ModelState.AddModelError("password", "Vui lòng nhập mật khẩu.");
+            else if (password.Length < 6)
+                ModelState.AddModelError("password", "Mật khẩu phải có ít nhất 6 ký tự.");
+
+            if (!string.IsNullOrWhiteSpace(phone))
             {
-                TempData["Error"] = "Mật khẩu phải có đúng 8 ký tự.";
-                return RedirectToAction("AddCustomer");
+                if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^0\d{9}$"))
+                    ModelState.AddModelError("phone", "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.");
             }
 
             if (await _context.Users.AnyAsync(u => u.Username == username))
-            {
-                TempData["Error"] = "Username đã tồn tại.";
-                return RedirectToAction("AddCustomer");
-            }
+                ModelState.AddModelError("username", "Username đã tồn tại.");
 
             if (await _context.Users.AnyAsync(u => u.Email == email))
-            {
-                TempData["Error"] = "Email đã tồn tại.";
-                return RedirectToAction("AddCustomer");
-            }
+                ModelState.AddModelError("email", "Email đã được sử dụng.");
 
+            // --- CREATE NEW CUSTOMER ---
             var newCustomer = new User
             {
                 Username = username.Trim(),

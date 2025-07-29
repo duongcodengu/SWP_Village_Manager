@@ -28,12 +28,6 @@
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
                                         <form class="theme-form theme-form-2 mega-form" action="/AddCustomer" method="post">
                                             @Html.AntiForgeryToken()
-                                            @if (TempData["Error"] != null)
-                                            {
-                                                <div class="alert alert-danger">@TempData["Error"]</div>
-                                            }
-                                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
                                             <div class="card-header-1">
                                                 <h5>Thông tin khách hàng</h5>
                                             </div>
@@ -42,7 +36,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="form-label-title col-lg-2 col-md-3 mb-0">Tên</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input asp-for="Username" class="form-control" type="text" required>
+                                                        <input asp-for="Username" class="form-control" type="text">
                                                         <span asp-validation-for="Username" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -50,7 +44,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Email</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input asp-for="Email" class="form-control" type="email" required>
+                                                        <input asp-for="Email" class="form-control" type="email">
                                                         <span asp-validation-for="Email" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -58,7 +52,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Số điện thoại </label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input asp-for="Phone" class="form-control" type="phone" required>
+                                                        <input asp-for="Phone" class="form-control" type="phone">
                                                         <span asp-validation-for="Phone" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -66,7 +60,7 @@
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Mật khẩu</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input asp-for="Password" class="form-control" type="password" required>
+                                                        <input asp-for="Password" class="form-control" type="password" >
                                                         <span asp-validation-for="Password" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -74,14 +68,14 @@
                                                 <div class="row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Xác nhận mật khẩu</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <input name="confirmPassword" class="form-control" type="password" required>
+                                                        <input name="confirmPassword" class="form-control" type="password">
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-4 row align-items-center">
                                                     <label class="col-lg-2 col-md-3 col-form-label form-label-title">Vai trò</label>
                                                     <div class="col-md-9 col-lg-10">
-                                                        <select asp-for="RoleId" class="form-control" required>
+                                                        <select asp-for="RoleId" class="form-control">
                                                             <option value="">-- Chọn vai trò --</option>
                                                             @foreach (var role in ViewBag.Roles)
                                                             {
