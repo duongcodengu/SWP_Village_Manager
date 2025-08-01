@@ -450,6 +450,14 @@ CREATE TABLE ChatMessages (
     FOREIGN KEY (sender_id) REFERENCES Users(id),
     FOREIGN KEY (receiver_id) REFERENCES Users(id)
 );
+
+ALTER TABLE RetailOrder
+ADD discount_code_id INT NULL;
+
+ALTER TABLE RetailOrder
+ADD CONSTRAINT FK_RetailOrder_DiscountCode
+FOREIGN KEY (discount_code_id) REFERENCES DiscountCodes(id);
+
 ------------------------------------INSERT--------------------------------------------------------------
 
 INSERT INTO Roles (name) VALUES

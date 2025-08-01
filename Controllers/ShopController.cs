@@ -259,7 +259,7 @@ public class ShopController : Controller
         // Kiểm tra địa chỉ được chọn
         var selectedUserLocation = await _context.UserLocations
             .FirstOrDefaultAsync(ul => ul.Id == selectedAddress && ul.UserId == userId.Value);
-        
+
         if (selectedUserLocation == null)
         {
             TempData["Error"] = "Vui lòng chọn địa chỉ giao hàng hợp lệ.";
@@ -272,7 +272,7 @@ public class ShopController : Controller
             return RedirectToAction("search", "shop");
         }
 
-        // Kiểm tra tồn kho trước
+        // Kiểm tra tồn kho
         foreach (var item in cart)
         {
             var product = await _context.Products.FindAsync(item.ProductId);
@@ -283,18 +283,41 @@ public class ShopController : Controller
             }
         }
 
-        // Tạo đơn hàng với thông tin địa chỉ
+        // 🔹 Lấy mã giảm giá từ Session và tìm trong DB
+        int? discountCodeId = null;
+        var discountCodeStr = HttpContext.Session.GetString("DiscountCode");
+        if (!string.IsNullOrWhiteSpace(discountCodeStr))
+        {
+            var discount = await _context.DiscountCodes
+                .FirstOrDefaultAsync(d => d.Code == discountCodeStr && d.Status == "active");
+
+            if (discount != null)
+            {
+                discountCodeId = discount.Id;
+
+                // Nếu có giới hạn lượt dùng thì giảm đi
+                discount.UsageLimit--;
+                if (discount.UsageLimit <= 0)
+                {
+                    discount.Status = "used";
+                }
+
+                _context.DiscountCodes.Update(discount);
+            }
+        }
+
+        // Tạo đơn hàng
         var newOrder = new RetailOrder
         {
             UserId = userId.Value,
             OrderDate = DateTime.Now,
-            Status = "pending"
-            // ShippingAddress = selectedUserLocation.Address // Tạm comment cho đến khi có migration
+            Status = "pending",
+            DiscountCodeId = discountCodeId
         };
         _context.RetailOrders.Add(newOrder);
         await _context.SaveChangesAsync(); // Lấy OrderId
 
-        // Thêm chi tiết đơn hàng và cập nhật tồn kho
+        // Thêm chi tiết đơn hàng + trừ kho
         foreach (var item in cart)
         {
             var product = await _context.Products.FindAsync(item.ProductId);
@@ -309,13 +332,10 @@ public class ShopController : Controller
                 };
                 _context.RetailOrderItems.Add(orderItem);
 
-                // Trừ tồn kho
                 product.Quantity -= (int)item.Quantity;
-
-                // Kiểm tra tránh quantity âm (nếu có lỗi đồng bộ nào đó)
                 if (product.Quantity < 0)
                 {
-                    TempData["Error"] = $"Lỗi: Sản phẩm \"{product.Name}\" bị thiếu hàng trong khi xử lý.";
+                    TempData["Error"] = $"Lỗi: Sản phẩm \"{product.Name}\" bị thiếu hàng.";
                     return RedirectToAction("cart", "shop");
                 }
             }
@@ -323,16 +343,16 @@ public class ShopController : Controller
 
         await _context.SaveChangesAsync();
 
-        // Tạo record Delivery với thông tin địa chỉ giao hàng
+        // Tạo record Delivery
         var delivery = new Delivery
         {
             OrderType = "retail",
             OrderId = newOrder.Id,
-            Status = "assigned", // Đã phân công cho shipper
+            Status = "assigned",
             CustomerName = selectedUserLocation.User?.Username ?? "Không xác định",
             CustomerAddress = selectedUserLocation.Address,
             CustomerPhone = selectedUserLocation.User?.Phone ?? "Không xác định",
-            ShippingFee = 0 // Phí vận chuyển cố định
+            ShippingFee = 0
         };
         _context.Deliveries.Add(delivery);
         await _context.SaveChangesAsync();
@@ -340,12 +360,16 @@ public class ShopController : Controller
         // Lưu địa chỉ giao hàng vào session
         HttpContext.Session.SetString("ShippingAddress", selectedUserLocation.Address);
 
-        // Clear giỏ hàng
+        // Xóa giỏ hàng + mã giảm giá
         HttpContext.Session.Remove("Cart");
+        HttpContext.Session.Remove("DiscountCode");
+        HttpContext.Session.Remove("DiscountAmount");
+
         TempData["OrderId"] = newOrder.Id;
 
         return RedirectToAction("Success");
     }
+
 
 
     public IActionResult Tracking(string orderId)
@@ -376,6 +400,7 @@ public class ShopController : Controller
 
         return View(product); // Truyền sản phẩm chính vào model, related qua ViewBag
     }
+
     [HttpGet("top4-selling")]
     public async Task<IActionResult> GetTopSelling()
     {

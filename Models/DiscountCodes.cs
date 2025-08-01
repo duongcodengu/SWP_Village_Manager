@@ -23,5 +23,8 @@ namespace Village_Manager.Models
 
         [Column("expired_at")]
         public DateTime? ExpiredAt { get; set; }
+
+        // Navigation collection: một mã áp cho nhiều đơn hàng
+        public virtual ICollection<RetailOrder> RetailOrders { get; set; } = new List<RetailOrder>();
     }
 }

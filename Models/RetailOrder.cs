@@ -15,6 +15,12 @@ public  class RetailOrder
     public string? Status { get; set; }
 
     public DateTime? ConfirmedAt { get; set; }
+    [Column("discount_code_id")]
+    public int? DiscountCodeId { get; set; }
+
+    // Navigation property
+    [ForeignKey("DiscountCodeId")]
+    public virtual DiscountCodes? DiscountCode { get; set; }
 
     public virtual ICollection<RetailOrderItem> RetailOrderItems { get; set; } = new List<RetailOrderItem>();
 
