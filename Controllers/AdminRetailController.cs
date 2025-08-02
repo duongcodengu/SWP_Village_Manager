@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Text.RegularExpressions;
+using Utils;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
@@ -14,12 +15,14 @@ namespace Village_Manager.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AdminRetailController> _logger;
+        private readonly IWebHostEnvironment _env;
 
-        public AdminRetailController(AppDbContext context, IConfiguration configuration, ILogger<AdminRetailController> logger)
+        public AdminRetailController(AppDbContext context, IConfiguration configuration, ILogger<AdminRetailController> logger, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
             _logger = logger;
+            _env = env;
         }
 
         //hiển thị tổng
@@ -95,6 +98,7 @@ namespace Village_Manager.Controllers
 
             int total = await query.CountAsync();
             var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            DefaultImage.Ensure(products, _env);
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
@@ -704,16 +708,48 @@ namespace Village_Manager.Controllers
                 .Include(r => r.Order)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (returnOrder == null || returnOrder.Order == null)
-                return NotFound();
+            if (returnOrder != null && returnOrder.Order != null)
+            {
+                returnOrder.Order.Status = "delivered"; // từ chối → giữ trạng thái giao hàng
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("ReturnOrderManage");
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, string newStatus)
+        {
+            var order = await _context.RetailOrders.FindAsync(orderId);
+            if (order != null)
+            {
+                order.Status = newStatus;
+                
+                // Nếu trạng thái là cancelled, hoàn trả số lượng sản phẩm vào kho
+                if (newStatus == "cancelled")
+                {
+                    var orderItems = await _context.RetailOrderItems
+                        .Where(oi => oi.OrderId == orderId)
+                        .Include(oi => oi.Product)
+                        .ToListAsync();
+
+                    foreach (var item in orderItems)
+                    {
+                        if (item.Product != null)
+                        {
+                            item.Product.Quantity += (int)item.Quantity;
+                        }
+                    }
+                }
+                
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Đã cập nhật trạng thái đơn hàng #{orderId} thành {newStatus}";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy đơn hàng";
+            }
             
-            returnOrder.Order.Status = "delivered"; // từ chối → giữ trạng thái giao hàng
-
-            await _context.SaveChangesAsync();
-
-           
-            return RedirectToAction(nameof(ReturnOrderManage));
+            return RedirectToAction("OrderDetailRetail", new { id = orderId });
         }
 
         public async Task<IActionResult> ReturnOrderDetails(int id)

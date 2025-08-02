@@ -24,7 +24,9 @@ namespace Village_Manager.Controllers.api
             [FromQuery] List<int> categoryIds,
             int? minPrice,
             int? maxPrice,
-            string? sort)
+            string? sort,
+            int page = 1,
+            int pageSize = 20)
         {
             var query = _context.Products
                 .Where(p => p.ApprovalStatus == "accepted")
@@ -56,7 +58,8 @@ namespace Village_Manager.Controllers.api
                 };
             }
 
-            var products = await query.ToListAsync();
+            int totalItems = await query.CountAsync();
+            var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             var result = products.Select(p => new
             {
@@ -70,7 +73,7 @@ namespace Village_Manager.Controllers.api
                     : "/images/product/default-product.png"
             });
 
-            return Ok(result);
+            return Ok(new { data = result, totalItems });
         }
 
         // Thêm vào giỏ hàng

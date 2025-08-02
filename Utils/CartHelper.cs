@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Village_Manager.Models;
+using Utils;
 using Village_Manager.Data;
+using Village_Manager.Models;
 
 namespace Village_Manager.Utils
 {
@@ -32,6 +34,12 @@ namespace Village_Manager.Utils
                             Product = product
                         });
                     }
+                }
+
+                var env = context.RequestServices.GetService(typeof(IWebHostEnvironment)) as IWebHostEnvironment;
+                if (env != null)
+                {
+                    DefaultImage.Ensure(cartItems, env);
                 }
             }
 

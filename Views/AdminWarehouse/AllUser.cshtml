@@ -52,13 +52,16 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                                 </div>
                                             }
-                                            <div class="title-header option-title">
-                                                <form class="d-inline-flex">
-                                                    <a href="/adduser" class="align-items-center btn btn-theme d-flex">
-                                                        <i data-feather="plus"></i>Thêm mới
-                                                    </a>
-                                                </form>
-                                            </div>
+                                                                                         <div class="title-header option-title">
+                                                 <form class="d-inline-flex">
+                                                     <a href="/adduser" class="align-items-center btn btn-theme d-flex me-2">
+                                                         <i data-feather="plus"></i>Thêm mới
+                                                     </a>
+                                                     <a href="/deleted-users" class="align-items-center btn btn-outline-secondary d-flex">
+                                                         <i data-feather="trash-2"></i>Người dùng đã xóa
+                                                     </a>
+                                                 </form>
+                                             </div>
 
                                             <!-- Lọc theo vai trò (role) -->
                                             <form method="get" class="mb-3 d-flex align-items-center" id="roleFilterForm">
@@ -110,9 +113,6 @@
                                                                     </td>
                                                                     <td>    
                                                                         <ul>
-                                                                            <li>
-                                                                                <a href="/Order/Detail/@user.Id">Chi tiết</a>
-                                                                            </li>
                                                                             <li>
                                                                                 <a href="@Url.Action("EditUser", "AdminWarehouse", new { id = user.Id })">Sửa</a>
                                                                             </li>

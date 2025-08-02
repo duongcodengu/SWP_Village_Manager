@@ -85,18 +85,9 @@
                                                 </td>
                                                 <td class="quantity">
                                                     <h4 class="table-title text-content">Số lượng</h4>
-                                                    <div class="cart_qty qty-box">
-                                                        <div class="input-group bg-white">
-                                                            <button type="button" class="qty-left-minus bg-gray" onclick="updateQty(@item.ProductId, -1)">
-                                                                <i class="fa fa-minus"></i>
-                                                            </button>
-                                                            <input class="form-control input-number qty-input text-center" type="text" value="@item.Quantity" readonly />
-                                                            <button type="button" class="qty-right-plus bg-gray" onclick="updateQty(@item.ProductId, 1)">
-                                                                <i class="fa fa-plus"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                    <h5>@item.Quantity</h5>
                                                 </td>
+
                                                 <td class="subtotal">
                                                     <h4 class="table-title text-content">Thành tiền</h4>
                                                     <h5>₫@String.Format("{0:N0}", (item.Product?.Price ?? 0) * item.Quantity)</h5>

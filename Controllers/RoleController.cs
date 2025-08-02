@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -35,11 +35,7 @@ namespace Village_Manager.Controllers
                     return View("404");
                 }
 
-             var roles = await _context.Roles.ToListAsync();
-
-
-
-                
+                var roles = await _context.Roles.ToListAsync();
                 return View("~/Views/AdminWarehouse/Role.cshtml", roles);
             }
             catch (Exception ex)
@@ -72,6 +68,13 @@ namespace Village_Manager.Controllers
             }
             if (ModelState.IsValid)
             {
+                // Check for duplicate role name (case-insensitive)
+                bool exists = await _context.Roles.AnyAsync(r => r.Name.ToLower() == role.Name.ToLower());
+                if (exists)
+                {
+                    ModelState.AddModelError("Name", "Role đã tồn tại!");
+                    return View("~/Views/AdminWarehouse/AddRole.cshtml", role);
+                }
                 _context.Roles.Add(role);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -94,6 +97,7 @@ namespace Village_Manager.Controllers
             }
             return View("~/Views/AdminWarehouse/EditRole.cshtml", role);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Role role)
@@ -105,6 +109,13 @@ namespace Village_Manager.Controllers
             }
             if (ModelState.IsValid)
             {
+                // Check for duplicate role name (case-insensitive), excluding current role
+                bool exists = await _context.Roles.AnyAsync(r => r.Name.ToLower() == role.Name.ToLower() && r.Id != role.Id);
+                if (exists)
+                {
+                    ModelState.AddModelError("Name", "Role đã tồn tại!");
+                    return View("~/Views/AdminWarehouse/EditRole.cshtml", role);
+                }
                 _context.Roles.Update(role);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -126,10 +137,16 @@ namespace Village_Manager.Controllers
             {
                 return NotFound();
             }
+            // Check if any user is using this role
+            bool isRoleInUse = await _context.Users.AnyAsync(u => u.RoleId == id);
+            if (isRoleInUse)
+            {
+                TempData["ErrorMessage"] = "Không thể xóa role này vì đã có tài khoản sử dụng!";
+                return RedirectToAction("Index");
+            }
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
-
     }
 }
