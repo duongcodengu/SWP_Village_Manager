@@ -487,29 +487,127 @@ public class AdminWarehouseController : Controller
             TempData["Error"] = "Không thể xóa tài khoản Super Admin!";
             return RedirectToAction("AllUser");
         }
-        // Xóa các bản ghi liên quan ở Farmer
-        var farmers = _context.Farmers.Where(f => f.UserId == id).ToList();
-        if (farmers.Any())
-        {
-            _context.Farmers.RemoveRange(farmers);
-        }
 
-        // Xóa các bản ghi liên quan ở Shipper (nếu có)
-        var shippers = _context.Shippers.Where(s => s.UserId == id).ToList();
-        if (shippers.Any())
-        {
-            _context.Shippers.RemoveRange(shippers);
-        }
-
-        // Có thể thêm các bảng liên quan khác nếu cần...
-
-        // Xóa user
-        _context.Users.Remove(user);
+        // Thực hiện soft delete
+        user.DeletedAt = DateTime.Now;
+        user.IsActive = false;
         _context.SaveChanges();
 
         var currentUserId = HttpContext.Session.GetInt32("UserId");
-        Village_Manager.Extensions.LogHelper.SaveLog(_context, currentUserId, $"Deleted user: {user.Username} (ID: {user.Id})");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, currentUserId, $"Soft deleted user: {user.Username} (ID: {user.Id})");
+        TempData["Success"] = $"Đã xóa mềm user: {user.Username}";
         return RedirectToAction("AllUser");
+    }
+
+    // Xem danh sách user đã xóa
+    [HttpGet]
+    [Route("deleted-users")]
+    public async Task<IActionResult> DeletedUsers(string searchUser, int page = 1, int roleId = 0, string sortOrder = "asc")
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        // Lấy danh sách roles để filter
+        ViewBag.Roles = await _context.Roles.ToListAsync();
+
+        // Query users đã xóa (sử dụng IgnoreQueryFilters để bỏ qua global filter)
+        var query = _context.Users
+            .IgnoreQueryFilters()
+            .Where(u => u.DeletedAt != null)
+            .Include(u => u.Role)
+            .AsQueryable();
+
+        // Filter theo search
+        if (!string.IsNullOrEmpty(searchUser))
+        {
+            query = query.Where(u => u.Username.Contains(searchUser) || u.Email.Contains(searchUser));
+        }
+
+        // Filter theo role
+        if (roleId > 0)
+        {
+            query = query.Where(u => u.RoleId == roleId);
+        }
+
+        // Sort
+        switch (sortOrder.ToLower())
+        {
+            case "desc":
+                query = query.OrderByDescending(u => u.Username);
+                break;
+            default:
+                query = query.OrderBy(u => u.Username);
+                break;
+        }
+
+        // Pagination
+        int pageSize = 10;
+        var totalUsers = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        var users = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(u => new
+            {
+                u.Id,
+                u.Username,
+                u.Email,
+                u.Phone,
+                RoleName = u.Role.Name,
+                u.CreatedAt,
+                u.DeletedAt
+            })
+            .ToListAsync();
+
+        ViewBag.SearchUser = searchUser;
+        ViewBag.RoleId = roleId;
+        ViewBag.SortOrder = sortOrder;
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.TotalUsers = totalUsers;
+
+        return View(users);
+    }
+
+    // Khôi phục user đã xóa
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("restore-user/{id}")]
+    public async Task<IActionResult> RestoreUser(int id)
+    {
+        // Kiểm tra quyền admin
+        if (!HttpContext.Session.IsAdmin())
+        {
+            Response.StatusCode = 404;
+            return View("404");
+        }
+
+        // Tìm user đã xóa
+        var user = await _context.Users
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.Id == id && u.DeletedAt != null);
+
+        if (user == null)
+        {
+            TempData["Error"] = "Không tìm thấy user đã xóa!";
+            return RedirectToAction("DeletedUsers");
+        }
+
+        // Khôi phục user
+        user.DeletedAt = null;
+        user.IsActive = true;
+        await _context.SaveChangesAsync();
+
+        var currentUserId = HttpContext.Session.GetInt32("UserId");
+        Village_Manager.Extensions.LogHelper.SaveLog(_context, currentUserId, $"Restored user: {user.Username} (ID: {user.Id})");
+        TempData["Success"] = $"Đã khôi phục user: {user.Username}";
+        return RedirectToAction("DeletedUsers");
     }
 
     // AddUser (GET): Hiển thị form thêm user mới
@@ -620,7 +718,8 @@ public class AdminWarehouseController : Controller
                     UserId = newUser.Id,
                     FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
                     Phone = newUser.Phone,
-                    VehicleInfo = null // cho phép null
+                    VehicleInfo = null, // cho phép null
+                    Status = "approved"
                 };
                 _context.Shippers.Add(newShipper);
                 await _context.SaveChangesAsync();
@@ -1221,11 +1320,23 @@ public class AdminWarehouseController : Controller
                 {
                     user.RoleId = 4;
                     _context.Users.Update(user);
+                    
+                    // Thông báo cho user nếu họ đang online
+                    _context.Notifications.Add(new Notification
+                    {
+                        UserId = user.Id,
+                        Content = "Tài khoản của bạn đã được cập nhật thành shipper. Vui lòng logout và login lại để truy cập vào trang shipper.",
+                        CreatedAt = DateTime.Now,
+                        IsRead = false
+                    });
                 }
+                
+                TempData["Success"] = "Đã duyệt yêu cầu thành công. Người dùng cần logout và login lại để truy cập vào trang shipper.";
             }
             else if (action == "reject")
             {
                 request.Status = "rejected";
+                TempData["Success"] = "Đã từ chối yêu cầu.";
             }
 
             await _context.SaveChangesAsync();

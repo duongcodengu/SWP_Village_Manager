@@ -1,0 +1,206 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Người dùng đã xóa";
+    Layout = "_AdminWarehouse";
+}
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="page-title">
+            <div class="row">
+                <div class="col-6">
+                    <h3>Người dùng đã xóa</h3>
+                </div>
+                <div class="col-6">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/adminwarehouse">
+                                <i class="material-icons-outlined">home</i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">Người dùng đã xóa</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Danh sách người dùng đã xóa</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Search and Filter Form -->
+                        <form method="get" class="row mb-3">
+                            <div class="col-md-3">
+                                <input type="text" name="searchUser" value="@ViewBag.SearchUser" class="form-control" placeholder="Tìm kiếm username hoặc email...">
+                            </div>
+                            <div class="col-md-2">
+                                <select name="roleId" class="form-control">
+                                    <option value="0">Tất cả vai trò</option>
+                                    @foreach (var role in ViewBag.Roles)
+                                    {
+                                        var isSelected = ViewBag.RoleId == role.Id;
+                                        if (isSelected)
+                                        {
+                                            <option value="@role.Id" selected>@role.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@role.Id">@role.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select name="sortOrder" class="form-control">
+                                    <option value="asc" selected="@(ViewBag.SortOrder == "asc")">Tăng dần</option>
+                                    <option value="desc" selected="@(ViewBag.SortOrder == "desc")">Giảm dần</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <a href="/alluser" class="btn btn-secondary">Quay lại danh sách user</a>
+                            </div>
+                        </form>
+
+                        <!-- Messages -->
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @TempData["Success"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @TempData["Error"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <!-- Users Table -->
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Vai trò</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Ngày xóa</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        @foreach (var user in Model)
+                                        {
+                                            <tr>
+                                                <td>@user.Id</td>
+                                                <td>@user.Username</td>
+                                                <td>@user.Email</td>
+                                                <td>@user.RoleName</td>
+                                                <td>@(user.Phone ?? "N/A")</td>
+                                                <td>@user.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>@user.DeletedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td>
+                                                    <form method="post" action="/restore-user/@user.Id" style="display: inline;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-success btn-sm" 
+                                                                onclick="return confirm('Bạn có chắc muốn khôi phục user này?')">
+                                                            <i class="material-icons-outlined">restore</i> Khôi phục
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center">Không có user nào đã xóa</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if (ViewBag.TotalPages > 1)
+                        {
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    @if (ViewBag.CurrentPage > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("DeletedUsers", new { 
+                                                searchUser = ViewBag.SearchUser, 
+                                                roleId = ViewBag.RoleId, 
+                                                sortOrder = ViewBag.SortOrder, 
+                                                page = ViewBag.CurrentPage - 1 
+                                            })">Trước</a>
+                                        </li>
+                                    }
+
+                                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                    {
+                                        if (i == ViewBag.CurrentPage)
+                                        {
+                                            <li class="page-item active">
+                                                <span class="page-link">@i</span>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item">
+                                                <a class="page-link" href="@Url.Action("DeletedUsers", new { 
+                                                    searchUser = ViewBag.SearchUser, 
+                                                    roleId = ViewBag.RoleId, 
+                                                    sortOrder = ViewBag.SortOrder, 
+                                                    page = i 
+                                                })">@i</a>
+                                            </li>
+                                        }
+                                    }
+
+                                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("DeletedUsers", new { 
+                                                searchUser = ViewBag.SearchUser, 
+                                                roleId = ViewBag.RoleId, 
+                                                sortOrder = ViewBag.SortOrder, 
+                                                page = ViewBag.CurrentPage + 1 
+                                            })">Sau</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
+
+                        <!-- Summary -->
+                        <div class="text-center">
+                            <p class="text-muted">
+                                Hiển thị @ViewBag.TotalUsers user đã xóa
+                                @if (ViewBag.TotalPages > 1)
+                                {
+                                    <span>- Trang @ViewBag.CurrentPage/@ViewBag.TotalPages</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
