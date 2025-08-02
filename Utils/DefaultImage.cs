@@ -24,6 +24,14 @@
             }
         }
 
+        public static void Ensure(List<Product> products, IWebHostEnvironment env) 
+        {
+            foreach (var product in products)
+            {
+                EnsureSingle(product, env);
+            }
+        }
+
         public static void EnsureSingle(Village_Manager.Models.Product product, IWebHostEnvironment env)
         {
             var img = product?.ProductImages?.FirstOrDefault();

@@ -1,7 +1,4 @@
-using System.Linq;
-using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
+using BCrypt.Net;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
@@ -12,11 +9,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System.Linq;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
+using Utils;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
 using Village_Manager.ViewModel;
-using BCrypt.Net;
 
 namespace Village_Manager.Controllers;
 public class AdminWarehouseController : Controller
@@ -122,6 +123,7 @@ public class AdminWarehouseController : Controller
             .Include(p => p.Category)
             .Include(p => p.ProductImages)
             .ToList();
+        DefaultImage.Ensure(products, _env);
         return View(products);
     }
     // ProductDetail

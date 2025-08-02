@@ -388,6 +388,8 @@ public class ShopController : Controller
 
         if (product == null) return NotFound();
 
+        DefaultImage.EnsureSingle(product, _env);
+
         // Lấy sản phẩm liên quan cùng category, loại trừ chính nó
         var relatedProducts = await _context.Products
             .Where(p => p.ApprovalStatus == "accepted" && p.CategoryId == product.CategoryId && p.Id != id)

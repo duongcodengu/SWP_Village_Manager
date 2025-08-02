@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Text.RegularExpressions;
+using Utils;
 using Village_Manager.Data;
 using Village_Manager.Extensions;
 using Village_Manager.Models;
@@ -14,12 +15,14 @@ namespace Village_Manager.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AdminRetailController> _logger;
+        private readonly IWebHostEnvironment _env;
 
-        public AdminRetailController(AppDbContext context, IConfiguration configuration, ILogger<AdminRetailController> logger)
+        public AdminRetailController(AppDbContext context, IConfiguration configuration, ILogger<AdminRetailController> logger, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
             _logger = logger;
+            _env = env;
         }
 
         //hiển thị tổng
@@ -95,6 +98,7 @@ namespace Village_Manager.Controllers
 
             int total = await query.CountAsync();
             var products = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            DefaultImage.Ensure(products, _env);
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);

@@ -222,29 +222,13 @@
                             </div>
                         }
                     </div>
+                    <div id="product-summary" class="text-center fw-bold my-3">
+                        Đang hiển thị 0 sản phẩm
+                    </div>
                     <nav class="custom-pagination">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="javascript:void(0)" tabindex="-1">
-                                    <i class="fa-solid fa-angles-left"></i>
-                                </a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="javascript:void(0)">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">
-                                    <i class="fa-solid fa-angles-right"></i>
-                                </a>
-                            </li>
-                        </ul>
+                        <ul class="pagination justify-content-center"></ul>
                     </nav>
+
                 </div>
             </div>
         </div>
@@ -306,6 +290,9 @@
 
     <script>
         $(document).ready(function () {
+            let currentPage = parseInt(new URLSearchParams(window.location.search).get("page")) || 1;
+            const pageSize = 20;
+
             // 1. Lấy giá trị search từ query string trên URL
             const urlParams = new URLSearchParams(window.location.search);
             const searchParam = urlParams.get("search") || "";
@@ -479,6 +466,10 @@
                     return $(this).val();
                 }).get();
 
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set("page", currentPage);
+                window.history.replaceState({}, "", `${location.pathname}?${urlParams}`);
+
                 $.ajax({
                     url: "/api/shopapi/products",
                     data: {
@@ -486,11 +477,14 @@
                         categoryIds: categoryIds,
                         minPrice: minPrice,
                         maxPrice: maxPrice,
-                        sort: sort
+                        sort: sort,
+                        page: currentPage,
+                        pageSize: pageSize
                     },
                     traditional: true,
-                    success: function (data) {
-                        window.renderProducts(data);
+                    success: function (res) {
+                        window.renderProducts(res.data);
+                        window.renderPagination(res.totalItems, res.data.length);
                     },
                     error: function (xhr) {
                         console.error("API lỗi:", xhr.responseText);
@@ -520,8 +514,8 @@
                                     <div class="product-image">
                                         <a href="/shop/detail/${p.id}">
                                             <img src="${imageUrl}"
-                                                 onerror="this.onerror=null;this.src='/images/product/default-product.png';"
-                                                 class="img-fluid blur-up lazyload" alt="${p.name}" />
+                                                onerror="this.onerror=null;this.src='/images/product/default-product.png';"
+                                                class="img-fluid blur-up lazyload" alt="${p.name}" />
                                         </a>
                                     </div>
                                 </div>
@@ -640,10 +634,55 @@
                 window.fetchProducts();
             });
 
-            // 14. Khởi chạy khi trang load
+            // 14. Hiển thị phân trang
+            window.renderPagination = function (totalItems, currentPageCount) {
+                const totalPages = Math.ceil(totalItems / pageSize);
+                const pagination = $(".pagination");
+
+                $("#product-summary").text(`Đang hiển thị ${currentPageCount} sản phẩm`);
+                pagination.empty();
+
+                if (totalPages <= 1) return;
+
+                pagination.append(`
+                    <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                        <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                    </li>
+                `);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    pagination.append(`
+                        <li class="page-item ${i === currentPage ? "active" : ""}">
+                            <a class="page-link" href="javascript:void(0)" data-page="${i}">${i}</a>
+                        </li>
+                    `);
+                }
+
+                pagination.append(`
+                    <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                        <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    </li>
+                `);
+            };
+
+            // 15. Xử lý khi click vào số trang
+            $(document).on("click", ".pagination .page-link", function () {
+                const page = parseInt($(this).data("page"));
+                if (!isNaN(page) && page !== currentPage) {
+                    currentPage = page;
+                    window.fetchProducts();
+                    $('html, body').animate({ scrollTop: 0 }, 300);
+                }
+            });
+
+            // 16. Khởi chạy khi trang load
             window.renderSearchHistory();
             window.fetchProducts();
-        });
+            });
     </script>
 
     <script>
