@@ -975,6 +975,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsActive)
             .HasColumnName("is_active")
             .HasDefaultValue(true);
+            entity.Property(e => e.DeletedAt)
+            .HasColumnName("deleted_at")
+            .IsRequired(false);
                     entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1036,6 +1039,9 @@ public partial class AppDbContext : DbContext
                   .HasForeignKey(h => h.ProductId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
+
+        // Global query filter để tự động lọc user đã soft delete
+        modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
 
         OnModelCreatingPartial(modelBuilder);
     }

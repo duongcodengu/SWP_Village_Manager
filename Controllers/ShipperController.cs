@@ -538,24 +538,60 @@ namespace Village_Manager.Controllers
         [HttpPost]
         public IActionResult ReportIssue(int id, string reason)
         {
-            var delivery = _context.Deliveries.FirstOrDefault(d => d.Id == id);
-            if (delivery != null)
+            try
             {
-                delivery.Status = "failed";
-                _context.SaveChanges();
-
-                // Lưu lý do vào bảng DeliveryIssue
-                var shipperId = HttpContext.Session.GetInt32("ShipperId");
-                _context.DeliveryIssues.Add(new DeliveryIssue
+                var delivery = _context.Deliveries.FirstOrDefault(d => d.Id == id);
+                if (delivery != null)
                 {
-                    DeliveryId = id,
-                    ShipperId = shipperId ?? 0,
-                    IssueType = "other",
-                    Description = reason,
-                    ReportedAt = DateTime.Now
-                });
-                _context.SaveChanges();
+                    // Bước 1: Cập nhật trạng thái Delivery
+                    delivery.Status = "failed";
+                    _context.SaveChanges();
+                    
+                    // Bước 2: Cập nhật trạng thái RetailOrder
+                    var retailOrder = _context.RetailOrders.FirstOrDefault(o => o.Id == delivery.OrderId);
+                    if (retailOrder != null)
+                    {
+                        retailOrder.Status = "cancelled";
+                        
+                        // Hoàn trả số lượng sản phẩm vào kho
+                        var orderItems = _context.RetailOrderItems
+                            .Where(oi => oi.OrderId == retailOrder.Id)
+                            .Include(oi => oi.Product)
+                            .ToList();
+
+                        foreach (var item in orderItems)
+                        {
+                            if (item.Product != null)
+                            {
+                                item.Product.Quantity += (int)item.Quantity;
+                            }
+                        }
+                        _context.SaveChanges();
+                    }
+
+                    // Bước 3: Lưu lý do vào bảng DeliveryIssue
+                    var shipperId = HttpContext.Session.GetInt32("ShipperId");
+                    _context.DeliveryIssues.Add(new DeliveryIssue
+                    {
+                        DeliveryId = id,
+                        ShipperId = shipperId ?? 0,
+                        IssueType = "other",
+                        Description = reason,
+                        ReportedAt = DateTime.Now
+                    });
+                    _context.SaveChanges();
+                }
             }
+            catch (Exception ex)
+            {
+                // Log lỗi để debug
+                System.Diagnostics.Debug.WriteLine($"Error in ReportIssue: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                // Có thể thêm log vào file hoặc database
+                TempData["Error"] = "Có lỗi xảy ra khi báo cáo sự cố. Vui lòng thử lại.";
+            }
+            
             return RedirectToAction("DeliveriesShipper");
         }
 

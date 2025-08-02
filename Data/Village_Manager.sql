@@ -15,6 +15,7 @@ CREATE TABLE Users (
     Phone Nvarchar(10) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     is_active BIT NOT NULL DEFAULT 1,
+    deleted_at DATETIME NULL,
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
 

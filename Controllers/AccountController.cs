@@ -143,7 +143,7 @@ public class AccountController : Controller
             case 3: // Customer
                 return RedirectToAction("Index", "Home"); 
             case 4: // Shipper
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("DashboardShipper", "Shipper");
             default:
                 return RedirectToAction("Login", "Home");
         }

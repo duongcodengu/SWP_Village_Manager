@@ -70,6 +70,42 @@ namespace Village_Manager.Controllers.api
             await _context.SaveChangesAsync();
             return Ok(new { success = true });
         }
+
+        [HttpPost("update-status/{id}")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusRequest request)
+        {
+            var order = await _context.RetailOrders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            // Cập nhật trạng thái đơn hàng
+            order.Status = request.Status;
+            
+            // Nếu trạng thái là cancelled, có thể thêm logic bổ sung
+            if (request.Status == "cancelled")
+            {
+                // Có thể thêm logic hoàn trả số lượng sản phẩm vào kho
+                var orderItems = await _context.RetailOrderItems
+                    .Where(oi => oi.OrderId == id)
+                    .Include(oi => oi.Product)
+                    .ToListAsync();
+
+                foreach (var item in orderItems)
+                {
+                    if (item.Product != null)
+                    {
+                        item.Product.Quantity += (int)item.Quantity;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = $"Đã cập nhật trạng thái đơn hàng #{id} thành {request.Status}" });
+        }
+
+        public class UpdateStatusRequest
+        {
+            public string Status { get; set; }
+        }
         [HttpGet("processed-orders")]
         public async Task<IActionResult> GetProcessedOrders(int page = 1, int pageSize = 10, string searchTerm = "")
         {
