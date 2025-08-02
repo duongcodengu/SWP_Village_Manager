@@ -68,22 +68,32 @@ namespace Village_Manager.Controllers
 
             if (isStaff)
             {
-                // Nhân viên thì load cuộc trò chuyện với customer cụ thể
+                // Staff: load tin nhắn giữa staff này và customer cụ thể
                 query = _context.ChatMessages
                     .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
                                 (m.SenderId == receiverId && m.ReceiverId == currentUserId));
             }
             else
             {
-                // Khách hàng thì load tất cả tin nhắn giữa mình và tất cả staff
+                // Customer: load tin nhắn với tất cả staff
                 var staffIds = await _context.Users
                     .Where(u => u.RoleId == 2 && u.IsActive)
                     .Select(u => u.Id)
                     .ToListAsync();
 
-                query = _context.ChatMessages
+                var rawMessages = await _context.ChatMessages
                     .Where(m => (m.SenderId == currentUserId && staffIds.Contains(m.ReceiverId)) ||
-                                (staffIds.Contains(m.SenderId) && m.ReceiverId == currentUserId));
+                                (staffIds.Contains(m.SenderId) && m.ReceiverId == currentUserId))
+                    .OrderBy(m => m.SentAt)
+                    .ToListAsync();
+
+                // 🔹 Loại bỏ tin nhắn trùng nhau (customer gửi cho nhiều staff)
+                var distinctMessages = rawMessages
+                    .GroupBy(m => new { m.SenderId, m.MessageContent, SentAt = m.SentAt.ToString("yyyy-MM-dd HH:mm:ss") })
+                    .Select(g => g.First())
+                    .ToList();
+
+                return PartialView("_MessageList", distinctMessages);
             }
 
             var messages = await query
@@ -92,6 +102,7 @@ namespace Village_Manager.Controllers
 
             return PartialView("_MessageList", messages);
         }
+
 
 
         [HttpPost]
