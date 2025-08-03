@@ -45,6 +45,28 @@
     <!-- Shop Section Start -->
     <section class="section-b-space shop-section">
         <div class="container-fluid-lg">
+            <!-- Messages -->
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
             <div class="row">
                 <div class="col-custom-3">
                     <div class="left-box wow fadeInUp">
@@ -199,7 +221,7 @@
                                                     <input type="hidden" name="productId" value="@item.Id" />
                                                     <div class="input-group bg-white w-auto">
                                                         <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
-                                                        <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                        <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" required />
                                                         <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
                                                     </div>
                                                     <script>
@@ -532,7 +554,7 @@
                                                     <button type="button" onclick="adjustQty(this, -1)">
                                                         <i class="fa fa-minus"></i>
                                                     </button>
-                                                    <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                    <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" required />
                                                     <button type="button" onclick="adjustQty(this, 1)">
                                                         <i class="fa fa-plus"></i>
                                                     </button>
@@ -679,7 +701,20 @@
                 }
             });
 
-            // 16. Khởi chạy khi trang load
+            // 16. Validation cho form add to cart
+            $(document).on('submit', 'form[asp-controller="Shop"][asp-action="AddToCart"]', function(e) {
+                const quantityInput = $(this).find('input[name="quantity"]');
+                const quantity = quantityInput.val();
+                
+                if (!quantity || quantity.trim() === '' || parseInt(quantity) < 1) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)');
+                    quantityInput.focus();
+                    return false;
+                }
+            });
+
+            // 17. Khởi chạy khi trang load
             window.renderSearchHistory();
             window.fetchProducts();
             });
@@ -689,7 +724,15 @@
         window.handleAddToCart = function(btn) {
             // Lấy id sản phẩm và số lượng
             const productId = $(btn).closest('.cart_qty').find('.product-id').val();
-            const quantity = $(btn).closest('.cart_qty').find('.qty-input').val() || 1;
+            const quantityInput = $(btn).closest('.cart_qty').find('.qty-input');
+            const quantity = quantityInput.val();
+
+            // Kiểm tra validation
+            if (!quantity || quantity.trim() === '' || parseInt(quantity) < 1) {
+                alert('Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)');
+                quantityInput.focus();
+                return;
+            }
 
             $.ajax({
                 url: '/Shop/AddToCart',

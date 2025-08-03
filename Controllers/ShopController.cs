@@ -152,16 +152,28 @@ public class ShopController : Controller
 
     public IActionResult Checkout()
     {
-        // Lưu thông tin mã giảm giá từ session vào TempData (nếu cần thiết)
-        TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode");
-        TempData["DiscountAmount"] = HttpContext.Session.GetString("DiscountAmount");
-
         // Lấy giỏ hàng từ session
         var cartItems = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        
+        // Kiểm tra xem có sản phẩm trong giỏ hàng không
+        if (cartItems == null || !cartItems.Any())
+        {
+            TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.";
+            return RedirectToAction("Search", "Shop");
+        }
+
         // Lọc chỉ giữ lại sản phẩm còn được phép mua
         cartItems = cartItems.Where(item =>
             _context.Products.Any(p => p.Id == item.ProductId && p.ApprovalStatus == "accepted")
         ).ToList();
+
+        // Kiểm tra lại sau khi lọc sản phẩm không hợp lệ
+        if (!cartItems.Any())
+        {
+            TempData["ErrorMessage"] = "Không có sản phẩm hợp lệ trong giỏ hàng. Vui lòng kiểm tra lại.";
+            return RedirectToAction("Search", "Shop");
+        }
+
         foreach (var item in cartItems)
         {
             item.Product = _context.Products
@@ -171,6 +183,10 @@ public class ShopController : Controller
             // Đảm bảo hình ảnh chính
             DefaultImage.EnsureSingle(item.Product, _env);
         }
+
+        // Lưu thông tin mã giảm giá từ session vào TempData (nếu cần thiết)
+        TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode");
+        TempData["DiscountAmount"] = HttpContext.Session.GetString("DiscountAmount");
 
         // Lấy địa chỉ từ bảng Address (chỉ 1 bản ghi duy nhất)
         int? userId = HttpContext.Session.GetInt32("UserId");
