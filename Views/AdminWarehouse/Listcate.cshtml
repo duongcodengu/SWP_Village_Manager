@@ -1,7 +1,8 @@
-@{
-    ViewData["Title"] = "Danh mục";
+﻿@{
+    ViewData["Title"] = "List Category";
     Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
+@model List<Village_Manager.ViewModel.CategoryStatsViewModel>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
@@ -10,13 +11,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-          content="FamViet admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+          content="Fastkart admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
     <meta name="keywords"
-          content="admin template, FamViet admin template, dashboard template, flat admin template, responsive admin template, web app">
+          content="admin template, Fastkart admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="~/back-end/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="~/back-end/images/favicon.png" type="image/x-icon">
-    <title>FamViet - Danh mục</title>
+    <title>Fastkart - Product</title>
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -71,15 +72,8 @@
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Danh sách danh mục</h5>
                                         <div class="right-options">
-                                            <ul>
-                                                <li>
-                                                    <a href="javascript:void(1)">Nhập</a>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0)">Xuất</a>
-                                                </li>
-                                                <li>
-                                                     @* trả về controller tên CategoryController  *@
+                                            <ul>   
+                                                <li>    
                                                     <a class="btn btn-solid" asp-action="addCategory" asp-controller="Category">Thêm danh mục</a>
                                                 </li>
                                             </ul>
@@ -87,64 +81,151 @@
                                     </div>
                                     <div>   
                                         <div class="table-responsive">
-                                            <table class="table theme-table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Mã danh mục</th>
-                                                        <th>Tên danh mục</th>
-                                                        <th>Hình ảnh</th>
-                                                        <th>Tùy chọn</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if(ViewBag.Categories != null)
-                                                    {
-                                                        foreach(var category in ViewBag.Categories)
-                                                        {
-                                                        <tr>
-                                                            <td>@category.Id</td>
-                                                            <td>@category.Name</td>
-                                                            <td>
-                                                                    <img src="@category.ImageUrl" style="height: 80px; object-fit: cover;" alt="Category Image">
-                                                            </td>
-                                                            <td>
-                                                                <ul>
+                                           <table class="table table-hover align-middle text-center">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 20%;">Tên danh mục</th>
+            <th style="width: 15%;">Ảnh</th>
+            <th style="width: 10%;">Trạng thái</th>
+            <th style="width: 15%;">Chi tiết</th>
+            <th style="width: 20%;">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var category in Model)
+            {
+                <tr class="@(category.Active ? "" : "table-secondary")">
+                    <td>@category.CategoryId</td>
+                    <td class="text-start fw-semibold">@category.CategoryName</td>
+                    <td>
+                        <img src="@(category.ImageUrl)"
+                             alt="Ảnh danh mục"
+                             class="rounded border shadow-sm"
+                             style="height: 60px; width: 60px; object-fit: cover;">
+                    </td>
+                    <td>
+                        <span class="badge @(category.Active ? "bg-success" : "bg-danger")">
+                            <i data-feather="@(category.Active ? "check-circle" : "x-circle")" class="me-1"></i>
+                            @(category.Active ? "Hoạt động" : "Dừng hoạt động")
+                        </span>
+                    </td>
+                    <td>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal-@category.CategoryId" class="text-decoration-none">
+                            <i data-feather="eye" class="me-1"></i>
+                            SP: <span class="badge bg-info text-dark">@category.ProductCount</span>,
+                            ĐT: <span class="badge bg-success">@category.FarmerCount</span>
+                        </a>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a asp-action="EditCategory" asp-controller="Category" asp-route-id="@category.CategoryId" class="text-warning" title="Chỉnh sửa">
+                                <i data-feather="edit"></i>
+                            </a>
+                            <button onclick="toggleActive(@category.CategoryId, @category.Active.ToString().ToLower())" 
+                                    class="btn btn-sm @(category.Active ? "btn-outline-danger" : "btn-outline-success")" 
+                                    title="@(category.Active ? "Dừng hoạt động" : "Kích hoạt")">
+                                <i data-feather="@(category.Active ? "pause" : "play")"></i>
+                            </button>
+                            <a href="javascript:void(0);" onclick="confirmDelete(@category.CategoryId)" title="Xóa" class="text-danger" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
+                                <i data-feather="trash-2"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
 
-                                                                        <li><a asp-action="EditCategory" asp-controller="category" asp-route-id="@category.Id"><i class="ri-pencil-line"></i></a></li>
-                                                                        <li>
-                                                                            <script>
-                                                                                function confirmDelete(id) {
-                                                                                    document.getElementById("categoryToDeleteId").value = id;
-                                                                                }
+                <!-- Modal chi tiết danh mục -->
+               <!-- Modal chi tiết danh mục -->
+<div class="modal fade" id="detailModal-@category.CategoryId" tabindex="-1" aria-labelledby="detailModalLabel-@category.CategoryId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title" id="detailModalLabel-@category.CategoryId">
+                    <i data-feather="info" class="me-2"></i>Chi tiết danh mục: @category.CategoryName
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <div class="row g-4">
+                    <!-- Hình ảnh danh mục -->
+                    <div class="col-md-4 text-center">
+                        <img src="@(category.ImageUrl)"
+                             alt="Ảnh danh mục"
+                             class="img-fluid rounded-3 border shadow-sm mb-2"
+                             style="max-height: 200px; object-fit: cover;">
+                        <p class="fw-semibold text-muted mb-0 mt-1">Ảnh đại diện</p>
+                        <span class="badge @(category.Active ? "bg-success" : "bg-danger") mt-2">
+                            @(category.Active ? "Hoạt động" : "Dừng hoạt động")
+                        </span>
+                    </div>
 
-                                                                                function deleteConfirmed() {
-                                                                                    var id = document.getElementById("categoryToDeleteId").value;
-                                                                                    window.location.href = '/category/DeleteCategory/' + id;
-                                                                                }
-                                                                            </script>
+                    <!-- Danh sách đối tác -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-2">Đối tác (Farmers)</h6>
+                        <div class="border rounded-3 p-2 bg-light" style="max-height: 220px; overflow-y: auto;">
+                            <ul class="list-unstyled mb-0">
+                                @if (category.Farmers.Any())
+                                {
+                                    foreach (var farmer in category.Farmers)
+                                    {
+                                        <li class="mb-1">
+                                           <i data-feather="user"   class="me-1 text-secondary"></i> <p style="color: black"> @farmer.FullName</p>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-muted">Không có đối tác</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
 
-                                                                            <a href="javascript:void(0);" onclick="confirmDelete(@category.Id)" data-bs-toggle="modal" data-bs-target="#exampleModalToggle">
-                                                                                <i class="ri-delete-bin-line"></i>
-                                                                                
-                                                                            </a>
-                                                                        </li>   
-                                                                </ul>
-                                                            </td>
-                                                            </tr>
-                                                        }
-                                                                                           
-                                                    }
-                                                    else
-                                                    {
-                                                        <tr>
-                                                            <td colspan="4">Không tìm thấy dữ liệu</td>
-                                                        </tr>
-                                                    }
-                                                  
-                                                </tbody>
-                                            
-                                            </table>
-                                            
+                    <!-- Danh sách sản phẩm -->
+                    <div class="col-md-4">
+                        <h6 class="text-success mb-2">Sản phẩm</h6>
+                        <div class="border rounded-3 p-2 bg-light" style="max-height: 220px; overflow-y: auto;">
+                            <ul class="list-unstyled mb-0">
+                                @if (category.Products.Any())
+                                {
+                                    foreach (var product in category.Products)
+                                    {
+                                        <li class="mb-1">
+                                            <i data-feather="package"  class="me-1 text-secondary"></i> <p style="color: black"> @product.Name</p>
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="text-muted">Không có sản phẩm</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-feather="x-circle" class="me-1"></i>Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-muted text-center">Không tìm thấy danh mục nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
                                         </div>
                                     </div>
                                 </div>
@@ -164,11 +245,11 @@
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Đăng xuất</h5>
-                    <p>Bạn có chắc chắn muốn đăng xuất không?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                    <p>Are you sure you want to log out?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">Không</button>
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
                         <button type="button" onclick="location.href = 'login.html';"
                                 class="btn  btn--yes btn-primary">
                             Yes
@@ -184,7 +265,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header d-block text-center">
-                    <h5 class="modal-title w-100" id="exampleModalLabel22">Bạn có chắc chắn?</h5>
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Xóa danh mục</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -193,7 +274,7 @@
                     <div class="remove-box">
                        
                         <p>
-                            Quyền sử dụng cho nhóm/người dùng sẽ được kế thừa từ đối tượng gốc. Đối tượng này sẽ tạo quyền mới riêng biệt.
+                            Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.
                         </p>
                     </div>
                     <input type="hidden" id="categoryToDeleteId" />
@@ -211,7 +292,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-center" id="exampleModalLabel12">Hoàn tất!</h5>
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
@@ -224,17 +305,55 @@
                                 <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                             </svg>
                         </div>
-                        <h4 class="text-content">Đã xóa thành công.</h4>
+                        <h4 class="text-content">It's Removed.</h4>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Đóng</button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Delete Modal Box End -->
     
+    <!-- JavaScript -->
+    <script>
+        function confirmDelete(categoryId) {
+            document.getElementById('categoryToDeleteId').value = categoryId;
+        }
+
+        function deleteConfirmed() {
+            var categoryId = document.getElementById('categoryToDeleteId').value;
+            window.location.href = '/category/DeleteCategory/' + categoryId;
+        }
+
+        function toggleActive(categoryId, currentActive) {
+            var isActive = currentActive === 'true';
+            var action = isActive ? 'dừng hoạt động' : 'kích hoạt';
+            
+            if (confirm('Bạn có chắc chắn muốn ' + action + ' danh mục này?')) {
+                fetch('/category/toggleActive/' + categoryId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload trang để cập nhật trạng thái
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi thực hiện thao tác');
+                });
+            }
+        }
+    </script>
 </body>
 
 </html>

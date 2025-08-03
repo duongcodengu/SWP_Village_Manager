@@ -1,6 +1,6 @@
-@{
-    ViewData["Title"] = "Chỉnh sửa danh mục";
-    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+﻿@{
+ViewData["Title"] = "Edit Category";
+Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 @model Village_Manager.Models.ProductCategory
 
@@ -12,7 +12,7 @@
                     <h5 class="mb-0">Chỉnh sửa danh mục</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-action="EditCategory" asp-controller="Category" method="post" enctype="multipart/form-data" class="theme-form theme-form-2 mega-form">
+                    <form asp-action="EditCategory" asp-route-id="@Model.Id"  asp-controller="Category" method="post" enctype="multipart/form-data" class="theme-form theme-form-2 mega-form">
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="ImageUrl" />
                         <div class="mb-4 row align-items-center">
@@ -23,27 +23,45 @@
                             </div>
                         </div>
 
-                        <div class="mb-4 row align-items-center">
+                        <div class="mb-4 row align-items-center">   
                             <label class="form-label-title col-sm-3 mb-0">Ảnh hiện tại</label>
                             <div class="col-sm-9">
-                                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
                                 {
-                                    <img src="@Model.ImageUrl" alt="Ảnh danh mục" style="max-height:100px;" class="mb-2" />
-                                } 
+                                    <img src="@Model.ImageUrl" alt="Category Image" style="max-height:100px;" class="mb-2" />
+                                }
                             </div>
                         </div>
 
                         <div class="mb-4 row align-items-center">
-                            <label class="form-label-title col-sm-3 mb-0">Tải ảnh mới</label>
+                            <label class="form-label-title col-sm-3 mb-0">Ảnh mới</label>
                             <div class="col-sm-9">
                                 <input class="form-control" type="file" name="imgFile" accept="image/*" />
                                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
                             </div>
                         </div>
 
+                        <div class="mb-4 row align-items-center">
+                            <label asp-for="Active" class="form-label-title col-sm-3 mb-0">Trạng thái</label>
+                            <div class="col-sm-9">
+                                <div class="form-check form-switch">
+                                    <input asp-for="Active" class="form-check-input" type="checkbox" id="activeSwitch" />
+                                    <label class="form-check-label" for="activeSwitch">
+                                        <span class="badge @(Model.Active ? "bg-success" : "bg-danger")">
+                                            @(Model.Active ? "Hoạt động" : "Dừng hoạt động")
+                                        </span>
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i data-feather="info" class="me-1"></i>
+                                    Danh mục dừng hoạt động sẽ không hiển thị cho khách hàng
+                                </small>
+                            </div>
+                        </div>
+
                         <div class="card-submit-button text-end">
                             <button type="submit" class="btn btn-primary">Lưu</button>
-                            <a asp-action="Listcate" class="btn btn-outline-secondary">Hủy</a>
+                            <a asp-action="Listcate" class="btn btn-outline-secondary">Huỷ</a>
                         </div>
                     </form>
                 </div>
@@ -51,3 +69,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Cập nhật badge khi toggle switch
+    document.getElementById('activeSwitch').addEventListener('change', function() {
+        var badge = this.parentElement.querySelector('.badge');
+        var label = this.parentElement.querySelector('.form-check-label');
+        
+        if (this.checked) {
+            badge.className = 'badge bg-success';
+            badge.textContent = 'Hoạt động';
+        } else {
+            badge.className = 'badge bg-danger';
+            badge.textContent = 'Dừng hoạt động';
+        }
+    });
+</script>

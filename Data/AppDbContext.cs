@@ -560,10 +560,6 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("product_type");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.ApprovalStatus)
-                .HasMaxLength(20)
-                .HasColumnName("approval_status")
-                .HasDefaultValue("pending");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
@@ -587,6 +583,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.Active) // thêm phần này
+         .HasColumnName("active")
+         .HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
@@ -979,10 +978,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsActive)
             .HasColumnName("is_active")
             .HasDefaultValue(true);
-                    entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Users__role_id__3F466844");
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+        .HasForeignKey(d => d.RoleId)
+        .OnDelete(DeleteBehavior.ClientSetNull)
+        .HasConstraintName("FK__Users__role_id__3F466844");
         });
 
         // ... existing code ...

@@ -59,6 +59,7 @@ public class AdminWarehouseController : Controller
         ViewBag.TotalOrders = totalDeliveredOrders;
         // Lấy danh sách category
         var categories = _context.ProductCategories
+            .Where(c => c.Active)
             .Select(c => new { Name = c.Name, ImageUrl = c.ImageUrl })
             .ToList<dynamic>(); ViewBag.Categories = categories;
         // Tổng doanh thu confirmed
@@ -157,7 +158,7 @@ public class AdminWarehouseController : Controller
             return View("404");
         }
         ViewBag.Farmers = _context.Farmers.ToList();
-        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Categories = _context.ProductCategories.Where(c => c.Active).ToList();
         return View();
     }
 
@@ -234,7 +235,7 @@ public class AdminWarehouseController : Controller
         {
             ModelState.AddModelError("", "Error adding product: " + ex.Message);
             ViewBag.Farmers = _context.Farmers.ToList();
-            ViewBag.Categories = _context.ProductCategories.ToList();
+            ViewBag.Categories = _context.ProductCategories.Where(c => c.Active).ToList();
             return View();
         }
     }
@@ -298,7 +299,7 @@ public class AdminWarehouseController : Controller
         if (product == null)
             return NotFound();
 
-        ViewBag.Categories = _context.ProductCategories.ToList();
+        ViewBag.Categories = _context.ProductCategories.Where(c => c.Active).ToList();
         ViewBag.Farmers = _context.Farmers.ToList();
         return View(product);
     }

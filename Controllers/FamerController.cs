@@ -114,6 +114,7 @@ namespace Village_Manager.Controllers
         public IActionResult DashboardFamer()
         {
             var categories = _context.ProductCategories
+                .Where(c => c.Active)
                 .Select(c => new { Id = c.Id, Name = c.Name })
                 .ToList();
 

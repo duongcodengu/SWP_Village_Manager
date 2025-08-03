@@ -1,72 +1,101 @@
-@{
-    ViewData["Title"] = "Thêm danh mục";
-    Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
+﻿@{
+ViewData["Title"] = "Add Category";
+Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 }
 @model Village_Manager.Models.ProductCategory
 
 <form asp-action="addCategory" asp-controller="Category" method="post" enctype="multipart/form-data">
-        <div class="page-body-wrapper">
-          
-            <div class="page-body">
-                  
-                <!-- New Product Add Start -->
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-sm-8 m-auto">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <div class="card-header-2">
-                                                <h5>Thông tin danh mục</h5>
-                                            </div>
-                                                            
-                                            <div class="theme-form theme-form-2 mega-form">
-                                                <div class="mb-4 row align-items-center" >
-                                                    <label class="form-label-title col-sm-3 mb-0" >Tên danh mục</label>
-                                                    <div class="col-sm-9">
-                                                        <input class="form-control"  type="text"
-                                                             asp-for="Name"  placeholder="Nhập tên danh mục">
-                                                             <span asp-validation-for="Name" class="text-danger"> </span>
-                                                    </div>
-                                                </div>
+    <div class="page-body-wrapper">
 
-                                        <div class="mb-4 row align-items-center">
-                                            <label class="form-label-title col-sm-3 mb-0">Ảnh danh mục</label>
-                                            <div class="col-sm-9">
+        <div class="page-body">
+
+            <!-- New Product Add Start -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-sm-8 m-auto">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="card-header-2">
+                                            <h5>Thông tin danh mục</h5>
+                                        </div>
+
+                                        <div class="theme-form theme-form-2 mega-form">
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="form-label-title col-sm-3 mb-0">Tên danh mục</label>
+                                                <div class="col-sm-9">
+                                                    <input class="form-control" type="text"
+                                                           asp-for="Name" placeholder="Tên danh mục">
+                                                    <span asp-validation-for="Name" class="text-danger"> </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="form-label-title col-sm-3 mb-0">Ảnh</label>
+                                                <div class="col-sm-9">
                                                     <input class="form-control" type="file" name="ImgFile" accept="image/*" />
-                                            </div>
-                                        </div>
-
                                                 </div>
-
-                                               
                                             </div>
+
+                                            <div class="mb-4 row align-items-center">
+                                                <label asp-for="Active" class="form-label-title col-sm-3 mb-0">Trạng thái</label>
+                                                <div class="col-sm-9">
+                                                    <div class="form-check form-switch">
+                                                        <input asp-for="Active" class="form-check-input" type="checkbox" id="activeSwitch" checked />
+                                                        <label class="form-check-label" for="activeSwitch">
+                                                            <span class="badge bg-success">Hoạt động</span>
+                                                        </label>
+                                                    </div>
+                                                    <small class="form-text text-muted">
+                                                        <i data-feather="info" class="me-1"></i>
+                                                        Danh mục dừng hoạt động sẽ không hiển thị cho khách hàng
+                                                    </small>
+                                                </div>
+                                            </div>
+
                                         </div>
-                                        <div class="card-submit-button">
-                                            <button class="btn btn-animation ms-auto" type="submit">Thêm mới</button>
-                                        </div>
+
+
                                     </div>
+                                </div>
+                                <div class="card-submit-button">
+                                    <button class="btn btn-animation ms-auto" type="submit">Ok</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- New Product Add End -->
-                <!-- footer Start -->
-                <div class="container-fluid">
-                    <footer class="footer">
-                        <div class="row">
-                            <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2022 © FamViệt theme by FamViệt</p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
-                <!-- footer En -->
             </div>
-            <!-- Container-fluid End -->
+        </div>
+        <!-- New Product Add End -->
+        <!-- footer Start -->
+        <div class="container-fluid">
+            <footer class="footer">
+                <div class="row">
+                    <div class="col-md-12 footer-copyright text-center">
+                        <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- footer En -->
+    </div>
+    <!-- Container-fluid End -->
 </form>
-        <!-- Page Body End -->
-    
-   
+<!-- Page Body End -->
+
+<script>
+    // Cập nhật badge khi toggle switch
+    document.getElementById('activeSwitch').addEventListener('change', function() {
+        var badge = this.parentElement.querySelector('.badge');
+        
+        if (this.checked) {
+            badge.className = 'badge bg-success';
+            badge.textContent = 'Hoạt động';
+        } else {
+            badge.className = 'badge bg-danger';
+            badge.textContent = 'Dừng hoạt động';
+        }
+    });
+</script>
