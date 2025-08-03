@@ -510,9 +510,6 @@
                                                                     case "rejected":
                                                                         <span class="badge bg-danger">Từ chối</span>
                                                                         break;
-                                                                    case "cancelled":
-                                                                        <span class="badge bg-secondary">Đã hủy</span>
-                                                                        break;
                                                                     default:
                                                                         <span class="badge bg-light text-dark">@product.ApprovalStatus</span>
                                                                         break;
@@ -534,7 +531,7 @@
                                                                 {
                                                                     <span class="text-muted">-</span>
                                                                 }
-                                                                else if (product.ApprovalStatus == "rejected" || product.ApprovalStatus == "cancelled")
+                                                                else if (product.ApprovalStatus == "rejected")
                                                                 {
                                                                     <form method="post" action="@Url.Action("ResellProduct", "Famer")" style="display: inline;">
                                                                         @Html.AntiForgeryToken()

@@ -273,16 +273,16 @@ namespace Village_Manager.Controllers
             if (product == null)
             {
                 TempData["Error"] = "Không tìm thấy sản phẩm hoặc bạn không có quyền hủy bán sản phẩm này.";
-                return RedirectToAction("MyProducts");
+                return RedirectToAction("DashboardFamer");
             }
 
             if (product.ApprovalStatus != "accepted")
             {
                 TempData["Error"] = "Chỉ có thể hủy bán sản phẩm đã được duyệt.";
-                return RedirectToAction("MyProducts");
+                return RedirectToAction("DashboardFamer");
             }
 
-            product.ApprovalStatus = "cancelled";
+            product.ApprovalStatus = "rejected";
             _context.SaveChanges();
 
             // Gửi thông báo cho admin
@@ -300,7 +300,7 @@ namespace Village_Manager.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = "Đã hủy bán sản phẩm thành công!";
-            return RedirectToAction("MyProducts");
+            return RedirectToAction("DashboardFamer");
         }
 
         [HttpPost]
@@ -316,13 +316,13 @@ namespace Village_Manager.Controllers
             if (product == null)
             {
                 TempData["Error"] = "Không tìm thấy sản phẩm hoặc bạn không có quyền bán lại sản phẩm này.";
-                return RedirectToAction("MyProducts");
+                return RedirectToAction("DashboardFamer");
             }
 
             if (product.ApprovalStatus != "rejected" && product.ApprovalStatus != "cancelled")
             {
                 TempData["Error"] = "Chỉ có thể bán lại sản phẩm đã bị từ chối hoặc hủy bán.";
-                return RedirectToAction("MyProducts");
+                return RedirectToAction("DashboardFamer");
             }
 
             product.ApprovalStatus = "pending";
@@ -343,7 +343,7 @@ namespace Village_Manager.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = "Đã gửi yêu cầu bán lại sản phẩm thành công!";
-            return RedirectToAction("MyProducts");
+            return RedirectToAction("DashboardFamer");
         }
 
         // Yêu cầu cung cấp sản phẩm từ farmer đến admin
