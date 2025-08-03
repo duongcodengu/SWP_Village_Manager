@@ -50,7 +50,7 @@ namespace Village_Manager.Controllers.api
 
                 // Lưu vào Session để dùng ở Checkout
                 HttpContext.Session.SetString("DiscountCode", discount.Code);
-                HttpContext.Session.SetString("DiscountAmount", Math.Round(discountAmount, 0).ToString());
+                HttpContext.Session.SetInt32("DiscountAmount", (int)Math.Round(discountAmount, 0));
 
                 // Trừ lượt dùng
                 discount.UsageLimit -= 1;
@@ -60,9 +60,6 @@ namespace Village_Manager.Controllers.api
                 }
 
                 await _context.SaveChangesAsync();
-                
-                HttpContext.Session.SetString("DiscountCode", discount.Code);
-                HttpContext.Session.SetInt32("DiscountAmount", (int)Math.Round(discountAmount));
                 
                 return Ok(new
                 {

@@ -163,6 +163,45 @@
     <!-- Cart Section End -->
     <!-- Apply Discount Script -->
     <script>
+        // Load current discount on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // First, recalculate discount based on current cart total
+                const recalcResponse = await fetch('/api/shopapi/recalculate-discount', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const recalcResult = await recalcResponse.json();
+                
+                if (recalcResult.success) {
+                    // Display recalculated discount
+                    document.getElementById('couponCode').value = recalcResult.discountCode;
+                    document.getElementById('discountAmount').innerText = recalcResult.discountAmount.toLocaleString('vi-VN');
+                    document.getElementById("finalAmount").innerText = recalcResult.finalAmount.toLocaleString('vi-VN');
+                } else {
+                    // If no discount or discount cleared, load current state
+                    const response = await fetch('/api/shopapi/current-discount');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Display current discount
+                        document.getElementById('couponCode').value = result.discountCode;
+                        document.getElementById('discountAmount').innerText = result.discountAmount.toLocaleString('vi-VN');
+                        
+                        // Recalculate final amount
+                        const subtotalText = document.getElementById("subtotalAmount").innerText.replace(/\D/g, "");
+                        const subtotal = parseFloat(subtotalText) || 0;
+                        const final = subtotal - result.discountAmount;
+                        document.getElementById("finalAmount").innerText = final.toLocaleString('vi-VN');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading current discount:', error);
+            }
+        });
+
         document.getElementById("applyCouponBtn").addEventListener("click", async () => {
             const code = document.getElementById("couponCode").value.trim();
             const subtotalText = document.getElementById("subtotalAmount").innerText.replace(/\D/g, "");

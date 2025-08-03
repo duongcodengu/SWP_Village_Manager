@@ -257,13 +257,13 @@ class CartManager {
         
         if (cartTable) {
             if (cartItems && cartItems.length > 0) {
-                // Update existing items or remove the specific item
-                // For simplicity, we'll just reload the page
+                // If cart still has items, reload to recalculate discounts properly
+                // This ensures discount codes are preserved and recalculated correctly
                 setTimeout(() => {
                     window.location.reload();
                 }, 500);
             } else {
-                // Cart is empty, show empty message
+                // Cart is empty, show empty message and clear discount
                 cartTable.innerHTML = `
                     <tr>
                         <td colspan="5" class="text-center p-4">
@@ -275,8 +275,48 @@ class CartManager {
                 // Update totals
                 if (subtotalElement) subtotalElement.textContent = '0';
                 if (finalAmountElement) finalAmountElement.textContent = '0';
+                
+                // Clear discount code if cart is empty
+                this.clearDiscountCode();
             }
         }
+    }
+
+    clearDiscountCode() {
+        // Remove discount code from session and update UI
+        fetch('/api/shopapi/clear-discount', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update discount display
+                const discountElement = document.getElementById('discountAmount');
+                if (discountElement) {
+                    discountElement.textContent = '0';
+                }
+                
+                // Update final amount
+                const finalAmountElement = document.getElementById('finalAmount');
+                if (finalAmountElement) {
+                    finalAmountElement.textContent = '0';
+                }
+                
+                // Clear coupon input if exists
+                const couponInput = document.getElementById('couponCode');
+                if (couponInput) {
+                    couponInput.value = '';
+                }
+                
+                console.log('Discount code cleared successfully');
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing discount:', error);
+        });
     }
 
     showNotification(message, type) {

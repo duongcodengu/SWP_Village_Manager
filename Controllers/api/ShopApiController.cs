@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.Utils;
@@ -174,6 +175,110 @@ namespace Village_Manager.Controllers.api
                         quantity = item.Quantity,
                         image = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png"
                     })
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Xóa mã giảm giá
+        [HttpPost("clear-discount")]
+        public IActionResult ClearDiscount()
+        {
+            try
+            {
+                // Xóa tất cả thông tin mã giảm giá khỏi session
+                HttpContext.Session.Remove("DiscountCode");
+                HttpContext.Session.Remove("DiscountAmount");
+                HttpContext.Session.Remove("DiscountPercentage");
+                
+                return Ok(new { success = true, message = "Đã xóa mã giảm giá" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Lấy thông tin mã giảm giá hiện tại
+        [HttpGet("current-discount")]
+        public IActionResult GetCurrentDiscount()
+        {
+            try
+            {
+                var discountCode = HttpContext.Session.GetString("DiscountCode");
+                var discountAmount = HttpContext.Session.GetInt32("DiscountAmount");
+                
+                if (!string.IsNullOrEmpty(discountCode) && discountAmount.HasValue)
+                {
+                    return Ok(new { 
+                        success = true, 
+                        discountCode = discountCode,
+                        discountAmount = discountAmount.Value
+                    });
+                }
+                
+                return Ok(new { success = false, message = "Không có mã giảm giá nào được áp dụng" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Tính toán lại mã giảm giá theo tổng tiền hiện tại
+        [HttpPost("recalculate-discount")]
+        public async Task<IActionResult> RecalculateDiscount()
+        {
+            try
+            {
+                var discountCode = HttpContext.Session.GetString("DiscountCode");
+                if (string.IsNullOrEmpty(discountCode))
+                {
+                    return Ok(new { success = false, message = "Không có mã giảm giá nào được áp dụng" });
+                }
+
+                // Lấy tổng tiền hiện tại của giỏ hàng
+                var cartWithProducts = CartHelper.GetCartWithProducts(HttpContext, _context);
+                var currentTotal = (decimal)cartWithProducts.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+
+                if (currentTotal <= 0)
+                {
+                    // Nếu giỏ hàng trống, xóa discount
+                    HttpContext.Session.Remove("DiscountCode");
+                    HttpContext.Session.Remove("DiscountAmount");
+                    return Ok(new { success = true, message = "Đã xóa mã giảm giá do giỏ hàng trống" });
+                }
+
+                // Tìm mã giảm giá trong database
+                var discount = await _context.DiscountCodes
+                    .FirstOrDefaultAsync(c => c.Code == discountCode && c.Status == "active");
+
+                if (discount == null)
+                {
+                    // Mã giảm giá không còn hợp lệ, xóa khỏi session
+                    HttpContext.Session.Remove("DiscountCode");
+                    HttpContext.Session.Remove("DiscountAmount");
+                    return Ok(new { success = false, message = "Mã giảm giá không còn hợp lệ" });
+                }
+
+                // Tính toán lại discount amount
+                decimal discountPercent = discount.DiscountPercent;
+                decimal newDiscountAmount = (discountPercent / 100m) * currentTotal;
+                decimal finalAmount = currentTotal - newDiscountAmount;
+
+                // Cập nhật session với giá trị mới
+                HttpContext.Session.SetInt32("DiscountAmount", (int)Math.Round(newDiscountAmount, 0));
+
+                return Ok(new
+                {
+                    success = true,
+                    discountCode = discountCode,
+                    discountAmount = Math.Round(newDiscountAmount, 0),
+                    finalAmount = Math.Round(finalAmount, 0),
+                    message = "Đã cập nhật mã giảm giá theo tổng tiền mới"
                 });
             }
             catch (Exception ex)
