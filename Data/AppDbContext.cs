@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Models;
@@ -564,10 +564,6 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("product_type");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.ApprovalStatus)
-                .HasMaxLength(20)
-                .HasColumnName("approval_status")
-                .HasDefaultValue("pending");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
@@ -591,6 +587,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.Active) // thêm phần này
+         .HasColumnName("active")
+         .HasDefaultValue(true);
         });
 
         modelBuilder.Entity<ProductImage>(entity =>

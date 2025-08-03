@@ -36,7 +36,7 @@ namespace Village_Manager.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId") ?? 0;
             var hasAcceptedGeo = HttpContext.Session.GetString("HasAcceptedGeo") == "True";
-            var categories = _context.ProductCategories.Select(c => new
+            var categories = _context.ProductCategories.Where(c => c.Active).Select(c => new
             {
                 c.Id,
                 c.Name,

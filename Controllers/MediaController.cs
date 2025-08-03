@@ -46,6 +46,7 @@ namespace Village_Manager.Controllers
                 return View("404");
             }
             var categories = _context.ProductCategories
+                .Where(c => c.Active)
                 .Select(c => new
                 {
                     Id = c.Id,

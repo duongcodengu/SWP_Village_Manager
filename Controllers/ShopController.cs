@@ -78,7 +78,7 @@ public class ShopController : Controller
             }
         }
 
-        ViewBag.Categories = await _context.ProductCategories.ToListAsync();
+        ViewBag.Categories = await _context.ProductCategories.Where(c => c.Active).ToListAsync();
 
         var products = await query.ToListAsync();
 

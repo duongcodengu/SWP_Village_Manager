@@ -14,7 +14,7 @@ public class CategoryMenuViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync()
     {
-        var categories = await _context.ProductCategories.ToListAsync();
+        var categories = await _context.ProductCategories.Where(c => c.Active).ToListAsync();
         return View(categories);
     }
 }
