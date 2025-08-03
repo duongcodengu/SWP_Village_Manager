@@ -265,26 +265,20 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                     </div>
 
                                                     <div class="cart_qty qty-box open mt-2">
-                                                        <form method="post" asp-controller="Home" asp-action="AddToCart" class="d-flex align-items-center">
+                                                        <div class="d-flex align-items-center">
                                                             <input type="hidden" name="productId" value="@image.Id" />
                                                             <div class="input-group bg-white w-auto">
-                                                                <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
-                                                                <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
-                                                                <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
+                                                                <button type="button" class="qty-left-minus"><i class="fa fa-minus"></i></button>
+                                                                <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                                <button type="button" class="qty-right-plus"><i class="fa fa-plus"></i></button>
                                                             </div>
-                                                            <script>
-                                                                function adjustQty(btn, delta) {
-                                                                    const input = btn.parentElement.querySelector('.qty-input');
-                                                                    let val = parseInt(input.value) || 1;
-                                                                    val += delta;
-                                                                    if (val < 1) val = 1;
-                                                                    input.value = val;
-                                                                }
-                                                            </script>
-                                                            <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
+                                                            <button type="button" class="btn btn-sm ms-2 add-to-cart-btn" 
+                                                                    data-product-id="@image.ProductImage?.Product?.Id"
+                                                                    data-product-name="@image.ProductImage?.Product?.Name"
+                                                                    style="background-color: #4caf50; color: white;">
                                                                 <i class="fa fa-shopping-cart"></i>
                                                             </button>
-                                                        </form>
+                                                        </div>
                                                     </div>
                                                     </div>
                                                 }
@@ -351,26 +345,20 @@ Layout = "~/Views/Shared/_Layout.cshtml";
                                                     </div>
 
                                                     <div class="cart_qty qty-box open mt-2">
-                                                        <form method="post" asp-controller="Home" asp-action="AddToCart" class="d-flex align-items-center">
+                                                        <div class="d-flex align-items-center">
                                                             <input type="hidden" name="productId" value="@image.Id" />
                                                             <div class="input-group bg-white w-auto">
-                                                                <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
-                                                                <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
-                                                                <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
+                                                                <button type="button" class="qty-left-minus"><i class="fa fa-minus"></i></button>
+                                                                <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                                <button type="button" class="qty-right-plus"><i class="fa fa-plus"></i></button>
                                                             </div>
-                                                            <script>
-                                                                function adjustQty(btn, delta) {
-                                                                    const input = btn.parentElement.querySelector('.qty-input');
-                                                                    let val = parseInt(input.value) || 1;
-                                                                    val += delta;
-                                                                    if (val < 1) val = 1;
-                                                                    input.value = val;
-                                                                }
-                                                            </script>
-                                                            <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
+                                                            <button type="button" class="btn btn-sm ms-2 add-to-cart-btn" 
+                                                                    data-product-id="@image.Id" 
+                                                                    data-product-name="@image.ProductImage?.Product?.Name"
+                                                                    style="background-color: #4caf50; color: white;">
                                                                 <i class="fa fa-shopping-cart"></i>
                                                             </button>
-                                                        </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -582,9 +570,6 @@ Layout = "~/Views/Shared/_Layout.cshtml";
     <!-- Fly Cart Js -->
     <script src="~/js/fly-cart.js"></script>
 
-    <!-- Quantity js -->
-    <script src="~/js/quantity-2.js"></script>
-
     <!-- WOW js -->
     <script src="~/js/wow.min.js"></script>
     <script src="~/js/custom-wow.js"></script>
@@ -594,6 +579,9 @@ Layout = "~/Views/Shared/_Layout.cshtml";
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    
+    <!-- Cart AJAX functionality -->
+    <script src="~/js/cart-ajax.js"></script>
 </body>
 
 </html>

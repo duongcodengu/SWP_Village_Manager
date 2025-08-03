@@ -135,6 +135,7 @@
                                                 <!-- Input số lượng -->
                                                 <input class="form-control text-center qty-input"
                                                        type="number"
+                                                       id="quantity-input"
                                                        name="quantity"
                                                        value="1"
                                                        min="1"
@@ -150,7 +151,8 @@
                                         </div>
 
                                         <!-- Nút Add To Cart nằm dưới -->
-                                        <button type="submit" class="btn btn-md bg-dark cart-button text-white w-100">
+                                        <button type="button" id="add-to-cart-btn" class="btn btn-md bg-dark cart-button text-white w-100" 
+                                                data-product-id="@Model.Id" data-product-name="@Model.Name">
                                             <i class="fas fa-shopping-cart me-1"></i> Cho vào giỏ hàng
                                         </button>
                                     </div>
@@ -468,13 +470,6 @@
     <!-- sidebar open js -->
     <script src="~/js/filter-sidebar.js"></script>
 
-    <!-- Quantity js -->
-    <script src="~/js/quantity-2.js"></script>
-
-    <!-- Zoom Js -->
-    <script src="~/js/jquery.elevatezoom.js"></script>
-    <script src="~/js/zoom-filter.js"></script>
-
     <!-- Timer Js -->
     <script src="~/js/timer1.js"></script>
 
@@ -490,34 +485,82 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+    
+    <!-- Cart AJAX functionality -->
+    <script src="~/js/cart-ajax.js"></script>
+    
+    <style>
+        @@keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @@keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const plusBtn = document.querySelector('.qty-right-plus');
-            const minusBtn = document.querySelector('.qty-left-minus');
-            const qtyInput = document.querySelector('.qty-input');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    const productName = this.getAttribute('data-product-name');
+                    const quantity = parseInt(document.getElementById('quantity-input').value);
+                    
+                    if (quantity < 1) {
+                        alert('Số lượng phải lớn hơn 0!');
+                        return;
+                    }
 
-            plusBtn.addEventListener('click', function () {
-                let value = parseInt(qtyInput.value);
-                if (!isNaN(value)) {
-                    qtyInput.value = value + 1;
-                }
-            });
+                    // Disable button để tránh double click
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang thêm...';
 
-            minusBtn.addEventListener('click', function () {
-                let value = parseInt(qtyInput.value);
-                if (!isNaN(value) && value > 1) {
-                    qtyInput.value = value - 1;
-                }
-            });
+                    // Gọi API thêm vào giỏ hàng
+                    fetch('/api/shopapi/add-to-cart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            productId: parseInt(productId),
+                            quantity: quantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Cập nhật số lượng trong badge
+                            window.cartManager.updateCartBadge(data.count);
+                            
+                            // Cập nhật popup cart
+                            window.cartManager.updateCartPopup(data.cartItems, data.total);
+                            
+                            // Hiển thị thông báo thành công
+                            window.cartManager.showNotification('Đã thêm ' + productName + ' vào giỏ hàng!', 'success');
+                            
+                            // Reset button
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart me-1"></i> Cho vào giỏ hàng';
+                        } else {
+                            throw new Error(data.message || 'Có lỗi xảy ra!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        window.cartManager.showNotification('Có lỗi xảy ra khi thêm vào giỏ hàng!', 'error');
+                        
+                        // Reset button
+                        addToCartBtn.disabled = false;
+                        addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart me-1"></i> Cho vào giỏ hàng';
+                    });
+                });
+            }
         });
     </script>
-
-
-
-
-
-   
-    
 </body>
 
 </html>

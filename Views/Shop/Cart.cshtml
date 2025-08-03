@@ -94,7 +94,7 @@
                                                 </td>
                                                 <td class="save-remove">
                                                     <h4 class="table-title text-content">Thao tác</h4>
-                                                    <a class="remove close_button text-danger" href="/shop/removefromcart/@item.ProductId">
+                                                    <a class="remove close_button text-danger remove-from-cart" href="#" data-product-id="@item.ProductId">
                                                         <strong>Xóa</strong>
                                                     </a>
                                                 </td>
@@ -233,6 +233,9 @@
 
     <!-- theme setting js -->
     <script src="~/js/theme-setting.js"></script>
+
+    <!-- Cart AJAX functionality -->
+    <script src="~/js/cart-ajax.js"></script>
 </body>
 
 </html>

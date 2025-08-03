@@ -192,7 +192,7 @@
                                                                             </div>
 
                                                                             <div style="flex-shrink: 0;">
-                                                                                <a href="/shop/removefromcart/@item.ProductId" class="text-dark">
+                                                                                <a href="#" class="text-dark remove-from-cart" data-product-id="@item.ProductId">
                                                                                     <i class="fa-solid fa-xmark"></i>
                                                                                 </a>
                                                                             </div>
@@ -728,6 +728,9 @@
                 border-color: #ffc107 !important;
             }
     </style>
+
+    <!-- Cart AJAX functionality -->
+    <script src="~/js/cart-ajax.js"></script>
 
 </body>
 </html>

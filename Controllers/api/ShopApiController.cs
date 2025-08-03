@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.Utils;
+using Village_Manager.Models.Dto;
 
 namespace Village_Manager.Controllers.api
 {
@@ -78,18 +79,107 @@ namespace Village_Manager.Controllers.api
 
         // Thêm vào giỏ hàng
         [HttpPost("add-to-cart")]
-        public IActionResult AddToCart(int productId, int quantity)
+        public IActionResult AddToCart([FromBody] AddToCartRequest request)
         {
-            var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-            var existing = cart.FirstOrDefault(i => i.ProductId == productId);
+            try
+            {
+                var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+                var existing = cart.FirstOrDefault(i => i.ProductId == request.ProductId);
 
-            if (existing != null)
-                existing.Quantity += quantity;
-            else
-                cart.Add(new CartItem { ProductId = productId, Quantity = quantity });
+                if (existing != null)
+                    existing.Quantity += request.Quantity;
+                else
+                    cart.Add(new CartItem { ProductId = request.ProductId, Quantity = request.Quantity });
 
-            HttpContext.Session.Set("Cart", cart);
-            return Ok(new { success = true, count = cart.Sum(i => i.Quantity) });
+                HttpContext.Session.Set("Cart", cart);
+                
+                // Lấy thông tin chi tiết về cart để trả về
+                var cartWithProducts = CartHelper.GetCartWithProducts(HttpContext, _context);
+                var total = cartWithProducts.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+                
+                return Ok(new { 
+                    success = true, 
+                    count = cart.Sum(i => i.Quantity),
+                    total = total,
+                    cartItems = cartWithProducts.Select(item => new {
+                        productId = item.ProductId,
+                        name = item.Product?.Name,
+                        price = item.Product?.Price,
+                        quantity = item.Quantity,
+                        image = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png"
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Lấy thông tin giỏ hàng
+        [HttpGet("cart-info")]
+        public IActionResult GetCartInfo()
+        {
+            try
+            {
+                var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+                var cartWithProducts = CartHelper.GetCartWithProducts(HttpContext, _context);
+                var total = cartWithProducts.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+                
+                return Ok(new { 
+                    count = cart.Sum(i => i.Quantity),
+                    total = total,
+                    cartItems = cartWithProducts.Select(item => new {
+                        productId = item.ProductId,
+                        name = item.Product?.Name,
+                        price = item.Product?.Price,
+                        quantity = item.Quantity,
+                        image = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png"
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
+        }
+
+        // Xóa sản phẩm khỏi giỏ hàng
+        [HttpDelete("remove-from-cart/{productId}")]
+        public IActionResult RemoveFromCart(int productId)
+        {
+            try
+            {
+                var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+                var itemToRemove = cart.FirstOrDefault(i => i.ProductId == productId);
+                
+                if (itemToRemove != null)
+                {
+                    cart.Remove(itemToRemove);
+                    HttpContext.Session.Set("Cart", cart);
+                }
+                
+                // Lấy thông tin chi tiết về cart để trả về
+                var cartWithProducts = CartHelper.GetCartWithProducts(HttpContext, _context);
+                var total = cartWithProducts.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
+                
+                return Ok(new { 
+                    success = true, 
+                    count = cart.Sum(i => i.Quantity),
+                    total = total,
+                    cartItems = cartWithProducts.Select(item => new {
+                        productId = item.ProductId,
+                        name = item.Product?.Name,
+                        price = item.Product?.Price,
+                        quantity = item.Quantity,
+                        image = item.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png"
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
     }
 }

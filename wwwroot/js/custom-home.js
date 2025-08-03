@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Improve quantity buttons functionality
+    // Improve quantity buttons functionality - COMMENTED OUT TO AVOID CONFLICT
+    /*
     const quantityButtons = document.querySelectorAll('.qty-left-minus, .qty-right-plus');
     quantityButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -50,8 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
             input.dispatchEvent(new Event('change'));
         });
     });
+    */
 
-    // Add to cart button functionality
+    // Add to cart button functionality - COMMENTED OUT TO AVOID CONFLICT
+    /*
     const addCartButtons = document.querySelectorAll('.addcart-button');
     addCartButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -71,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    */
 
     // Wishlist functionality
     const wishlistButtons = document.querySelectorAll('.notifi-wishlist');

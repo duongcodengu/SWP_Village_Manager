@@ -217,26 +217,20 @@
                                             <h5 class="price text-dark">₫@item.Price.ToString("N0")</h5>
                                             <!-- Nút Add to Cart -->
                                             <div class="cart_qty qty-box open mt-2">
-                                                <form method="post" asp-controller="Shop" asp-action="AddToCart" class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center">
                                                     <input type="hidden" name="productId" value="@item.Id" />
                                                     <div class="input-group bg-white w-auto">
-                                                        <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
-                                                        <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" required />
-                                                        <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
+                                                        <button type="button" class="qty-left-minus"><i class="fa fa-minus"></i></button>
+                                                        <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" required />
+                                                        <button type="button" class="qty-right-plus"><i class="fa fa-plus"></i></button>
                                                     </div>
-                                                    <script>
-                                                        function adjustQty(btn, delta) {
-                                                            const input = btn.parentElement.querySelector('.qty-input');
-                                                            let val = parseInt(input.value) || 1;
-                                                            val += delta;
-                                                            if (val < 1) val = 1;
-                                                            input.value = val;
-                                                        }
-                                                    </script>
-                                                    <button type="submit" class="btn btn-sm ms-2" style="background-color: #4caf50; color: white;">
+                                                    <button type="button" class="btn btn-sm ms-2 add-to-cart-btn" 
+                                                            data-product-id="@item.Id" 
+                                                            data-product-name="@item.Name"
+                                                            style="background-color: #4caf50; color: white;">
                                                         <i class="fa fa-shopping-cart"></i>
                                                     </button>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -293,16 +287,6 @@
 
     <!-- Price Range Js -->
     <script src="~/js/ion.rangeSlider.min.js"></script>
-
-    <!-- Quantity js -->
-    <script src="~/js/quantity-2.js"></script>
-
-    <!-- sidebar open js -->
-    <script src="~/js/filter-sidebar.js"></script>
-
-    <!-- WOW js -->
-    <script src="~/js/wow.min.js"></script>
-    <script src="~/js/custom-wow.js"></script>
 
     <!-- script js -->
     <script src="~/js/script.js"></script>
@@ -551,15 +535,14 @@
                                             <div class="d-flex align-items-center">
                                                 <input type="hidden" class="product-id" value="${p.id}" />
                                                 <div class="input-group bg-white w-auto">
-                                                    <button type="button" onclick="adjustQty(this, -1)">
-                                                        <i class="fa fa-minus"></i>
-                                                    </button>
+                                                    <button type="button" class="qty-left-minus"><i class="fa fa-minus"></i></button>
                                                     <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" required />
-                                                    <button type="button" onclick="adjustQty(this, 1)">
-                                                        <i class="fa fa-plus"></i>
-                                                    </button>
+                                                    <button type="button" class="qty-right-plus"><i class="fa fa-plus"></i></button>
                                                 </div>
-                                                <button type="button" class="btn btn-sm ms-2 text-white" style="background-color: #4caf50;" onclick="handleAddToCart(this)">
+                                                <button type="button" class="btn btn-sm ms-2 add-to-cart-btn" 
+                                                        data-product-id="${p.id}" 
+                                                        data-product-name="${p.name}"
+                                                        style="background-color: #4caf50; color: white;">
                                                     <i class="fa fa-shopping-cart"></i>
                                                 </button>
                                             </div>
@@ -720,36 +703,8 @@
             });
     </script>
 
-    <script>
-        window.handleAddToCart = function(btn) {
-            // Lấy id sản phẩm và số lượng
-            const productId = $(btn).closest('.cart_qty').find('.product-id').val();
-            const quantityInput = $(btn).closest('.cart_qty').find('.qty-input');
-            const quantity = quantityInput.val();
-
-            // Kiểm tra validation
-            if (!quantity || quantity.trim() === '' || parseInt(quantity) < 1) {
-                alert('Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)');
-                quantityInput.focus();
-                return;
-            }
-
-            $.ajax({
-                url: '/Shop/AddToCart',
-                type: 'POST',
-                data: {
-                    productId: productId,
-                    quantity: quantity
-                },
-                success: function(res) {
-                    // Reload lại trang hoặc fetch lại sản phẩm
-                    location.reload();
-                },
-                error: function(xhr) {
-                    alert('Add to cart failed!');
-                }
-            });
-        };
-    </script>
+    <!-- Cart AJAX functionality -->
+    <script src="~/js/cart-ajax.js"></script>
 </body>
+
 </html>

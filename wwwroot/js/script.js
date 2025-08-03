@@ -162,8 +162,9 @@ $(document).ready(function () {
 });
 
 /*=====================
-  06. quantity js
+  06. quantity js - COMMENTED OUT TO AVOID CONFLICT
    ==========================*/
+/*
 $('.qty-box .quantity-right-plus').on('click', function () {
     var $qty = $(this).parents(".qty-box").find(".input-number");
     var currentVal = parseInt($qty.val(), 10);
@@ -178,6 +179,7 @@ $('.qty-box .quantity-left-minus').on('click', function () {
         $qty.val(currentVal - 0);
     }
 });
+*/
 
 /*=====================
   07. Tap to Top js
