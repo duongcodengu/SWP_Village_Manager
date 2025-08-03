@@ -246,7 +246,8 @@ public class ShopController : Controller
         HttpContext.Session.Remove("ShippingAddress");
         ViewBag.OrderId = order.Id;
         ViewBag.PaymentMethod = "Tiền mặt";
-        ViewBag.DiscountAmount = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
+        ViewBag.DiscountAmount = TempData["DiscountAmount"] != null ? (int)TempData["DiscountAmount"] : 0;
+        ViewBag.DiscountCode = TempData["DiscountCode"]?.ToString() ?? "";
 
         // Chuẩn bị model: danh sách CartItem tương ứng chi tiết đơn hàng
         var cartItems = order.RetailOrderItems.Select(oi => new CartItem
@@ -376,12 +377,15 @@ public class ShopController : Controller
         // Lưu địa chỉ giao hàng vào session
         HttpContext.Session.SetString("ShippingAddress", selectedUserLocation.Address);
 
-        // Xóa giỏ hàng + mã giảm giá
+        // Gửi thông tin sang trang success trước khi xoá
+        TempData["OrderId"] = newOrder.Id;
+        TempData["DiscountAmount"] = HttpContext.Session.GetInt32("DiscountAmount") ?? 0;
+        TempData["DiscountCode"] = HttpContext.Session.GetString("DiscountCode") ?? "";
+
+        // Xóa giỏ hàng + mã giảm giá sau khi đã lưu vào TempData
         HttpContext.Session.Remove("Cart");
         HttpContext.Session.Remove("DiscountCode");
         HttpContext.Session.Remove("DiscountAmount");
-
-        TempData["OrderId"] = newOrder.Id;
 
         return RedirectToAction("Success");
     }
