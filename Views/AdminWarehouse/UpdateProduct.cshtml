@@ -76,6 +76,7 @@
             <form class="theme-form theme-form-2 mega-form" method="POST" action="/updateproduct" enctype="multipart/form-data">
                 <!-- Product Information -->
                 @Html.AntiForgeryToken()
+                <input type="hidden" name="FarmerId" value="@Model.FarmerId" />
                 <input type="hidden" name="Id" value="@Model.Id" />
                 <div class="card">
                     <div class="card-body">
