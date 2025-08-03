@@ -1,0 +1,236 @@
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin cá nhân";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Village_Manager.ViewModel.FarmerEditProfileViewModel
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FamViệt">
+    <meta name="keywords" content="FamViệt">
+    <meta name="author" content="FamViệt">
+    <link rel="icon" href="~/images/favicon/1.png" type="image/x-icon">
+    <title>Nền tảng giao hàng và nông sản FamViệt</title>
+    <title>Trang chủ - FamViệt</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- bootstrap css -->
+    <link id="rtl-link" rel="stylesheet" type="text/css" href="~/css/vendors/bootstrap.css">
+
+    <!-- wow css -->
+    <link rel="stylesheet" href="~/css/animate.min.css">
+
+    <!-- Iconly css -->
+    <link rel="stylesheet" type="text/css" href="~/css/bulk-style.css">
+    <link rel="stylesheet" type="text/css" href="~/css/vendors/animate.css">
+
+    <!-- Template css -->
+    <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+</head>
+
+<body>
+    <!-- Edit Profile Section Start -->
+    <section class="edit-profile-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10">
+                    <div class="edit-profile-card">
+                        <div class="edit-profile-header">
+                            <h2><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin cá nhân</h2>
+                            <p class="mb-0">Cập nhật thông tin cá nhân của bạn</p>
+                        </div>
+
+                        <div class="edit-profile-body">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <div class="validation-summary-errors">
+                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Có lỗi xảy ra:</h6>
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+                                </div>
+                            }
+
+                            <form asp-action="EditProfile" asp-controller="Famer" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" asp-for="Id" />
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="FullName" class="form-label">
+                                                <i class="fas fa-user me-2"></i>Họ tên
+                                            </label>
+                                            <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên đầy đủ" />
+                                            <span asp-validation-for="FullName" class="field-validation-error"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="Phone" class="form-label">
+                                                <i class="fas fa-phone me-2"></i>Số điện thoại
+                                            </label>
+                                            <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
+                                            <span asp-validation-for="Phone" class="field-validation-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="Email" class="form-label">
+                                        <i class="fas fa-envelope me-2"></i>Email
+                                    </label>
+                                    <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ email" />
+                                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="Address" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ
+                                    </label>
+                                    <textarea asp-for="Address" class="form-control" rows="3" 
+                                              placeholder="Nhập địa chỉ chi tiết"></textarea>
+                                    <span asp-validation-for="Address" class="field-validation-error"></span>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="NewPassword" class="form-label">
+                                                <i class="fas fa-lock me-2"></i>Mật khẩu mới
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-key"></i>
+                                                </span>
+                                                <input asp-for="NewPassword" type="password" class="form-control" 
+                                                       placeholder="Để trống nếu không đổi mật khẩu" />
+                                            </div>
+                                            <span asp-validation-for="NewPassword" class="field-validation-error"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="ConfirmPassword" class="form-label">
+                                                <i class="fas fa-lock me-2"></i>Xác nhận mật khẩu
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                                <input asp-for="ConfirmPassword" type="password" class="form-control" 
+                                                       placeholder="Nhập lại mật khẩu mới" />
+                                            </div>
+                                            <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between">
+                                            <a href="@Url.Action("DashboardFamer", "Famer")" class="btn btn-secondary">
+                                                <i class="fas fa-arrow-left me-2"></i>Quay lại
+                                            </a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Cập nhật thông tin
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Edit Profile Section End -->
+    <!-- latest jquery-->
+    <script src="~/js/jquery-3.6.0.min.js"></script>
+
+    <!-- jquery ui-->
+    <script src="~/js/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="~/js/bootstrap/bootstrap-notify.min.js"></script>
+    <script src="~/js/bootstrap/popper.min.js"></script>
+
+    <!-- feather icon js-->
+    <script src="~/js/feather/feather.min.js"></script>
+    <script src="~/js/feather/feather-icon.js"></script>
+
+    <!-- Lazyload Js -->
+    <script src="~/js/lazysizes.min.js"></script>
+
+    <!-- Slick js-->
+    <script src="~/js/slick/slick.js"></script>
+    <script src="~/js/slick/slick-animation.min.js"></script>
+    <script src="~/js/slick/custom_slick.js"></script>
+
+    <!-- Auto Height Js -->
+    <script src="~/js/auto-height.js"></script>
+
+    <!-- Timer Js -->
+    <script src="~/js/timer1.js"></script>
+
+    <!-- Fly Cart Js -->
+    <script src="~/js/fly-cart.js"></script>
+
+    <!-- Quantity js -->
+    <script src="~/js/quantity-2.js"></script>
+
+    <!-- WOW js -->
+    <script src="~/js/wow.min.js"></script>
+    <script src="~/js/custom-wow.js"></script>
+
+    <!-- script js -->
+    <script src="~/js/script.js"></script>
+
+    <!-- theme setting js -->
+    <script src="~/js/theme-setting.js"></script>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Custom validation for phone number
+        $(document).ready(function() {
+            $('#Phone').on('input', function() {
+                var phone = $(this).val();
+                // Remove all non-digit characters
+                phone = phone.replace(/\D/g, '');
+                $(this).val(phone);
+            });
+
+            // Show/hide password fields
+            $('#NewPassword').on('input', function() {
+                if ($(this).val().length > 0) {
+                    $('#ConfirmPassword').prop('required', true);
+                } else {
+                    $('#ConfirmPassword').prop('required', false);
+                    $('#ConfirmPassword').val('');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html> 

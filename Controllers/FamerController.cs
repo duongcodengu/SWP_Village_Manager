@@ -160,7 +160,7 @@ namespace Village_Manager.Controllers
             var model = new FamerDashboardViewModel
             {
                 User = user,
-                Famer = farmer,
+                Farmer = farmer,
                 ProductList = productList,
                 ProductWithSalesList = productWithSalesList,
                 OngoingOrders = ongoingOrders
@@ -503,6 +503,113 @@ namespace Village_Manager.Controllers
 
             TempData["Success"] = $"Đã {response} yêu cầu cung cấp thành công!";
             return RedirectToAction("DashboardFamer");
+        }
+
+        // Edit Profile Actions
+        [HttpGet]
+        [Route("famer/editprofile")]
+        public async Task<IActionResult> EditProfile()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            var farmer = await _context.Farmers
+                .Include(f => f.User)
+                .FirstOrDefaultAsync(f => f.UserId == userId);
+
+            if (farmer == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin nông dân.";
+                return RedirectToAction("DashboardFamer");
+            }
+
+            var viewModel = new FarmerEditProfileViewModel
+            {
+                Id = farmer.Id,
+                FullName = farmer.FullName ?? "",
+                Phone = farmer.Phone,
+                Address = farmer.Address,
+                Email = farmer.User.Email
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [Route("famer/editprofile")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(FarmerEditProfileViewModel model)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var farmer = await _context.Farmers
+                .Include(f => f.User)
+                .FirstOrDefaultAsync(f => f.UserId == userId);
+
+            if (farmer == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin nông dân.";
+                return RedirectToAction("DashboardFamer");
+            }
+
+            // Kiểm tra số điện thoại trùng lặp (trừ chính nó)
+            var phoneExists = await _context.Farmers
+                .AnyAsync(f => f.Phone == model.Phone && f.Id != farmer.Id);
+
+            if (phoneExists)
+            {
+                ModelState.AddModelError("Phone", "Số điện thoại này đã được sử dụng bởi nông dân khác.");
+                return View(model);
+            }
+
+            // Kiểm tra email trùng lặp (trừ chính nó)
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email == model.Email && u.Id != userId);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("Email", "Email này đã được sử dụng bởi tài khoản khác.");
+                return View(model);
+            }
+
+            try
+            {
+                // Cập nhật thông tin Farmer
+                farmer.FullName = model.FullName;
+                farmer.Phone = model.Phone;
+                farmer.Address = model.Address;
+
+                // Cập nhật thông tin User
+                farmer.User.Email = model.Email;
+
+                // Cập nhật mật khẩu nếu có
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    farmer.User.Password = Utils.PasswordHelper.HashPassword(model.NewPassword);
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Cập nhật thông tin cá nhân thành công!";
+                return RedirectToAction("DashboardFamer");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.");
+                return View(model);
+            }
         }
     }
 }

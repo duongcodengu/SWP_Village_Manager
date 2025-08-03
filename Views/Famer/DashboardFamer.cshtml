@@ -34,6 +34,50 @@
 
     <!-- Template css -->
     <link id="color-link" rel="stylesheet" type="text/css" href="~/css/style.css">
+    
+    <style>
+        .profile-info h5 {
+            font-family: 'Public Sans', sans-serif;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .profile-info li {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 12px 0;
+        }
+        .profile-info li:last-child {
+            border-bottom: none;
+        }
+        .profile-info h5:first-child {
+            color: #666;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .profile-info h5:last-child {
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .dashboard-title .btn-primary {
+            background: linear-gradient(135deg, #0da487 0%, #0099cc 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .dashboard-title .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 164, 135, 0.3);
+        }
+        .address-text {
+            font-family: 'Public Sans', sans-serif;
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -63,7 +107,7 @@
                                 </div>
 
                                 <div class="profile-name">
-                                    <li> @Model.Famer.FullName</li>
+                                    <li> @Model.Farmer.FullName</li>
                                     <h6 class="text-content">@Model.User.Email</h6>
                                 </div>
                             </div>
@@ -120,7 +164,7 @@
                                     </div>
 
                                     <div class="dashboard-user-name">
-                                        <h6 class="text-content">Xin chào, <b class="text-title">@Model.Famer.FullName</b></h6>
+                                        <h6 class="text-content">Xin chào, <b class="text-title">@Model.Farmer.FullName</b></h6>
                                         <p class="text-content">
                                             Từ bảng điều khiển của bạn, bạn có thể xem tổng hợp các hoạt động gần đây và cập nhật thông tin tài khoản của mình. Chọn một liên kết dưới đây để xem hoặc chỉnh sửa thông tin.
                                         </p>
@@ -616,10 +660,19 @@
                                     <div class="profile-tab dashboard-bg-box">
                                         <div class="dashboard-title dashboard-flex">
                                             <h3>Thông tin cá nhân</h3>
+                                            <a href="@Url.Action("EditProfile", "Famer")" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit me-1"></i>Chỉnh sửa
+                                            </a>
                                         </div>
 
-                                        <ul>
-                                            
+                                        <ul class="profile-info">
+                                            <li>
+                                                <h5>Họ tên :</h5>
+                                                <h5>@Model.Farmer.FullName</h5>
+                                            </li>
+                                            <li>
+                                                <h5>Số điện thoại :</h5>
+                                                <h5>@Model.Farmer.Phone</h5>
                                             </li>
                                             <li>
                                                 <h5>Email :</h5>
@@ -627,16 +680,15 @@
                                             </li>
                                             <li>
                                                 <h5>Quốc gia :</h5>
-                                                <h5>Viet Nam</h5>
+                                                <h5>Việt Nam</h5>
                                             </li>
-
                                             <li>
                                                 <h5>Ngày tham gia :</h5>
-                                                <h5>@Model.User.CreatedAt</h5>
+                                                <h5>@Model.User.CreatedAt?.ToString("dd/MM/yyyy")</h5>
                                             </li>
                                             <li>
                                                 <h5>Địa chỉ :</h5>
-                                                <h5>@Model.Famer.Address</h5>
+                                                <h5 class="address-text">@Model.Farmer.Address</h5>
                                             </li>
                                         </ul>
                                     </div>
