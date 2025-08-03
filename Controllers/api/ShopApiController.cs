@@ -30,7 +30,7 @@ namespace Village_Manager.Controllers.api
             int pageSize = 20)
         {
             var query = _context.Products
-                .Where(p => p.ApprovalStatus == "accepted")
+                .Where(p => p.ApprovalStatus == "accepted" && !_context.HiddenProduct.Any(h => h.ProductId == p.Id))
                 .Include(p => p.Category)
                 .Include(p => p.ProductImages)
                 .AsQueryable();

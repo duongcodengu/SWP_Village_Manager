@@ -69,7 +69,7 @@
                                     <div class="title-header option-title">
                                         <h5>Danh sách Shipper</h5>
                                         <form class="d-inline-flex">
-                                            <a href="add-new-category.html" class="align-items-center btn btn-theme d-flex">
+                                            <a href="/adduser" class="align-items-center btn btn-theme d-flex">
                                                 <i data-feather="plus-square"></i>Thêm mới
                                             </a>
                                         </form>
@@ -90,10 +90,9 @@
                                                     <th>ID</th>
                                                     <th>Họ tên</th>
                                                     <th>Điện thoại</th>
-                                                    <th>Địa chỉ</th>
-                                                    <th>Phương tiện</th>
-                                                    <th>Tài khoản</th>
                                                     <th>Email</th>
+                                                    <th>Phương tiện</th>
+                                                    <th>Trạng thái</th>
                                                     <th>Ngày tạo</th>
                                                     <th>Tùy chọn</th>
                                                 </tr>
@@ -107,44 +106,22 @@
                                                             <td>@shipper.Id</td>
                                                             <td>@shipper.FullName</td>
                                                             <td>@shipper.Phone</td>
-                                                            <td>@shipper.Address</td>
-                                                            <td>@shipper.Username</td>
-                                                            <td>@shipper.VehicleInfo</td>
                                                             <td>@shipper.Email</td>
-                                                            <td>@shipper.Created</td>
+                                                            <td>@shipper.VehicleInfo</td>
+                                                            <td>@shipper.Status</td>
+                                                            <td>@(shipper.Created?.ToString("dd/MM/yyyy"))</td>
                                                             <td>
                                                                 <ul class="action-icons">
-                                                                    <li>
-                                                                        <a href="javascript:void(0)"
-                                                                           data-bs-toggle="modal"
-                                                                           data-bs-target="#editShipperModal"
-                                                                           data-id="@shipper.Id"
-                                                                           data-name="@shipper.FullName"
-                                                                           data-phone="@shipper.Phone"
-                                                                           data-address="@shipper.Address"
-                                                                           data-username="@shipper.Username"
-                                                                           data-email="@shipper.Email">
-                                                                            <i class="ri-pencil-line"></i>
-                                                                        </a>
-                                                                        <script>
-                                                                            $('#editShipperModal').on('show.bs.modal', function (event) {
-                                                                                var button = $(event.relatedTarget);
-                                                                                var id = button.data('id');
-                                                                                var name = button.data('name');
-                                                                                var phone = button.data('phone');
-                                                                                var address = button.data('address');
-                                                                                var username = button.data('username');
-                                                                                var email = button.data('email');
-
-                                                                                var modal = $(this);
-                                                                                modal.find('input[name="Id"]').val(id);
-                                                                                modal.find('input[name="FullName"]').val(name);
-                                                                                modal.find('input[name="Phone"]').val(phone);
-                                                                                modal.find('input[name="Address"]').val(address);
-                                                                                modal.find('input[name="Username"]').val(username);
-                                                                                modal.find('input[name="Email"]').val(email);
-                                                                            });
-                                                                        </script>
+                                                                    <li>                                                                                                                                          <a href="javascript:void(0)"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editShipperModal"
+                                                                        data-id="@shipper.Id"
+                                                                        data-name="@shipper.FullName"
+                                                                        data-phone="@shipper.Phone"
+                                                                        data-email="@shipper.Email"
+                                                                        data-status="@shipper.Status"
+                                                                        data-vehicleinfo="@shipper.VehicleInfo">
+                                                                        <i class="ri-pencil-line"></i>
 
                                                                     </li>
                                                                     <li>
@@ -163,47 +140,54 @@
                                                 }
                                                 else
                                                 {
-                                                    <tr><td colspan="8" class="text-center">Không có dữ liệu.</td></tr>
+                                                    <tr><td colspan="9" class="text-center">Không có dữ liệu.</td></tr>
                                                 }
                                             </tbody>
                                         </table>
-                                        <div class="modal fade" id="editShipperModal" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <form action="/admin/shipper/update" method="post">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Cập nhật shipper</h5>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <input type="hidden" name="Id" />
-                                                            <div class="mb-2">
-                                                                <label>Họ tên</label>
-                                                                <input type="text" name="FullName" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>SĐT</label>
-                                                                <input type="text" name="Phone" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Địa chỉ</label>
-                                                                <input type="text" name="Address" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Email</label>
-                                                                <input type="text" name="Email" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Username</label>
-                                                                <input type="text" name="Username" class="form-control" disabled />
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn btn-primary">Lưu</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
+                                                                                 <div class="modal fade" id="editShipperModal" tabindex="-1" aria-hidden="true">
+                                             <div class="modal-dialog">
+                                                 <form action="/admin/shipper/update" method="post">
+                                                     @Html.AntiForgeryToken()
+                                                     <div class="modal-content">
+                                                         <div class="modal-header">
+                                                             <h5 class="modal-title">Cập nhật shipper</h5>
+                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                         </div>
+                                                         <div class="modal-body">
+                                                             <input type="hidden" name="Id" />
+                                                             <div class="mb-3">
+                                                                 <label class="form-label">Họ tên</label>
+                                                                 <input type="text" name="FullName" class="form-control" required />
+                                                             </div>
+                                                             <div class="mb-3">
+                                                                 <label class="form-label">Số điện thoại</label>
+                                                                 <input type="text" name="Phone" class="form-control" required />
+                                                             </div>
+                                                             <div class="mb-3">
+                                                                 <label class="form-label">Phương tiện</label>
+                                                                 <input type="text" name="VehicleInfo" class="form-control" />
+                                                             </div>
+                                                             <div class="mb-3">
+                                                                 <label class="form-label">Trạng thái</label>
+                                                                 <select name="Status" class="form-control" required>
+                                                                     <option value="Active">Hoạt động</option>
+                                                                     <option value="Inactive">Không hoạt động</option>
+                                                                     <option value="Suspended">Tạm ngưng</option>
+                                                                 </select>
+                                                             </div>
+                                                             <div class="mb-3">
+                                                                 <label class="form-label">Email</label>
+                                                                 <input type="email" name="Email" class="form-control" disabled />
+                                                             </div>
+                                                         </div>
+                                                         <div class="modal-footer">
+                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                             <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                                         </div>
+                                                     </div>
+                                                 </form>
+                                             </div>
+                                         </div>
                                         <div class="modal fade" id="confirmRoleChangeModal" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <form action="/admin/shipper/delete" method="post">
@@ -259,57 +243,86 @@
             </div>
         </div>
     </div>
-    <!-- Chỉnh sửa thông tin Shipper -->
-    <div class="modal fade" id="editFarmerModal" tabindex="-1" aria-labelledby="editFarmerModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="post" action="/famer/update">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editFarmerModalLabel">Chỉnh sửa thông tin shipper</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="FarmerId" id="editFarmerId" />
-                        <div class="mb-3">
-                            <label for="editFarmerName" class="form-label">Họ tên</label>
-                            <input type="text" class="form-control" name="FarmerName" id="editFarmerName" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editFarmerPhone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" name="FarmerPhone" id="editFarmerPhone" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editFarmerAddress" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" name="FarmerAddress" id="editFarmerAddress" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editUsername" class="form-label">Tài khoản</label>
-                            <input type="text" class="form-control" name="Username" id="editUsername" disabled />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" name="Email" id="editEmail" disabled />
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <script>
-        $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var userid = button.data('userid');
-            var username = button.data('username');
+               <script>
+          $(document).ready(function() {
+              // Script for edit shipper modal - Load existing data when modal opens
+              $('#editShipperModal').on('show.bs.modal', function (event) {
+                  var button = $(event.relatedTarget);
+                  var id = button.data('id');
+                  var name = button.data('name');
+                  var phone = button.data('phone');
+                  var vehicleInfo = button.data('vehicleinfo');
+                  var status = button.data('status');
+                  var email = button.data('email');
 
-            var modal = $(this);
-            modal.find('input[name="UserId"]').val(userid);
-            modal.find('#confirmUsername').text(username);
-        });
-    </script>
+                  var modal = $(this);
+                  
+                                     // Map status from database to form values
+                   var mappedStatus = status;
+                   if (status === 'approved') mappedStatus = 'Active';
+                   else if (status === 'inactive') mappedStatus = 'Inactive';
+                   else if (status === 'pending') mappedStatus = 'Suspended';
+                   else mappedStatus = 'Active'; // default
+                   
+                   // Populate form fields with existing data
+                   modal.find('input[name="Id"]').val(id);
+                   modal.find('input[name="FullName"]').val(name);
+                   modal.find('input[name="Phone"]').val(phone);
+                   modal.find('input[name="VehicleInfo"]').val(vehicleInfo);
+                   modal.find('select[name="Status"]').val(mappedStatus);
+                   modal.find('input[name="Email"]').val(email);
+                  
+                  console.log('Loading shipper data:', {
+                      id: id,
+                      name: name,
+                      phone: phone,
+                      vehicleInfo: vehicleInfo,
+                      status: status,
+                      email: email
+                  });
+                  
+                  // Verify data is loaded correctly
+                  console.log('Form values after loading:');
+                  console.log('ID:', modal.find('input[name="Id"]').val());
+                  console.log('FullName:', modal.find('input[name="FullName"]').val());
+                  console.log('Phone:', modal.find('input[name="Phone"]').val());
+                  console.log('VehicleInfo:', modal.find('input[name="VehicleInfo"]').val());
+                  console.log('Status:', modal.find('select[name="Status"]').val());
+                  console.log('Email:', modal.find('input[name="Email"]').val());
+              });
+
+              // Script for confirm delete modal
+              $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
+                  var button = $(event.relatedTarget);
+                  var userid = button.data('userid');
+                  var username = button.data('username');
+
+                  var modal = $(this);
+                  modal.find('input[name="UserId"]').val(userid);
+                  modal.find('#confirmUsername').text(username);
+              });
+              
+              // Clear form when modal is hidden (optional)
+              $('#editShipperModal').on('hidden.bs.modal', function () {
+                  var modal = $(this);
+                  modal.find('form')[0].reset();
+                  console.log('Form cleared after modal closed');
+              });
+              
+              // Add click handler for debugging
+              $('[data-bs-target="#editShipperModal"]').on('click', function() {
+                  console.log('Edit button clicked');
+                  console.log('Data attributes:', {
+                      id: $(this).data('id'),
+                      name: $(this).data('name'),
+                      phone: $(this).data('phone'),
+                      vehicleinfo: $(this).data('vehicleinfo'),
+                      status: $(this).data('status'),
+                      email: $(this).data('email')
+                  });
+              });
+          });
+      </script>
 
 
     <!-- Bootstrap JS (bắt buộc) -->

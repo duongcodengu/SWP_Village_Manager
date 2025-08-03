@@ -112,26 +112,70 @@ namespace Village_Manager.Controllers
         //udpateShipper
         [HttpPost]
         [Route("admin/shipper/update")]
-        public async Task<IActionResult> UpdateShipper(int Id, string FullName, string Phone, string Address, string Email)
+        public async Task<IActionResult> UpdateShipper(int Id, string FullName, string Phone, string VehicleInfo, string Status, string Email)
         {
-            var shipper = await _context.Shippers.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == Id);
-            if (shipper != null)
+            try
             {
-                shipper.FullName = FullName;
-                shipper.Phone = Phone;
-                shipper.VehicleInfo = shipper.VehicleInfo; // giữ nguyên nếu không cập nhật
-                shipper.User.Email = Email;
-
-                // Nếu có địa chỉ riêng thì cập nhật bảng khác (tùy design)
-                var request = await _context.ShipperRegistrationRequests.FirstOrDefaultAsync(r => r.UserId == shipper.UserId);
-                if (request != null)
+                var shipper = await _context.Shippers.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == Id);
+                if (shipper == null)
                 {
-                    request.Address = Address;
+                    TempData["Error"] = "Không tìm thấy shipper.";
+                    return Redirect("/shipper");
+                }
+
+                // Validate phone number (only digits)
+                if (!string.IsNullOrWhiteSpace(Phone) && Phone.Any(c => !char.IsDigit(c)))
+                {
+                    TempData["Error"] = "Số điện thoại chỉ được chứa ký tự số.";
+                    return Redirect("/shipper");
+                }
+
+                // Check if phone number already exists for another shipper
+                if (!string.IsNullOrWhiteSpace(Phone))
+                {
+                    var existingShipper = await _context.Shippers.FirstOrDefaultAsync(s => s.Phone == Phone.Trim() && s.Id != Id);
+                    if (existingShipper != null)
+                    {
+                        TempData["Error"] = "Số điện thoại đã được sử dụng bởi shipper khác.";
+                        return Redirect("/shipper");
+                    }
+                }
+
+                // Map status values to database constraints
+                string mappedStatus = Status switch
+                {
+                    "Active" => "approved",
+                    "Inactive" => "inactive",
+                    "Suspended" => "pending",
+                    _ => "pending"
+                };
+
+                // Cập nhật thông tin shipper
+                shipper.FullName = FullName?.Trim();
+                shipper.Phone = Phone?.Trim();
+                shipper.VehicleInfo = VehicleInfo?.Trim();
+                shipper.Status = mappedStatus;
+
+                // Cập nhật email của user nếu có
+                if (!string.IsNullOrWhiteSpace(Email))
+                {
+                    shipper.User.Email = Email?.Trim();
                 }
 
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Cập nhật shipper thành công.";
             }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi khi cập nhật shipper: {ex.Message}";
+                // Log the full exception for debugging
+                Console.WriteLine($"Full exception: {ex}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException}");
+                }
+            }
+            
             return Redirect("/shipper");
         }
         //DeleteShipper
@@ -139,11 +183,8 @@ namespace Village_Manager.Controllers
         [Route("admin/shipper/delete")]
         public async Task<IActionResult> DeleteShipper(int UserId)
         {
-            Console.WriteLine("UserId nhận được: " + UserId);
             try
             {
-                Console.WriteLine($"[DeleteShipper] Received UserId: {UserId}");
-
                 var shipper = await _context.Shippers.FirstOrDefaultAsync(s => s.UserId == UserId);
                 if (shipper == null)
                 {
@@ -151,10 +192,7 @@ namespace Village_Manager.Controllers
                     return Redirect("/shipper");
                 }
 
-                // Soft delete thay vì Remove
-                shipper.Status = "pending";
-                await _context.SaveChangesAsync();
-
+                // Tìm user để thay đổi role
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
                 if (user == null)
                 {
@@ -162,18 +200,27 @@ namespace Village_Manager.Controllers
                     return Redirect("/shipper");
                 }
 
+                // Thay đổi role từ shipper (4) về customer (3)
                 if (user.RoleId == 4)
                 {
                     user.RoleId = 3;
                     _context.Users.Update(user);
                 }
 
+                // Xóa shipper khỏi bảng Shippers
+                _context.Shippers.Remove(shipper);
+
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã gỡ quyền shipper và chuyển về khách hàng.";
+                TempData["Success"] = "Đã xóa shipper và chuyển về khách hàng thành công.";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Lỗi khi gỡ quyền: {ex.Message}";
+                TempData["Error"] = $"Lỗi khi xóa shipper: {ex.Message}";
+                Console.WriteLine($"Full exception: {ex}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException}");
+                }
             }
 
             return Redirect("/shipper");

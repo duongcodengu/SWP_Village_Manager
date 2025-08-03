@@ -182,8 +182,7 @@
         </div>
         <!-- Container-fluid End -->
     </div>
-    <!-- Page Body End -->
-    </div>
+
     <!-- page-wrapper End -->
     <!-- Modal Start -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
@@ -205,6 +204,66 @@
         </div>
     </div>
     <!-- Modal End -->
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const priceInput = this.querySelector('input[name="price"]');
+            const quantityInput = this.querySelector('input[name="quantity"]');
+
+            const price = priceInput.value.trim();
+            const quantity = quantityInput.value.trim();
+
+            const priceNum = Number(price);
+            const quantityNum = Number(quantity);
+
+            // Kiểm tra giá
+            if (!price || isNaN(priceNum)) {
+                alert('Giá phải là số hợp lệ.');
+                priceInput.focus();
+                e.preventDefault();
+                return false;
+            }
+            if (priceNum <= 0) {
+                alert('Giá phải là số dương.');
+                priceInput.focus();
+                e.preventDefault();
+                return false;
+            }
+            if (priceNum < 1000) {
+                alert('Giá không được nhỏ hơn 1000.');
+                priceInput.focus();
+                e.preventDefault();
+                return false;
+            }
+            if (priceNum % 1000 !== 0) {
+                alert('Giá phải là bội số của 1000.');
+                priceInput.focus();
+                e.preventDefault();
+                return false;
+            }
+
+            // Kiểm tra số lượng
+            if (!quantity || isNaN(quantityNum)) {
+                alert('Số lượng phải là số hợp lệ.');
+                quantityInput.focus();
+                e.preventDefault();
+                return false;
+            }
+            if (quantityNum <= 0) {
+                alert('Số lượng phải lớn hơn 0.');
+                quantityInput.focus();
+                e.preventDefault();
+                return false;
+            }
+            if (!Number.isInteger(quantityNum)) {
+                alert('Số lượng phải là số nguyên.');
+                quantityInput.focus();
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+
 
 </body>
 

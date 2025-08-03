@@ -493,43 +493,72 @@ namespace Village_Manager.Controllers
             var roleId = HttpContext.Session.GetInt32("RoleId");
             if (roleId != 2) return View("404");
 
+            // Kiểm tra các trường bắt buộc
             if (string.IsNullOrWhiteSpace(username))
-                ModelState.AddModelError("username", "Vui lòng nhập username.");
+            {
+                TempData["Error"] = "Vui lòng nhập username.";
+                return RedirectToAction("AddCustomer");
+            }
 
             if (string.IsNullOrWhiteSpace(email))
             {
-                ModelState.AddModelError("email", "Vui lòng nhập email.");
-            }
-            else
-            {
-                // Regex kiểm tra định dạng email chuẩn (tên@tênmiền)
-                var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$");
-                if (!emailRegex.IsMatch(email))
-                {
-                    ModelState.AddModelError("email", "Email không hợp lệ. Vui lòng nhập đúng định dạng: ten@tenmien.com.");
-                }
-                else if (await _context.Users.AnyAsync(u => u.Email == email))
-                {
-                    ModelState.AddModelError("email", "Email đã được sử dụng.");
-                }
+                TempData["Error"] = "Vui lòng nhập email.";
+                return RedirectToAction("AddCustomer");
             }
 
             if (string.IsNullOrWhiteSpace(password))
-                ModelState.AddModelError("password", "Vui lòng nhập mật khẩu.");
-            else if (password.Length < 6)
-                ModelState.AddModelError("password", "Mật khẩu phải có ít nhất 6 ký tự.");
-
-            if (!string.IsNullOrWhiteSpace(phone))
             {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(phone, @"^0\d{9}$"))
-                    ModelState.AddModelError("phone", "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.");
+                TempData["Error"] = "Vui lòng nhập mật khẩu.";
+                return RedirectToAction("AddCustomer");
             }
 
-            if (await _context.Users.AnyAsync(u => u.Username == username))
-                ModelState.AddModelError("username", "Username đã tồn tại.");
+            if (password.Length < 6)
+            {
+                TempData["Error"] = "Mật khẩu phải có ít nhất 6 ký tự.";
+                return RedirectToAction("AddCustomer");
+            }
 
+            // Kiểm tra định dạng email
+            var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$");
+            if (!emailRegex.IsMatch(email))
+            {
+                TempData["Error"] = "Email không hợp lệ. Vui lòng nhập đúng định dạng: ten@tenmien.com.";
+                return RedirectToAction("AddCustomer");
+            }
+
+            // Kiểm tra định dạng số điện thoại nếu có
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                if (!Regex.IsMatch(phone, @"^0\d{9}$"))
+                {
+                    TempData["Error"] = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.";
+                    return RedirectToAction("AddCustomer");
+                }
+            }
+
+            // Kiểm tra trùng lặp username
+            if (await _context.Users.AnyAsync(u => u.Username == username))
+            {
+                TempData["Error"] = "Username đã tồn tại.";
+                return RedirectToAction("AddCustomer");
+            }
+
+            // Kiểm tra trùng lặp email
             if (await _context.Users.AnyAsync(u => u.Email == email))
-                ModelState.AddModelError("email", "Email đã được sử dụng.");
+            {
+                TempData["Error"] = "Email đã được sử dụng.";
+                return RedirectToAction("AddCustomer");
+            }
+
+            // Kiểm tra trùng lặp số điện thoại nếu có
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                if (await _context.Users.AnyAsync(u => u.Phone == phone.Trim()))
+                {
+                    TempData["Error"] = "Số điện thoại đã được sử dụng.";
+                    return RedirectToAction("AddCustomer");
+                }
+            }
 
             // --- CREATE NEW CUSTOMER ---
             var newCustomer = new User
