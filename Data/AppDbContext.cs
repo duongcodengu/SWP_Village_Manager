@@ -152,7 +152,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AddressLine)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("address_line");
             entity.Property(e => e.City)
                 .HasMaxLength(100)
@@ -345,7 +345,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Content)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("content");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -414,7 +414,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Action)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar")
                 .HasColumnName("action");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -434,7 +434,7 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Content)
-                .HasColumnType("text")
+                .HasColumnType("nvarchar(max)")
                 .HasColumnName("content");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")

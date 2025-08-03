@@ -473,13 +473,3 @@ VALUES (N'admin', N'$2a$11$0FqV8cu.Hcztc09ha/2.Oe5m1tOVt3KUwlpbMxhEh3PINOuWmNLpi
 
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'Staff', N'$2a$11$F8O3TAlKXEQpnK/KZfICTeUBjtm4DvyUIWcwEoe.IGVPLd30GpsWy', N'admin@gmail.com', 2, 0, '0123456788'); -- pass staff1
-
-INSERT INTO ProductCategory (name, imageUrl, active) VALUES
-(N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg', 1),
-(N'Đồ uống', N'back-end/svg/cup.svg', 1),
-(N'Thịt & Hải sản', N'back-end/svg/meats.svg', 1),
-(N'Bữa sáng', N'back-end/svg/breakfast.svg', 1),
-(N'Thực phẩm đông lạnh', N'back-end/svg/frozen.svg', 1),
-(N'Sữa & Chế phẩm từ sữa', N'back-end/svg/milk.svg', 1),
-(N'Thức ăn cho thú cưng', N'back-end/svg/pet.svg', 1);
-

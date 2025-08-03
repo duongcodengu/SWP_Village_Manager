@@ -171,11 +171,8 @@
                                         @foreach (var category in categories)
                                         {
                                             <div>
-                                                <div class="dashboard-category">
-                                                    <a href="javascript:void(0)" class="category-image">
-                                                        <img src="@category.ImageUrl" class="img-fluid" alt="@category.Name" />
-                                                    </a>
-                                                    <a href="javascript:void(0)" class="category-name">
+                                                <div class="dashboard-category text-center">
+                                                    <a href="javascript:void(0)" class="category-name" style="width: 100px">
                                                         <h6>@category.Name</h6>
                                                     </a>
                                                 </div>
@@ -185,7 +182,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- chart card section End -->
+
                         <!-- Earning chart star-->
                         <div class="col-xl-6">
                             <div class="card o-hidden card-hover">
