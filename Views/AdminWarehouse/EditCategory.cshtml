@@ -12,7 +12,7 @@ Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
                     <h5 class="mb-0">Chỉnh sửa danh mục</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-action="EditCategory" asp-route-id="@Model.Id"  asp-controller="Category" method="post" enctype="multipart/form-data" class="theme-form theme-form-2 mega-form">
+                    <form asp-action="EditCategory" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="ImageUrl" />
                         <div class="mb-4 row align-items-center">
@@ -41,23 +41,22 @@ Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
                             </div>
                         </div>
 
-                        <div class="mb-4 row align-items-center">
-                            <label asp-for="Active" class="form-label-title col-sm-3 mb-0">Trạng thái</label>
-                            <div class="col-sm-9">
-                                <div class="form-check form-switch">
-                                    <input asp-for="Active" class="form-check-input" type="checkbox" id="activeSwitch" />
-                                    <label class="form-check-label" for="activeSwitch">
-                                        <span class="badge @(Model.Active ? "bg-success" : "bg-danger")">
-                                            @(Model.Active ? "Hoạt động" : "Dừng hoạt động")
-                                        </span>
-                                    </label>
-                                </div>
-                                <small class="form-text text-muted">
-                                    <i data-feather="info" class="me-1"></i>
-                                    Danh mục dừng hoạt động sẽ không hiển thị cho khách hàng
-                                </small>
-                            </div>
-                        </div>
+                                                 <div class="mb-4 row align-items-center">
+                             <label asp-for="Active" class="form-label-title col-sm-3 mb-0">Trạng thái</label>
+                             <div class="col-sm-9">
+                                 <div class="form-check form-switch">
+                                     <input name="Active" type="checkbox" id="activeSwitch" value="true" @(Model.Active ? "checked" : "") />
+                                     <input type="hidden" name="Active" value="false" />
+                                     <label class="form-check-label" for="activeSwitch">
+                                         <span id="statusText">@(Model.Active ? "ON" : "OFF")</span>
+                                     </label>
+                                 </div>
+                                 <small class="form-text text-muted">
+                                     <i data-feather="info" class="me-1"></i>
+                                     Danh mục dừng hoạt động sẽ không hiển thị cho khách hàng
+                                 </small>
+                             </div>
+                         </div>
 
                         <div class="card-submit-button text-end">
                             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -71,17 +70,14 @@ Layout = "~/Views/Shared/_AdminWarehouse.cshtml";
 </div>
 
 <script>
-    // Cập nhật badge khi toggle switch
+    // Cập nhật text khi toggle switch
     document.getElementById('activeSwitch').addEventListener('change', function() {
-        var badge = this.parentElement.querySelector('.badge');
-        var label = this.parentElement.querySelector('.form-check-label');
+        var statusText = document.getElementById('statusText');
         
         if (this.checked) {
-            badge.className = 'badge bg-success';
-            badge.textContent = 'Hoạt động';
+            statusText.textContent = 'ON';
         } else {
-            badge.className = 'badge bg-danger';
-            badge.textContent = 'Dừng hoạt động';
+            statusText.textContent = 'OFF';
         }
     });
 </script>

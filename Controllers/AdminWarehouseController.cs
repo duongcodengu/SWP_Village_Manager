@@ -675,6 +675,12 @@ public class AdminWarehouseController : Controller
                     ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits and start with 0");
                     return View(user);
                 }
+                // Kiểm tra trùng số điện thoại
+                if (await _context.Users.AnyAsync(u => u.Phone == user.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is already used by another user");
+                    return View(user);
+                }
             }
             // Tạo user mới
             var newUser = new User
@@ -694,11 +700,25 @@ public class AdminWarehouseController : Controller
             var farmerRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "farmer");
             if (farmerRole != null && newUser.RoleId == farmerRole.Id)
             {
+                // Kiểm tra xem đã có farmer nào với số điện thoại này chưa
+                if (!string.IsNullOrEmpty(newUser.Phone) && await _context.Farmers.AnyAsync(f => f.Phone == newUser.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is already used by another farmer");
+                    return View(user);
+                }
+
+                // Kiểm tra phone number cho farmer (bắt buộc phải có)
+                if (string.IsNullOrEmpty(newUser.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is required for farmer");
+                    return View(user);
+                }
+
                 var newFarmer = new Farmer
                 {
                     UserId = newUser.Id,
                     FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
-                    Phone = newUser.Phone,
+                    Phone = newUser.Phone, // Đã kiểm tra không null ở trên
                     Address = "" // lấy từ form nếu có, hoặc để trống
                 };
                 _context.Farmers.Add(newFarmer);
@@ -709,12 +729,26 @@ public class AdminWarehouseController : Controller
             var shipperRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == "shipper");
             if (shipperRole != null && newUser.RoleId == shipperRole.Id)
             {
+                // Kiểm tra xem đã có shipper nào với số điện thoại này chưa
+                if (!string.IsNullOrEmpty(newUser.Phone) && await _context.Shippers.AnyAsync(s => s.Phone == newUser.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is already used by another shipper");
+                    return View(user);
+                }
+
+                // Kiểm tra phone number cho shipper (bắt buộc phải có)
+                if (string.IsNullOrEmpty(newUser.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is required for shipper");
+                    return View(user);
+                }
+
                 var newShipper = new Shipper
                 {
                     UserId = newUser.Id,
                     FullName = newUser.Username, // hoặc lấy từ form nếu có trường tên đầy đủ
-                    Phone = newUser.Phone,
-                    VehicleInfo = null, // cho phép null
+                    Phone = newUser.Phone, // Đã kiểm tra không null ở trên
+                    VehicleInfo = "Vehicle info will be updated later", // Tạm thời để giá trị mặc định, có thể cập nhật sau
                     Status = "approved"
                 };
                 _context.Shippers.Add(newShipper);
@@ -817,6 +851,13 @@ public class AdminWarehouseController : Controller
             {
                 _logger.LogWarning($"Email already exists: {user.Email}");
                 ModelState.AddModelError("Email", "Email already exists");
+                return View(user);
+            }
+            // Kiểm tra trùng số điện thoại (trừ user hiện tại)
+            if (!string.IsNullOrEmpty(user.Phone) && await _context.Users.AnyAsync(u => u.Phone == user.Phone && u.Id != id))
+            {
+                _logger.LogWarning($"Phone number already exists: {user.Phone}");
+                ModelState.AddModelError("Phone", "Phone number is already used by another user");
                 return View(user);
             }
             // Không cho đổi username của tài khoản đặc biệt (Id == 1)
@@ -1210,6 +1251,7 @@ public class AdminWarehouseController : Controller
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Duyệt sản phẩm: {product?.Name} - Hành động: {action}");
         return RedirectToAction("Products");
     }
+    
     [HttpGet]
     [Route("shipper")]
     public IActionResult Shipper()
@@ -1220,22 +1262,22 @@ public class AdminWarehouseController : Controller
             Response.StatusCode = 404;
             return View("404");
         }
-        var result = (from shipper in _context.Shippers
-                      join request in _context.ShipperRegistrationRequests
-                      on shipper.UserId equals request.UserId
-                      select new ShipperDisplayViewModel
-                      {
-                          Id = shipper.Id,
-                          FullName = shipper.FullName,
-                          Phone = shipper.Phone,
-                          VehicleInfo = shipper.VehicleInfo,
-                          Status = shipper.Status,
-                          Address = request.Address,
-                          UserId = request.UserId,
-                          Username = shipper.User.Username,
-                          Email = shipper.User.Email,
-                          Created = shipper.User.CreatedAt
-                      }).ToList();
+        
+        var result = _context.Shippers
+            .Include(s => s.User)
+            .Select(shipper => new ShipperDisplayViewModel
+            {
+                Id = shipper.Id,
+                FullName = shipper.FullName,
+                Phone = shipper.Phone,
+                VehicleInfo = shipper.VehicleInfo,
+                Status = shipper.Status,
+                Address = "", // Address không có trong bảng Shipper, để trống hoặc lấy từ User
+                UserId = shipper.UserId ?? 0,
+                Username = shipper.User != null ? shipper.User.Username : "",
+                Email = shipper.User != null ? shipper.User.Email : "",
+                Created = shipper.User != null ? shipper.User.CreatedAt : null
+            }).ToList();
 
         return View(result);
     }

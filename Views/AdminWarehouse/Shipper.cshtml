@@ -90,10 +90,10 @@
                                                     <th>ID</th>
                                                     <th>Họ tên</th>
                                                     <th>Điện thoại</th>
-                                                    <th>Địa chỉ</th>
-                                                    <th>Phương tiện</th>
-                                                    <th>Tài khoản</th>
+                                                    <th>Username</th>
                                                     <th>Email</th>
+                                                    <th>Phương tiện</th>
+                                                    <th>Trạng thái</th>
                                                     <th>Ngày tạo</th>
                                                     <th>Tùy chọn</th>
                                                 </tr>
@@ -107,44 +107,26 @@
                                                             <td>@shipper.Id</td>
                                                             <td>@shipper.FullName</td>
                                                             <td>@shipper.Phone</td>
-                                                            <td>@shipper.Address</td>
                                                             <td>@shipper.Username</td>
-                                                            <td>@shipper.VehicleInfo</td>
                                                             <td>@shipper.Email</td>
-                                                            <td>@shipper.Created</td>
+                                                            <td>@shipper.VehicleInfo</td>
+                                                            <td>@shipper.Status</td>
+                                                            <td>@(shipper.Created?.ToString("dd/MM/yyyy"))</td>
                                                             <td>
                                                                 <ul class="action-icons">
                                                                     <li>
-                                                                        <a href="javascript:void(0)"
-                                                                           data-bs-toggle="modal"
-                                                                           data-bs-target="#editShipperModal"
-                                                                           data-id="@shipper.Id"
-                                                                           data-name="@shipper.FullName"
-                                                                           data-phone="@shipper.Phone"
-                                                                           data-address="@shipper.Address"
-                                                                           data-username="@shipper.Username"
-                                                                           data-email="@shipper.Email">
+                                                                                                                                                                                                                          <a href="javascript:void(0)"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#editShipperModal"
+                                                                            data-id="@shipper.Id"
+                                                                            data-name="@shipper.FullName"
+                                                                            data-phone="@shipper.Phone"
+                                                                            data-vehicleinfo="@shipper.VehicleInfo"
+                                                                            data-status="@shipper.Status"
+                                                                            data-username="@shipper.Username"
+                                                                            data-email="@shipper.Email">
                                                                             <i class="ri-pencil-line"></i>
                                                                         </a>
-                                                                        <script>
-                                                                            $('#editShipperModal').on('show.bs.modal', function (event) {
-                                                                                var button = $(event.relatedTarget);
-                                                                                var id = button.data('id');
-                                                                                var name = button.data('name');
-                                                                                var phone = button.data('phone');
-                                                                                var address = button.data('address');
-                                                                                var username = button.data('username');
-                                                                                var email = button.data('email');
-
-                                                                                var modal = $(this);
-                                                                                modal.find('input[name="Id"]').val(id);
-                                                                                modal.find('input[name="FullName"]').val(name);
-                                                                                modal.find('input[name="Phone"]').val(phone);
-                                                                                modal.find('input[name="Address"]').val(address);
-                                                                                modal.find('input[name="Username"]').val(username);
-                                                                                modal.find('input[name="Email"]').val(email);
-                                                                            });
-                                                                        </script>
 
                                                                     </li>
                                                                     <li>
@@ -163,7 +145,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <tr><td colspan="8" class="text-center">Không có dữ liệu.</td></tr>
+                                                    <tr><td colspan="9" class="text-center">Không có dữ liệu.</td></tr>
                                                 }
                                             </tbody>
                                         </table>
@@ -174,29 +156,37 @@
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Cập nhật shipper</h5>
                                                         </div>
-                                                        <div class="modal-body">
-                                                            <input type="hidden" name="Id" />
-                                                            <div class="mb-2">
-                                                                <label>Họ tên</label>
-                                                                <input type="text" name="FullName" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>SĐT</label>
-                                                                <input type="text" name="Phone" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Địa chỉ</label>
-                                                                <input type="text" name="Address" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Email</label>
-                                                                <input type="text" name="Email" class="form-control" />
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label>Username</label>
-                                                                <input type="text" name="Username" class="form-control" disabled />
-                                                            </div>
-                                                        </div>
+                                                                                                                 <div class="modal-body">
+                                                             <input type="hidden" name="Id" />
+                                                             <div class="mb-2">
+                                                                 <label>Họ tên</label>
+                                                                 <input type="text" name="FullName" class="form-control" />
+                                                             </div>
+                                                             <div class="mb-2">
+                                                                 <label>SĐT</label>
+                                                                 <input type="text" name="Phone" class="form-control" />
+                                                             </div>
+                                                             <div class="mb-2">
+                                                                 <label>Phương tiện</label>
+                                                                 <input type="text" name="VehicleInfo" class="form-control" />
+                                                             </div>
+                                                             <div class="mb-2">
+                                                                 <label>Trạng thái</label>
+                                                                 <select name="Status" class="form-control">
+                                                                     <option value="Active">Hoạt động</option>
+                                                                     <option value="Inactive">Không hoạt động</option>
+                                                                     <option value="Suspended">Tạm ngưng</option>
+                                                                 </select>
+                                                             </div>
+                                                             <div class="mb-2">
+                                                                 <label>Username</label>
+                                                                 <input type="text" name="Username" class="form-control" disabled />
+                                                             </div>
+                                                             <div class="mb-2">
+                                                                 <label>Email</label>
+                                                                 <input type="text" name="Email" class="form-control" disabled />
+                                                             </div>
+                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="submit" class="btn btn-primary">Lưu</button>
                                                         </div>
@@ -299,17 +289,39 @@
             </div>
         </div>
     </div>
-    <script>
-        $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var userid = button.data('userid');
-            var username = button.data('username');
+         <script>
+         // Script for edit shipper modal
+         $('#editShipperModal').on('show.bs.modal', function (event) {
+             var button = $(event.relatedTarget);
+             var id = button.data('id');
+             var name = button.data('name');
+             var phone = button.data('phone');
+             var vehicleInfo = button.data('vehicleinfo');
+             var status = button.data('status');
+             var username = button.data('username');
+             var email = button.data('email');
 
-            var modal = $(this);
-            modal.find('input[name="UserId"]').val(userid);
-            modal.find('#confirmUsername').text(username);
-        });
-    </script>
+             var modal = $(this);
+             modal.find('input[name="Id"]').val(id);
+             modal.find('input[name="FullName"]').val(name);
+             modal.find('input[name="Phone"]').val(phone);
+             modal.find('input[name="VehicleInfo"]').val(vehicleInfo);
+             modal.find('select[name="Status"]').val(status);
+             modal.find('input[name="Username"]').val(username);
+             modal.find('input[name="Email"]').val(email);
+         });
+
+         // Script for confirm delete modal
+         $('#confirmRoleChangeModal').on('show.bs.modal', function (event) {
+             var button = $(event.relatedTarget);
+             var userid = button.data('userid');
+             var username = button.data('username');
+
+             var modal = $(this);
+             modal.find('input[name="UserId"]').val(userid);
+             modal.find('#confirmUsername').text(username);
+         });
+     </script>
 
 
     <!-- Bootstrap JS (bắt buộc) -->
