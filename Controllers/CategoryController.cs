@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Village_Manager.Data;
 using Village_Manager.Models;
 using Village_Manager.ViewModel;
+using Village_Manager.Extensions;
 namespace Village_Manager.Controllers
 {
     [Route("category")]
@@ -22,6 +23,12 @@ namespace Village_Manager.Controllers
         [Route("listcate")]
         public IActionResult Listcate()
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
            
             var categoriesRaw = _context.ProductCategories
                 .Include(c => c.Products)
@@ -50,6 +57,13 @@ namespace Village_Manager.Controllers
         [Route("category-details")]
         public IActionResult CategoryDetails()
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             var categoryDetails = _context.ProductCategories
                 .Select(c => new CategoryStatsViewModel
                 {
@@ -80,12 +94,26 @@ namespace Village_Manager.Controllers
         [HttpGet("addCategory")]
         public IActionResult addCategory()
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             return View("Views/AdminWarehouse/addCategory.cshtml");
         }
         [HttpPost("addCategory")]
 
         public IActionResult addCategory(ProductCategory category, IFormFile ImgFile)
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             if (String.IsNullOrWhiteSpace(category.Name))
             {
                 ModelState.AddModelError("Name", "Category name is required");
@@ -140,6 +168,13 @@ namespace Village_Manager.Controllers
         [HttpGet("editCategory/{id}")]
         public async Task<IActionResult> EditCategory(int id)
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             var category = await _context.ProductCategories.FindAsync(id);
             if (category == null)
             {
@@ -152,6 +187,13 @@ namespace Village_Manager.Controllers
         [ActionName("EditCategory")]
         public async Task<IActionResult> EditCategory(ProductCategory category, IFormFile? imgFile)
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             // Fix checkbox binding issue
             var activeValues = Request.Form["Active"].ToArray();
             bool isActive = activeValues.Contains("true");
@@ -237,6 +279,13 @@ namespace Village_Manager.Controllers
         [HttpPost("toggleActive/{id}")]
         public async Task<IActionResult> ToggleActive(int id)
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
+            
             var category = await _context.ProductCategories.FindAsync(id);
             if (category == null)
             {
@@ -262,6 +311,12 @@ namespace Village_Manager.Controllers
         [HttpGet("DeleteCategory/{id}")]
         public IActionResult DeleteCategory(int id)
         {
+            // Kiểm tra quyền admin
+            if (!HttpContext.Session.IsAdmin())
+            {
+                Response.StatusCode = 404;
+                return View("404");
+            }
 
             var category = _context.ProductCategories.FirstOrDefault(c => c.Id == id);
             if (category == null) return NotFound();

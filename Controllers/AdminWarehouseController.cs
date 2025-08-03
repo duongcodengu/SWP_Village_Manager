@@ -675,6 +675,12 @@ public class AdminWarehouseController : Controller
                     ModelState.AddModelError("Phone", "Phone number must be exactly 10 digits and start with 0");
                     return View(user);
                 }
+                // Kiểm tra trùng số điện thoại
+                if (await _context.Users.AnyAsync(u => u.Phone == user.Phone))
+                {
+                    ModelState.AddModelError("Phone", "Phone number is already used by another user");
+                    return View(user);
+                }
             }
             // Tạo user mới
             var newUser = new User
@@ -845,6 +851,13 @@ public class AdminWarehouseController : Controller
             {
                 _logger.LogWarning($"Email already exists: {user.Email}");
                 ModelState.AddModelError("Email", "Email already exists");
+                return View(user);
+            }
+            // Kiểm tra trùng số điện thoại (trừ user hiện tại)
+            if (!string.IsNullOrEmpty(user.Phone) && await _context.Users.AnyAsync(u => u.Phone == user.Phone && u.Id != id))
+            {
+                _logger.LogWarning($"Phone number already exists: {user.Phone}");
+                ModelState.AddModelError("Phone", "Phone number is already used by another user");
                 return View(user);
             }
             // Không cho đổi username của tài khoản đặc biệt (Id == 1)
