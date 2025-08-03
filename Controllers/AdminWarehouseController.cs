@@ -4,6 +4,7 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -320,6 +321,7 @@ public class AdminWarehouseController : Controller
         }
         var product = await _context.Products
             .Include(p => p.ProductImages)
+            .Include(p => p.Farmer)
             .FirstOrDefaultAsync(p => p.Id == model.Id);
 
         if (product == null)
@@ -337,18 +339,11 @@ public class AdminWarehouseController : Controller
         if (model.Price != 0)
             product.Price = model.Price;
 
-        //if (model.ExpirationDate != default)
-        //    product.ExpirationDate = model.ExpirationDate;
-
         if (!string.IsNullOrEmpty(model.ProductType))
             product.ProductType = model.ProductType;
 
         if (model.Quantity != 0)
             product.Quantity = model.Quantity;
-
-        //if (model.ProcessingTime != default)
-        //    product.ProcessingTime = model.ProcessingTime;
-
         if (model.FarmerId != 0)
             product.FarmerId = model.FarmerId;
 
@@ -381,7 +376,7 @@ public class AdminWarehouseController : Controller
         // Sau khi cập nhật thành công:
         int? userId = HttpContext.Session.GetInt32("UserId");
         Village_Manager.Extensions.LogHelper.SaveLog(_context, userId, $"Updated product: {model.Name}");
-        return Redirect("/products");
+        return Redirect("/product");
     }
     [HttpGet]
     [Route("searchProduct")]
