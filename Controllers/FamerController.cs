@@ -144,7 +144,8 @@ namespace Village_Manager.Controllers
                 Product = p,
                 SoldQuantity = _context.RetailOrderItems
                     .Where(roi => roi.ProductId == p.Id)
-                    .Sum(roi => (int?)roi.Quantity) ?? 0
+                    .Sum(roi => (int?)roi.Quantity) ?? 0,
+                StockQuantity = p.Quantity // Lấy số lượng từ bảng Product
             }).ToList();
 
             var productIds = productList.Select(p => p.Id).ToList();
@@ -172,9 +173,7 @@ namespace Village_Manager.Controllers
             ViewBag.FarmerName = farmer.FullName;
             ViewBag.TotalProductTypes = productList.Count;
             ViewBag.TotalSold = productWithSalesList.Sum(p => p.SoldQuantity);
-            ViewBag.TotalQuantityInStock = _context.Stocks
-                .Where(s => productIds.Contains(s.Id))
-                .Sum(s => (int?)s.Quantity) ?? 0;
+            ViewBag.TotalQuantityInStock = productList.Sum(p => p.Quantity);
 
             // Load danh sách yêu cầu cung cấp
             var supplyRequests = _context.SupplyRequests

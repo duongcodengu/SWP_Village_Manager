@@ -77,6 +77,46 @@
             word-wrap: break-word;
             white-space: pre-wrap;
         }
+        
+        /* CSS cho thống kê kho hàng */
+        .stock-item {
+            background: #fff;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef !important;
+        }
+        .stock-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-color: #0da487 !important;
+        }
+        .stock-stat h5 {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .stock-stat small {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .progress {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .progress-bar {
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .text-success {
+            color: #28a745 !important;
+        }
+        .text-warning {
+            color: #ffc107 !important;
+        }
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        .text-info {
+            color: #17a2b8 !important;
+        }
     </style>
 </head>
 
@@ -226,7 +266,8 @@
                                                             <th scope="col">Hình ảnh</th>
                                                             <th scope="col">Tên sản phẩm</th>
                                                             <th scope="col">Giá</th>
-                                                            <th scope="col">Khuyến mãi</th>
+                                                            <th scope="col">Tồn kho</th>
+                                                            <th scope="col">Đã bán</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -248,7 +289,8 @@
 
                                                                     </td>
                                                                     <td>@product.Name</td>
-                                                                    <td>@product.Price</td>
+                                                                    <td>@product.Price.ToString("N0") VNĐ</td>
+                                                                    <td>@item.StockQuantity</td>
                                                                     <td>@item.SoldQuantity</td>
                                                                      
                                                                 </tr>
@@ -257,7 +299,7 @@
                                                         else
                                                         {
                                                             <tr>
-                                                                <td colspan="6" class="tex-center"> Ban chua co san pham</td>
+                                                                <td colspan="5" class="text-center">Bạn chưa có sản phẩm</td>
                                                             </tr>
                                                         }
                                                     </tbody>
@@ -312,6 +354,79 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Thống kê kho hàng chi tiết -->
+                                        <div class="col-12">
+                                            <div class="dashboard-bg-box">
+                                                <div class="dashboard-title mb-4">
+                                                    <h3>Thống kê kho hàng</h3>
+                                                </div>
+                                                <div class="row g-3">
+                                                    @if (Model.ProductWithSalesList != null && Model.ProductWithSalesList.Any())
+                                                    {
+                                                        foreach (var item in Model.ProductWithSalesList)
+                                                        {
+                                                            var product = item.Product;
+                                                            var stockPercentage = item.StockQuantity > 0 ? (item.StockQuantity * 100.0 / (item.StockQuantity + item.SoldQuantity)) : 0;
+                                                            var stockStatus = item.StockQuantity == 0 ? "Hết hàng" : 
+                                                                           item.StockQuantity <= 5 ? "Sắp hết" : "Còn hàng";
+                                                            var statusClass = item.StockQuantity == 0 ? "text-danger" : 
+                                                                           item.StockQuantity <= 5 ? "text-warning" : "text-success";
+                                                            
+                                                            <div class="col-lg-3 col-md-4 col-sm-6">
+                                                                <div class="stock-item p-3 border rounded">
+                                                                    <div class="d-flex align-items-center mb-2">
+                                                                        @if(product.ProductImages != null && product.ProductImages.Any())
+                                                                        {
+                                                                            <img src="@product.ProductImages.First().ImageUrl" alt="@product.Name" 
+                                                                                 class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"/>
+                                                                        }
+                                                                        <div>
+                                                                            <h6 class="mb-0">@product.Name</h6>
+                                                                            <small class="text-muted">@product.Price.ToString("N0") VNĐ</small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row text-center">
+                                                                        <div class="col-4">
+                                                                            <div class="stock-stat">
+                                                                                <h5 class="mb-0 @statusClass">@item.StockQuantity</h5>
+                                                                                <small class="text-muted">Tồn kho</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-4">
+                                                                            <div class="stock-stat">
+                                                                                <h5 class="mb-0 text-info">@item.SoldQuantity</h5>
+                                                                                <small class="text-muted">Đã bán</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-4">
+                                                                            <div class="stock-stat">
+                                                                                <h5 class="mb-0 @statusClass">@stockStatus</h5>
+                                                                                <small class="text-muted">Trạng thái</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @if (item.StockQuantity > 0)
+                                                                    {
+                                                                        <div class="progress mt-2" style="height: 6px;">
+                                                                            <div class="progress-bar @(item.StockQuantity <= 5 ? "bg-warning" : "bg-success")" 
+                                                                                 style="width: @(stockPercentage)%"></div>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="col-12 text-center py-4">
+                                                            <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc;"></i>
+                                                            <p class="mt-2 text-muted">Chưa có sản phẩm trong kho</p>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -336,6 +451,7 @@
                                                     <th scope="col">Ảnh</th>
                                                     <th scope="col">Tên sản phẩm</th>
                                                     <th scope="col">Giá</th>
+                                                    <th scope="col">Tồn kho</th>
                                                     <th scope="col">Mô tả</th>
                                                     <th scope="col">Trạng thái</th>
                                                     <th scope="col">Thao tác</th>
@@ -362,6 +478,16 @@
                                                             </td>
                                                             <td>@product.Name</td>
                                                             <td>@product.Price.ToString("N0") VNĐ</td>
+                                                            <td>
+                                                                @{
+                                                                    var stockStatus = product.Quantity == 0 ? "Hết hàng" : 
+                                                                                     product.Quantity <= 5 ? "Sắp hết" : "Còn hàng";
+                                                                    var stockClass = product.Quantity == 0 ? "text-danger" : 
+                                                                                    product.Quantity <= 5 ? "text-warning" : "text-success";
+                                                                }
+                                                                <span class="@stockClass fw-bold">@product.Quantity</span>
+                                                                <br><small class="text-muted">@stockStatus</small>
+                                                            </td>
                                                             <td>
                                                                 @if (!string.IsNullOrEmpty(product.ProductImages?.FirstOrDefault()?.Description))
                                                                 {
@@ -426,7 +552,7 @@
                                                 else
                                                 {
                                                     <tr>
-                                                        <td colspan="6" class="text-center">Bạn chưa có sản phẩm nào.</td>
+                                                        <td colspan="7" class="text-center">Bạn chưa có sản phẩm nào.</td>
                                                     </tr>
                                                 }
                                             </tbody>
