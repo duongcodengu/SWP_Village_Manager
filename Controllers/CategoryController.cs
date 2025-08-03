@@ -147,27 +147,40 @@ namespace Village_Manager.Controllers
             }
             return View("Views/Adminwarehouse/EditCategory.cshtml", category);
         }
-        [HttpPost("editCategory/{Id}")]
+
+        [HttpPost("editCategory/{id}")]
         [ActionName("EditCategory")]
-        public async Task<IActionResult> EditCategory(ProductCategory category, IFormFile imgFile)
+        public async Task<IActionResult> EditCategory(ProductCategory category, IFormFile? imgFile)
         {
-            var exitCate = await _context.ProductCategories.FirstOrDefaultAsync(c => c.Id == category.Id);
+            // Fix checkbox binding issue
+            var activeValues = Request.Form["Active"].ToArray();
+            bool isActive = activeValues.Contains("true");
+            category.Active = isActive;
+            
+            var exitCate = await _context.ProductCategories.FindAsync(category.Id);
             if (exitCate == null)
             {
                 return NotFound("Không tìm thấy danh mục");
             }
 
-            // validate name
+            // validate name - simplified
             if (string.IsNullOrWhiteSpace(category.Name))
             {
                 ModelState.AddModelError("Name", "Tên không được để trống");
             }
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(category.Name, @"^[\p{L}0-9\s\-&]+$"))
+            
+            // Clear any imgFile validation errors since it's optional
+            ModelState.Remove("imgFile");
+
+            // nếu có lỗi thì trả lại view với thông báo
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Name", "Tên không hợp lệ (chỉ cho phép chữ, số, khoảng trắng, -, &))");
+                // Giữ nguyên ảnh cũ khi trả lại form
+                category.ImageUrl = exitCate.ImageUrl;
+                return View("Views/AdminWarehouse/EditCategory.cshtml", category);
             }
 
-            // validate image file
+            // Nếu có ảnh mới, xử lý và lưu
             if (imgFile != null && imgFile.Length > 0)
             {
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
@@ -175,53 +188,49 @@ namespace Village_Manager.Controllers
 
                 if (!allowedExtensions.Contains(extension))
                 {
-                    ModelState.AddModelError("ImageUrl", "File không hợp lệ (vui lòng chọn file có định dạng .jpg, .jpeg, .png, .gif)");
+                    ModelState.AddModelError("ImageUrl", "File không hợp lệ");
+                    category.ImageUrl = exitCate.ImageUrl;
+                    return View("Views/AdminWarehouse/EditCategory.cshtml", category);
                 }
-            }
 
-            // nếu có lỗi thì trả lại view với thông báo
-            if (!ModelState.IsValid)
-            {
-                category.ImageUrl = exitCate.ImageUrl;
-
-                return View("Views/AdminWarehouse/EditCategory.cshtml", category);
-            }
-
-            // nếu có ảnh mới thì xử lý
-            if (imgFile != null && imgFile.Length > 0)
-            {
-                // xoá ảnh cũ nếu tồn tại
-                var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", exitCate.ImageUrl.TrimStart('/'));
-                if (System.IO.File.Exists(oldImagePath))
+                // Xóa ảnh cũ nếu có
+                if (!string.IsNullOrEmpty(exitCate.ImageUrl))
                 {
-                    System.IO.File.Delete(oldImagePath);
+                    var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", exitCate.ImageUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                        System.IO.File.Delete(oldImagePath);
                 }
 
-                // lưu ảnh mới
-                var filename = Guid.NewGuid().ToString() + Path.GetExtension(imgFile.FileName);
+                // Lưu ảnh mới
+                var filename = Guid.NewGuid() + Path.GetExtension(imgFile.FileName);
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/categories", filename);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await imgFile.CopyToAsync(stream);
                 }
 
-                category.ImageUrl = "/images/categories/" + filename;
-            }
-            else
-            {
-
-                category.ImageUrl = exitCate.ImageUrl;
-
+                exitCate.ImageUrl = "/images/categories/" + filename;
             }
 
-            // cập nhật dữ liệu
+            // Cập nhật thông tin khác
             exitCate.Name = category.Name;
-            exitCate.ImageUrl = category.ImageUrl;
             exitCate.Active = category.Active;
 
-            _context.ProductCategories.Update(exitCate);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Listcate");
+            try
+            {
+                // Lưu DB
+                await _context.SaveChangesAsync();
+                
+                TempData["Success"] = "Cập nhật danh mục thành công!";
+                return RedirectToAction("Listcate");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi khi cập nhật danh mục: " + ex.Message);
+                category.ImageUrl = exitCate.ImageUrl;
+                return View("Views/AdminWarehouse/EditCategory.cshtml", category);
+            }
+
         }
 
         // Toggle active/inactive status

@@ -474,9 +474,6 @@ VALUES (N'admin', N'$2a$11$0FqV8cu.Hcztc09ha/2.Oe5m1tOVt3KUwlpbMxhEh3PINOuWmNLpi
 INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
 VALUES (N'Staff', N'$2a$11$F8O3TAlKXEQpnK/KZfICTeUBjtm4DvyUIWcwEoe.IGVPLd30GpsWy', N'admin@gmail.com', 2, 0, '0123456788'); -- pass staff1
 
-INSERT INTO Users (username, password, email, role_id, HasAcceptedGeolocation, Phone)
-VALUES (N'famer', N'$2a$11$eTsIS8kd9vJAmucqAtnNxuubSEx6AiURdahWSsg2sd8h0BQKNWEda', N'famer@famer.com', 5, 0, '0123456787'); -- pass famer1
-
 INSERT INTO ProductCategory (name, imageUrl, active) VALUES
 (N'Rau củ & Trái cây', N'back-end/svg/vegetable.svg', 1),
 (N'Đồ uống', N'back-end/svg/cup.svg', 1),

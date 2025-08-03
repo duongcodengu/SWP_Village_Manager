@@ -22,7 +22,7 @@ namespace Village_Manager.Controllers
         public async Task<IActionResult> ChatBox(int? receiverId)
         {
             var currentUserId = HttpContext.Session.GetInt32("UserId");
-            if (currentUserId == null) return RedirectToAction("Login", "Account");
+            if (currentUserId == null) return RedirectToAction("Login", "Home");
 
             var currentUser = await _context.Users.FindAsync(currentUserId);
             var currentRole = await _context.Roles.FindAsync(currentUser.RoleId);
