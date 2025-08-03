@@ -88,6 +88,7 @@
                                                         <th>Tên sản phẩm</th>
                                                         <th>Danh mục</th>
                                                         <th>Giá</th>
+                                                        <th>Số lượng</th>
                                                         <th>Loại sản phẩm</th>
                                                         <th>Trạng thái</th>
                                                         <th>Hành động</th>
@@ -111,6 +112,7 @@
                                                             <td>@product.Name</td>
                                                             <td>@product.Category?.Name</td>
                                                             <td>@product.Price</td>
+                                                            <td>@product.Quantity</td>
                                                             <td>@product.ProductType</td>
                                                             <td>
                                                                 @if(product.ApprovalStatus == "accepted")
