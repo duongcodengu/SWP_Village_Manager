@@ -9,7 +9,7 @@
     var paymentMethod = ViewBag.PaymentMethod?.ToString() ?? "N/A";
     var total = Model.Sum(i => (i.Product?.Price ?? 0) * i.Quantity);
     var discount = ViewBag.DiscountAmount != null ? (int)ViewBag.DiscountAmount : 0;
-    var shipping = 15000;
+    var shipping = 0; // Free ship
     var finalTotal = total - discount + shipping;
     var itemCount = Model.Sum(i => i.Quantity);
 
@@ -121,7 +121,7 @@
                                     </li>
                                     <li>
                                         <h4>Phí vận chuyển:</h4>
-                                        <h4 class="price">₫@String.Format("{0:N0}", shipping)</h4>
+                                        <h4 class="price text-success">Miễn phí</h4>
                                     </li>
                                 </ul>
 

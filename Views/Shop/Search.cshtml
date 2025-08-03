@@ -45,6 +45,28 @@
     <!-- Shop Section Start -->
     <section class="section-b-space shop-section">
         <div class="container-fluid-lg">
+            <!-- Messages -->
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
             <div class="row">
                 <div class="col-custom-3">
                     <div class="left-box wow fadeInUp">
@@ -199,7 +221,7 @@
                                                     <input type="hidden" name="productId" value="@item.Id" />
                                                     <div class="input-group bg-white w-auto">
                                                         <button type="button" onclick="adjustQty(this, -1)"><i class="fa fa-minus"></i></button>
-                                                        <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                        <input type="number" name="quantity" class="form-control input-number qty-input text-center" value="1" min="1" required />
                                                         <button type="button" onclick="adjustQty(this, 1)"><i class="fa fa-plus"></i></button>
                                                     </div>
                                                     <script>
@@ -222,29 +244,13 @@
                             </div>
                         }
                     </div>
+                    <div id="product-summary" class="text-center fw-bold my-3">
+                        Đang hiển thị 0 sản phẩm
+                    </div>
                     <nav class="custom-pagination">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="javascript:void(0)" tabindex="-1">
-                                    <i class="fa-solid fa-angles-left"></i>
-                                </a>
-                            </li>
-                            <li class="page-item active">
-                                <a class="page-link" href="javascript:void(0)">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="javascript:void(0)">
-                                    <i class="fa-solid fa-angles-right"></i>
-                                </a>
-                            </li>
-                        </ul>
+                        <ul class="pagination justify-content-center"></ul>
                     </nav>
+
                 </div>
             </div>
         </div>
@@ -306,6 +312,9 @@
 
     <script>
         $(document).ready(function () {
+            let currentPage = parseInt(new URLSearchParams(window.location.search).get("page")) || 1;
+            const pageSize = 20;
+
             // 1. Lấy giá trị search từ query string trên URL
             const urlParams = new URLSearchParams(window.location.search);
             const searchParam = urlParams.get("search") || "";
@@ -479,6 +488,10 @@
                     return $(this).val();
                 }).get();
 
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set("page", currentPage);
+                window.history.replaceState({}, "", `${location.pathname}?${urlParams}`);
+
                 $.ajax({
                     url: "/api/shopapi/products",
                     data: {
@@ -486,11 +499,14 @@
                         categoryIds: categoryIds,
                         minPrice: minPrice,
                         maxPrice: maxPrice,
-                        sort: sort
+                        sort: sort,
+                        page: currentPage,
+                        pageSize: pageSize
                     },
                     traditional: true,
-                    success: function (data) {
-                        window.renderProducts(data);
+                    success: function (res) {
+                        window.renderProducts(res.data);
+                        window.renderPagination(res.totalItems, res.data.length);
                     },
                     error: function (xhr) {
                         console.error("API lỗi:", xhr.responseText);
@@ -520,8 +536,8 @@
                                     <div class="product-image">
                                         <a href="/shop/detail/${p.id}">
                                             <img src="${imageUrl}"
-                                                 onerror="this.onerror=null;this.src='/images/product/default-product.png';"
-                                                 class="img-fluid blur-up lazyload" alt="${p.name}" />
+                                                onerror="this.onerror=null;this.src='/images/product/default-product.png';"
+                                                class="img-fluid blur-up lazyload" alt="${p.name}" />
                                         </a>
                                     </div>
                                 </div>
@@ -538,7 +554,7 @@
                                                     <button type="button" onclick="adjustQty(this, -1)">
                                                         <i class="fa fa-minus"></i>
                                                     </button>
-                                                    <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" />
+                                                    <input type="number" class="form-control input-number qty-input text-center" value="1" min="1" required />
                                                     <button type="button" onclick="adjustQty(this, 1)">
                                                         <i class="fa fa-plus"></i>
                                                     </button>
@@ -640,17 +656,83 @@
                 window.fetchProducts();
             });
 
-            // 14. Khởi chạy khi trang load
+            // 14. Hiển thị phân trang
+            window.renderPagination = function (totalItems, currentPageCount) {
+                const totalPages = Math.ceil(totalItems / pageSize);
+                const pagination = $(".pagination");
+
+                $("#product-summary").text(`Đang hiển thị ${currentPageCount} sản phẩm`);
+                pagination.empty();
+
+                if (totalPages <= 1) return;
+
+                pagination.append(`
+                    <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+                        <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}">
+                            <i class="fa-solid fa-angles-left"></i>
+                        </a>
+                    </li>
+                `);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    pagination.append(`
+                        <li class="page-item ${i === currentPage ? "active" : ""}">
+                            <a class="page-link" href="javascript:void(0)" data-page="${i}">${i}</a>
+                        </li>
+                    `);
+                }
+
+                pagination.append(`
+                    <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+                        <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </a>
+                    </li>
+                `);
+            };
+
+            // 15. Xử lý khi click vào số trang
+            $(document).on("click", ".pagination .page-link", function () {
+                const page = parseInt($(this).data("page"));
+                if (!isNaN(page) && page !== currentPage) {
+                    currentPage = page;
+                    window.fetchProducts();
+                    $('html, body').animate({ scrollTop: 0 }, 300);
+                }
+            });
+
+            // 16. Validation cho form add to cart
+            $(document).on('submit', 'form[asp-controller="Shop"][asp-action="AddToCart"]', function(e) {
+                const quantityInput = $(this).find('input[name="quantity"]');
+                const quantity = quantityInput.val();
+                
+                if (!quantity || quantity.trim() === '' || parseInt(quantity) < 1) {
+                    e.preventDefault();
+                    alert('Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)');
+                    quantityInput.focus();
+                    return false;
+                }
+            });
+
+            // 17. Khởi chạy khi trang load
             window.renderSearchHistory();
             window.fetchProducts();
-        });
+            });
     </script>
 
     <script>
         window.handleAddToCart = function(btn) {
             // Lấy id sản phẩm và số lượng
             const productId = $(btn).closest('.cart_qty').find('.product-id').val();
-            const quantity = $(btn).closest('.cart_qty').find('.qty-input').val() || 1;
+            const quantityInput = $(btn).closest('.cart_qty').find('.qty-input');
+            const quantity = quantityInput.val();
+
+            // Kiểm tra validation
+            if (!quantity || quantity.trim() === '' || parseInt(quantity) < 1) {
+                alert('Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)');
+                quantityInput.focus();
+                return;
+            }
 
             $.ajax({
                 url: '/Shop/AddToCart',

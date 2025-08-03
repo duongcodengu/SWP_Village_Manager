@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Village_Manager.Models;
@@ -15,6 +15,8 @@ public partial class AppDbContext : DbContext
         : base(options)
     {
     }
+   
+
 
     public virtual DbSet<Address> Addresses { get; set; }
 
@@ -95,6 +97,8 @@ public partial class AppDbContext : DbContext
 
     public DbSet<HiddenProduct> HiddenProduct { get; set; }
     public virtual DbSet<HomepageImage> HomepageImages { get; set; }
+
+    public DbSet<ChatMessages> ChatMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
@@ -978,10 +982,13 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IsActive)
             .HasColumnName("is_active")
             .HasDefaultValue(true);
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-        .HasForeignKey(d => d.RoleId)
-        .OnDelete(DeleteBehavior.ClientSetNull)
-        .HasConstraintName("FK__Users__role_id__3F466844");
+            entity.Property(e => e.DeletedAt)
+            .HasColumnName("deleted_at")
+            .IsRequired(false);
+                    entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Users__role_id__3F466844");
         });
 
         // ... existing code ...
@@ -1039,6 +1046,9 @@ public partial class AppDbContext : DbContext
                   .HasForeignKey(h => h.ProductId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
+
+        // Global query filter để tự động lọc user đã soft delete
+        modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
 
         OnModelCreatingPartial(modelBuilder);
     }

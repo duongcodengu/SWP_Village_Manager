@@ -101,7 +101,7 @@
                                                             <td>
                                                                 @if(product.ProductImages != null && product.ProductImages.Any())
                                                                 {
-                                                                    <img src="@product.ProductImages.FirstOrDefault()?.ImageUrl" style="max-height: 80px;" />
+                                                                    <img src="@(product.ProductImages?.FirstOrDefault()?.ImageUrl ?? "/images/product/default-product.png")" style="max-height: 80px;" />
                                                                 }
                                                                 else
                                                                 {

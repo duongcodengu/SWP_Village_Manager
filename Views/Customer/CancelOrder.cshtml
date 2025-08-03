@@ -42,7 +42,10 @@
             <div class="mb-3">
                 <textarea class="form-control" name="reason" rows="4" placeholder="Nhập lý do huỷ đơn hàng..." required></textarea>
             </div>
-            <button type="submit" class="btn btn-danger">Xác nhận huỷ</button>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                Xác nhận huỷ
+            </button>
+
         </form>
     </div>
     <!-- Bg overlay Start -->

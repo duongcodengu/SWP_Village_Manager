@@ -9,13 +9,16 @@
     {
         return status switch
         {
-            "Pending" => "Đang chờ xử lý",
-            "Confirmed" => "Đã xác nhận",
-            "Processing" => "Đang xử lý",
-            "Shipped" => "Đang giao hàng",
-            "Delivered" => "Đã giao hàng",
-            "Cancelled" => "Đã hủy",
-            "Returned" => "Đã trả hàng",
+            "pending" => "Chờ xử lý",
+            "confirmed" => "Đã xác nhận",
+            "processing" => "Đang xử lý",
+            "shipped" => "Đang giao hàng",
+            "delivered" => "Đã giao hàng",
+            "cancelled" => "Đã hủy",
+            "returned" => "Đã trả hàng",
+            "assigned" => "Chờ giao",
+            "in_transit" => "Đang giao",
+            "failed" => "Thất bại",
             _ => status
         };
     }
@@ -27,6 +30,22 @@
             <div class="card shadow p-4">
                 <h3 class="mb-4">Chi tiết đơn hàng</h3>
 
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
                 <dl class="row">
                     <dt class="col-sm-4">Mã đơn hàng</dt>
                     <dd class="col-sm-8">@Model.Id</dd>
@@ -37,12 +56,63 @@
                     <dt class="col-sm-4">Ngày đặt hàng</dt>
                     <dd class="col-sm-8">@Model.OrderDate?.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-4">Trạng thái</dt>
-                    <dd class="col-sm-8">@GetStatusInVietnamese(Model.Status)</dd>
+                    <dt class="col-sm-4">Trạng thái hiện tại</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-@(Model.Status switch {
+                            "pending" => "warning",
+                            "confirmed" => "primary", 
+                            "shipped" => "info",
+                            "delivered" => "success",
+                            "cancelled" => "danger",
+                            "returned" => "secondary",
+                            "assigned" => "info",
+                            "in_transit" => "warning",
+                            "failed" => "dark",
+                            _ => "light"
+                        })">@GetStatusInVietnamese(Model.Status)</span>
+                    </dd>
 
                     <dt class="col-sm-4">Ngày xác nhận</dt>
                     <dd class="col-sm-8">@(Model.ConfirmedAt?.ToString("dd/MM/yyyy") ?? "Chưa xác nhận")</dd>
                 </dl>
+
+                <!-- Phần cập nhật trạng thái -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5>Cập nhật trạng thái</h5>
+                        <form method="post" asp-action="UpdateOrderStatus" class="d-flex gap-2">
+                            <input type="hidden" name="orderId" value="@Model.Id" />
+                            <select name="newStatus" class="form-select" style="max-width: 200px;">
+                                @{
+                                    var statuses = new Dictionary<string, string>
+                                    {
+                                        {"pending", "Chờ xử lý"},
+                                        {"confirmed", "Đã xác nhận"},
+                                        {"shipped", "Đang giao hàng"},
+                                        {"delivered", "Đã giao hàng"},
+                                        {"cancelled", "Đã hủy"},
+                                        {"returned", "Đã trả hàng"},
+                                        {"assigned", "Chờ giao"},
+                                        {"in_transit", "Đang giao"},
+                                        {"failed", "Thất bại"}
+                                    };
+                                }
+                                @foreach (var status in statuses)
+                                {
+                                    if (Model.Status == status.Key)
+                                    {
+                                        <option value="@status.Key" selected>@status.Value</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@status.Key">@status.Value</option>
+                                    }
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        </form>
+                    </div>
+                </div>
 
                 <h5 class="mt-4">Danh sách sản phẩm</h5>
                 <div class="table-responsive mt-2">

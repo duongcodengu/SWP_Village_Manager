@@ -16,15 +16,18 @@
                         <form asp-action="CreateDiscountCode" method="post">
                             <div class="mb-3">
                                 <label>Mã code</label>
-                                <input asp-for="Code" class="form-control" required minlength="6" />
+                                <input asp-for="Code" class="form-control" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
                                 <label>Phần trăm giảm giá</label>
-                                <input asp-for="DiscountPercent" type="number" class="form-control" min="1" max="100" required />
+                                <input asp-for="DiscountPercent" type="number" class="form-control"/>
+                                <span asp-validation-for="DiscountPercent" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
                                 <label>Giới hạn sử dụng</label>
-                                <input asp-for="UsageLimit" type="number" class="form-control" min="1" required />
+                                <input asp-for="UsageLimit" type="number" class="form-control" />
+                                <span asp-validation-for="UsageLimit" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
                                 <label>Trạng thái</label>
@@ -36,6 +39,7 @@
                             <div class="mb-3">
                                 <label>Ngày hết hạn</label>
                                 <input asp-for="ExpiredAt" type="date" class="form-control" />
+                                <span asp-validation-for="ExpiredAt" class="text-danger"></span>
                             </div>
                             <div class="text-end">
                                 <button type="submit" class="btn btn-success">Tạo mã giảm giá</button>

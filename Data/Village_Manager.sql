@@ -15,6 +15,7 @@ CREATE TABLE Users (
     Phone Nvarchar(10) UNIQUE NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     is_active BIT NOT NULL DEFAULT 1,
+    deleted_at DATETIME NULL,
     FOREIGN KEY (role_id) REFERENCES Roles(id)
 );
 
@@ -440,6 +441,23 @@ CREATE TABLE HomepageImage (
         REFERENCES ProductImage(id)
         ON DELETE SET NULL
 );
+CREATE TABLE ChatMessages (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message NVARCHAR(MAX) NOT NULL,
+    sent_at DATETIME DEFAULT GETDATE(),
+    is_read BIT DEFAULT 0, -- để đánh dấu đã đọc hay chưa
+    FOREIGN KEY (sender_id) REFERENCES Users(id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(id)
+);
+
+ALTER TABLE RetailOrder
+ADD discount_code_id INT NULL;
+
+ALTER TABLE RetailOrder
+ADD CONSTRAINT FK_RetailOrder_DiscountCode
+FOREIGN KEY (discount_code_id) REFERENCES DiscountCodes(id);
 
 ------------------------------------INSERT--------------------------------------------------------------
 

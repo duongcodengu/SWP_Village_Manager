@@ -85,6 +85,7 @@ namespace Village_Manager.Controllers
                     .ThenInclude(oi => oi.Product)
                     .ThenInclude(p => p.ProductImages)
                 .Include(o => o.User)
+                .Include(o => o.DiscountCode) // 🔹 Load DiscountCode từ DB
                 .FirstOrDefaultAsync();
 
             if (order == null)
@@ -93,25 +94,33 @@ namespace Village_Manager.Controllers
             // Lấy thông tin địa chỉ giao hàng từ bảng Delivery
             var delivery = await _context.Deliveries
                 .FirstOrDefaultAsync(d => d.OrderId == order.Id && d.OrderType == "retail");
-            
+
             ViewBag.DeliveryAddress = delivery?.CustomerAddress ?? "Không có thông tin địa chỉ";
             ViewBag.CustomerName = delivery?.CustomerName ?? order.User?.Username ?? "Không xác định";
             ViewBag.CustomerPhone = delivery?.CustomerPhone ?? order.User?.Phone ?? "Không xác định";
 
-            // Lấy mã giảm giá từ session nếu có
-            var discountCode = HttpContext.Session.GetString("DiscountCode");
-            var discountAmountStr = HttpContext.Session.GetString("DiscountAmount");
-            decimal discountAmount = 0;
-            if (decimal.TryParse(discountAmountStr, out var value))
-                discountAmount = value;
+            // 🔹 Tính tổng tiền gốc
+            decimal totalAmount = (decimal)order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
 
+            // 🔹 Tính giảm giá từ DiscountCode trong DB
+            decimal discountAmount = 0;
+            string discountCode = null;
+            if (order.DiscountCode != null)
+            {
+                discountCode = order.DiscountCode.Code;
+                discountAmount = totalAmount * order.DiscountCode.DiscountPercent / 100m;
+            }
+
+            // 🔹 Gán ViewBag
             ViewBag.DiscountCode = discountCode;
             ViewBag.DiscountAmount = discountAmount;
-            ViewBag.TotalAmount = order.RetailOrderItems.Sum(i => i.Quantity * (i.UnitPrice ?? 0));
-            ViewBag.FinalAmount = ViewBag.TotalAmount - discountAmount;
+            ViewBag.TotalAmount = totalAmount;
+            ViewBag.FinalAmount = totalAmount - discountAmount;
+            if (ViewBag.FinalAmount < 0) ViewBag.FinalAmount = 0;
 
             return PartialView("OrderDetail", order);
         }
+
 
 
         [HttpGet("/otp")]
